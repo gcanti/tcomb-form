@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+src
+test
+coverage
+.gitattributes
+.gitignore
+.jshintrc
+bower.json
+Grunfile.js
