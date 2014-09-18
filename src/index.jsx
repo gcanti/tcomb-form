@@ -14,12 +14,12 @@
 
   - Default conversions from types to inputs
 
-  Str -> textbox, textarea (default textbox)
+  Str -> textbox, textarea
   Num -> textbox
   Bool -> checkbox
-  enums -> select, radio (deafult select)
+  enums -> select, radio
   struct -> form
-  list(struct) -> tab, panel, accordion
+  list(struct) -> table
 
 */
 
@@ -108,18 +108,17 @@ function getOptions(map, order, emptyOption) {
   });
 }
 
-// TODO finish
 function getInput(type, opts) {
   if (opts && opts.input) {
     return opts.input;
   }
   type = extractType(type);
+  if (type === Bool) {
+    return checkbox;
+  }
   var kind = getKind(type);
   switch (kind) {
     case 'irriducible' :
-      if (type === Bool) {
-        return checkbox;
-      }
       return textbox;
     case 'enums' :
       return select;
@@ -130,7 +129,27 @@ function getInput(type, opts) {
   }
 }
 
-var I18n = struct({
+function getInitialState () {
+  return { hasError: false };
+}
+
+function setErrors (errors) {
+  var hasError = !Nil.is(errors);
+  if (hasError !== this.state.hasError) {
+    this.setState({ hasError: hasError });
+  }
+}
+
+function getValue (type) {
+  return function () {
+    var value = this.getRawValue();
+    var result = t.validate(value, type);
+    this.setErrors(result.errors);
+    return result.isValid() ? type(value) : result;
+  };
+}
+
+var I17n = struct({
   format: Func,
   parse: Func
 });
@@ -149,16 +168,16 @@ var TextboxOpts = struct({
   help: Any,  // TODO add contraints
   groupClasses: maybe(Obj),
   placeholder: maybe(Str),
-  i18n: maybe(I18n)
+  i17n: maybe(I17n)
 }, 'Textbox.Opts');
 
 var textbox = func([Any, maybe(TextboxOpts)], function (type, opts) {
 
   opts = opts || TextboxOpts({});
   var defaultValue = getOrElse(opts.value, '');
-  var i18n = opts.i18n || {};
-  if (i18n.format) {
-    defaultValue = i18n.format(defaultValue);
+  var i17n = opts.i17n || {};
+  if (i17n.format) {
+    defaultValue = i17n.format(defaultValue);
   }
   var label = opts.label ? <label className="control-label label-class">{opts.label}</label> : null;
   var help = opts.help ? <span className="help-block">{opts.help}</span> : null;
@@ -167,31 +186,19 @@ var textbox = func([Any, maybe(TextboxOpts)], function (type, opts) {
     
     displayName: 'Textbox',
     
-    getInitialState: function () {
-      return { hasError: false };
-    },
+    getInitialState: getInitialState,
     
-    setErrors: function (errors) {
-      var hasError = !Nil.is(errors);
-      if (hasError !== this.state.hasError) {
-        this.setState({ hasError: hasError });
-      }
-    },
+    setErrors: setErrors,
     
     getRawValue: function () {
       var value = this.refs.input.getDOMNode().value.trim() || null;
-      if (i18n.parse) {
-        value = i18n.parse(value);
+      if (i17n.parse) {
+        value = i17n.parse(value);
       }
       return value;
     },
     
-    getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, type);
-      this.setErrors(result.errors);
-      return result.isValid() ? type(value) : result;
-    },
+    getValue: getValue(type),
 
     render: function () {
 
@@ -254,27 +261,15 @@ var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
     
     displayName: 'Select',
     
-    getInitialState: function () {
-      return { hasError: false };
-    },
+    getInitialState: getInitialState,
     
-    setErrors: function (errors) {
-      var hasError = !Nil.is(errors);
-      if (hasError !== this.state.hasError) {
-        this.setState({ hasError: hasError });
-      }
-    },
+    setErrors: setErrors,
     
     getRawValue: function () {
       return this.refs.input.getDOMNode().value.trim() || null;
     },
     
-    getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, type);
-      this.setErrors(result.errors);
-      return result.isValid() ? type(value) : result;
-    },
+    getValue: getValue(type),
 
     render: function () {
 
@@ -326,16 +321,9 @@ var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
     
     displayName: 'Radio',
     
-    getInitialState: function () {
-      return { hasError: false };
-    },
+    getInitialState: getInitialState,
     
-    setErrors: function (errors) {
-      var hasError = !Nil.is(errors);
-      if (hasError !== this.state.hasError) {
-        this.setState({ hasError: hasError });
-      }
-    },
+    setErrors: setErrors,
     
     getRawValue: function () {
       var value = null;
@@ -349,12 +337,7 @@ var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
       return value;
     },
     
-    getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, type);
-      this.setErrors(result.errors);
-      return result.isValid() ? type(value) : result;
-    },
+    getValue: getValue(type),
 
     render: function () {
 
@@ -413,27 +396,15 @@ var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
     
     displayName: 'Checkbox',
     
-    getInitialState: function () {
-      return { hasError: false };
-    },
+    getInitialState: getInitialState,
     
-    setErrors: function (errors) {
-      var hasError = !Nil.is(errors);
-      if (hasError !== this.state.hasError) {
-        this.setState({ hasError: hasError });
-      }
-    },
+    setErrors: setErrors,
     
     getRawValue: function () {
       return this.refs.input.getDOMNode().checked;
     },
     
-    getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, type);
-      this.setErrors(result.errors);
-      return result.isValid() ? type(value) : result;
-    },
+    getValue: getValue(type),
 
     render: function () {
 
@@ -497,9 +468,7 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
 
     displayName: 'Form',
 
-    getInitialState: function () {
-      return { hasError: false };
-    },
+    getInitialState: getInitialState,
 
     setErrors: function (errors, depth) {
       
@@ -539,12 +508,7 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
       return ret;
     },
     
-    getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, type);
-      this.setErrors(result.errors);
-      return result.isValid() ? type(value) : result;
-    },
+    getValue: getValue(type),
 
     render: function () {
 

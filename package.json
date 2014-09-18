@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "watchify -t reactify dev/dev.jsx -o dev/dev.js -v",
-    "build": "jsx -x jsx --no-cache-dir ./src . -w"
+    "build": "jsx -x jsx --no-cache-dir ./src . -w",
+    "playground": "watchify playground/playground.src.js -o playground/playground.js -v"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,8 @@
     "tcomb-validation": "~0.1.0"
   },
   "devDependencies": {
-    "react-vdom": "~0.1.0"
+    "react-vdom": "~0.1.0",
+    "react": "~0.11.1"
   },
   "tags": [
     "form",

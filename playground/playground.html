@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tcomb-form playground</title>
+    
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.11.1/JSXTransformer.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/mode/javascript/javascript.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <script type="text/javascript" src="playground.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row header">
+        <div class="col-md-6">
+          <h1><a href="https://github.com/gcanti/tcomb-form">tcomb-form</a> Playground</h1>
+          <p class="text-muted">Form generation and validation based on domain models</p>
+        </div>
+        <div class="col-md-6">
+          <div class="text-right repo-link"><p><span>My </span><a href="/">blog</a></p></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-7">
+          <p class="lead">Choose an example or insert your code</p>
+          <div id="examples" class="form-group"></div>
+          <div>
+            <div class="form-group">
+              <textarea id="code" class="form-control" type="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <p class="lead">Form values</p>
+          <div id="json"></div>
+          <p class="lead">Preview</p>
+          <div id="preview"></div>
+        </div>
+      </div>
+    </div>
+<script type="text/postfix" id="postfix">
+React.createClass({
+  onClick: function (evt) {
+    evt.preventDefault();
+    var value = this.refs.form.getValue();
+    if (t.validate.Result.is(value)) {
+      //$('#json').html('<div class="alert alert-danger"><pre>' + JSON.stringify(value.errors, null, 2) + '</pre></div>');
+    } else {
+      console.log(value); 
+      var s = 'This is an instance of the type. Open up the console to see the details.<br/><br/>';
+      $('#json').html(s + '<div class="alert alert-success"><pre>' + JSON.stringify(value, null, 2) + '</pre></div>');
+    }
+  },
+  render: function () {
+    return (
+      <div>
+        <Form ref="form"/>
+        <button className="btn btn-primary" onClick={this.onClick}>Click me</button>
+      </div>
+    );    
+  }
+});
+</script>
+<script type="text/example" id="person">// defines a Person type
+
+var Person = struct({
+  name: Str,    // a required string name
+  surname: Str  // a required string surname
+});
+
+// this is the form generated and mounted aside
+var Form = form(Person);
+</script>
+<script type="text/example" id="maybe">var Person = struct({
+  name: Str,
+  surname: Str,
+  nickname: maybe(Str) // an optional string
+});
+
+var Form = form(Person);
+</script>
+<script type="text/example" id="signin">// a subtype is a pair (type, predicate) 
+// where predicate is a function with signature (x) -> boolean
+
+var Password = subtype(Str, function (s) {
+  return s.length >= 6;
+});
+
+var User = struct({
+  username: Str,      
+  password: Password  // a required password with at least 6 chars
+});
+
+var Form = form(User);
+</script>
+<script type="text/example" id="customize">var User = struct({
+  username: Str,      
+  password: Str,
+  rememberMe: Bool // a boolean is rendered as a checkbox
+});
+
+// to customize the fields, pass a second argument to `form(type, opts)`
+var Form = form(User, {
+
+  // displays the fields with the specified order
+  order: ['username', 'rememberMe', 'password'],
+  
+  // for each field yu can customize the appearance
+  fields: {
+    username: {
+      label: 'Username'
+    },
+    password: {
+      label: 'Password',
+      type: 'password'
+    },
+    rememberMe: {
+      label: 'Remember me' // you can customize labels
+    }
+  }
+});
+</script>
+<script type="text/example" id="enumsSelect">var Country = t.enums({
+  IT: 'Italy',
+  US: 'United States'
+});
+
+var Person = struct({
+  name: Str,
+  country: Country
+});
+
+var Form = form(Person);
+</script>
+<script type="text/example" id="enumsRadio">var Country = t.enums({
+  IT: 'Italy',
+  US: 'United States'
+});
+
+var Person = struct({
+  name: Str,
+  country: Country
+});
+
+var Form = form(Person, {
+  fields: {
+    country: {
+      input: radio
+    }
+  }
+});
+</script>
+<script type="text/example" id="customizeSelect">var Country = t.enums({
+  IT: 'Italy',
+  US: 'United States'
+});
+
+var Person = struct({
+  name: Str,
+  country: Country
+});
+
+var Form = form(Person, {
+  fields: {
+    country: {
+      emptyOption: {value: '', caption: '-'}, // an always first empty option
+      order: 'desc'                           // order options asc or desc
+    }
+  }
+});
+</script>
+<script type="text/example" id="number">var Person = struct({
+  name: Str,
+  age: Num
+});
+
+var Form = form(Person, {
+  fields: {
+    age: {
+      i17n: {
+        // this is used from the model to UI
+        format: function (value) {
+          return String(value);
+        },
+        // this is used from the UI to the model
+        parse: function (s) {
+          return parseFloat(s, 10);
+        }
+      }
+    }
+  }
+});
+</script>
+<script type="text/example" id="textarea">var Post = struct({
+  username: Str,
+  text: Str
+});
+
+var Form = form(Post, {
+  fields: {
+    username: {
+      label: 'Username'
+    },
+    text: {
+      label: 'Text',
+      type: 'textarea'
+    }
+  }
+});
+</script>
+<script type="text/example" id="value">var Post = struct({
+  username: Str,
+  text: Str
+});
+
+var Form = form(Post, {
+  fields: {
+    username: {
+      label: 'Username',
+      value: 'giulio'
+    },
+    text: {
+      label: 'Text',
+      type: 'textarea',
+      value: 'Lorem ipsum'
+    }
+  }
+});
+</script>
+
+    <a href="https://github.com/gcanti/tcomb-form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+  </body>
+</html>
+

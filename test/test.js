@@ -85,7 +85,7 @@ describe('textbox', function () {
     eq(dom.children[0].attrs['placeholder'], 'hello');
   });
 
-  it.only('should handle i18n', function () {
+  it('should handle i18n', function () {
     var Factory = textbox(Num, {
       value: 1000,
       i18n: {

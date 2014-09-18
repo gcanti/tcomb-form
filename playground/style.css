@@ -1,0 +1,30 @@
+body {
+  color: #333;
+}
+
+pre {
+  background-color: transparent;
+  border: 0;  
+}
+
+.header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.repo-link { 
+  padding: 40px 0 0 0;
+}
+
+.CodeMirror {
+  font-family: Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  height: 800px;
+  padding: 15px 20px;
+  background: #fff8ed;
+  border: 1px solid #f6e4cc;
+}
+
+
