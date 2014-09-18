@@ -1,9 +1,10 @@
 {
   "name": "tcomb-form",
   "version": "0.0.1",
-  "description": "Form generation and validation",
+  "description": "Form generation and validation based on type combinators",
   "main": "index.js",
   "scripts": {
+    "dev": "watchify -t reactify dev/dev.jsx -o dev/dev.js -v"
   },
   "repository": {
     "type": "git",
@@ -16,18 +17,10 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
-    "tcomb": "~0.2.0",
     "tcomb-validation": "~0.1.0"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-cli": "^0.1.13",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.5.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-mocha-test": "^0.11.0",
-    "jshint-stylish": "^0.4.0",
-    "mocha": "^1.21.4"
+    "react-vdom": "~0.1.0"
   },
   "tags": [
     "form",
