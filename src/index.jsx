@@ -89,12 +89,12 @@ function getOptions(type, opts) {
   }
   // convert options to tags
   options = options.map(function (o, i) {
-    return React.DOM.option({key: i, value: o.value}, o.caption);
+    return <option key={i} value={o.value}>{o.caption}</option>;
   });
   // add an emptyOption to the beginning if specified
   if (opts.emptyOption) {
     options.unshift(
-      React.DOM.option({key: -1, value: opts.emptyOption.value}, opts.emptyOption.caption)
+      <option key={-1} value={opts.emptyOption.value}>{opts.emptyOption.caption}</option>
     );
   }
   return options;
@@ -144,8 +144,8 @@ var textbox = func([TextboxType, maybe(TextboxOpts)], function (type, opts) {
 
   opts = opts || TextboxOpts({});
   var defaultValue = getOrElse(opts.value, '');
-  var label = opts.label ? React.DOM.label({className: "control-label label-class"}, opts.label) : null;
-  var help = opts.help ? React.DOM.span({className: "help-block"}, opts.help) : null;
+  var label = opts.label ? <label className="control-label label-class">{opts.label}</label> : null;
+  var help = opts.help ? <span className="help-block">{opts.help}</span> : null;
 
   return React.createClass({
     
@@ -181,15 +181,15 @@ var textbox = func([TextboxType, maybe(TextboxOpts)], function (type, opts) {
       }, opts.groupClasses || {});
 
       var input = opts.type === 'textarea' ? 
-        React.DOM.textarea({ref: "input", className: "form-control", defaultValue: defaultValue, placeholder: opts.placeholder}) :
-        React.DOM.input({ref: "input", className: "form-control", type: opts.type || 'text', defaultValue: defaultValue, placeholder: opts.placeholder});
+        <textarea ref="input" className="form-control" defaultValue={defaultValue} placeholder={opts.placeholder}/> :
+        <input ref="input" className="form-control" type={opts.type || 'text'} defaultValue={defaultValue} placeholder={opts.placeholder}/>;
 
       return (
-        React.DOM.div({className: cx(groupClasses)}, 
-          label, 
-          input, 
-          help
-        )
+        <div className={cx(groupClasses)}>
+          {label}
+          {input}
+          {help}
+        </div>
       );
     }
 
@@ -226,8 +226,8 @@ var select = func([SelectType, maybe(SelectOpts)], function (type, opts) {
   opts = opts || SelectOpts({});
   var emptyValue = opts.emptyOption ? opts.emptyOption.value : '';
   var defaultValue = getOrElse(opts.value, emptyValue);
-  var label = opts.label ? React.DOM.label({className: "control-label label-class"}, opts.label) : null;
-  var help = opts.help ? React.DOM.span({className: "help-block"}, opts.help) : null;
+  var label = opts.label ? <label className="control-label label-class">{opts.label}</label> : null;
+  var help = opts.help ? <span className="help-block">{opts.help}</span> : null;
   var options = getOptions(extractType(type), opts);
 
   return React.createClass({
@@ -264,13 +264,13 @@ var select = func([SelectType, maybe(SelectOpts)], function (type, opts) {
       }, opts.groupClasses || {});
 
       return (
-        React.DOM.div({className: cx(groupClasses)}, 
-          label, 
-          React.DOM.select({ref: "input", className: "form-control", defaultValue: defaultValue}, 
-            options
-          ), 
-          help
-        )
+        <div className={cx(groupClasses)}>
+          {label}
+          <select ref="input" className="form-control" defaultValue={defaultValue}>
+            {options}
+          </select>
+          {help}
+        </div>
       );
     }
 
@@ -300,7 +300,7 @@ var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
 
   opts = opts || CheckboxOpts({});
   var defaultValue = getOrElse(opts.value, false);
-  var help = opts.help ? React.DOM.span({className: "help-block"}, opts.help) : null;
+  var help = opts.help ? <span className="help-block">{opts.help}</span> : null;
 
   return React.createClass({
     
@@ -336,14 +336,14 @@ var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
       }, opts.groupClasses || {});
 
       return (
-        React.DOM.div({className: cx(groupClasses)}, 
-          React.DOM.div({className: "checkbox"}, 
-            React.DOM.label(null, 
-              React.DOM.input({ref: "input", type: "checkbox", defaultChecked: defaultValue}), " ", opts.label
-            )
-          ), 
-          help
-        )
+        <div className={cx(groupClasses)}>
+          <div className="checkbox">
+            <label>
+              <input ref="input" type="checkbox" defaultChecked={defaultValue}/> {opts.label}
+            </label>
+          </div>
+          {help}
+        </div>
       );
     }
 
@@ -446,7 +446,7 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
         return factories[i]({key: i, ref: name});
       });
 
-      return React.DOM.div({className: cx(classes)}, children);
+      return <div className={cx(classes)}>{children}</div>;
     }
 
   });

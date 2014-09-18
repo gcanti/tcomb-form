@@ -4,7 +4,8 @@
   "description": "Form generation and validation based on type combinators",
   "main": "index.js",
   "scripts": {
-    "dev": "watchify -t reactify dev/dev.jsx -o dev/dev.js -v"
+    "dev": "watchify -t reactify dev/dev.jsx -o dev/dev.js -v",
+    "build": "jsx -x jsx --no-cache-dir ./src . -w"
   },
   "repository": {
     "type": "git",
