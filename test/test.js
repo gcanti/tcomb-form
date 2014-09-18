@@ -9,6 +9,7 @@ var struct = t.struct;
 var textbox = t.form.textbox;
 var select = t.form.select;
 var checkbox = t.form.checkbox;
+var radio = t.form.radio;
 var form = t.form.form;
 
 //
@@ -155,7 +156,7 @@ describe('select', function () {
     eq(dom.children[0].children[0], {
       "tag": "option",
       "attrs": {
-        "key": -1,
+        "key": 0,
         "value": "myvalue"
       },
       "children": "mycaption"
@@ -170,7 +171,7 @@ describe('select', function () {
       {
         "tag": "option",
         "attrs": {
-          "key": -1,
+          "key": 0,
           "value": "myvalue"
         },
         "children": "mycaption"
@@ -178,7 +179,7 @@ describe('select', function () {
       {
         "tag": "option",
         "attrs": {
-          "key": 0,
+          "key": 1,
           "value": "US"
         },
         "children": "United States"
@@ -186,7 +187,7 @@ describe('select', function () {
       {
         "tag": "option",
         "attrs": {
-          "key": 1,
+          "key": 2,
           "value": "IT"
         },
         "children": "Italy"
@@ -223,6 +224,45 @@ describe('checkbox', function () {
 
   it('should handle opts.groupClasses', function () {
     var Factory = checkbox(Bool, {groupClasses: {'hello': true}});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs['className'], 'form-group hello');
+  });
+
+});
+
+describe('radio', function () {
+
+  var Country = t.enums({
+    IT: 'Italy',
+    US: 'United States'
+  });
+
+  it('should handle opts.value', function () {
+    var Factory = radio(Country, {value: 'US'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0][1].children.children[0].attrs.checked, true);
+  });
+
+  it('should handle opts.label', function () {
+    var Factory = radio(Country, {label: 'hello'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].children, 'hello');
+  });
+
+  it('should handle opts.help', function () {
+    var Factory = radio(Country, {help: 'hello'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[1].tag, 'span');
+    eq(dom.children[1].attrs['className'], 'help-block');
+    eq(dom.children[1].children, 'hello');
+  });
+
+  it('should handle opts.groupClasses', function () {
+    var Factory = radio(Country, {groupClasses: {'hello': true}});
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs['className'], 'form-group hello');

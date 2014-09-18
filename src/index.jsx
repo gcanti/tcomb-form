@@ -68,6 +68,13 @@ function getOrElse(value, defaultValue) {
   return Nil.is(value) ? defaultValue : value;
 }
 
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+  });
+}
+
 var Order = enums({
   asc: function (a, b) {
     return a.caption < b.caption ? -1 : a.caption > b.caption ? 1 : 0;
@@ -77,31 +84,34 @@ var Order = enums({
   }
 }, 'Order');
 
-// returns the list of options of a select or a radio
-function getOptions(type, opts) {
-  var map = type.meta.map;
-  var options = Object.keys(map).map(function (value, i) {
+function getChoices(map, order, emptyChoice) {
+  var choices = Object.keys(map).map(function (value, i) {
     return {value: value, caption: map[value]};
   });
   // apply an order (asc, desc) to options if specified
-  if (opts.order) {
-    options.sort(Order.meta.map[opts.order]);
+  if (order) {
+    choices.sort(Order.meta.map[order]);
   }
-  // convert options to tags
-  options = options.map(function (o, i) {
-    return <option key={i} value={o.value}>{o.caption}</option>;
+  // add an empty choice to the beginning if specified
+  if (emptyChoice) {
+    choices.unshift(emptyChoice);
+  }
+  return choices;
+}
+
+// returns the list of options of a select
+function getOptions(map, order, emptyOption) {
+  var choices = getChoices(map, order, emptyOption);
+  return choices.map(function (c, i) {
+    return <option key={i} value={c.value}>{c.caption}</option>;
   });
-  // add an emptyOption to the beginning if specified
-  if (opts.emptyOption) {
-    options.unshift(
-      <option key={-1} value={opts.emptyOption.value}>{opts.emptyOption.caption}</option>
-    );
-  }
-  return options;
 }
 
 // TODO finish
-function getInput(type) {
+function getInput(type, opts) {
+  if (opts.input) {
+    return opts.input;
+  }
   type = extractType(type);
   var kind = getKind(type);
   switch (kind) {
@@ -120,10 +130,10 @@ function getInput(type) {
 }
 
 //
-// Textbox
+// textbox
 //
 
-// Textbox accepts only Str, subtypes of Str or maybe of Str
+// textbox accepts only Str, subtypes of Str or maybe of Str
 var TextboxType = irriducible('Textbox.Type', function (type) {
   return isType(type) && extractType(type) === Str;
 });
@@ -198,11 +208,11 @@ var textbox = func([TextboxType, maybe(TextboxOpts)], function (type, opts) {
 });
 
 //
-// Select
+// select
 //
 
-// Select accepts only enums
-var SelectType = irriducible('Select.Type', function (type) {
+// select accepts only enums
+var EnumType = irriducible('EnumType', function (type) {
   return isType(type) && isKind(extractType(type), 'enums');
 });
 
@@ -221,14 +231,14 @@ var SelectOpts = struct({
   order: maybe(Order)
 }, 'Select.Opts');
 
-var select = func([SelectType, maybe(SelectOpts)], function (type, opts) {
+var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
 
   opts = opts || SelectOpts({});
   var emptyValue = opts.emptyOption ? opts.emptyOption.value : '';
   var defaultValue = getOrElse(opts.value, emptyValue);
   var label = opts.label ? <label className="control-label label-class">{opts.label}</label> : null;
   var help = opts.help ? <span className="help-block">{opts.help}</span> : null;
-  var options = getOptions(extractType(type), opts);
+  var options = getOptions(extractType(type).meta.map, opts.order, opts.emptyOption);
 
   return React.createClass({
     
@@ -281,10 +291,97 @@ var select = func([SelectType, maybe(SelectOpts)], function (type, opts) {
 select.defaultEmptyOption = new Option({value: '', caption: '-'});
 
 //
-// Checkbox
+// radio
 //
 
-// Checkbox accepts only Bool, subtypes of Str or maybe of Str
+var RadioOpts = struct({
+  value: Any, // TODO add contraints
+  label: Any, // TODO add contraints
+  help: Any,  // TODO add contraints
+  groupClasses: maybe(Obj),
+  order: maybe(Order)
+}, 'Radio.Opts');
+
+var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
+
+  opts = opts || RadioOpts({});
+  var defaultValue = getOrElse(opts.value, '');
+  var label = opts.label ? <label className="control-label label-class">{opts.label}</label> : null;
+  var help = opts.help ? <span className="help-block">{opts.help}</span> : null;
+  var choices = getChoices(extractType(type).meta.map, opts.order);
+  var len = choices.length;
+  var name = uuid();
+
+  return React.createClass({
+    
+    displayName: 'Radio',
+    
+    getInitialState: function () {
+      return { hasError: false };
+    },
+    
+    setErrors: function (errors) {
+      var hasError = !Nil.is(errors);
+      if (hasError !== this.state.hasError) {
+        this.setState({ hasError: hasError });
+      }
+    },
+    
+    getRawValue: function () {
+      var value = null;
+      for (var i = 0 ; i < len ; i++ ) {
+        var node = this.refs[name + i].getDOMNode();
+        if (node.checked) {
+          value = node.value;
+          break;
+        }
+      }
+      return value;
+    },
+    
+    getValue: function () {
+      var value = this.getRawValue();
+      var result = t.validate(value, type);
+      this.setErrors(result.errors);
+      return result.isValid() ? type(value) : result;
+    },
+
+    render: function () {
+
+      var groupClasses = mixin({
+        'form-group': true,
+        'has-error': this.state.hasError
+      }, opts.groupClasses || {});
+
+      var radios = choices.map(function (c, i) {
+        return (
+          <div className="radio" key={i}>
+            <label>
+              <input type="radio" ref={name + i} name={name} value={c.value} defaultChecked={c.value === defaultValue}></input>
+              {c.caption}
+            </label>
+          </div>
+        );
+      });
+
+      return (
+        <div className={cx(groupClasses)}>
+          {label}
+          {radios}
+          {help}
+        </div>
+      );
+    }
+
+  });
+
+});
+
+//
+// checkbox
+//
+
+// checkbox accepts only Bool, subtypes of Str or maybe of Str
 var CheckboxType = irriducible('Checkbox.Type', function (type) {
   return isType(type) && extractType(type) === Bool;
 });
@@ -352,10 +449,10 @@ var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
 });
 
 //
-// Form
+// form
 //
 
-// Form accepts only structs or subtypes of struct
+// form accepts only structs or subtypes of struct
 var FormType = irriducible('Form.Type', function (type) {
   return isType(type) && isKind(extractType(type), 'struct');
 });
@@ -378,9 +475,10 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
 
   var factories = order.map(function (name) {
     var type = props[name];
-    var Input = getInput(type);
+    var opts = fields[name];
+    var Input = getInput(type, opts);
     // pass to child input its options
-    return Input(type, fields[name]);
+    return Input(type, opts);
   });
 
   return React.createClass({
@@ -457,6 +555,7 @@ t.form = {
   textbox: textbox,
   Option: Option,
   select: select,
+  radio: radio,
   checkbox: checkbox,
   form: form
 };
