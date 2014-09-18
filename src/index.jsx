@@ -33,6 +33,7 @@ var Nil = t.Nil;
 var Str = t.Str;
 var Bool = t.Bool;
 var Obj = t.Obj;
+var Func = t.Func;
 var irriducible = t.irriducible;
 var maybe = t.maybe;
 var enums = t.enums;
@@ -109,7 +110,7 @@ function getOptions(map, order, emptyOption) {
 
 // TODO finish
 function getInput(type, opts) {
-  if (opts.input) {
+  if (opts && opts.input) {
     return opts.input;
   }
   type = extractType(type);
@@ -129,14 +130,14 @@ function getInput(type, opts) {
   }
 }
 
+var I18n = struct({
+  format: Func,
+  parse: Func
+});
+
 //
 // textbox
 //
-
-// textbox accepts only Str, subtypes of Str or maybe of Str
-var TextboxType = irriducible('Textbox.Type', function (type) {
-  return isType(type) && extractType(type) === Str;
-});
 
 // attr `type` of input tag
 var TextboxOptsType = enums.of('text textarea password color date datetime datetime-local email month number range search tel time url week', 'Textbox.Opts.Type');
@@ -147,13 +148,18 @@ var TextboxOpts = struct({
   label: Any, // TODO add contraints
   help: Any,  // TODO add contraints
   groupClasses: maybe(Obj),
-  placeholder: maybe(Str)
+  placeholder: maybe(Str),
+  i18n: maybe(I18n)
 }, 'Textbox.Opts');
 
-var textbox = func([TextboxType, maybe(TextboxOpts)], function (type, opts) {
+var textbox = func([Any, maybe(TextboxOpts)], function (type, opts) {
 
   opts = opts || TextboxOpts({});
   var defaultValue = getOrElse(opts.value, '');
+  var i18n = opts.i18n || {};
+  if (i18n.format) {
+    defaultValue = i18n.format(defaultValue);
+  }
   var label = opts.label ? <label className="control-label label-class">{opts.label}</label> : null;
   var help = opts.help ? <span className="help-block">{opts.help}</span> : null;
 
@@ -173,7 +179,11 @@ var textbox = func([TextboxType, maybe(TextboxOpts)], function (type, opts) {
     },
     
     getRawValue: function () {
-      return this.refs.input.getDOMNode().value.trim() || null;
+      var value = this.refs.input.getDOMNode().value.trim() || null;
+      if (i18n.parse) {
+        value = i18n.parse(value);
+      }
+      return value;
     },
     
     getValue: function () {
@@ -470,7 +480,9 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
   opts = opts || FormOpts({});
   // inputsOrder is useful both for ordering and filtering fields
   // TODO controllare che ci siano tutti i campi
-  var order = opts.order || Object.keys(props);
+  var keys = Object.keys(props);
+  var order = opts.order || keys;
+  assert(keys.length === order.length, 'Invalid `order` of value `%j` supplied to `form`, all type props must be specified', order);
   var fields = opts.fields || {};
 
   var factories = order.map(function (name) {

@@ -5,6 +5,7 @@ var vdom = require('react-vdom');
 
 var Str = t.Str;
 var Bool = t.Bool;
+var Num = t.Num;
 var struct = t.struct;
 var textbox = t.form.textbox;
 var select = t.form.select;
@@ -35,7 +36,7 @@ describe('textbox', function () {
   it('should handle default type', function () {
     var Factory = textbox(Str);
     var input = Factory();
-    var dom = vdom(input);
+    var dom = dvdom(input);
     eq(dom.children[0].tag, 'input');
     eq(dom.children[0].attrs.type, 'text');
   });
@@ -43,14 +44,14 @@ describe('textbox', function () {
   it('should handle opts.type', function () {
     var Factory = textbox(Str, {type: 'textarea'});
     var input = Factory();
-    var dom = vdom(input);
+    var dom = dvdom(input);
     eq(dom.children[0].tag, 'textarea');
   });
 
   it('should handle opts.value', function () {
     var Factory = textbox(Str, {value: 'hello'});
     var input = Factory();
-    var dom = vdom(input);
+    var dom = dvdom(input);
     eq(dom.children[0].attrs.value, 'hello');
   });
 
@@ -82,6 +83,23 @@ describe('textbox', function () {
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].attrs['placeholder'], 'hello');
+  });
+
+  it.only('should handle i18n', function () {
+    var Factory = textbox(Num, {
+      value: 1000,
+      i18n: {
+        format: function (value) {
+          return '1,000';
+        },
+        parse: function (s) {
+          return parseFloat(s, 10);
+        }
+      }
+    });
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs.value, '1,000');
   });
 
 });
