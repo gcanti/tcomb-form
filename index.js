@@ -12,15 +12,6 @@
   input.getValue() -> validate.Result | type
   input.setErrors(errors: maybe(list(Err)))
 
-  - Default conversions from types to inputs
-
-  Str -> textbox, textarea
-  Num -> textbox
-  Bool -> checkbox
-  enums -> select, radio
-  struct -> form
-  list(struct) -> table
-
 */
 
 var React = require('react');
@@ -110,10 +101,8 @@ function getChoices(map, order, emptyChoice) {
   var choices = Object.keys(map).map(function (value, i) {
     return {value: value, text: map[value]};
   });
-  if (order) {
-    // apply an order (asc, desc) to options
-    choices.sort(Order.meta.map[order]);
-  }
+  // apply an order (asc, desc) to options
+  choices.sort(Order.meta.map[order] || 'asc');
   if (emptyChoice) {
     // add an empty choice to the beginning
     choices.unshift(emptyChoice);
@@ -165,6 +154,13 @@ function getValue(type) {
     this.setErrors(result.errors);
     return result.isValid() ? type(value) : result;
   };
+}
+
+function getOptionalLabel(name, optional) {
+  name = humanize(name);
+  return optional ?
+    React.DOM.span(null, name, React.DOM.small({className: "text-muted"}, optional)) :
+    React.DOM.span(null, name);
 }
 
 var I17n = struct({
@@ -455,7 +451,7 @@ var FormType = irriducible('Form.Type', function (type) {
   return isType(type) && isKind(extractType(type), 'struct');
 });
 
-var FormAuto = enums.of('none placeholder label', 'FormAuto');
+var FormAuto = enums.of('none placeholders labels', 'FormAuto');
 
 var FormOpts = struct({
   auto: maybe(FormAuto),
@@ -471,7 +467,7 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
   var props = innerType.meta.props;
 
   opts = opts || {};
-  var auto = opts.auto || 'placeholder';
+  var auto = opts.auto || 'placeholders';
   var keys = Object.keys(props);
   var order = opts.order || keys;
   assert(keys.length === order.length, 'Invalid `order` of value `%j` supplied to `form`, all type props must be specified', order);
@@ -486,28 +482,32 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
     // get the input from the type
     var Input = o.input ? o.input : getInput(type);
 
-    // handle optional fields
-    var optional = isKind(type, 'maybe') ? ' (optional)' : '';
+    if (Input === form) {
+      // sub form
+      o.auto = auto
+    } else {
 
-    if (auto === 'label') {
-      if (Input === form) {
-        o.enableLabels = true;
-      } else {
-        o.label = o.label || React.DOM.span(null, humanize(name), React.DOM.small({className: "text-muted"}, optional));
+      // handle optional fields
+      var optional = isKind(type, 'maybe') ? ' (optional)' : '';
+
+      // checkboxes and radios need always a label
+      if (Input === checkbox || Input === radio) {
+        o.label = o.label || getOptionalLabel(name, optional);
       }
-      if (Input === select) {
-        o.emptyOption = o.emptyOption || {value: '', text: '-'};
+
+      if (auto === 'labels') {
+        o.label = o.label || getOptionalLabel(name, optional);
+        if (Input === select) {
+          o.emptyOption = o.emptyOption || {value: '', text: '-'};
+        }
+      } else if (auto === 'placeholders' && !o.label) {
+        if (Input === select) {
+          o.emptyOption = o.emptyOption || {value: '', text: humanize('Select your ' + name + optional)};
+        } else if (Input === textbox) {
+          o.placeholder = o.placeholder || humanize(name + optional);
+        }
       }
-    } else if (auto === 'placeholder' && !o.label) {
-      if (Input === form) {
-        o.disablePlaceholders = false;
-      } else if (Input === checkbox || Input === radio) {
-        o.label = React.DOM.span(null, humanize(name), React.DOM.small({className: "text-muted"}, optional));
-      } else if (Input === select) {
-        o.emptyOption = o.emptyOption || {value: '', text: humanize('Select your ' + name + optional)};
-      } else if (Input === textbox) {
-        o.placeholder = o.placeholder || humanize(name + optional);
-      }
+
     }
 
     return Input(type, o);

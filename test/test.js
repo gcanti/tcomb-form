@@ -6,6 +6,7 @@ var vdom = require('react-vdom');
 var Str = t.Str;
 var Bool = t.Bool;
 var Num = t.Num;
+var maybe = t.maybe;
 var struct = t.struct;
 var textbox = t.form.textbox;
 var select = t.form.select;
@@ -302,6 +303,82 @@ describe('radio', function () {
 
 describe('form', function () {
 
+  var Country = t.enums({
+    IT: 'Italy',
+    US: 'United States'
+  });
+
+  var User = struct({
+    requiredStr: Str,
+    optionalStr: maybe(Str),
+    bool: Bool,
+    requiredEnum: Country,
+    optionalEnum: maybe(Country),
+    requiredRadio: Country,
+    optionalRadio: maybe(Country)
+  });
+
+  it('should handle opts.auto = "placeholders"', function () {
+    var Factory = form(User, {
+      order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
+      fields: {
+        requiredRadio: {input: t.form.radio},
+        optionalRadio: {input: t.form.radio}
+      }
+    });
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].children[0].attrs.placeholder, 'Required str');
+    eq(dom.children[1].children[0].attrs.placeholder, 'Optional str (optional)');
+    eq(dom.children[2].children[0].children.children[2].children, 'Bool');
+    eq(dom.children[3].children[0].children[0].children, 'Select your required enum');
+    eq(dom.children[4].children[0].children[0].children, 'Select your optional enum (optional)');
+    eq(dom.children[5].children[0].children.children, 'Required radio');
+    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
+    eq(dom.children[6].children[0].children.children[1].children, ' (optional)');
+  });
+
+  it('should handle opts.auto = "labels"', function () {
+    var Factory = form(User, {
+      auto: 'labels',
+      order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
+      fields: {
+        requiredRadio: {input: t.form.radio},
+        optionalRadio: {input: t.form.radio}
+      }
+    });
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].children[0].children.children, 'Required str');
+    eq(dom.children[1].children[0].children.children[0], 'Optional str');
+    eq(dom.children[1].children[0].children.children[1].children, ' (optional)');
+    eq(dom.children[2].children[0].children.children[2].children, 'Bool');
+    eq(dom.children[3].children[0].children.children, 'Required enum');
+    eq(dom.children[4].children[0].children.children[0], 'Optional enum');
+    eq(dom.children[5].children[0].children.children, 'Required radio');
+    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
+  });
+
+  it('should handle opts.auto = "none"', function () {
+    var Factory = form(User, {
+      auto: 'none',
+      order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
+      fields: {
+        requiredRadio: {input: t.form.radio},
+        optionalRadio: {input: t.form.radio}
+      }
+    });
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].children[0].tag, 'input');
+    eq(dom.children[1].children[0].tag, 'input');
+    eq(dom.children[2].children[0].children.children[2].children, 'Bool');
+    eq(dom.children[3].children[0].tag, 'select');
+    eq(dom.children[4].children[0].tag, 'select');
+    eq(dom.children[5].children[0].children.children, 'Required radio');
+    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
+  });
+
   it('should handle nested structs', function () {
     var Type = struct({
       a: Str,
@@ -312,10 +389,12 @@ describe('form', function () {
       })
     });
     var Factory = form(Type, {
+      order: ['a', 'b', 'c'],
       fields: {
         a: {value: 'a'},
         b: {value: 'b'},
         c: {
+          order: ['d', 'e'],
           fields: {
             d: {value: 'd'},
             e: {value: 'e'}

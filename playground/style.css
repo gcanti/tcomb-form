@@ -9,7 +9,6 @@ pre {
 
 .header {
   border-bottom: 1px solid #eee;
-  padding-bottom: 20px;
   margin-bottom: 20px;
 }
 
@@ -21,10 +20,27 @@ pre {
   font-family: Menlo, Consolas, monospace;
   font-size: 12px;
   line-height: 1.5;
-  height: 800px;
-  padding: 15px 20px;
+  height: 350px;
+  padding: 10px 10px;
   background: #fff8ed;
   border: 1px solid #f6e4cc;
 }
 
+#preview {
+  margin-bottom: 40px;
+}
+
+#examplesGroup .list-group-item:hover {
+  cursor: pointer;
+  background-color: #d9edf7;
+}
+
+#examplesGroup .list-group-item.selected {
+  cursor: default;
+  font-weight: bold;
+}
+
+#examplesGroup .list-group-item.selected:hover {
+  background-color: #fff;
+}
 

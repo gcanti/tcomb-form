@@ -23,7 +23,8 @@
   },
   "devDependencies": {
     "react-vdom": "~0.1.0",
-    "react": "~0.11.1"
+    "react": "~0.11.1",
+    "js-beautify": "~1.5.1"
   },
   "tags": [
     "form",

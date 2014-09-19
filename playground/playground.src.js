@@ -2,7 +2,8 @@ $(function () {
 
   var React = require('react');
   var t = require('../index');
-  
+  var beautifyHtml = require('js-beautify').html;
+
   var Any = t.Any;
   var Nil = t.Nil;
   var Str = t.Str;
@@ -10,6 +11,7 @@ $(function () {
   var Num = t.Num;
   var Obj = t.Obj;
   var Func = t.Func;
+  var Arr = t.Arr;
   var irriducible = t.irriducible;
   var maybe = t.maybe;
   var enums = t.enums;
@@ -24,67 +26,50 @@ $(function () {
   // setup
   //
 
-  var scripts = {
-    person: {
-      label: 'Basic example: required fields'
-    },
-    maybe: {
-      label: 'How to define optional fields'
-    },
-    signin: {
-      label: 'Sign in form example: how to define subtypes'
-    },
-    customize: {
-      label: 'Fields customization'
-    },
-    enumsSelect: {
-      label: 'Enums: render as select'
-    },
-    enumsRadio: {
-      label: 'Enums: render as radio'
-    },
-    customizeSelect: {
-      label: 'How to customize a select'
-    },
-    number: {
-      label: 'How to handle numbers'
-    },
-    textarea: {
-      label: 'Textarea'
-    },
-    value: {
-      label: 'How to set default values'
-    },
-    global: {
-      label: 'How to set constraints on the whole form'
-    }
+  // override default fail behaviour of tcomb https://github.com/gcanti/tcomb
+  t.options.onFail = function (message) {
+    throw new Error(message);
   };
 
+  //
+  // load examples
+  //
+
+  var scripts = [
+    {id: 'showcase', label: 'Showcase'},
+    {id: 'requiredFields', label: '1. Required fields'},
+    {id: 'labels', label: '2. Auto generated labels'},
+    {id: 'optionalFields', label: '3. Optional fields'},
+    {id: 'subtypes', label: '4. Subtypes'},
+    {id: 'customize', label: '5. Booleans and fields customization'},
+    {id: 'enumsSelect', label: '6. Enums: render as select (default)'},
+    {id: 'enumsRadio', label: '7. Enums: render as radio'},
+    {id: 'textarea', label: '8. Textarea'},
+    {id: 'i17n', label: '9. i17n'},
+    {id: 'defaultValues', label: '10. Default values'},
+    {id: 'global', label: '11. How to set constraints on the whole form'},
+  ];
+
   var examples = {};
-  var defaultExample = 'person';
-  var select = '<select id="example" class="form-control">';
-  Object.keys(scripts).forEach(function (id) {
-    examples[id] = $('#' + id).text();
-    select += '<option ';
-    if (id === defaultExample) {
-      select += ' selected="true" ';
-    }
-    select += 'value=' + id + '>' + scripts[id].label + '</option>';
+  var defaultExample = 'showcase';
+  scripts.forEach(function (script) {
+    examples[script.id] = '// * ' + script.label + ' *\n\n' + $('#' + script.id).text();
   });
-  select += '</select>'
-  $('#examples').html(select);
 
-  //
-  // eval code
-  //
+  var examplesHtml = '<ul id="examplesGroup" class="list-group">';
+  examplesHtml += scripts.map(function (script) {
+    return '<li class="list-group-item' + (script.id === defaultExample ? ' selected' : '') + '" data="' + script.id + '">' + script.label + '</li>';
+  }).join('');
+  examplesHtml += '</ul>';
+  $('#examples').html(examplesHtml);
 
-  var $preview = $('#preview');
-  var mountNode = $preview.get(0);
-  var $json = $('#json');
-  var $formValue = $('#formValue');
-  var $example = $('#example');
+  var $preview =    $('#preview');
+  var $html =       $('#html');
+  var $formValues = $('#formValues');
+  var $examples =   $('#examples .list-group-item');
+  var POSTFIX =     $('#postfix').html();
   var JSX_PREAMBLE = '/** @jsx React.DOM */\n';
-  var POSTFIX = $('#postfix').html();
+
   function evalCode(code) {
     try {
       var js = JSXTransformer.transform(JSX_PREAMBLE + code + POSTFIX).code;
@@ -94,23 +79,43 @@ $(function () {
     }
   }
 
+  function escapeHtml(html) {
+    return html
+       .replace(/&/g, "&amp;")
+       .replace(/</g, "&lt;")
+       .replace(/>/g, "&gt;")
+       .replace(/"/g, "&quot;")
+       .replace(/'/g, "&#039;");
+  }
+
+  function renderComponent(component) {
+    React.renderComponent(component(), $preview.get(0));
+    $formValues.hide();
+    var html = $('#preview div div').html();
+    html = html.replace(/data-reactid="(.[^"]*)"/gm, '');
+    $html.html(escapeHtml(beautifyHtml(html)));
+  }
+
+  function renderFormValues(value) {
+    var html = '<p class="lead">Form values</p>';
+    html += 'This is an instance of the type. Open up the console to see the details.<br/><br/>';
+    html += '<div class="alert alert-success"><pre>' + JSON.stringify(value, null, 2) + '</pre></div>';
+    $formValues.show().html(html);
+  }
+
+  function renderError(err) {
+    var html = '<p class="lead">Error!</p>';
+    html += '<div class="alert alert-danger">' + err.message + '</div>';
+    $formValues.show().html(html);
+  }
+
   function run() {
-    $formValue.hide();
-    $json.html('');
     var code = cm.getValue();
-    var component;
-    var json;
     try {
-      component = evalCode(code);
-    } catch (e) {
-      component = e;
-    }
-    if (component instanceof Error) {
-      $formValue.show();
-      $json.html('<div class="alert alert-danger">' + component.message + '</div>');
-      $preview.html('');
-    } else {
-      React.renderComponent(component(), mountNode);
+      var component = evalCode(code);
+      renderComponent(component);
+    } catch (err) {
+      renderError(err);
     }
   }
 
@@ -123,11 +128,13 @@ $(function () {
   cm.setValue(examples[defaultExample]);
   cm.on("change", run);
 
-  $example.on('change', function () {
-    var id = $(this).val();
+  $examples.click(function () {
+    $examples.removeClass('selected');
+    var id = $(this).addClass('selected').attr('data');
     cm.setValue(examples[id]);
     run();
   });
+
   run();
 
 });
