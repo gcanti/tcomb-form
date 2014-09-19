@@ -51,6 +51,19 @@ var Result = t.validate.Result;
 // utils
 //
 
+// thanks to https://github.com/epeli/underscore.string
+function underscored(s){
+  return s.trim().replace(/([a-z\d])([A-Z]+)/g, '$1_$2').replace(/[-\s]+/g, '_').toLowerCase();
+}
+
+function capitalize(s){
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function humanize(s){
+  return capitalize(underscored(s).replace(/_id$/,'').replace(/_/g, ' '));
+}
+
 // extract the type from a maybe or a subtype
 // TODO remove once landed in tcomb
 function extractType(type) {
@@ -69,6 +82,14 @@ function getOrElse(value, defaultValue) {
   return Nil.is(value) ? defaultValue : value;
 }
 
+function getLabel(label) {
+  return label ? React.DOM.label({className: "control-label label-class"}, label) : null;
+}
+
+function getHelp(help) {
+  return help ? React.DOM.span({className: "help-block"}, help) : null;
+}
+
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
@@ -78,23 +99,23 @@ function uuid() {
 
 var Order = enums({
   asc: function (a, b) {
-    return a.caption < b.caption ? -1 : a.caption > b.caption ? 1 : 0;
+    return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
   },
   desc: function (a, b) {
-    return a.caption < b.caption ? 1 : a.caption > b.caption ? -1 : 0;
+    return a.text < b.text ? 1 : a.text > b.text ? -1 : 0;
   }
 }, 'Order');
 
 function getChoices(map, order, emptyChoice) {
   var choices = Object.keys(map).map(function (value, i) {
-    return {value: value, caption: map[value]};
+    return {value: value, text: map[value]};
   });
-  // apply an order (asc, desc) to options if specified
   if (order) {
+    // apply an order (asc, desc) to options
     choices.sort(Order.meta.map[order]);
   }
-  // add an empty choice to the beginning if specified
   if (emptyChoice) {
+    // add an empty choice to the beginning
     choices.unshift(emptyChoice);
   }
   return choices;
@@ -104,21 +125,18 @@ function getChoices(map, order, emptyChoice) {
 function getOptions(map, order, emptyOption) {
   var choices = getChoices(map, order, emptyOption);
   return choices.map(function (c, i) {
-    return React.DOM.option({key: i, value: c.value}, c.caption);
+    return React.DOM.option({key: i, value: c.value}, c.text);
   });
 }
 
-function getInput(type, opts) {
-  if (opts && opts.input) {
-    return opts.input;
-  }
+function getInput(type) {
   type = extractType(type);
-  if (type === Bool) {
-    return checkbox;
-  }
   var kind = getKind(type);
   switch (kind) {
     case 'irriducible' :
+      if (type === Bool) {
+        return checkbox;
+      }
       return textbox;
     case 'enums' :
       return select;
@@ -129,18 +147,18 @@ function getInput(type, opts) {
   }
 }
 
-function getInitialState () {
+function getInitialState() {
   return { hasError: false };
 }
 
-function setErrors (errors) {
+function setErrors(errors) {
   var hasError = !Nil.is(errors);
   if (hasError !== this.state.hasError) {
     this.setState({ hasError: hasError });
   }
 }
 
-function getValue (type) {
+function getValue(type) {
   return function () {
     var value = this.getRawValue();
     var result = t.validate(value, type);
@@ -159,10 +177,10 @@ var I17n = struct({
 //
 
 // attr `type` of input tag
-var TextboxOptsType = enums.of('text textarea password color date datetime datetime-local email month number range search tel time url week', 'Textbox.Opts.Type');
+var TypeAttr = enums.of('text textarea password color date datetime datetime-local email month number range search tel time url week', 'Textbox.Opts.Type');
 
 var TextboxOpts = struct({
-  type: maybe(TextboxOptsType),
+  type: maybe(TypeAttr),
   value: Any, // TODO add contraints
   label: Any, // TODO add contraints
   help: Any,  // TODO add contraints
@@ -173,14 +191,15 @@ var TextboxOpts = struct({
 
 var textbox = func([Any, maybe(TextboxOpts)], function (type, opts) {
 
-  opts = opts || TextboxOpts({});
+  opts = opts || {};
+
   var defaultValue = getOrElse(opts.value, '');
-  var i17n = opts.i17n || {};
-  if (i17n.format) {
-    defaultValue = i17n.format(defaultValue);
+  if (opts.i17n) {
+    defaultValue = opts.i17n.format(defaultValue);
   }
-  var label = opts.label ? React.DOM.label({className: "control-label label-class"}, opts.label) : null;
-  var help = opts.help ? React.DOM.span({className: "help-block"}, opts.help) : null;
+
+  var label = getLabel(opts.label);
+  var help = getHelp(opts.help);
 
   return React.createClass({
     
@@ -192,8 +211,8 @@ var textbox = func([Any, maybe(TextboxOpts)], function (type, opts) {
     
     getRawValue: function () {
       var value = this.refs.input.getDOMNode().value.trim() || null;
-      if (i17n.parse) {
-        value = i17n.parse(value);
+      if (opts.i17n) {
+        value = opts.i17n.parse(value);
       }
       return value;
     },
@@ -205,7 +224,7 @@ var textbox = func([Any, maybe(TextboxOpts)], function (type, opts) {
       var groupClasses = mixin({
         'form-group': true,
         'has-error': this.state.hasError
-      }, opts.groupClasses || {});
+      }, opts.groupClasses);
 
       var input = opts.type === 'textarea' ? 
         React.DOM.textarea({ref: "input", className: "form-control", defaultValue: defaultValue, placeholder: opts.placeholder}) :
@@ -236,8 +255,8 @@ var EnumType = irriducible('EnumType', function (type) {
 // represents an <option>
 var Option = struct({
   value: Str,
-  caption: Str
-}, 'Select.Option');
+  text: Str
+}, 'Option');
 
 var SelectOpts = struct({
   value: Any, // TODO add contraints
@@ -250,11 +269,11 @@ var SelectOpts = struct({
 
 var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
 
-  opts = opts || SelectOpts({});
+  opts = opts || {};
   var emptyValue = opts.emptyOption ? opts.emptyOption.value : '';
   var defaultValue = getOrElse(opts.value, emptyValue);
-  var label = opts.label ? React.DOM.label({className: "control-label label-class"}, opts.label) : null;
-  var help = opts.help ? React.DOM.span({className: "help-block"}, opts.help) : null;
+  var label = getLabel(opts.label);
+  var help = getHelp(opts.help);
   var options = getOptions(extractType(type).meta.map, opts.order, opts.emptyOption);
 
   return React.createClass({
@@ -276,7 +295,7 @@ var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
       var groupClasses = mixin({
         'form-group': true,
         'has-error': this.state.hasError
-      }, opts.groupClasses || {});
+      }, opts.groupClasses);
 
       return (
         React.DOM.div({className: cx(groupClasses)}, 
@@ -293,8 +312,6 @@ var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
 
 });
 
-select.defaultEmptyOption = new Option({value: '', caption: '-'});
-
 //
 // radio
 //
@@ -309,10 +326,10 @@ var RadioOpts = struct({
 
 var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
 
-  opts = opts || RadioOpts({});
+  opts = opts || {};
   var defaultValue = getOrElse(opts.value, '');
-  var label = opts.label ? React.DOM.label({className: "control-label label-class"}, opts.label) : null;
-  var help = opts.help ? React.DOM.span({className: "help-block"}, opts.help) : null;
+  var label = getLabel(opts.label);
+  var help = getHelp(opts.help);
   var choices = getChoices(extractType(type).meta.map, opts.order);
   var len = choices.length;
   var name = uuid();
@@ -344,14 +361,14 @@ var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
       var groupClasses = mixin({
         'form-group': true,
         'has-error': this.state.hasError
-      }, opts.groupClasses || {});
+      }, opts.groupClasses);
 
       var radios = choices.map(function (c, i) {
         return (
           React.DOM.div({className: "radio", key: i}, 
             React.DOM.label(null, 
               React.DOM.input({type: "radio", ref: name + i, name: name, value: c.value, defaultChecked: c.value === defaultValue}), 
-              c.caption
+              c.text
             )
           )
         );
@@ -388,9 +405,9 @@ var CheckboxOpts = struct({
 
 var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
 
-  opts = opts || CheckboxOpts({});
+  opts = opts || {};
   var defaultValue = getOrElse(opts.value, false);
-  var help = opts.help ? React.DOM.span({className: "help-block"}, opts.help) : null;
+  var help = getHelp(opts.help);
 
   return React.createClass({
     
@@ -411,7 +428,7 @@ var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
       var groupClasses = mixin({
         'form-group': true,
         'has-error': this.state.hasError
-      }, opts.groupClasses || {});
+      }, opts.groupClasses);
 
       return (
         React.DOM.div({className: cx(groupClasses)}, 
@@ -438,7 +455,12 @@ var FormType = irriducible('Form.Type', function (type) {
   return isType(type) && isKind(extractType(type), 'struct');
 });
 
+var FormAuto = enums.of('none placeholder label', 'FormAuto');
+
 var FormOpts = struct({
+  auto: maybe(FormAuto),
+  disablePlaceholders: maybe(Bool),
+  enableLabels: maybe(Bool),
   order: maybe(list(Str)),
   fields: maybe(Obj)
 });
@@ -448,9 +470,8 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
   var innerType = extractType(type);
   var props = innerType.meta.props;
 
-  opts = opts || FormOpts({});
-  // inputsOrder is useful both for ordering and filtering fields
-  // TODO controllare che ci siano tutti i campi
+  opts = opts || {};
+  var auto = opts.auto || 'placeholder';
   var keys = Object.keys(props);
   var order = opts.order || keys;
   assert(keys.length === order.length, 'Invalid `order` of value `%j` supplied to `form`, all type props must be specified', order);
@@ -458,10 +479,38 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
 
   var factories = order.map(function (name) {
     var type = props[name];
-    var opts = fields[name];
-    var Input = getInput(type, opts);
-    // pass to child input its options
-    return Input(type, opts);
+
+    // copy opts to preserve original
+    var o = mixin({}, fields[name]);
+
+    // get the input from the type
+    var Input = o.input ? o.input : getInput(type);
+
+    // handle optional fields
+    var optional = isKind(type, 'maybe') ? ' (optional)' : '';
+
+    if (auto === 'label') {
+      if (Input === form) {
+        o.enableLabels = true;
+      } else {
+        o.label = o.label || React.DOM.span(null, humanize(name), React.DOM.small({className: "text-muted"}, optional));
+      }
+      if (Input === select) {
+        o.emptyOption = o.emptyOption || {value: '', text: '-'};
+      }
+    } else if (auto === 'placeholder' && !o.label) {
+      if (Input === form) {
+        o.disablePlaceholders = false;
+      } else if (Input === checkbox || Input === radio) {
+        o.label = React.DOM.span(null, humanize(name), React.DOM.small({className: "text-muted"}, optional));
+      } else if (Input === select) {
+        o.emptyOption = o.emptyOption || {value: '', text: humanize('Select your ' + name + optional)};
+      } else if (Input === textbox) {
+        o.placeholder = o.placeholder || humanize(name + optional);
+      }
+    }
+
+    return Input(type, o);
   });
 
   return React.createClass({
@@ -528,6 +577,9 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
 });
 
 t.form = {
+  util: {
+    humanize: humanize
+  },
   textbox: textbox,
   Option: Option,
   select: select,

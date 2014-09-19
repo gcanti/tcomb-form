@@ -54,6 +54,9 @@ $(function () {
     },
     value: {
       label: 'How to set default values'
+    },
+    global: {
+      label: 'How to set constraints on the whole form'
     }
   };
 
@@ -78,6 +81,7 @@ $(function () {
   var $preview = $('#preview');
   var mountNode = $preview.get(0);
   var $json = $('#json');
+  var $formValue = $('#formValue');
   var $example = $('#example');
   var JSX_PREAMBLE = '/** @jsx React.DOM */\n';
   var POSTFIX = $('#postfix').html();
@@ -91,6 +95,7 @@ $(function () {
   }
 
   function run() {
+    $formValue.hide();
     $json.html('');
     var code = cm.getValue();
     var component;
@@ -101,12 +106,11 @@ $(function () {
       component = e;
     }
     if (component instanceof Error) {
+      $formValue.show();
       $json.html('<div class="alert alert-danger">' + component.message + '</div>');
       $preview.html('');
     } else {
-      $preview.hide();
       React.renderComponent(component(), mountNode);
-      $preview.fadeIn();
     }
   }
 

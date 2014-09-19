@@ -37,8 +37,10 @@
           </div>
         </div>
         <div class="col-md-5">
-          <p class="lead">Form values</p>
-          <div id="json"></div>
+          <div id="formValue">
+            <p class="lead">Form values</p>
+            <div id="json"></div>
+          </div>
           <p class="lead">Preview</p>
           <div id="preview"></div>
         </div>
@@ -54,6 +56,7 @@ React.createClass({
     } else {
       console.log(value); 
       var s = 'This is an instance of the type. Open up the console to see the details.<br/><br/>';
+      $('#formValue').show();
       $('#json').html(s + '<div class="alert alert-success"><pre>' + JSON.stringify(value, null, 2) + '</pre></div>');
     }
   },
@@ -111,17 +114,14 @@ var Form = form(User, {
   // displays the fields with the specified order
   order: ['username', 'rememberMe', 'password'],
   
-  // for each field yu can customize the appearance
+  // for each field you can customize the appearance
   fields: {
     username: {
-      label: 'Username'
+      label: 'Insert your username' // you can customize labels
     },
     password: {
-      label: 'Password',
+      label: 'Insert your password',
       type: 'password'
-    },
-    rememberMe: {
-      label: 'Remember me' // you can customize labels
     }
   }
 });
@@ -169,8 +169,8 @@ var Person = struct({
 var Form = form(Person, {
   fields: {
     country: {
-      emptyOption: {value: '', caption: '-'}, // an always first empty option
-      order: 'desc'                           // order options asc or desc
+      emptyOption: {value: '', text: '*'},  // empty option
+      order: 'desc'                         // order options asc or desc
     }
   }
 });
@@ -230,6 +230,26 @@ var Form = form(Post, {
       type: 'textarea',
       value: 'Lorem ipsum'
     }
+  }
+});
+</script>
+<script type="text/example" id="global">// if you select the checkbox, then the email field is required
+var predicate = function (x) {
+  return !(x.send === true && Nil.is(x.email));
+};
+
+var Subscription = subtype(struct({
+  username: Str,
+  send: Bool,
+  email: maybe(Str)
+}), predicate);
+
+var Form = form(Subscription, {
+  order: ['username', 'send', 'email'],
+  fields: {
+    username: {label: 'Username'},
+    send: {label: 'Send me email notifications'},
+    email: {label: 'Email'}
   }
 });
 </script>

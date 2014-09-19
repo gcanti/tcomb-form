@@ -31,6 +31,18 @@ function dvdom(input, doDump) {
   return dom;
 }
 
+describe('humanize', function () {
+
+  var humanize = t.form.util.humanize;
+
+  it('should humanize labels', function () {
+    eq(humanize('username'), 'Username');
+    eq(humanize('rememberMe'), 'Remember me');
+    eq(humanize('remember_me'), 'Remember me');
+  });
+
+});
+
 describe('textbox', function () {
 
   it('should handle default type', function () {
@@ -85,10 +97,10 @@ describe('textbox', function () {
     eq(dom.children[0].attrs['placeholder'], 'hello');
   });
 
-  it('should handle i18n', function () {
+  it('should handle i17n', function () {
     var Factory = textbox(Num, {
       value: 1000,
-      i18n: {
+      i17n: {
         format: function (value) {
           return '1,000';
         },
@@ -114,7 +126,7 @@ describe('select', function () {
   it('should output a select', function () {
     var Factory = select(Country, {value: 'US'});
     var input = Factory();
-    var dom = vdom(input);
+    var dom = dvdom(input);
     //dump(dom);
     eq(dom.children[0].tag, 'select');
     eq(dom.children[0].children, [
@@ -140,7 +152,7 @@ describe('select', function () {
   it('should handle opts.value', function () {
     var Factory = select(Country, {value: 'US'});
     var input = Factory();
-    var dom = vdom(input);
+    var dom = dvdom(input);
     eq(dom.children[0].attrs.defaultValue, 'US');
   });
 
@@ -168,7 +180,7 @@ describe('select', function () {
   });
 
   it('should handle opts.emptyOption', function () {
-    var Factory = select(Country, {emptyOption: {value: 'myvalue', caption: 'mycaption'}});
+    var Factory = select(Country, {emptyOption: {value: 'myvalue', text: 'mycaption'}});
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children[0], {
@@ -182,7 +194,7 @@ describe('select', function () {
   });
 
   it('should handle opts.order', function () {
-    var Factory = select(Country, {order: 'desc', emptyOption: {value: 'myvalue', caption: 'mycaption'}});
+    var Factory = select(Country, {order: 'desc', emptyOption: {value: 'myvalue', text: 'mycaption'}});
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children, [
@@ -312,7 +324,7 @@ describe('form', function () {
       }
     });
     var input = Factory();
-    var dom = vdom(input);
+    var dom = dvdom(input);
     eq(dom.children[0].children[0].attrs.value, 'a');
     eq(dom.children[1].children[0].attrs.value, 'b');
     eq(dom.children[2].children[0].children[0].attrs.value, 'd');
