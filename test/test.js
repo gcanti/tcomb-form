@@ -12,7 +12,7 @@ var textbox = t.form.textbox;
 var select = t.form.select;
 var checkbox = t.form.checkbox;
 var radio = t.form.radio;
-var form = t.form.form;
+var createForm = t.form.createForm;
 
 //
 // setup
@@ -301,7 +301,7 @@ describe('radio', function () {
 
 });
 
-describe('form', function () {
+describe('createForm', function () {
 
   var Country = t.enums({
     IT: 'Italy',
@@ -319,7 +319,7 @@ describe('form', function () {
   });
 
   it('should handle opts.auto = "placeholders"', function () {
-    var Factory = form(User, {
+    var Factory = createForm(User, {
       order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
       fields: {
         requiredRadio: {input: t.form.radio},
@@ -328,18 +328,18 @@ describe('form', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children[0].attrs.placeholder, 'Required str');
-    eq(dom.children[1].children[0].attrs.placeholder, 'Optional str (optional)');
-    eq(dom.children[2].children[0].children.children[2].children, 'Bool');
-    eq(dom.children[3].children[0].children[0].children, 'Select your required enum');
-    eq(dom.children[4].children[0].children[0].children, 'Select your optional enum (optional)');
-    eq(dom.children[5].children[0].children.children, 'Required radio');
-    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
-    eq(dom.children[6].children[0].children.children[1].children, ' (optional)');
+    eq(dom.children[0][0].children[0].attrs.placeholder, 'Required str');
+    eq(dom.children[0][1].children[0].attrs.placeholder, 'Optional str (optional)');
+    eq(dom.children[0][2].children[0].children.children[2].children, 'Bool');
+    eq(dom.children[0][3].children[0].children[0].children, 'Select your required enum');
+    eq(dom.children[0][4].children[0].children[0].children, 'Select your optional enum (optional)');
+    eq(dom.children[0][5].children[0].children.children, 'Required radio');
+    eq(dom.children[0][6].children[0].children.children[0], 'Optional radio');
+    eq(dom.children[0][6].children[0].children.children[1].children, ' (optional)');
   });
 
   it('should handle opts.auto = "labels"', function () {
-    var Factory = form(User, {
+    var Factory = createForm(User, {
       auto: 'labels',
       order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
       fields: {
@@ -349,18 +349,18 @@ describe('form', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children[0].children.children, 'Required str');
-    eq(dom.children[1].children[0].children.children[0], 'Optional str');
-    eq(dom.children[1].children[0].children.children[1].children, ' (optional)');
-    eq(dom.children[2].children[0].children.children[2].children, 'Bool');
-    eq(dom.children[3].children[0].children.children, 'Required enum');
-    eq(dom.children[4].children[0].children.children[0], 'Optional enum');
-    eq(dom.children[5].children[0].children.children, 'Required radio');
-    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
+    eq(dom.children[0][0].children[0].children.children, 'Required str');
+    eq(dom.children[0][1].children[0].children.children[0], 'Optional str');
+    eq(dom.children[0][1].children[0].children.children[1].children, ' (optional)');
+    eq(dom.children[0][2].children[0].children.children[2].children, 'Bool');
+    eq(dom.children[0][3].children[0].children.children, 'Required enum');
+    eq(dom.children[0][4].children[0].children.children[0], 'Optional enum');
+    eq(dom.children[0][5].children[0].children.children, 'Required radio');
+    eq(dom.children[0][6].children[0].children.children[0], 'Optional radio');
   });
 
   it('should handle opts.auto = "none"', function () {
-    var Factory = form(User, {
+    var Factory = createForm(User, {
       auto: 'none',
       order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
       fields: {
@@ -370,13 +370,13 @@ describe('form', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children[0].tag, 'input');
-    eq(dom.children[1].children[0].tag, 'input');
-    eq(dom.children[2].children[0].children.children[2].children, 'Bool');
-    eq(dom.children[3].children[0].tag, 'select');
-    eq(dom.children[4].children[0].tag, 'select');
-    eq(dom.children[5].children[0].children.children, 'Required radio');
-    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
+    eq(dom.children[0][0].children[0].tag, 'input');
+    eq(dom.children[0][1].children[0].tag, 'input');
+    eq(dom.children[0][2].children[0].children.children[2].children, 'Bool');
+    eq(dom.children[0][3].children[0].tag, 'select');
+    eq(dom.children[0][4].children[0].tag, 'select');
+    eq(dom.children[0][5].children[0].children.children, 'Required radio');
+    eq(dom.children[0][6].children[0].children.children[0], 'Optional radio');
   });
 
   it('should handle opts.value', function () {
@@ -388,7 +388,7 @@ describe('form', function () {
         e: Str
       })
     });
-    var Factory = form(Type, {
+    var Factory = createForm(Type, {
       order: ['a', 'b', 'c'],
       value: {
         a: 'a',
@@ -401,10 +401,10 @@ describe('form', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children[0].attrs.value, 'a');
-    eq(dom.children[1].children[0].attrs.value, 'b');
-    eq(dom.children[2].children[0].children[0].attrs.value, 'd');
-    eq(dom.children[2].children[1].children[0].attrs.value, 'e');
+    eq(dom.children[0][0].children[0].attrs.value, 'a');
+    eq(dom.children[0][1].children[0].attrs.value, 'b');
+    eq(dom.children[0][2].children[1][0].children[0].attrs.value, 'd');
+    eq(dom.children[0][2].children[1][1].children[0].attrs.value, 'e');
   });
 
 });

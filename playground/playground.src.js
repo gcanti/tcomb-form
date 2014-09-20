@@ -19,7 +19,7 @@ $(function () {
   var subtype = t.subtype;
   var struct = t.struct;
 
-  var form = t.form.form;
+  var createForm = t.form.createForm;
   var radio = t.form.radio;
 
   //
