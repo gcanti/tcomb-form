@@ -676,28 +676,38 @@ function createList(type, opts) {
 
     add: function (evt) {
       evt.preventDefault();
-      var value = this.state.value.concat(null);
-      this.setState({hasError: this.state.hasError, value: value});
+      var value = this.getValue();
+      if (value) {
+        value = value.concat(null);
+        this.setState({hasError: this.state.hasError, value: value});
+      }
     },
 
     remove: function (i, evt) {
       evt.preventDefault();
-      var value = remove(this.state.value, i);
+      var value = this.getValue();
+      if (value) {
+        value = remove(value, i);
+      } else {
+        value = remove(this.state.value, i);
+      }
       this.setState({hasError: this.state.hasError, value: value});
     },
 
     moveUp: function (i, evt) {
       evt.preventDefault();
-      if (i > 0) {
-        var value = moveUp(this.state.value, i);
+      var value = this.getValue();
+      if (i > 0 && value) {
+        value = moveUp(value, i);
         this.setState({hasError: this.state.hasError, value: value});
       }
     },
 
     moveDown: function (i, evt) {
       evt.preventDefault();
-      if (i < this.state.value.length - 1) {
-        var value = moveDown(this.state.value, i);
+      var value = this.getValue();
+      if (i < this.state.value.length - 1 && value) {
+        value = moveDown(value, i);
         this.setState({hasError: this.state.hasError, value: value});
       }
     },
@@ -23378,6 +23388,7 @@ $(function () {
   var struct = t.struct;
 
   var createForm = t.form.createForm;
+  var createList = t.form.createList;
   var radio = t.form.radio;
 
   //
@@ -23406,7 +23417,9 @@ $(function () {
     {id: 'i17n', label: '9. i17n'},
     {id: 'defaultValues', label: '10. Default values'},
     {id: 'global', label: '11. How to set constraints on the whole form'},
-    {id: 'lists', label: '12. Lists'}
+    {id: 'lists', label: '12. Lists'},
+    {id: 'listOfStructs', label: '13. Lists of structs'},
+    {id: 'nestedLists', label: '14. Nested lists'}
   ];
 
   var examples = {};
@@ -23456,7 +23469,7 @@ $(function () {
   }
 
   function renderFormValues(value) {
-    var html = '<p class="lead">Form values</p>';
+    var html = '<h3>Form values</h3>';
     html += 'This is an instance of the type. Open up the console to see the details.<br/><br/>';
     html += '<div class="alert alert-success"><pre>' + JSON.stringify(value, null, 2) + '</pre></div>';
     $formValues.show().html(html);

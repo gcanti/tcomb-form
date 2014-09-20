@@ -675,28 +675,38 @@ function createList(type, opts) {
 
     add: function (evt) {
       evt.preventDefault();
-      var value = this.state.value.concat(null);
-      this.setState({hasError: this.state.hasError, value: value});
+      var value = this.getValue();
+      if (value) {
+        value = value.concat(null);
+        this.setState({hasError: this.state.hasError, value: value});
+      }
     },
 
     remove: function (i, evt) {
       evt.preventDefault();
-      var value = remove(this.state.value, i);
+      var value = this.getValue();
+      if (value) {
+        value = remove(value, i);
+      } else {
+        value = remove(this.state.value, i);
+      }
       this.setState({hasError: this.state.hasError, value: value});
     },
 
     moveUp: function (i, evt) {
       evt.preventDefault();
-      if (i > 0) {
-        var value = moveUp(this.state.value, i);
+      var value = this.getValue();
+      if (i > 0 && value) {
+        value = moveUp(value, i);
         this.setState({hasError: this.state.hasError, value: value});
       }
     },
 
     moveDown: function (i, evt) {
       evt.preventDefault();
-      if (i < this.state.value.length - 1) {
-        var value = moveDown(this.state.value, i);
+      var value = this.getValue();
+      if (i < this.state.value.length - 1 && value) {
+        value = moveDown(value, i);
         this.setState({hasError: this.state.hasError, value: value});
       }
     },

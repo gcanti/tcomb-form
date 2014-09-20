@@ -13,8 +13,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/mode/javascript/javascript.min.js"></script>
     <link type="text/css" rel="stylesheet" href="style.css"/>
     <script type="text/javascript" src="playground.js"></script>
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/default.min.css">
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>    
   </head>
   <body>
     <div class="container">
@@ -59,9 +59,7 @@ React.createClass({
   onClick: function (evt) {
     evt.preventDefault();
     var value = this.refs.form.getValue();
-    if (t.validate.Result.is(value)) {
-      //$('#json').html('<div class="alert alert-danger"><pre>' + JSON.stringify(value.errors, null, 2) + '</pre></div>');
-    } else {
+    if (value) {
       console.log(value); 
       renderFormValues(value);
     }
@@ -76,7 +74,20 @@ React.createClass({
   }
 });
 </script>
-<script type="text/example" id="lists">var Person = struct({
+<script type="text/example" id="lists">var Tags = list(Str);
+
+var Form = createList(Tags);
+</script>
+<script type="text/example" id="listOfStructs">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+var Persons = list(Person);
+
+var Form = createList(Persons);
+</script>
+<script type="text/example" id="nestedLists">var Person = struct({
   name: Str,
   surname: Str
 });
