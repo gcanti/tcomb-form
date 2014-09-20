@@ -121,19 +121,15 @@ function getOptions(map, order, emptyOption) {
 function getInput(type) {
   type = extractType(type);
   var kind = getKind(type);
-  switch (kind) {
-    case 'irriducible' :
-      if (type === Bool) {
-        return checkbox;
-      }
-      return textbox;
-    case 'enums' :
-      return select;
-    case 'struct' :
-      return form;
-    default :
-      t.fail('Unhandled kind `%s`', kind);
+  var ret = options[kind];
+  if (Func.is(ret)) {
+    return ret;
   }
+  ret = ret[getName(type)];
+  if (Func.is(ret)) {
+    return ret;
+  }
+  return textbox;
 }
 
 function getInitialState() {
@@ -576,7 +572,16 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
 
 });
 
+var options = {
+  irriducible: {
+    Bool: checkbox
+  },
+  enums: select,
+  struct: form
+};
+
 t.form = {
+  options: options,
   util: {
     humanize: humanize
   },
