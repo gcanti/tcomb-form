@@ -7,13 +7,14 @@
     <title>tcomb-form playground</title>
     
     <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.11.1/JSXTransformer.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js"></script>
     <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.min.css"/>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/mode/javascript/javascript.min.js"></script>
     <link type="text/css" rel="stylesheet" href="style.css"/>
     <script type="text/javascript" src="playground.js"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/default.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>    
   </head>
   <body>
     <div class="container">
@@ -27,27 +28,27 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-7">
-          <p class="lead">Source</p>
+        <div class="col-md-6">
+          <h3>Source</h3>
           <p class="text-muted">Live code editor. Changes will be reflected in the preview and HTML to the right.</p>
           <div>
             <div class="form-group">
               <textarea id="code" class="form-control" type="textarea"></textarea>
             </div>
           </div>
-          <p class="lead">Examples</p>
+          <h3>Examples</h3>
           <p class="text-muted">Select an example to change the live code.</p>
           <div id="examples" class="form-group"></div>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-6">
           <div id="formValues"></div>
-          <p class="lead">Preview</p>
+          <h3>Preview</h3>
           <div id="preview"></div>
-          <p class="lead">HTML output</p>
-          <p class="text-muted">Markup is annotated with semantic classes. Demo is styled with Bootstrap.</p>
+          <h3>HTML output</h3>
+          <p class="text-muted">Markup is annotated with semantic classes. Demo is styled with Bootstrap 3.</p>
           <div>
             <div class="form-group">
-              <pre id="html"></pre>
+              <pre><code id="html"></code></pre>
             </div>
           </div>
         </div>
@@ -67,21 +68,21 @@ React.createClass({
   },
   render: function () {
     return (
-      <div>
-        <Form ref="form"/>
-        <button className="btn btn-primary" onClick={this.onClick}>Click me</button>
-      </div>
-    );    
+      React.DOM.div(null, 
+        Form({ref: 'form'}),
+        React.DOM.button({className: 'btn btn-primary', onClick: this.onClick}, 'Click me')
+        )
+    );
   }
 });
 </script>
 <script type="text/example" id="showcase">// the model: each property produces a form field
 var Person = struct({
-  name: Str,
-  surname: Str,
-  gender: enums({M: 'Male', F: 'Female'}),
-  country: enums({IT: 'Italy', US: 'United States'}),
-  address: maybe(Str),
+  name:       Str,
+  surname:    Str,
+  gender:     enums({M: 'Male', F: 'Female'}),
+  country:    enums({IT: 'Italy', US: 'United States'}),
+  address:    maybe(Str),
   rememberMe: Bool
 });
 
@@ -260,6 +261,8 @@ var Form = form(Subscription, {
 </script>
 
     <a href="https://github.com/gcanti/tcomb-form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+
+    
   </body>
 </html>
 

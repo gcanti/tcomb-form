@@ -119,22 +119,26 @@ function getOptions(map, order, emptyOption) {
   });
 }
 
+var options = {
+  irriducible: {
+    Bool: checkbox
+  },
+  enums: select,
+  struct: form
+};
+
 function getInput(type) {
   type = extractType(type);
   var kind = getKind(type);
-  switch (kind) {
-    case 'irriducible' :
-      if (type === Bool) {
-        return checkbox;
-      }
-      return textbox;
-    case 'enums' :
-      return select;
-    case 'struct' :
-      return form;
-    default :
-      t.fail('Unhandled kind `%s`', kind);
+  var ret = options[kind];
+  if (Func.is(ret)) {
+    return ret;
   }
+  ret = ret[getName(type)];
+  if (Func.is(ret)) {
+    return ret;
+  }
+  return textbox;
 }
 
 function getInitialState() {
@@ -23245,11 +23249,10 @@ $(function () {
   var $formValues = $('#formValues');
   var $examples =   $('#examples .list-group-item');
   var POSTFIX =     $('#postfix').html();
-  var JSX_PREAMBLE = '/** @jsx React.DOM */\n';
 
   function evalCode(code) {
     try {
-      var js = JSXTransformer.transform(JSX_PREAMBLE + code + POSTFIX).code;
+      var js = code + POSTFIX;
       return eval(js);
     } catch (e) {
       return e;
@@ -23271,6 +23274,7 @@ $(function () {
     var html = $('#preview div div').html();
     html = html.replace(/data-reactid="(.[^"]*)"/gm, '');
     $html.html(escapeHtml(beautifyHtml(html)));
+    hljs.highlightBlock($html.get(0));
   }
 
   function renderFormValues(value) {
