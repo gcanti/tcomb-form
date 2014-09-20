@@ -76,6 +76,42 @@ React.createClass({
   }
 });
 </script>
+<script type="text/example" id="lists">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+var Family = struct({
+  address: Str,
+  mother: Person,
+  father: Person,
+  children: list(Person)
+});
+
+var Form = createForm(Family, {
+  value: {
+    "address": "2082 Alexander Avenue Oakland, CA 94612",
+    "mother": {
+      "name": "Brandy",
+      "surname": "Hargrove"
+    },
+    "father": {
+      "name": "Darrell",
+      "surname": "R. Silva"
+    },
+    "children": [
+      {
+        "name": "Scott",
+        "surname": "Silva"
+      },
+      {
+        "name": "Valerie",
+        "surname": "Hargrove"
+      }
+    ]
+  }
+});
+</script>
 <script type="text/example" id="showcase">// the model: each property produces a form field
 var Person = struct({
   name:       Str,

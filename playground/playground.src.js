@@ -48,6 +48,7 @@ $(function () {
     {id: 'i17n', label: '9. i17n'},
     {id: 'defaultValues', label: '10. Default values'},
     {id: 'global', label: '11. How to set constraints on the whole form'},
+    {id: 'lists', label: '12. Lists'}
   ];
 
   var examples = {};

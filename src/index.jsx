@@ -37,10 +37,6 @@ var getKind =     t.util.getKind;
 var getName =     t.util.getName;
 var Result =      t.validate.Result;
 
-//
-// domain
-//
-
 var Type = irriducible('Type', isType);
 
 // represents an order (asc or desc)
@@ -112,6 +108,30 @@ function uuid() {
     var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
     return v.toString(16);
   });
+}
+
+function remove(arr, index) {
+  var ret = arr.slice();
+  ret.splice(index, 1);
+  return ret;
+}
+
+function move(arr, from, to) {
+  var ret = arr.slice();
+  if (from === to) {
+    return ret;
+  }
+  var element = ret.splice(from, 1)[0];
+  ret.splice(to, 0, element);
+  return ret;
+}
+
+function moveUp(arr, i) {
+  return move(arr, i, i - 1);
+}
+
+function moveDown(arr, i) {
+  return move(arr, i, i + 1);
 }
 
 function getChoices(map, order, emptyChoice) {
@@ -570,6 +590,7 @@ function createForm(type, opts) {
     render: function () {
 
       var classes = {
+        'form-group': true,
         'has-error': this.state.hasError
       };
 
@@ -623,7 +644,7 @@ function createList(type, opts) {
     displayName: 'List',
 
     getInitialState: function () {
-      return { hasError: false, len: defaultValue.length };
+      return { hasError: false, value: defaultValue };
     },
 
     getValue: function (depth) {
@@ -634,7 +655,7 @@ function createList(type, opts) {
       var value = [];
       var result;
       
-      for ( var i = 0 ; i < this.state.len ; i++ ) {
+      for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
         var result = this.refs[i].getValue(depth + 1);
         if (Result.is(result)) {
           errors = errors.concat(result.errors);
@@ -648,26 +669,71 @@ function createList(type, opts) {
 
       result = t.validate(value, type);
       var isValid = result.isValid();
-      this.setState({hasError: !isValid});
+      this.setState({hasError: !isValid, value: value});
       return isValid ? type(value) : depth ? result : null;
+    },
+
+    add: function (evt) {
+      evt.preventDefault();
+      var value = this.state.value.concat(null);
+      this.setState({hasError: this.state.hasError, value: value});
+    },
+
+    remove: function (i, evt) {
+      evt.preventDefault();
+      var value = remove(this.state.value, i);
+      this.setState({hasError: this.state.hasError, value: value});
+    },
+
+    moveUp: function (i, evt) {
+      evt.preventDefault();
+      if (i > 0) {
+        var value = moveUp(this.state.value, i);
+        this.setState({hasError: this.state.hasError, value: value});
+      }
+    },
+
+    moveDown: function (i, evt) {
+      evt.preventDefault();
+      if (i < this.state.value.length - 1) {
+        var value = moveDown(this.state.value, i);
+        this.setState({hasError: this.state.hasError, value: value});
+      }
     },
 
     render: function () {
 
       var classes = {
+        'form-group': true,
         'has-error': this.state.hasError
       };
 
       var children = [];
-      for ( var i = 0 ; i < this.state.len ; i++ ) {
-        var o = {value: defaultValue[i]};
-        children.push(Input(ItemType, o)({key: i, ref: i}));
+      for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
+        var o = {value: this.state.value[i]};
+        children.push(
+          <div className="row">
+            <div className="col-md-7">
+              {Input(ItemType, o)({key: i, ref: i})}
+            </div>
+            <div className="col-md-5">
+              <div className="btn-group">
+                <button className="btn btn-default" onClick={this.remove.bind(this, i)}>Remove</button>
+                <button className="btn btn-default" onClick={this.moveUp.bind(this, i)}>Up</button>
+                <button className="btn btn-default" onClick={this.moveDown.bind(this, i)}>Down</button>
+              </div>
+            </div>
+          </div>
+        );
       }
 
       return (
         <div className={cx(classes)}>
           {label}
           {children}
+          <div className="form-group">
+            <button className="btn btn-default" onClick={this.add}>Add</button>
+          </div>
         </div>
       );
     }

@@ -23,6 +23,7 @@ var Nil =         t.Nil;
 var Str =         t.Str;
 var Bool =        t.Bool;
 var Obj =         t.Obj;
+var Arr =         t.Arr;
 var Func =        t.Func;
 var irriducible = t.irriducible;
 var subtype =     t.subtype;
@@ -36,10 +37,6 @@ var isType =      t.util.isType;
 var getKind =     t.util.getKind;
 var getName =     t.util.getName;
 var Result =      t.validate.Result;
-
-//
-// domain
-//
 
 var Type = irriducible('Type', isType);
 
@@ -63,75 +60,6 @@ var Option = struct({
   value:  Str,
   text:   Str
 }, 'Option');
-
-// select accepts only enums or maybe(enums)
-var EnumType = subtype(Type, function (type) {
-  var kind = getKind(type);
-  if (kind === 'enums') {
-    return true;
-  }
-  return kind === 'maybe' && getKind(type.meta.type) === 'enums';
-}, 'EnumType');
-
-var SelectOpts = struct({
-  value:        Any,
-  label:        Any,
-  help:         Any, 
-  groupClasses: maybe(Obj),
-  emptyOption:  maybe(Option),
-  order:        maybe(Order)
-}, 'SelectOpts');
-
-var RadioOpts = struct({
-  value:        Any,
-  label:        Any,
-  help:         Any, 
-  groupClasses: maybe(Obj),
-  order:        maybe(Order)
-}, 'RadioOpts');
-
-// checkbox accepts only Bool, subtypes of Bool
-var CheckboxType = subtype(Type, function (type) {
-  if (type === Bool) {
-    return true;
-  }
-  return getKind(type) === 'subtype' && type.meta.type === Bool;
-}, 'CheckboxType');
-
-var CheckboxOpts = struct({
-  value:        Any,
-  label:        Any,
-  help:         Any, 
-  groupClasses: maybe(Obj)
-}, 'CheckboxOpts');
-
-// createForm accepts only structs or subtypes of a struct
-var FormType = subtype(Type, function (type) {
-  var kind = getKind(type)
-  if (kind === 'struct') {
-    return true;
-  }
-  return kind === 'subtype' && getKind(type.meta.type) === 'struct';
-}, 'FormType');
-
-var FormAuto = enums.of('none placeholders labels', 'FormAuto');
-
-var FormOpts = struct({
-  value:        Any,
-  label:        Any,
-  auto:   maybe(FormAuto),
-  order:  maybe(list(Str)),
-  fields: maybe(Obj)
-});
-
-// createList accepts only lists or subtypes of a lists
-var ListType = subtype(Type, function (type) {
-  var kind = getKind(type)
-  if (kind === 'list') {
-    return true;
-  }
-  return kind === 'subtype' && getKind(type.meta.type) === 'list';
-}, 'ListType');
 
 //
 // utils
@@ -181,6 +109,30 @@ function uuid() {
     var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
     return v.toString(16);
   });
+}
+
+function remove(arr, index) {
+  var ret = arr.slice();
+  ret.splice(index, 1);
+  return ret;
+}
+
+function move(arr, from, to) {
+  var ret = arr.slice();
+  if (from === to) {
+    return ret;
+  }
+  var element = ret.splice(from, 1)[0];
+  ret.splice(to, 0, element);
+  return ret;
+}
+
+function moveUp(arr, i) {
+  return move(arr, i, i - 1);
+}
+
+function moveDown(arr, i) {
+  return move(arr, i, i + 1);
 }
 
 function getChoices(map, order, emptyChoice) {
@@ -262,7 +214,7 @@ function textbox(type, opts) {
 
   assert(isType(type));
 
-  opts = textboxOpts(type)(opts);
+  opts = new (textboxOpts(type))(opts || {});
 
   var defaultValue = getOrElse(opts.value, null);
   if (opts.i17n) {
@@ -316,9 +268,31 @@ function textbox(type, opts) {
 // select
 //
 
-var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
+// select accepts only enums or maybe(enums)
+var EnumType = subtype(Type, function (type) {
+  var kind = getKind(type);
+  if (kind === 'enums') {
+    return true;
+  }
+  return kind === 'maybe' && getKind(type.meta.type) === 'enums';
+}, 'EnumType');
 
-  opts = opts || {};
+function selectOpts(type) {
+  return struct({
+    value:        maybe(type),
+    label:        Any,
+    help:         Any, 
+    groupClasses: maybe(Obj),
+    emptyOption:  maybe(Option),
+    order:        maybe(Order)
+  }, 'SelectOpts');
+}
+
+function select(type, opts) {
+
+  type = EnumType(type);
+  opts = new (selectOpts(type))(opts || {});
+
   var Enum = stripMaybeOrSubtype(type);
   var emptyValue = opts.emptyOption ? opts.emptyOption.value : null;
   var defaultValue = getOrElse(opts.value, emptyValue);
@@ -359,15 +333,27 @@ var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
 
   });
 
-}, null, 'select');
+}
 
 //
 // radio
 //
 
-var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
+function radioOpts(type) {
+  return struct({
+    value:        Any,
+    label:        Any,
+    help:         Any, 
+    groupClasses: maybe(Obj),
+    order:        maybe(Order)
+  }, 'RadioOpts');
+}
 
-  opts = opts || {};
+function radio(type, opts) {
+
+  type = EnumType(type);
+  opts = new (radioOpts(type))(opts || {});
+
   var Enum = stripMaybeOrSubtype(type);
   var defaultValue = getOrElse(opts.value, null);
   var label = getLabel(opts.label);
@@ -425,15 +411,34 @@ var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
 
   });
 
-}, null, 'radio');
+}
 
 //
 // checkbox
 //
 
-var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
+// checkbox accepts only Bool, subtypes of Bool
+var CheckboxType = subtype(Type, function (type) {
+  if (type === Bool) {
+    return true;
+  }
+  return getKind(type) === 'subtype' && type.meta.type === Bool;
+}, 'CheckboxType');
 
-  opts = opts || {};
+function checkboxOpts(type) {
+  return struct({
+    value:        maybe(type),
+    label:        Any,
+    help:         Any, 
+    groupClasses: maybe(Obj)
+  }, 'CheckboxOpts');
+}
+
+function checkbox(type, opts) {
+
+  type = CheckboxType(type);
+  opts = new (checkboxOpts(type))(opts || {});
+
   var defaultValue = getOrElse(opts.value, false);
   var help = getHelp(opts.help);
 
@@ -470,15 +475,36 @@ var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
 
   });
 
-}, null, 'checkbox');
+}
 
 //
 // createForm
 //
 
-var createForm = func([FormType, maybe(FormOpts)], function (type, opts) {
+// createForm accepts only structs or subtypes of a struct
+var FormType = subtype(Type, function (type) {
+  var kind = getKind(type)
+  if (kind === 'struct') {
+    return true;
+  }
+  return kind === 'subtype' && getKind(type.meta.type) === 'struct';
+}, 'FormType');
 
-  opts = opts || {};
+var FormAuto = enums.of('none placeholders labels', 'FormAuto');
+
+var FormOpts = struct({
+  value:  maybe(Obj),
+  label:  Any,
+  auto:   maybe(FormAuto),
+  order:  maybe(list(Str)),
+  fields: maybe(Obj)
+}, 'FormOpts');
+
+function createForm(type, opts) {
+
+  type = FormType(type);
+  opts = new FormOpts(opts || {});
+
   var Struct = stripMaybeOrSubtype(type);
   var props = Struct.meta.props;
   var keys = Object.keys(props);
@@ -565,6 +591,7 @@ var createForm = func([FormType, maybe(FormOpts)], function (type, opts) {
     render: function () {
 
       var classes = {
+        'form-group': true,
         'has-error': this.state.hasError
       };
 
@@ -582,16 +609,31 @@ var createForm = func([FormType, maybe(FormOpts)], function (type, opts) {
 
   });
 
-}, null, 'createForm');
+}
 
 //
 // list
 //
-var ListOpts = Any;
 
-var createList = func([ListType, maybe(ListOpts)], function (type, opts) {
+// createList accepts only lists or subtypes of a lists
+var ListType = subtype(Type, function (type) {
+  var kind = getKind(type)
+  if (kind === 'list') {
+    return true;
+  }
+  return kind === 'subtype' && getKind(type.meta.type) === 'list';
+}, 'ListType');
 
-  opts = opts || {};
+var ListOpts = struct({
+  value: maybe(Arr),
+  label: Any
+}, 'ListOpts');
+
+function createList(type, opts) {
+
+  type = ListType(type);
+  opts = new ListOpts(opts || {});
+
   var List = stripMaybeOrSubtype(type);
   var ItemType = stripMaybeOrSubtype(List.meta.type);
   var Input = opts.input || getInput(ItemType);
@@ -603,7 +645,7 @@ var createList = func([ListType, maybe(ListOpts)], function (type, opts) {
     displayName: 'List',
 
     getInitialState: function () {
-      return { hasError: false, len: defaultValue.length };
+      return { hasError: false, value: defaultValue };
     },
 
     getValue: function (depth) {
@@ -614,8 +656,8 @@ var createList = func([ListType, maybe(ListOpts)], function (type, opts) {
       var value = [];
       var result;
       
-      for ( var i = 0 ; i < this.state.len ; i++ ) {
-        var result = this.refs[i].getValue();
+      for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
+        var result = this.refs[i].getValue(depth + 1);
         if (Result.is(result)) {
           errors = errors.concat(result.errors);
         } else {
@@ -628,33 +670,78 @@ var createList = func([ListType, maybe(ListOpts)], function (type, opts) {
 
       result = t.validate(value, type);
       var isValid = result.isValid();
-      this.setState({hasError: !isValid});
+      this.setState({hasError: !isValid, value: value});
       return isValid ? type(value) : depth ? result : null;
+    },
+
+    add: function (evt) {
+      evt.preventDefault();
+      var value = this.state.value.concat(null);
+      this.setState({hasError: this.state.hasError, value: value});
+    },
+
+    remove: function (i, evt) {
+      evt.preventDefault();
+      var value = remove(this.state.value, i);
+      this.setState({hasError: this.state.hasError, value: value});
+    },
+
+    moveUp: function (i, evt) {
+      evt.preventDefault();
+      if (i > 0) {
+        var value = moveUp(this.state.value, i);
+        this.setState({hasError: this.state.hasError, value: value});
+      }
+    },
+
+    moveDown: function (i, evt) {
+      evt.preventDefault();
+      if (i < this.state.value.length - 1) {
+        var value = moveDown(this.state.value, i);
+        this.setState({hasError: this.state.hasError, value: value});
+      }
     },
 
     render: function () {
 
       var classes = {
+        'form-group': true,
         'has-error': this.state.hasError
       };
 
       var children = [];
-      for ( var i = 0 ; i < this.state.len ; i++ ) {
-        var o = {value: defaultValue[i]};
-        children.push(Input(ItemType, o)({key: i, ref: i}));
+      for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
+        var o = {value: this.state.value[i]};
+        children.push(
+          React.DOM.div({className: "row"}, 
+            React.DOM.div({className: "col-md-7"}, 
+              Input(ItemType, o)({key: i, ref: i})
+            ), 
+            React.DOM.div({className: "col-md-5"}, 
+              React.DOM.div({className: "btn-group"}, 
+                React.DOM.button({className: "btn btn-default", onClick: this.remove.bind(this, i)}, "Remove"), 
+                React.DOM.button({className: "btn btn-default", onClick: this.moveUp.bind(this, i)}, "Up"), 
+                React.DOM.button({className: "btn btn-default", onClick: this.moveDown.bind(this, i)}, "Down")
+              )
+            )
+          )
+        );
       }
 
       return (
         React.DOM.div({className: cx(classes)}, 
           label, 
-          children
+          children, 
+          React.DOM.div({className: "form-group"}, 
+            React.DOM.button({className: "btn btn-default", onClick: this.add}, "Add")
+          )
         )
       );
     }
 
   });
 
-}, null, 'createList');
+}
 
 var options = {
   irriducible: {
@@ -23319,6 +23406,7 @@ $(function () {
     {id: 'i17n', label: '9. i17n'},
     {id: 'defaultValues', label: '10. Default values'},
     {id: 'global', label: '11. How to set constraints on the whole form'},
+    {id: 'lists', label: '12. Lists'}
   ];
 
   var examples = {};
