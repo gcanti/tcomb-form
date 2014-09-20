@@ -33,10 +33,95 @@ var struct = t.struct;
 var func = t.func;
 var mixin = t.util.mixin;
 var isType = t.util.isType;
-var isKind = t.util.isKind;
 var getKind = t.util.getKind;
 var getName = t.util.getName;
 var Result = t.validate.Result;
+
+//
+// domain
+//
+
+// represents an order (asc or desc)
+var Order = enums({
+  asc: function (a, b) {
+    return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
+  },
+  desc: function (a, b) {
+    return a.text < b.text ? 1 : a.text > b.text ? -1 : 0;
+  }
+}, 'Order');
+
+var I17n = struct({
+  format: Func,
+  parse:  Func
+}, 'I17n');
+
+// represents an <option>
+var Option = struct({
+  value:  Str,
+  text:   Str
+}, 'Option');
+
+// attr `type` of input tag
+var TypeAttr = enums.of('text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
+
+var TextboxOpts = struct({
+  type:         maybe(TypeAttr),
+  value:        Any,
+  label:        Any,
+  help:         Any,
+  groupClasses: maybe(Obj),
+  placeholder:  maybe(Str),
+  i17n:         maybe(I17n)
+}, 'TextboxOpts');
+
+// select accepts only enums
+var EnumType = irriducible('EnumType', function (type) {
+  return isType(type) && getKind(stripMaybeOrSubtype(type)) === 'enums';
+});
+
+var SelectOpts = struct({
+  value:        Any,
+  label:        Any,
+  help:         Any, 
+  groupClasses: maybe(Obj),
+  emptyOption:  maybe(Option),
+  order:        maybe(Order)
+}, 'SelectOpts');
+
+var RadioOpts = struct({
+  value:        Any,
+  label:        Any,
+  help:         Any, 
+  groupClasses: maybe(Obj),
+  order:        maybe(Order)
+}, 'RadioOpts');
+
+// checkbox accepts only Bool, subtypes of Str or maybe of Str
+var CheckboxType = irriducible('CheckboxType', function (type) {
+  return isType(type) && stripMaybeOrSubtype(type) === Bool;
+});
+
+var CheckboxOpts = struct({
+  value:        Any,
+  label:        Any,
+  help:         Any, 
+  groupClasses: maybe(Obj)
+}, 'CheckboxOpts');
+
+// form accepts only structs or subtypes of a struct
+var FormType = irriducible('FormType', function (type) {
+  return isType(type) && getKind(stripMaybeOrSubtype(type)) === 'struct';
+});
+
+var FormAuto = enums.of('none placeholders labels', 'FormAuto');
+
+var FormOpts = struct({
+  auto:   maybe(FormAuto),
+  order:  maybe(list(Str)),
+  fields: maybe(Obj),
+  value:  Any
+});
 
 //
 // utils
@@ -55,20 +140,20 @@ function humanize(s){
   return capitalize(underscored(s).replace(/_id$/,'').replace(/_/g, ' '));
 }
 
-// extract the type from a maybe or a subtype
-// TODO remove once landed in tcomb
-function extractType(type) {
-  return type.meta.type ? extractType(type.meta.type) : type;
+function stripMaybeOrSubtype(type) {
+  var kind = getKind(type);
+  if (kind === 'maybe' || kind === 'subtype') {
+    return stripMaybeOrSubtype(type.meta.type);
+  }
+  return type;
 }
 
-// TODO remove once landed in tcomb
 function merge() {
   return Array.prototype.reduce.call(arguments, function (x, y) {
     return mixin(x, y, true);
   }, {});
 }
 
-// TODO remove once landed in tcomb
 function getOrElse(value, defaultValue) {
   return Nil.is(value) ? defaultValue : value;
 }
@@ -87,15 +172,6 @@ function uuid() {
     return v.toString(16);
   });
 }
-
-var Order = enums({
-  asc: function (a, b) {
-    return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
-  },
-  desc: function (a, b) {
-    return a.text < b.text ? 1 : a.text > b.text ? -1 : 0;
-  }
-}, 'Order');
 
 function getChoices(map, order, emptyChoice) {
   var choices = Object.keys(map).map(function (value, i) {
@@ -119,7 +195,7 @@ function getOptions(map, order, emptyOption) {
 }
 
 function getInput(type) {
-  type = extractType(type);
+  type = stripMaybeOrSubtype(type);
   var kind = getKind(type);
   var ret = options[kind];
   if (Func.is(ret)) {
@@ -159,27 +235,9 @@ function getOptionalLabel(name, optional) {
     <span>{name}</span>;
 }
 
-var I17n = struct({
-  format: Func,
-  parse: Func
-});
-
 //
 // textbox
 //
-
-// attr `type` of input tag
-var TypeAttr = enums.of('text textarea password color date datetime datetime-local email month number range search tel time url week', 'Textbox.Opts.Type');
-
-var TextboxOpts = struct({
-  type: maybe(TypeAttr),
-  value: Any, // TODO add contraints
-  label: Any, // TODO add contraints
-  help: Any,  // TODO add contraints
-  groupClasses: maybe(Obj),
-  placeholder: maybe(Str),
-  i17n: maybe(I17n)
-}, 'Textbox.Opts');
 
 var textbox = func([Any, maybe(TextboxOpts)], function (type, opts) {
 
@@ -239,26 +297,6 @@ var textbox = func([Any, maybe(TextboxOpts)], function (type, opts) {
 // select
 //
 
-// select accepts only enums
-var EnumType = irriducible('EnumType', function (type) {
-  return isType(type) && isKind(extractType(type), 'enums');
-});
-
-// represents an <option>
-var Option = struct({
-  value: Str,
-  text: Str
-}, 'Option');
-
-var SelectOpts = struct({
-  value: Any, // TODO add contraints
-  label: Any, // TODO add contraints
-  help: Any,  // TODO add contraints
-  groupClasses: maybe(Obj),
-  emptyOption: maybe(Option),
-  order: maybe(Order)
-}, 'Select.Opts');
-
 var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
 
   opts = opts || {};
@@ -266,7 +304,7 @@ var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
   var defaultValue = getOrElse(opts.value, emptyValue);
   var label = getLabel(opts.label);
   var help = getHelp(opts.help);
-  var options = getOptions(extractType(type).meta.map, opts.order, opts.emptyOption);
+  var options = getOptions(stripMaybeOrSubtype(type).meta.map, opts.order, opts.emptyOption);
 
   return React.createClass({
     
@@ -308,21 +346,13 @@ var select = func([EnumType, maybe(SelectOpts)], function (type, opts) {
 // radio
 //
 
-var RadioOpts = struct({
-  value: Any, // TODO add contraints
-  label: Any, // TODO add contraints
-  help: Any,  // TODO add contraints
-  groupClasses: maybe(Obj),
-  order: maybe(Order)
-}, 'Radio.Opts');
-
 var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
 
   opts = opts || {};
   var defaultValue = getOrElse(opts.value, '');
   var label = getLabel(opts.label);
   var help = getHelp(opts.help);
-  var choices = getChoices(extractType(type).meta.map, opts.order);
+  var choices = getChoices(stripMaybeOrSubtype(type).meta.map, opts.order);
   var len = choices.length;
   var name = uuid();
 
@@ -383,18 +413,6 @@ var radio = func([EnumType, maybe(RadioOpts)], function (type, opts) {
 // checkbox
 //
 
-// checkbox accepts only Bool, subtypes of Str or maybe of Str
-var CheckboxType = irriducible('Checkbox.Type', function (type) {
-  return isType(type) && extractType(type) === Bool;
-});
-
-var CheckboxOpts = struct({
-  value: Any, // TODO add contraints
-  label: Any, // TODO add contraints
-  help: Any,  // TODO add contraints
-  groupClasses: maybe(Obj)
-}, 'Checkbox.Opts');
-
 var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
 
   opts = opts || {};
@@ -442,38 +460,22 @@ var checkbox = func([CheckboxType, maybe(CheckboxOpts)], function (type, opts) {
 // form
 //
 
-// form accepts only structs or subtypes of struct
-var FormType = irriducible('Form.Type', function (type) {
-  return isType(type) && isKind(extractType(type), 'struct');
-});
-
-var FormAuto = enums.of('none placeholders labels', 'FormAuto');
-
-var FormOpts = struct({
-  auto: maybe(FormAuto),
-  disablePlaceholders: maybe(Bool),
-  enableLabels: maybe(Bool),
-  order: maybe(list(Str)),
-  fields: maybe(Obj)
-});
-
 var form = func([FormType, maybe(FormOpts)], function (type, opts) {
 
-  var innerType = extractType(type);
-  var props = innerType.meta.props;
-
   opts = opts || {};
+  var props = stripMaybeOrSubtype(type).meta.props;
   var auto = opts.auto || 'placeholders';
   var keys = Object.keys(props);
   var order = opts.order || keys;
   assert(keys.length === order.length, 'Invalid `order` of value `%j` supplied to `form`, all type props must be specified', order);
   var fields = opts.fields || {};
+  var value = opts.value || {};
 
   var factories = order.map(function (name) {
     var type = props[name];
 
     // copy opts to preserve original
-    var o = mixin({}, fields[name]);
+    var o = mixin({value: value[name]}, fields[name]);
 
     // get the input from the type
     var Input = o.input ? o.input : getInput(type);
@@ -484,7 +486,7 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
     } else {
 
       // handle optional fields
-      var optional = isKind(type, 'maybe') ? ' (optional)' : '';
+      var optional = getKind(type) === 'maybe' ? ' (optional)' : '';
 
       // checkboxes and radios need always a label
       if (Input === checkbox || Input === radio) {
@@ -572,12 +574,64 @@ var form = func([FormType, maybe(FormOpts)], function (type, opts) {
 
 });
 
+//
+// list
+//
+var ListType = Any;
+var ListOpts = Any;
+
+var createList = func([ListType, maybe(ListOpts)], function (type, opts) {
+
+  opts = opts || {};
+  var itemType = stripMaybeOrSubtype(type).meta.type;
+  var Input = opts.input || getInput(itemType);
+  var defaultValue = getOrElse(opts.value, []);
+
+  return React.createClass({
+
+    displayName: 'List',
+
+    getInitialState: function () {
+      return { hasError: false, value: defaultValue };
+    },
+
+    setErrors: function (errors, depth) {
+      var hasError = !Nil.is(errors);
+      if (hasError !== this.state.hasError) {
+        this.setState({ hasError: hasError, value: this.state.value });
+      }
+    },
+    
+    getRawValue: function () {
+      return null;
+      return this.state.value;
+    },
+    
+    getValue: getValue(type),
+
+    render: function () {
+
+      var classes = {
+        'has-error': this.state.hasError
+      };
+
+      var children = this.state.value.map(function (value, i) {
+        return Input(itemType, opts.item);
+      });
+
+      return <div className={cx(classes)}>{children}</div>;
+    }
+
+  });
+
+});
 var options = {
   irriducible: {
     Bool: checkbox
   },
   enums: select,
-  struct: form
+  struct: form,
+  list: createList
 };
 
 t.form = {
@@ -590,7 +644,8 @@ t.form = {
   select: select,
   radio: radio,
   checkbox: checkbox,
-  form: form
+  form: form,
+  createList: createList
 };
 
 module.exports = t;

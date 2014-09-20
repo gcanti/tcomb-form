@@ -234,9 +234,12 @@ var Form = form(Post, {
 });
 
 var Form = form(Post, {
+  value: {
+    username: 'giulio',
+    text: 'Lorem ipsum'
+  },
   fields: {
-    username: { value: 'giulio' },
-    text: { type: 'textarea', value: 'Lorem ipsum' }
+    text: { type: 'textarea' }
   }
 });
 </script>

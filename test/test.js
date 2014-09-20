@@ -379,7 +379,7 @@ describe('form', function () {
     eq(dom.children[6].children[0].children.children[0], 'Optional radio');
   });
 
-  it('should handle nested structs', function () {
+  it('should handle opts.value', function () {
     var Type = struct({
       a: Str,
       b: Str,
@@ -390,15 +390,12 @@ describe('form', function () {
     });
     var Factory = form(Type, {
       order: ['a', 'b', 'c'],
-      fields: {
-        a: {value: 'a'},
-        b: {value: 'b'},
+      value: {
+        a: 'a',
+        b: 'b',
         c: {
-          order: ['d', 'e'],
-          fields: {
-            d: {value: 'd'},
-            e: {value: 'e'}
-          }
+          d: 'd',
+          e: 'e'
         }
       }
     });
