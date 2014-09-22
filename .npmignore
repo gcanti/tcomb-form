@@ -1,8 +1,7 @@
 .*
 *.log
 bower.json
-Grunfile.js
-tcomb.sjs
+Gruntfile.js
 node_modules
 test
 coverage
