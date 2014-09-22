@@ -29,6 +29,13 @@
   "tags": [
     "form",
     "validation",
-    "generation"
+    "generation",
+    "react-component"
+  ],
+  "keywords": [
+    "form",
+    "validation",
+    "generation",
+    "react-component"
   ]
 }
