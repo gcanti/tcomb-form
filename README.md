@@ -72,6 +72,10 @@ var Person = struct({
 var Form = createForm(Person);
 ```
 
+### getValue()
+
+Return an instance of `type` if the validation succeded, `null` otherwise.
+
 ### opts.value: maybe(Obj)
 
 A hash containing the default values of the form fields.
@@ -177,6 +181,10 @@ var Tags = list(Str);
 
 var Form = createList(Tags);
 ```
+
+### getValue()
+
+Return an instance of `type` if the validation succeded, `null` otherwise.
 
 ### opts.value: maybe(Arr)
 
