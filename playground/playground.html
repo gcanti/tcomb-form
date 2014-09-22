@@ -20,7 +20,7 @@
     <div class="container">
       <div class="row header">
         <div class="col-md-8">
-          <h1><a href="https://github.com/gcanti/tcomb-form">tcomb-form</a> Playground</h1>
+          <h1><a href="https://github.com/gcanti/tcomb-form">Domain Driven Forms</a></h1>
           <p class="lead">Automatically generate form markup from a domain model. It seems like magic.</p>
         </div>
         <div class="col-md-4">
@@ -74,6 +74,187 @@ React.createClass({
   }
 });
 </script>
+<script type="text/example" id="showcase">// play with the form to the right
+// you can add, remove and sort colors
+// and then start the tutorial from `1. Required fields`
+
+var Palette = struct({
+  name: Str,
+  draft: Bool,
+  colors: list(Str)
+});
+
+var Form = createForm(Palette, {
+  value: { colors: ['#d53f54', '#5b79e4'] },
+  fields: {
+    colors: { item: {type: 'color'} }
+  }
+});
+</script>
+<script type="text/example" id="requiredFields">var Person = struct({
+  name: Str,    // required string
+  surname: Str  // required string
+});
+
+// the form is mounted by React.js to the right
+// placeholders are auto generated
+var Form = createForm(Person);
+</script>
+<script type="text/example" id="labels">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+// to customize the fields, pass a second 
+// argument to `createForm(type, [opts])`
+
+var Form = createForm(Person, {
+  //auto: 'labels'      // decomment this
+});
+</script>
+<script type="text/example" id="optionalFields">var Person = struct({
+  name: Str,
+  surname: Str,
+  nickname: maybe(Str) // use maybe() to get an optional string
+});
+
+// try to replace `surname: Str` with `surname: maybe(Str)`
+// to make surname optional
+
+// "(optional)" is auto appended
+var Form = createForm(Person);
+</script>
+<script type="text/example" id="subtypes">// a subtype is a pair (type, predicate) 
+// where predicate is a function with signature (x) -> boolean
+
+var Password = subtype(Str, function (s) {
+  return s.length >= 6;
+});
+
+var User = struct({
+  username: Str,      
+  password: Password  // a required string with at least 6 chars
+});
+
+var Form = createForm(User, {
+  fields: {
+    password: {
+      // help the user with a message
+      help: 'Insert at least 6 chars'
+    }
+  }
+});
+</script>
+<script type="text/example" id="customize">var User = struct({
+  username: Str,      
+  password: Str,
+  rememberMe: Bool // a boolean is rendered as a checkbox
+});
+
+var Form = createForm(User, {
+
+  // custom fields order
+  order: ['username', 'rememberMe', 'password'],
+  
+  fields: {
+    username: {
+      label: 'Insert your username' // you can override labels
+    },
+    password: {
+      // you can override the type (HTML5 types supported)
+      // try to change it to see the available types
+      type: 'password'
+    }
+  }
+});
+</script>
+<script type="text/example" id="enumsSelect">var Country = enums({ IT: 'Italy', US: 'United States' });
+
+var Person = struct({
+  name: Str,
+  country: Country
+});
+
+var Form = createForm(Person, {
+  fields: {
+    country: {
+      // decomment to override empty option
+      //emptyOption: {value: '', text: '-'},
+      order: 'desc' // try `asc`
+    }
+  }
+});
+</script>
+<script type="text/example" id="enumsRadio">var Country = enums({ IT: 'Italy', US: 'United States' });
+
+var Person = struct({
+  name: Str,
+  country: Country
+});
+
+var Form = createForm(Person, {
+  fields: {
+    country: { 
+      // you can override the input used to display
+      input: radio
+    }
+  }
+});
+</script>
+<script type="text/example" id="i17n">var Person = struct({
+  name: Str,
+  age: Num // a number property
+});
+
+var Form = createForm(Person, {
+  fields: {
+    age: {
+      i17n: {
+        // this is used from the model to the UI
+        format: function (value) {
+          return value;
+        },
+        // this is used from the UI to the model
+        parse: function (s) {
+          return parseFloat(s, 10);
+        }
+      }
+    }
+  }
+});
+</script>
+<script type="text/example" id="defaultValues">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+var Form = createForm(Person, {
+  // you can set a default value for every field
+  value: {
+    name: 'Giulio',
+    surname: 'Canti'
+  }
+});
+</script>
+<script type="text/example" id="global">// if you select the checkbox, then the email field is required
+var predicate = function (x) {
+  return !(x.send === true && Nil.is(x.email));
+};
+
+var Subscription = subtype(struct({
+  username: Str,
+  send: Bool,
+  email: maybe(Str)
+}), predicate);
+
+var Form = createForm(Subscription, {
+  order: ['username', 'send', 'email'],
+  fields: {
+    send: {label: 'Send me email notifications'},
+    email: {help: 'Required if you select `Send me email notifications`'}
+  }
+});
+</script>
 <script type="text/example" id="lists">var Tags = list(Str);
 
 var Form = createList(Tags);
@@ -120,192 +301,6 @@ var Form = createForm(Family, {
         "surname": "Hargrove"
       }
     ]
-  }
-});
-</script>
-<script type="text/example" id="showcase">// the model: each property produces a form field
-var Person = struct({
-  name:       Str,
-  surname:    Str,
-  gender:     enums({M: 'Male', F: 'Female'}),
-  country:    enums({IT: 'Italy', US: 'United States'}),
-  address:    maybe(Str),
-  rememberMe: Bool
-});
-
-// the form is generated by the library and mounted by React.js
-// the placeholders are auto generated
-var Form = createForm(Person, {
-  fields: {gender: {input: radio}}
-});
-</script>
-<script type="text/example" id="requiredFields">var Person = struct({
-  name: Str,        // required string
-  surname: Str      // required string
-});
-
-var Form = createForm(Person);
-</script>
-<script type="text/example" id="labels">var Person = struct({
-  name: Str,
-  surname: Str
-});
-
-// to customize the fields, pass a second argument to `form(type, [opts])`
-var Form = createForm(Person, {
-  //auto: 'labels'      // decomment this to see auto generated labels
-});
-</script>
-<script type="text/example" id="optionalFields">var Person = struct({
-  name: Str,
-  surname: Str,
-  nickname: maybe(Str) // use maybe() to get an optional string
-});
-
-// "(optional)" is auto appended
-var Form = createForm(Person);
-</script>
-<script type="text/example" id="subtypes">// a subtype is a pair (type, predicate) 
-// where predicate is a function with signature (x) -> boolean
-
-var Password = subtype(Str, function (s) {
-  return s.length >= 6;
-});
-
-var User = struct({
-  username: Str,      
-  password: Password  // a required string with at least 6 chars
-});
-
-var Form = createForm(User, {
-  fields: {
-    password: {help: 'Insert at least 6 chars'} // help the user
-  }
-});
-</script>
-<script type="text/example" id="customize">var User = struct({
-  username: Str,      
-  password: Str,
-  rememberMe: Bool // a boolean is rendered as a checkbox
-});
-
-var Form = createForm(User, {
-
-  // custom fields order
-  order: ['username', 'rememberMe', 'password'],
-  
-  fields: {
-    username: {
-      label: 'Insert your username' // you can override labels
-    },
-    password: {
-      type: 'password' // you can override the type (HTML5 types supported)
-    }
-  }
-});
-</script>
-<script type="text/example" id="enumsSelect">var Country = t.enums({
-  IT: 'Italy',
-  US: 'United States'
-});
-
-var Person = struct({
-  name: Str,
-  country: Country
-});
-
-var Form = createForm(Person, {
-  fields: {
-    country: {
-      //emptyOption: {value: '', text: '-'},  // decomment to override empty option
-      order: 'desc' // options order: `asc` or `desc`, default `asc`
-    }
-  }
-});
-</script>
-<script type="text/example" id="enumsRadio">var Country = t.enums({
-  IT: 'Italy',
-  US: 'United States'
-});
-
-var Person = struct({
-  name: Str,
-  country: Country
-});
-
-var Form = createForm(Person, {
-  fields: {
-    country: { 
-      input: t.form.radio,  // you can override the input used to display
-      order: 'desc' // options order: `asc` or `desc`, default `asc`
-    }
-  }
-});
-</script>
-<script type="text/example" id="i17n">var Person = struct({
-  name: Str,
-  age: Num
-});
-
-var Form = createForm(Person, {
-  fields: {
-    age: {
-      i17n: {
-        // this is used from the model to UI
-        format: function (value) {
-          return value;
-        },
-        // this is used from the UI to the model
-        parse: function (s) {
-          return parseFloat(s, 10);
-        }
-      }
-    }
-  }
-});
-</script>
-<script type="text/example" id="textarea">var Post = struct({
-  username: Str,
-  text: Str
-});
-
-var Form = createForm(Post, {
-  fields: {
-    text: { type: 'textarea' }
-  }
-});
-</script>
-<script type="text/example" id="defaultValues">var Post = struct({
-  username: Str,
-  text: Str
-});
-
-var Form = createForm(Post, {
-  value: {
-    username: 'giulio',
-    text: 'Lorem ipsum'
-  },
-  fields: {
-    text: { type: 'textarea' }
-  }
-});
-</script>
-<script type="text/example" id="global">// if you select the checkbox, then the email field is required
-var predicate = function (x) {
-  return !(x.send === true && Nil.is(x.email));
-};
-
-var Subscription = subtype(struct({
-  username: Str,
-  send: Bool,
-  email: maybe(Str)
-}), predicate);
-
-var Form = createForm(Subscription, {
-  order: ['username', 'send', 'email'],
-  fields: {
-    send: {label: 'Send me email notifications'},
-    email: {help: 'Required if you select `Send me email notifications`'}
   }
 });
 </script>

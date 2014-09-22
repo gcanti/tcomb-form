@@ -39,19 +39,18 @@ $(function () {
   var scripts = [
     {id: 'showcase', label: 'Showcase'},
     {id: 'requiredFields', label: '1. Required fields'},
-    {id: 'labels', label: '2. Auto generated labels'},
-    {id: 'optionalFields', label: '3. Optional fields'},
+    {id: 'optionalFields', label: '2. Optional fields'},
+    {id: 'labels', label: '3. Auto generated labels'},
     {id: 'subtypes', label: '4. Subtypes'},
     {id: 'customize', label: '5. Booleans and fields customization'},
     {id: 'enumsSelect', label: '6. Enums: render as select (default)'},
     {id: 'enumsRadio', label: '7. Enums: render as radio'},
-    {id: 'textarea', label: '8. Textarea'},
-    {id: 'i17n', label: '9. i17n'},
-    {id: 'defaultValues', label: '10. Default values'},
-    {id: 'global', label: '11. How to set constraints on the whole form'},
-    {id: 'lists', label: '12. Lists'},
-    {id: 'listOfStructs', label: '13. Lists of structs'},
-    {id: 'nestedLists', label: '14. Nested lists'}
+    {id: 'i17n', label: '8. i17n'},
+    {id: 'defaultValues', label: '9. Default values'},
+    {id: 'global', label: '10. How to set constraints on the whole form'},
+    {id: 'lists', label: '11. Lists'},
+    {id: 'listOfStructs', label: '12. Lists of structs'},
+    {id: 'nestedLists', label: '13. Nested lists'}
   ];
 
   var examples = {};
@@ -74,12 +73,8 @@ $(function () {
   var POSTFIX =     $('#postfix').html();
 
   function evalCode(code) {
-    try {
-      var js = code + POSTFIX;
-      return eval(js);
-    } catch (e) {
-      return e;
-    }
+    var js = code + POSTFIX;
+    return eval(js);
   }
 
   function escapeHtml(html) {
@@ -91,13 +86,17 @@ $(function () {
        .replace(/'/g, "&#039;");
   }
 
-  function renderComponent(component) {
-    React.renderComponent(component(), $preview.get(0));
-    $formValues.hide();
+  function renderHtml() {
     var html = $('#preview div div').html();
     html = html.replace(/data-reactid="(.[^"]*)"/gm, '');
     $html.html(escapeHtml(beautifyHtml(html)));
     hljs.highlightBlock($html.get(0));
+  }
+
+  function renderComponent(component) {
+    React.renderComponent(component(), $preview.get(0));
+    $formValues.hide();
+    renderHtml();
   }
 
   function renderFormValues(value) {
@@ -138,6 +137,8 @@ $(function () {
     cm.setValue(examples[id]);
     run();
   });
+
+  $preview.click(renderHtml);
 
   run();
 
