@@ -1,6 +1,6 @@
 {
   "name": "tcomb-form",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Form generation and validation based on type combinators",
   "main": "index.js",
   "scripts": {
