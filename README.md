@@ -29,9 +29,9 @@ With tcomb-form you simply call `var Form = t.form.createForm(domainModel)` to g
 
 # Contributions
 
-A special thank to [William Lubelski](https://github.com/lubelski) ([@uiwill](https://twitter.com/uiwill)), without him this library would be less magic.
+Special thanks to [William Lubelski](https://github.com/lubelski) ([@uiwill](https://twitter.com/uiwill)), without him this library would be less magic.
 
-Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the `humanize()` function (regexps are not my forte).
+Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the excellent `humanize()` function.
 
 # Example
 
