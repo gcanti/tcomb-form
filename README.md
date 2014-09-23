@@ -1,8 +1,8 @@
 # Domain Driven Forms
 
-The [tcomb library](https://github.com/gcanti/tcomb) provides a concise but expressive way to define domain models in javascript.  
+The [tcomb library](https://github.com/gcanti/tcomb) provides a concise but expressive way to define domain models in javascript.
 
-The [tcomb-validation library](https://github.com/gcanti/tcomb-validation) builds on tcomb, providing validation functions for tcomb domain models. 
+The [tcomb-validation library](https://github.com/gcanti/tcomb-validation) builds on tcomb, providing validation functions for tcomb domain models.
 
 This library builds on those two and realizes an old dream of mine.
 
@@ -10,26 +10,28 @@ This library builds on those two and realizes an old dream of mine.
 
 # Playground
 
-If you want to see this library in action, try the playground [here](http://gcanti.github.io/resources/tcomb-form/playground/playground.html)
+[Live Demo!](http://gcanti.github.io/resources/tcomb-form/playground/playground.html)
+
+If you want to see this library in action, the playground contains a dozen examples and the code section is fully editable with live updates in the preview and HTML views.
 
 # Benefits
 
-With tcomb-form you simply call `var Form = t.form.createForm(domainModel)` to generate a form based on that domain model. What does this get you? 
+With tcomb-form you simply call `var Form = t.form.createForm(domainModel)` to generate a form based on that domain model. What does this get you?
 
 1. Write a lot less HTML
-2. Usability and accessibility for free (automatic labels, inline validation, etc) 
+2. Usability and accessibility for free (automatic labels, inline validation, etc)
 3. No need to update forms when domain model changes
 
 # Flexibility
 
-- tcomb-forms lets you override automatic features or add additional information to forms.  
-- You often don't want to use your domain model directly for a form. You can easily create a form specific model with tcomb that captures the details of a particular feature, and then define a function that uses that model to process the main domain model.  
+- tcomb-forms lets you override automatic features or add additional information to forms.
+- You often don't want to use your domain model directly for a form. You can easily create a form specific model with tcomb that captures the details of a particular feature, and then define a function that uses that model to process the main domain model.
 
 # Contributions
 
-A special thank to [William Lubelski](https://github.com/lubelski), without him this library would be less magic.
+Special thanks to [William Lubelski](https://github.com/lubelski) ([@uiwill](https://twitter.com/uiwill)), without him this library would be less magic.
 
-Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the `humanize()` function, I suck writing regexps.
+Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the excellent `humanize()` function.
 
 # Example
 
@@ -51,7 +53,7 @@ var App = React.createClass({
     evt.preventDefault();
     var value = this.refs.form.getValue();
     if (value) {
-      console.log(value); 
+      console.log(value);
     }
   },
   render: function () {
@@ -60,7 +62,7 @@ var App = React.createClass({
         <Form ref="form"/>
         <button className="btn btn-primary" onClick={this.onClick}>Click me</button>
       </form>
-    );    
+    );
   }
 });
 ```
