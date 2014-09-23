@@ -8,6 +8,10 @@ This library builds on those two and realizes an old dream of mine.
 
 ![tcomb-form diagram](https://gcanti.github.io/resources/tcomb-form/tcomb-form-diagram.png)
 
+# Playground
+
+If you want to see this library in action, try the playground [here](http://gcanti.github.io/resources/tcomb-form/playground/playground.html)
+
 # Benefits
 
 With tcomb-form you simply call `var Form = t.form.createForm(domainModel)` to generate a form based on that domain model. What does this get you? 
@@ -20,10 +24,6 @@ With tcomb-form you simply call `var Form = t.form.createForm(domainModel)` to g
 
 - tcomb-forms lets you override automatic features or add additional information to forms.  
 - You often don't want to use your domain model directly for a form. You can easily create a form specific model with tcomb that captures the details of a particular feature, and then define a function that uses that model to process the main domain model.  
-
-# Playground
-
-If you want to see this library in action, try the playground [here](http://gcanti.github.io/resources/tcomb-form/playground/playground.html)
 
 # Contributions
 
@@ -69,6 +69,10 @@ var App = React.createClass({
 
 - tcomb-validation.js
 - React.js
+
+# Api
+
+[API.md](API.md)
 
 # Roadmap
 
