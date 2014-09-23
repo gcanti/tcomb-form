@@ -59,17 +59,17 @@ $(function () {
     examples[script.id] = '// * ' + script.label + ' *\n\n' + $('#' + script.id).text();
   });
 
-  var examplesHtml = '<ul id="examplesGroup" class="list-group">';
+  var examplesHtml = '<select id="examplesGroup" class="form-control">';
   examplesHtml += scripts.map(function (script) {
-    return '<li class="list-group-item' + (script.id === defaultExample ? ' selected' : '') + '" data="' + script.id + '">' + script.label + '</li>';
+    return '<option' + (script.id === defaultExample ? ' selected="true"' : '') + ' value="' + script.id + '">' + script.label + '</option>';
   }).join('');
-  examplesHtml += '</ul>';
+  examplesHtml += '</select>';
   $('#examples').html(examplesHtml);
 
   var $preview =    $('#preview');
   var $html =       $('#html');
   var $formValues = $('#formValues');
-  var $examples =   $('#examples .list-group-item');
+  var $examples =   $('#examples select');
   var POSTFIX =     $('#postfix').html();
 
   function evalCode(code) {
@@ -131,9 +131,8 @@ $(function () {
   cm.setValue(examples[defaultExample]);
   cm.on("change", run);
 
-  $examples.click(function () {
-    $examples.removeClass('selected');
-    var id = $(this).addClass('selected').attr('data');
+  $examples.on('change', function () {
+    var id = $(this).val();
     cm.setValue(examples[id]);
     run();
   });

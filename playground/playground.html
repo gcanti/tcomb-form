@@ -33,12 +33,13 @@
           <p class="text-muted">Live code editor. Changes will be reflected in the preview and HTML to the right.</p>
           <div>
             <div class="form-group">
+              <p><b>Examples</b></p>
+              <div id="examples" class="form-group"></div>
+            </div>
+            <div class="form-group">
               <textarea id="code" class="form-control" type="textarea"></textarea>
             </div>
           </div>
-          <h3>Examples</h3>
-          <p class="text-muted">Select an example to change the live code.</p>
-          <div id="examples" class="form-group"></div>
         </div>
         <div class="col-md-6">
           <div id="formValues"></div>
@@ -74,9 +75,9 @@ React.createClass({
   }
 });
 </script>
-<script type="text/example" id="showcase">// play with the form to the right
-// you can add, remove and sort colors
-// and then start the tutorial from `1. Required fields`
+<script type="text/example" id="showcase">// play with the form to the right: you can add, 
+// remove and sort colors. Then start the tutorial from the 
+// example `1. Required fields`
 
 var Palette = struct({
   name: Str,

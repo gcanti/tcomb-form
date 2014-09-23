@@ -18,7 +18,7 @@ pre {
 
 .CodeMirror {
   font-family: Menlo, monospace;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
   height: 350px;
   padding: 10px 10px;
@@ -34,19 +34,5 @@ pre {
 
 #html {
   font-size: 11px;
-}
-
-#examplesGroup .list-group-item:hover {
-  cursor: pointer;
-  background-color: #d9edf7;
-}
-
-#examplesGroup .list-group-item.selected {
-  cursor: default;
-  font-weight: bold;
-}
-
-#examplesGroup .list-group-item.selected:hover {
-  background-color: #fff;
 }
 
