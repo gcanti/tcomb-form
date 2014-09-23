@@ -74,6 +74,13 @@ var App = React.createClass({
 
 [API.md](API.md)
 
+- [createForm](API.md#createform)
+- [createList](API.md#createlist)
+- [textbox](API.md#textbox)
+- [select](API.md#select)
+- [radio](API.md#radio)
+- [checkbox](API.md#checkbox)
+
 # Roadmap
 
 - make customizable **every little bit**

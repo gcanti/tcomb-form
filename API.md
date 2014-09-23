@@ -1,8 +1,10 @@
-# Api
+If you don't know how to define types with tcomb you may want to take a look at its [README](https://github.com/gcanti/tcomb/blob/master/README.md) file.
 
-*If you don't know how to define types with tcomb you may want to take a look at its [README](https://github.com/gcanti/tcomb/blob/master/README.md) file.*
+# createForm
 
-## createForm(type, [opts])
+```js
+createForm(type, [opts])
+```
 
 Returns a React.js component handling the form fields defined by the `type` struct.
 
@@ -20,11 +22,11 @@ var Person = struct({
 var Form = createForm(Person);
 ```
 
-### getValue()
+## getValue()
 
 Returns an instance of `type` if the validation succeded, `null` otherwise.
 
-### opts.value: maybe(Obj)
+## opts.value: maybe(Obj)
 
 A hash containing the default values of the form fields.
 
@@ -44,7 +46,7 @@ var Form = createForm(Person, {
 });
 ```
 
-### opts.label: Any
+## opts.label: Any
 
 Adds a label above the form.
 
@@ -61,7 +63,7 @@ var Form = createForm(Person, {
 });
 ```
 
-### opts.auto
+## opts.auto
 
 One of `placeholders` (default), `labels`, `none`. Adds automatically generated placeholders or labels
 to the form. Set `auto` to `none` if you don't want neither.
@@ -79,7 +81,7 @@ var Form = createForm(Person, {
 });
 ```
 
-### opts.order: maybe(list(Str))
+## opts.order: maybe(list(Str))
 
 Renders the form fields in the specified order
 
@@ -96,7 +98,7 @@ var Form = createForm(Person, {
 });
 ```
 
-### opts.fields: maybe(Obj)
+## opts.fields: maybe(Obj)
 
 A hash containing the options for every fields. See the section `opts` of the inputs types
 for details.
@@ -115,7 +117,11 @@ var Form = createForm(Person, {
 });
 ```
 
-## createList(type, [opts])
+# createList
+
+```js
+createList(type, [opts])
+```
 
 Returns a React.js component handling the items defined by the `type` list.
 
@@ -130,11 +136,11 @@ var Tags = list(Str);
 var Form = createList(Tags);
 ```
 
-### getValue()
+## getValue()
 
 Returns an instance of `type` if the validation succeded, `null` otherwise.
 
-### opts.value: maybe(Arr)
+## opts.value: maybe(Arr)
 
 A hash containing the default values of the form fields.
 
@@ -148,7 +154,7 @@ var Form = createList(Tags, {
 });
 ```
 
-### opts.label: Any
+## opts.label: Any
 
 Adds a label above the form.
 
@@ -162,19 +168,19 @@ var Form = createList(Tags, {
 });
 ```
 
-### opts.disableAdd: maybe(Bool)
+## opts.disableAdd: maybe(Bool)
 
 If set to `true` removes the possibility to add an item to the list.
 
-### opts.disableRemove: maybe(Bool)
+## opts.disableRemove: maybe(Bool)
 
 If set to `true` removes the possibility to remove the items from the list.
 
-### opts.disableOrder: maybe(Bool)
+## opts.disableOrder: maybe(Bool)
 
 If set to `true` removes the possibility to sort the items in the list.
 
-### opts.item: maybe(Obj)
+## opts.item: maybe(Obj)
 
 A hash containing the options for every item in the list. See the section `opts` of the inputs types
 for details.
@@ -189,12 +195,16 @@ var Form = createList(Colors, {
 });
 ```
 
-## textbox(type, [opts])
+# textbox
+
+```js
+textbox(type, [opts])
+```
 
 - `type`: every type that it makes sense to render in a textbox / textarea
 - `opts`: a hash containing directives on how you want render the textbox / textarea
 
-### opts.type: maybe(Str)
+## opts.type: maybe(Str)
 
 One of
 
@@ -215,27 +225,27 @@ One of
 - `url`
 - `week`
 
-### opts.value: Any
+## opts.value: Any
 
 The default value of the textbox / textarea.
 
-### opts.label: Any
+## opts.label: Any
 
 Adds a label above the textbox / textarea.
 
-### opts.help: Any
+## opts.help: Any
 
 Adds a label below the textbox / textarea.
 
-### opts.groupClasses: maybe(Obj)
+## opts.groupClasses: maybe(Obj)
 
 Customize the `className` of the containing `div`.
 
-### opts.placeholder: maybe(Str)
+## opts.placeholder: maybe(Str)
 
 Overrrides the default placeholder.
 
-### opts.i17n: maybe(I17n)
+## opts.i17n: maybe(I17n)
 
 i17n support
 
@@ -265,72 +275,108 @@ var Form = createForm(Person, {
 });
 ```
 
-## select(type, [opts])
+# select
+
+```js
+textbox(type, [opts])
+```
 
 - `type`: an `enums` or a `subtype` of an `enums`
 - `opts`: a hash containing directives on how you want render the select
 
-### opts.value: maybe(type)
+## opts.value: maybe(type)
 
 The default value of the select.
 
-### opts.label: Any
+## opts.label: Any
 
 Adds a label above the select.
 
-### opts.help: Any 
+## opts.help: Any 
 
 Adds a label below the select.
 
-### opts.groupClasses: maybe(Obj)
+## opts.groupClasses: maybe(Obj)
 
 Customize the `className` of the containing `div`.
 
-### opts.emptyOption: maybe(Option)
+## opts.emptyOption: maybe(Option)
 
-### opts.order: maybe(Order)
+Adds a first option to the select representing a "no choice".
+Overrides the default one.
 
-## radio(type, [opts])
+Example
+
+```js
+var Country = enums({ IT: 'Italy', US: 'United States' });
+
+var Person = struct({
+  name: Str,
+  country: Country
+});
+
+var Form = createForm(Person, {
+  fields: {
+    country: {
+      emptyOption: {value: '', text: '-'}
+    }
+  }
+});
+```
+
+## opts.order: maybe(Order)
+
+Sorts the options `asc` or `desc`.
+
+# radio
+
+```js
+textbox(type, [opts])
+```
 
 - `type`: an `enums` or a `subtype` of an `enums`
 - `opts`: a hash containing directives on how you want render the radio
 
-### opts.value: Any
+## opts.value: Any
 
 The default value of the radio.
 
-### opts.label: Any
+## opts.label: Any
 
 Adds a label above the radio.
 
-### opts.help: Any
+## opts.help: Any
 
 Adds a label below the radio.
 
-### opts.groupClasses: maybe(Obj)
+## opts.groupClasses: maybe(Obj)
 
 Customize the `className` of the containing `div`.
 
-### opts.order: maybe(Order)
+## opts.order: maybe(Order)
 
-## checkbox(type, [opts])
+# checkbox
+
+```js
+checkbox(type, [opts])
+```
 
 - `type`: a `Bool` or a `subtype` of a `Bool`
 - `opts`: a hash containing directives on how you want render the checkbox
 
-### opts.value: maybe(type)
+## opts.value: maybe(type)
 
 The default value of the checkbox.
 
-### opts.label: Any
+## opts.label: Any
 
 Adds a label above the checkbox.
 
-### opts.help: Any
+## opts.help: Any
 
 Adds a label below the checkbox.
 
-### opts.groupClasses: maybe(Obj)
+## opts.groupClasses: maybe(Obj)
 
 Customize the `className` of the containing `div`.
 
