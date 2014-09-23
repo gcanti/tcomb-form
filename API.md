@@ -1,67 +1,3 @@
-% tcomb-form
-
-![tcomb logo](http://gcanti.github.io/resources/tcomb/logo.png)
-
-This library realizes my dream, it closes this cycle:
-
-![tcomb-form diagram](https://gcanti.github.io/resources/tcomb-form/tcomb-form-diagram.png)
-
-# Playground
-
-If you want to see this library in action, try the playground [here](http://gcanti.github.io/resources/tcomb-form/playground/playground.html)
-
-# Contributions
-
-A special thank to [William Lubelski](https://github.com/lubelski), without him this library would be less magic.
-
-Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the `humanize()` function, I suck writing regexps.
-
-# Example
-
-```js
-var t = require('tcomb-form');
-
-// define a type
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Bool
-});
-
-// create the form
-var Form = t.form.createForm(Person);
-
-// use the form in your component
-var App = React.createClass({
-  onClick: function (evt) {
-    evt.preventDefault();
-    var value = this.refs.form.getValue();
-    if (value) {
-      console.log(value); 
-    }
-  },
-  render: function () {
-    return (
-      <form>
-        <Form ref="form"/>
-        <button className="btn btn-primary" onClick={this.onClick}>Click me</button>
-      </form>
-    );    
-  }
-});
-```
-# Roadmap
-
-- make customizable **every little bit**
-- add all bootstrap goodies
-  - Add-ons
-  - horizontal forms
-  - inline forms
-  - inline inputs
-  - disabled inputs
-  - readOnly inputs
-  - control sizing
-  - column sizing
-
 # Api
 
 *If you don't know how to define types with tcomb you may want to take a look at its [README](https://github.com/gcanti/tcomb/blob/master/README.md) file.*
@@ -398,10 +334,3 @@ Adds a label below the checkbox.
 
 Customize the `className` of the containing `div`.
 
-# Tests
-
-Run `mocha` on the project root, rendering tests made possible thanks to [react-vdom](https://github.com/gcanti/react-vdom).
-
-# License
-
-MIT
