@@ -91,6 +91,30 @@ describe('textbox', function () {
     eq(dom.attrs['className'], 'form-group hello');
   });
 
+  it('should handle opts.disabled', function () {
+    var Factory = textbox(Str, {disabled: true});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs['disabled'], true);
+
+    Factory = textbox(Str, {disabled: true, type: 'textarea'});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.children[0].attrs['disabled'], true);
+  });
+
+  it('should handle opts.readOnly', function () {
+    var Factory = textbox(Str, {readOnly: true});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs['readOnly'], true);
+
+    Factory = textbox(Str, {readOnly: true, type: 'textarea'});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.children[0].attrs['readOnly'], true);
+  });
+
   it('should handle opts.placeholder', function () {
     var Factory = textbox(Str, {placeholder: 'hello'});
     var input = Factory();
@@ -224,6 +248,13 @@ describe('select', function () {
         "children": "Italy"
       }
     ]);
+  });
+
+  it('should handle opts.disabled', function () {
+    var Factory = select(Country, {disabled: true});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs['disabled'], true);
   });
 
 });

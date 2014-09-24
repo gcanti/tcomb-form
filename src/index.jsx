@@ -215,7 +215,9 @@ function textboxOpts(type) {
     help:         Any,
     groupClasses: maybe(Obj),
     placeholder:  maybe(Str),
-    i17n:         maybe(I17n)
+    i17n:         maybe(I17n),
+    disabled:     maybe(Bool),
+    readOnly:     maybe(Bool)
   }, 'TextboxOpts');
 }
 
@@ -257,8 +259,20 @@ function textbox(type, opts) {
       }, opts.groupClasses);
 
       var input = opts.type === 'textarea' ? 
-        <textarea ref="input" className="form-control" defaultValue={defaultValue} placeholder={opts.placeholder}/> :
-        <input ref="input" className="form-control" type={opts.type || 'text'} defaultValue={defaultValue} placeholder={opts.placeholder}/>;
+        <textarea 
+          ref="input" 
+          className="form-control" 
+          defaultValue={defaultValue} 
+          disabled={opts.disabled}
+          readOnly={opts.readOnly}
+          placeholder={opts.placeholder}/> :
+        <input ref="input" 
+          className="form-control" 
+          type={opts.type || 'text'} 
+          defaultValue={defaultValue}
+          disabled={opts.disabled}
+          readOnly={opts.readOnly}
+          placeholder={opts.placeholder}/>;
 
       return (
         <div className={cx(groupClasses)}>
@@ -294,7 +308,8 @@ function selectOpts(type) {
     help:         Any, 
     groupClasses: maybe(Obj),
     emptyOption:  maybe(Option),
-    order:        maybe(Order)
+    order:        maybe(Order),
+    disabled:     maybe(Bool)
   }, 'SelectOpts');
 }
 
@@ -333,7 +348,12 @@ function select(type, opts) {
       return (
         <div className={cx(groupClasses)}>
           {label}
-          <select ref="input" className="form-control" defaultValue={defaultValue}>
+          <select 
+            ref="input" 
+            className="form-control" 
+            disabled={opts.disabled}
+            readOnly={opts.readOnly}
+            defaultValue={defaultValue}>
             {options}
           </select>
           {help}

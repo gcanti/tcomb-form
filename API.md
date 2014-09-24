@@ -287,6 +287,14 @@ var Form = createForm(Person, {
 });
 ```
 
+## opts.disabled: maybe(Bool)
+
+Disable the input.
+
+## opts.readOnly: maybe(Bool)
+
+Makes the the input readOnly.
+
 # select
 
 ```js
@@ -343,6 +351,10 @@ var Form = createForm(Person, {
 ## opts.order: maybe(Order)
 
 Sorts the options `asc` or `desc`.
+
+## opts.disabled: maybe(Bool)
+
+Disable the input.
 
 # radio
 
