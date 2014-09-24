@@ -20,6 +20,7 @@ var assert =      t.assert;
 var Any =         t.Any;
 var Nil =         t.Nil;
 var Str =         t.Str;
+var Num =         t.Num;
 var Bool =        t.Bool;
 var Obj =         t.Obj;
 var Arr =         t.Arr;
@@ -30,6 +31,7 @@ var maybe =       t.maybe;
 var enums =       t.enums;
 var list =        t.list;
 var struct =      t.struct;
+var tuple =       t.tuple;
 var func =        t.func;
 var mixin =       t.util.mixin;
 var isType =      t.util.isType;
@@ -119,8 +121,13 @@ function getOptionalLabel(name, optional) {
     <span>{name}</span>;
 }
 
-function getLabel(label) {
-  return label ? <label className="control-label label-class">{label}</label> : null;
+function getLabel(label, breakpoints) {
+  var classes = {};
+  if (breakpoints) {
+    classes['control-label'] = true;
+    classes[breakpoints.toLabelClassName()] = true;
+  }
+  return label ? <label className={cx(classes)}>{label}</label> : null;
 }
 
 function getHelp(help) {
@@ -130,6 +137,48 @@ function getHelp(help) {
 function getAddon(addon) {
   return addon ? <span className="input-group-addon">{addon}</span> : null;
 }
+
+var Positive = subtype(Num, function (n) {
+  return n === parseInt(n, 10) && n >= 0;
+}, 'Positive');
+
+var Cols = subtype(tuple([Positive, Positive]), function (cols) {
+  return cols[0] + cols[1] === 12;
+}, 'Cols');
+
+var Breakpoints = struct({
+  xs: maybe(Cols),
+  sm: maybe(Cols),
+  md: maybe(Cols),
+  lg: maybe(Cols)
+}, 'Breakpoints');
+
+function toClassName(n) {
+  return function () {
+    var classes = {};
+    for (var size in this) {
+      var value = this[size];
+      if (this.hasOwnProperty(size) && !Nil.is(value)) {
+        classes['col-' + size + '-' + value[n]] = true;
+      }
+    }
+    return cx(classes);
+  };
+}
+
+Breakpoints.prototype.toLabelClassName = toClassName(0);
+Breakpoints.prototype.toInputClassName = toClassName(1);
+Breakpoints.prototype.toCheckboxClassName = function () {
+  var classes = {};
+  for (var size in this) {
+    var value = this[size];
+    if (this.hasOwnProperty(size) && !Nil.is(value)) {
+      classes['col-' + size + '-offset-' + value[0]] = true;
+      classes['col-' + size + '-' + value[1]] = true;
+    }
+  }
+  return cx(classes);
+};
 
 // returns the list of options of a select
 function getOptions(map, order, emptyOption) {
@@ -223,7 +272,8 @@ function textboxOpts(type) {
     disabled:     maybe(Bool),
     readOnly:     maybe(Bool),
     addonBefore:  Any,
-    addonAfter:   Any
+    addonAfter:   Any,
+    breakpoints:  maybe(Breakpoints)
   }, 'TextboxOpts');
 }
 
@@ -238,7 +288,7 @@ function textbox(type, opts) {
     defaultValue = opts.i17n.format(defaultValue);
   }
 
-  var label = getLabel(opts.label);
+  var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
   var addonBefore = getAddon(opts.addonBefore);
   var addonAfter = getAddon(opts.addonAfter);
@@ -292,6 +342,14 @@ function textbox(type, opts) {
         );
       }
 
+      if (opts.breakpoints) {
+        input = (
+          <div className={opts.breakpoints.toInputClassName()}>
+            {input}
+          </div>
+        );
+      }
+
       return (
         <div className={cx(groupClasses)}>
           {label}
@@ -327,7 +385,8 @@ function selectOpts(type) {
     groupClasses: maybe(Obj),
     emptyOption:  maybe(Option),
     order:        maybe(Order),
-    disabled:     maybe(Bool)
+    disabled:     maybe(Bool),
+    breakpoints:  maybe(Breakpoints)
   }, 'SelectOpts');
 }
 
@@ -339,7 +398,7 @@ function select(type, opts) {
   var Enum = stripMaybeOrSubtype(type);
   var emptyValue = opts.emptyOption ? opts.emptyOption.value : null;
   var defaultValue = getOrElse(opts.value, emptyValue);
-  var label = getLabel(opts.label);
+  var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
   var options = getOptions(Enum.meta.map, opts.order, opts.emptyOption);
 
@@ -363,17 +422,29 @@ function select(type, opts) {
         'has-error': this.state.hasError
       }, opts.groupClasses);
 
+      var input = (
+        <select 
+          ref="input" 
+          className="form-control" 
+          disabled={opts.disabled}
+          readOnly={opts.readOnly}
+          defaultValue={defaultValue}>
+          {options}
+        </select>
+      );
+
+      if (opts.breakpoints) {
+        input = (
+          <div className={opts.breakpoints.toInputClassName()}>
+            {input}
+          </div>
+        );
+      }
+
       return (
         <div className={cx(groupClasses)}>
           {label}
-          <select 
-            ref="input" 
-            className="form-control" 
-            disabled={opts.disabled}
-            readOnly={opts.readOnly}
-            defaultValue={defaultValue}>
-            {options}
-          </select>
+          {input}
           {help}
         </div>
       );
@@ -394,7 +465,8 @@ function radioOpts(type) {
     label:        Any,
     help:         Any, 
     groupClasses: maybe(Obj),
-    order:        maybe(Order)
+    order:        maybe(Order),
+    breakpoints:  maybe(Breakpoints)
   }, 'RadioOpts');
 }
 
@@ -405,7 +477,7 @@ function radio(type, opts) {
 
   var Enum = stripMaybeOrSubtype(type);
   var defaultValue = getOrElse(opts.value, null);
-  var label = getLabel(opts.label);
+  var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
   var choices = getChoices(Enum.meta.map, opts.order);
   var len = choices.length;
@@ -438,7 +510,7 @@ function radio(type, opts) {
         'has-error': this.state.hasError
       }, opts.groupClasses);
 
-      var radios = choices.map(function (c, i) {
+      var input = choices.map(function (c, i) {
         return (
           <div className="radio" key={i}>
             <label>
@@ -449,10 +521,18 @@ function radio(type, opts) {
         );
       });
 
+      if (opts.breakpoints) {
+        input = (
+          <div className={opts.breakpoints.toInputClassName()}>
+            {input}
+          </div>
+        );
+      }
+
       return (
         <div className={cx(groupClasses)}>
           {label}
-          {radios}
+          {input}
           {help}
         </div>
       );
@@ -480,7 +560,8 @@ function checkboxOpts(type) {
     value:        maybe(type),
     label:        Any,
     help:         Any, 
-    groupClasses: maybe(Obj)
+    groupClasses: maybe(Obj),
+    breakpoints:  maybe(Breakpoints)
   }, 'CheckboxOpts');
 }
 
@@ -511,13 +592,25 @@ function checkbox(type, opts) {
         'has-error': this.state.hasError
       }, opts.groupClasses);
 
+      var input = (
+        <div className="checkbox">
+          <label>
+            <input ref="input" type="checkbox" defaultChecked={defaultValue}/> {opts.label}
+          </label>
+        </div>
+      );
+
+      if (opts.breakpoints) {
+        input = (
+          <div className={opts.breakpoints.toCheckboxClassName()}>
+            {input}
+          </div>
+        );
+      }
+
       return (
         <div className={cx(groupClasses)}>
-          <div className="checkbox">
-            <label>
-              <input ref="input" type="checkbox" defaultChecked={defaultValue}/> {opts.label}
-            </label>
-          </div>
+          {input}
           {help}
         </div>
       );
@@ -548,7 +641,8 @@ var FormOpts = struct({
   label:  Any,
   auto:   maybe(FormAuto),
   order:  maybe(list(Str)),
-  fields: maybe(Obj)
+  fields: maybe(Obj),
+  breakpoints:  maybe(Breakpoints)
 }, 'FormOpts');
 
 function createForm(type, opts) {
@@ -573,7 +667,8 @@ function createForm(type, opts) {
     // copy opts to preserve the original
     var o = mixin({
       ctx: opts.ctx,
-      value: defaultValue[name]
+      value: defaultValue[name],
+      breakpoints: opts.breakpoints
     }, fields[name]);
 
     // get the input from the type
@@ -645,7 +740,7 @@ function createForm(type, opts) {
     render: function () {
 
       var classes = {
-        'form-group': true,
+        //'form-group': true,
         'has-error': this.state.hasError
       };
 
@@ -846,7 +941,8 @@ t.form = {
   options: options,
   util: {
     humanize: humanize,
-    Option: Option
+    Option: Option,
+    Breakpoints: Breakpoints
   },
   I17n: I17n,
   textbox: textbox,
