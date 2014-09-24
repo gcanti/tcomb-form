@@ -121,6 +121,26 @@ var Form = createForm(Person, {
 });
 ```
 
+## opts.breakpoints: maybe(Breakpoints)
+
+Useful when the form is horizonatal.
+An hash containing the optional keys: `xs`, `sm`, `md`, `lg`.
+For each key you can set the width of the label and the width of the input.
+
+Example
+
+```js
+var Person = struct({
+  name: Str,
+  surname: Str,
+});
+
+var Form = createForm(Person, {
+  auto: 'labels',
+  breakpoints: { md: [2, 10] }
+});
+```
+
 # createList
 
 ```js
@@ -303,6 +323,10 @@ Bootstrap 3 addon before.
 
 Bootstrap 3 addon after.
 
+## opts.height: maybe(Size)
+
+Set height, one of `xs`, `sm`, `md`, `lg`.
+
 # select
 
 ```js
@@ -363,6 +387,10 @@ Sorts the options `asc` or `desc`.
 ## opts.disabled: maybe(Bool)
 
 Disable the input.
+
+## opts.height: maybe(Size)
+
+Set height, one of `xs`, `sm`, `md`, `lg`.
 
 # radio
 

@@ -153,6 +153,8 @@ var Breakpoints = struct({
   lg: maybe(Cols)
 }, 'Breakpoints');
 
+var Size = enums.of('xs sm md lg', 'Size');
+
 function toClassName(n) {
   return function () {
     var classes = {};
@@ -273,7 +275,8 @@ function textboxOpts(type) {
     readOnly:     maybe(Bool),
     addonBefore:  Any,
     addonAfter:   Any,
-    breakpoints:  maybe(Breakpoints)
+    breakpoints:  maybe(Breakpoints),
+    height:       maybe(Size)
   }, 'TextboxOpts');
 }
 
@@ -292,6 +295,13 @@ function textbox(type, opts) {
   var help = getHelp(opts.help);
   var addonBefore = getAddon(opts.addonBefore);
   var addonAfter = getAddon(opts.addonAfter);
+
+  var inputClasses = {
+    'form-control': true
+  };
+  if (opts.height) {
+    inputClasses['input-' + opts.height] = true;
+  }
 
   return React.createClass({
     
@@ -319,13 +329,13 @@ function textbox(type, opts) {
       var input = opts.type === 'textarea' ? 
         <textarea 
           ref="input" 
-          className="form-control" 
+          className={cx(inputClasses)} 
           defaultValue={defaultValue} 
           disabled={opts.disabled}
           readOnly={opts.readOnly}
           placeholder={opts.placeholder}/> :
         <input ref="input" 
-          className="form-control" 
+          className={cx(inputClasses)} 
           type={opts.type || 'text'} 
           defaultValue={defaultValue}
           disabled={opts.disabled}
@@ -386,7 +396,8 @@ function selectOpts(type) {
     emptyOption:  maybe(Option),
     order:        maybe(Order),
     disabled:     maybe(Bool),
-    breakpoints:  maybe(Breakpoints)
+    breakpoints:  maybe(Breakpoints),
+    height:       maybe(Size)
   }, 'SelectOpts');
 }
 
@@ -401,6 +412,13 @@ function select(type, opts) {
   var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
   var options = getOptions(Enum.meta.map, opts.order, opts.emptyOption);
+
+  var inputClasses = {
+    'form-control': true
+  };
+  if (opts.height) {
+    inputClasses['input-' + opts.height] = true;
+  }
 
   return React.createClass({
     
@@ -425,7 +443,7 @@ function select(type, opts) {
       var input = (
         <select 
           ref="input" 
-          className="form-control" 
+          className={cx(inputClasses)} 
           disabled={opts.disabled}
           readOnly={opts.readOnly}
           defaultValue={defaultValue}>
