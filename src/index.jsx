@@ -32,7 +32,6 @@ var list =        t.list;
 var struct =      t.struct;
 var func =        t.func;
 var mixin =       t.util.mixin;
-var merge =       t.util.merge;
 var isType =      t.util.isType;
 var getKind =     t.util.getKind;
 var getName =     t.util.getName;
@@ -209,6 +208,7 @@ var TypeAttr = enums.of('text textarea password color date datetime datetime-loc
 
 function textboxOpts(type) {
   return struct({
+    ctx:          Any,
     type:         maybe(TypeAttr),
     value:        maybe(type),
     label:        Any,
@@ -288,6 +288,7 @@ var EnumType = subtype(Type, function (type) {
 
 function selectOpts(type) {
   return struct({
+    ctx:          Any,
     value:        maybe(type),
     label:        Any,
     help:         Any, 
@@ -350,6 +351,7 @@ function select(type, opts) {
 
 function radioOpts(type) {
   return struct({
+    ctx:          Any,
     value:        Any,
     label:        Any,
     help:         Any, 
@@ -436,6 +438,7 @@ var CheckboxType = subtype(Type, function (type) {
 
 function checkboxOpts(type) {
   return struct({
+    ctx:          Any,
     value:        maybe(type),
     label:        Any,
     help:         Any, 
@@ -502,6 +505,7 @@ var FormType = subtype(Type, function (type) {
 var FormAuto = enums.of('none placeholders labels', 'FormAuto');
 
 var FormOpts = struct({
+  ctx:    Any,
   value:  maybe(Obj),
   label:  Any,
   auto:   maybe(FormAuto),
@@ -529,7 +533,10 @@ function createForm(type, opts) {
     var type = props[name];
 
     // copy opts to preserve the original
-    var o = mixin({value: defaultValue[name]}, fields[name]);
+    var o = mixin({
+      ctx: opts.ctx,
+      value: defaultValue[name]
+    }, fields[name]);
 
     // get the input from the type
     var Input = o.input ? o.input : getInput(type);
@@ -634,6 +641,7 @@ var ListType = subtype(Type, function (type) {
 }, 'ListType');
 
 var ListOpts = struct({
+  ctx:            Any,
   value:          maybe(Arr),
   label:          Any,
   disableAdd:     maybe(Bool),
@@ -734,8 +742,13 @@ function createList(type, opts) {
 
       var children = [];
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
+        
         // copy opts to preserve the original
-        var o = mixin({value: this.state.value[i]}, opts.item);
+        var o = mixin({
+          ctx: opts.ctx,
+          value: this.state.value[i]
+        }, opts.item);
+        
         children.push(
           <div className="row" key={i}>
             <div className="col-md-7">

@@ -26,6 +26,10 @@ var Form = createForm(Person);
 
 Returns an instance of `type` if the validation succeded, `null` otherwise.
 
+## opts.ctx: Any
+
+Useful to pass a context to deeply nested inputs.
+
 ## opts.value: maybe(Obj)
 
 A hash containing the default values of the form fields.
@@ -140,6 +144,10 @@ var Form = createList(Tags);
 
 Returns an instance of `type` if the validation succeded, `null` otherwise.
 
+## opts.ctx: Any
+
+Useful to pass a context to deeply nested inputs.
+
 ## opts.value: maybe(Arr)
 
 A hash containing the default values of the form fields.
@@ -203,6 +211,10 @@ textbox(type, [opts])
 
 - `type`: every type that it makes sense to render in a textbox / textarea
 - `opts`: a hash containing directives on how you want render the textbox / textarea
+
+## opts.ctx: Any
+
+Useful to pass a context to deeply nested inputs.
 
 ## opts.type: maybe(Str)
 
@@ -284,6 +296,10 @@ textbox(type, [opts])
 - `type`: an `enums` or a `subtype` of an `enums`
 - `opts`: a hash containing directives on how you want render the select
 
+## opts.ctx: Any
+
+Useful to pass a context to deeply nested inputs.
+
 ## opts.value: maybe(type)
 
 The default value of the select.
@@ -337,6 +353,10 @@ textbox(type, [opts])
 - `type`: an `enums` or a `subtype` of an `enums`
 - `opts`: a hash containing directives on how you want render the radio
 
+## opts.ctx: Any
+
+Useful to pass a context to deeply nested inputs.
+
 ## opts.value: Any
 
 The default value of the radio.
@@ -363,6 +383,10 @@ checkbox(type, [opts])
 
 - `type`: a `Bool` or a `subtype` of a `Bool`
 - `opts`: a hash containing directives on how you want render the checkbox
+
+## opts.ctx: Any
+
+Useful to pass a context to deeply nested inputs.
 
 ## opts.value: maybe(type)
 
