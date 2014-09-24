@@ -122,6 +122,26 @@ describe('textbox', function () {
     eq(dom.children[0].attrs['placeholder'], 'hello');
   });
 
+  it('should handle opts.addonBefore', function () {
+    var Factory = textbox(Str, {addonBefore: '@'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs['className'], 'input-group');
+    eq(dom.children[0].children[0].tag, 'span');
+    eq(dom.children[0].children[0].attrs['className'], 'input-group-addon');
+    eq(dom.children[0].children[0].children, '@');
+  });
+
+  it('should handle opts.addonAfter', function () {
+    var Factory = textbox(Str, {addonAfter: '@'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs['className'], 'input-group');
+    eq(dom.children[0].children[1].tag, 'span');
+    eq(dom.children[0].children[1].attrs['className'], 'input-group-addon');
+    eq(dom.children[0].children[1].children, '@');
+  });
+
   it('should handle i17n', function () {
     var Factory = textbox(Num, {
       value: 1000,

@@ -295,6 +295,14 @@ Disable the input.
 
 Makes the the input readOnly.
 
+## opts.addonBefore: Any
+
+Bootstrap 3 addon before.
+
+## opts.addonAfter: Any
+
+Bootstrap 3 addon after.
+
 # select
 
 ```js

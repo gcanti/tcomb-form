@@ -127,6 +127,10 @@ function getHelp(help) {
   return help ? <span className="help-block">{help}</span> : null;
 }
 
+function getAddon(addon) {
+  return addon ? <span className="input-group-addon">{addon}</span> : null;
+}
+
 // returns the list of options of a select
 function getOptions(map, order, emptyOption) {
   var choices = getChoices(map, order, emptyOption);
@@ -217,7 +221,9 @@ function textboxOpts(type) {
     placeholder:  maybe(Str),
     i17n:         maybe(I17n),
     disabled:     maybe(Bool),
-    readOnly:     maybe(Bool)
+    readOnly:     maybe(Bool),
+    addonBefore:  Any,
+    addonAfter:   Any
   }, 'TextboxOpts');
 }
 
@@ -234,6 +240,8 @@ function textbox(type, opts) {
 
   var label = getLabel(opts.label);
   var help = getHelp(opts.help);
+  var addonBefore = getAddon(opts.addonBefore);
+  var addonAfter = getAddon(opts.addonAfter);
 
   return React.createClass({
     
@@ -273,6 +281,16 @@ function textbox(type, opts) {
           disabled={opts.disabled}
           readOnly={opts.readOnly}
           placeholder={opts.placeholder}/>;
+
+      if (addonBefore || addonAfter) {
+        input = (
+          <div className="input-group">
+            {addonBefore}
+            {input}
+            {addonAfter}
+          </div>
+        );
+      }
 
       return (
         <div className={cx(groupClasses)}>
