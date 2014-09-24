@@ -266,7 +266,11 @@ var Form = createForm(Subscription, {
 </script>
 <script type="text/example" id="lists">var Tags = list(Str);
 
-var Form = createList(Tags);
+var Form = createList(Tags, {
+  item: {
+      addonBefore: '#'
+    }
+});
 </script>
 <script type="text/example" id="listOfStructs">var Person = struct({
   name: Str,
@@ -310,6 +314,9 @@ var Form = createForm(Family, {
         "surname": "Hargrove"
       }
     ]
+  },
+  fields: {
+    address: { disabled: true }
   }
 });
 </script>

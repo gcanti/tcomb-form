@@ -21,6 +21,7 @@ var assert =      t.assert;
 var Any =         t.Any;
 var Nil =         t.Nil;
 var Str =         t.Str;
+var Num =         t.Num;
 var Bool =        t.Bool;
 var Obj =         t.Obj;
 var Arr =         t.Arr;
@@ -31,9 +32,9 @@ var maybe =       t.maybe;
 var enums =       t.enums;
 var list =        t.list;
 var struct =      t.struct;
+var tuple =       t.tuple;
 var func =        t.func;
 var mixin =       t.util.mixin;
-var merge =       t.util.merge;
 var isType =      t.util.isType;
 var getKind =     t.util.getKind;
 var getName =     t.util.getName;
@@ -121,13 +122,66 @@ function getOptionalLabel(name, optional) {
     React.DOM.span(null, name);
 }
 
-function getLabel(label) {
-  return label ? React.DOM.label({className: "control-label label-class"}, label) : null;
+function getLabel(label, breakpoints) {
+  var classes = {};
+  if (breakpoints) {
+    classes['control-label'] = true;
+    classes[breakpoints.toLabelClassName()] = true;
+  }
+  return label ? React.DOM.label({className: cx(classes)}, label) : null;
 }
 
 function getHelp(help) {
   return help ? React.DOM.span({className: "help-block"}, help) : null;
 }
+
+function getAddon(addon) {
+  return addon ? React.DOM.span({className: "input-group-addon"}, addon) : null;
+}
+
+var Positive = subtype(Num, function (n) {
+  return n === parseInt(n, 10) && n >= 0;
+}, 'Positive');
+
+var Cols = subtype(tuple([Positive, Positive]), function (cols) {
+  return cols[0] + cols[1] === 12;
+}, 'Cols');
+
+var Breakpoints = struct({
+  xs: maybe(Cols),
+  sm: maybe(Cols),
+  md: maybe(Cols),
+  lg: maybe(Cols)
+}, 'Breakpoints');
+
+var Size = enums.of('xs sm md lg', 'Size');
+
+function toClassName(n) {
+  return function () {
+    var classes = {};
+    for (var size in this) {
+      var value = this[size];
+      if (this.hasOwnProperty(size) && !Nil.is(value)) {
+        classes['col-' + size + '-' + value[n]] = true;
+      }
+    }
+    return cx(classes);
+  };
+}
+
+Breakpoints.prototype.toLabelClassName = toClassName(0);
+Breakpoints.prototype.toInputClassName = toClassName(1);
+Breakpoints.prototype.toCheckboxClassName = function () {
+  var classes = {};
+  for (var size in this) {
+    var value = this[size];
+    if (this.hasOwnProperty(size) && !Nil.is(value)) {
+      classes['col-' + size + '-offset-' + value[0]] = true;
+      classes['col-' + size + '-' + value[1]] = true;
+    }
+  }
+  return cx(classes);
+};
 
 // returns the list of options of a select
 function getOptions(map, order, emptyOption) {
@@ -210,13 +264,20 @@ var TypeAttr = enums.of('text textarea password color date datetime datetime-loc
 
 function textboxOpts(type) {
   return struct({
+    ctx:          Any,
     type:         maybe(TypeAttr),
     value:        maybe(type),
     label:        Any,
     help:         Any,
     groupClasses: maybe(Obj),
     placeholder:  maybe(Str),
-    i17n:         maybe(I17n)
+    i17n:         maybe(I17n),
+    disabled:     maybe(Bool),
+    readOnly:     maybe(Bool),
+    addonBefore:  Any,
+    addonAfter:   Any,
+    breakpoints:  maybe(Breakpoints),
+    height:       maybe(Size)
   }, 'TextboxOpts');
 }
 
@@ -231,8 +292,17 @@ function textbox(type, opts) {
     defaultValue = opts.i17n.format(defaultValue);
   }
 
-  var label = getLabel(opts.label);
+  var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
+  var addonBefore = getAddon(opts.addonBefore);
+  var addonAfter = getAddon(opts.addonAfter);
+
+  var inputClasses = {
+    'form-control': true
+  };
+  if (opts.height) {
+    inputClasses['input-' + opts.height] = true;
+  }
 
   return React.createClass({
     
@@ -258,8 +328,38 @@ function textbox(type, opts) {
       }, opts.groupClasses);
 
       var input = opts.type === 'textarea' ? 
-        React.DOM.textarea({ref: "input", className: "form-control", defaultValue: defaultValue, placeholder: opts.placeholder}) :
-        React.DOM.input({ref: "input", className: "form-control", type: opts.type || 'text', defaultValue: defaultValue, placeholder: opts.placeholder});
+        React.DOM.textarea({
+          ref: "input", 
+          className: cx(inputClasses), 
+          defaultValue: defaultValue, 
+          disabled: opts.disabled, 
+          readOnly: opts.readOnly, 
+          placeholder: opts.placeholder}) :
+        React.DOM.input({ref: "input", 
+          className: cx(inputClasses), 
+          type: opts.type || 'text', 
+          defaultValue: defaultValue, 
+          disabled: opts.disabled, 
+          readOnly: opts.readOnly, 
+          placeholder: opts.placeholder});
+
+      if (addonBefore || addonAfter) {
+        input = (
+          React.DOM.div({className: "input-group"}, 
+            addonBefore, 
+            input, 
+            addonAfter
+          )
+        );
+      }
+
+      if (opts.breakpoints) {
+        input = (
+          React.DOM.div({className: opts.breakpoints.toInputClassName()}, 
+            input
+          )
+        );
+      }
 
       return (
         React.DOM.div({className: cx(groupClasses)}, 
@@ -289,12 +389,16 @@ var EnumType = subtype(Type, function (type) {
 
 function selectOpts(type) {
   return struct({
+    ctx:          Any,
     value:        maybe(type),
     label:        Any,
     help:         Any, 
     groupClasses: maybe(Obj),
     emptyOption:  maybe(Option),
-    order:        maybe(Order)
+    order:        maybe(Order),
+    disabled:     maybe(Bool),
+    breakpoints:  maybe(Breakpoints),
+    height:       maybe(Size)
   }, 'SelectOpts');
 }
 
@@ -306,9 +410,16 @@ function select(type, opts) {
   var Enum = stripMaybeOrSubtype(type);
   var emptyValue = opts.emptyOption ? opts.emptyOption.value : null;
   var defaultValue = getOrElse(opts.value, emptyValue);
-  var label = getLabel(opts.label);
+  var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
   var options = getOptions(Enum.meta.map, opts.order, opts.emptyOption);
+
+  var inputClasses = {
+    'form-control': true
+  };
+  if (opts.height) {
+    inputClasses['input-' + opts.height] = true;
+  }
 
   return React.createClass({
     
@@ -330,12 +441,29 @@ function select(type, opts) {
         'has-error': this.state.hasError
       }, opts.groupClasses);
 
+      var input = (
+        React.DOM.select({
+          ref: "input", 
+          className: cx(inputClasses), 
+          disabled: opts.disabled, 
+          readOnly: opts.readOnly, 
+          defaultValue: defaultValue}, 
+          options
+        )
+      );
+
+      if (opts.breakpoints) {
+        input = (
+          React.DOM.div({className: opts.breakpoints.toInputClassName()}, 
+            input
+          )
+        );
+      }
+
       return (
         React.DOM.div({className: cx(groupClasses)}, 
           label, 
-          React.DOM.select({ref: "input", className: "form-control", defaultValue: defaultValue}, 
-            options
-          ), 
+          input, 
           help
         )
       );
@@ -351,11 +479,13 @@ function select(type, opts) {
 
 function radioOpts(type) {
   return struct({
+    ctx:          Any,
     value:        Any,
     label:        Any,
     help:         Any, 
     groupClasses: maybe(Obj),
-    order:        maybe(Order)
+    order:        maybe(Order),
+    breakpoints:  maybe(Breakpoints)
   }, 'RadioOpts');
 }
 
@@ -366,7 +496,7 @@ function radio(type, opts) {
 
   var Enum = stripMaybeOrSubtype(type);
   var defaultValue = getOrElse(opts.value, null);
-  var label = getLabel(opts.label);
+  var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
   var choices = getChoices(Enum.meta.map, opts.order);
   var len = choices.length;
@@ -399,7 +529,7 @@ function radio(type, opts) {
         'has-error': this.state.hasError
       }, opts.groupClasses);
 
-      var radios = choices.map(function (c, i) {
+      var input = choices.map(function (c, i) {
         return (
           React.DOM.div({className: "radio", key: i}, 
             React.DOM.label(null, 
@@ -410,10 +540,18 @@ function radio(type, opts) {
         );
       });
 
+      if (opts.breakpoints) {
+        input = (
+          React.DOM.div({className: opts.breakpoints.toInputClassName()}, 
+            input
+          )
+        );
+      }
+
       return (
         React.DOM.div({className: cx(groupClasses)}, 
           label, 
-          radios, 
+          input, 
           help
         )
       );
@@ -437,10 +575,12 @@ var CheckboxType = subtype(Type, function (type) {
 
 function checkboxOpts(type) {
   return struct({
+    ctx:          Any,
     value:        maybe(type),
     label:        Any,
     help:         Any, 
-    groupClasses: maybe(Obj)
+    groupClasses: maybe(Obj),
+    breakpoints:  maybe(Breakpoints)
   }, 'CheckboxOpts');
 }
 
@@ -471,13 +611,25 @@ function checkbox(type, opts) {
         'has-error': this.state.hasError
       }, opts.groupClasses);
 
+      var input = (
+        React.DOM.div({className: "checkbox"}, 
+          React.DOM.label(null, 
+            React.DOM.input({ref: "input", type: "checkbox", defaultChecked: defaultValue}), " ", opts.label
+          )
+        )
+      );
+
+      if (opts.breakpoints) {
+        input = (
+          React.DOM.div({className: opts.breakpoints.toCheckboxClassName()}, 
+            input
+          )
+        );
+      }
+
       return (
         React.DOM.div({className: cx(groupClasses)}, 
-          React.DOM.div({className: "checkbox"}, 
-            React.DOM.label(null, 
-              React.DOM.input({ref: "input", type: "checkbox", defaultChecked: defaultValue}), " ", opts.label
-            )
-          ), 
+          input, 
           help
         )
       );
@@ -503,11 +655,13 @@ var FormType = subtype(Type, function (type) {
 var FormAuto = enums.of('none placeholders labels', 'FormAuto');
 
 var FormOpts = struct({
+  ctx:    Any,
   value:  maybe(Obj),
   label:  Any,
   auto:   maybe(FormAuto),
   order:  maybe(list(Str)),
-  fields: maybe(Obj)
+  fields: maybe(Obj),
+  breakpoints:  maybe(Breakpoints)
 }, 'FormOpts');
 
 function createForm(type, opts) {
@@ -530,7 +684,11 @@ function createForm(type, opts) {
     var type = props[name];
 
     // copy opts to preserve the original
-    var o = mixin({value: defaultValue[name]}, fields[name]);
+    var o = mixin({
+      ctx: opts.ctx,
+      value: defaultValue[name],
+      breakpoints: opts.breakpoints
+    }, fields[name]);
 
     // get the input from the type
     var Input = o.input ? o.input : getInput(type);
@@ -601,7 +759,7 @@ function createForm(type, opts) {
     render: function () {
 
       var classes = {
-        'form-group': true,
+        //'form-group': true,
         'has-error': this.state.hasError
       };
 
@@ -635,6 +793,7 @@ var ListType = subtype(Type, function (type) {
 }, 'ListType');
 
 var ListOpts = struct({
+  ctx:            Any,
   value:          maybe(Arr),
   label:          Any,
   disableAdd:     maybe(Bool),
@@ -735,8 +894,13 @@ function createList(type, opts) {
 
       var children = [];
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
+        
         // copy opts to preserve the original
-        var o = mixin({value: this.state.value[i]}, opts.item);
+        var o = mixin({
+          ctx: opts.ctx,
+          value: this.state.value[i]
+        }, opts.item);
+        
         children.push(
           React.DOM.div({className: "row", key: i}, 
             React.DOM.div({className: "col-md-7"}, 
@@ -796,7 +960,8 @@ t.form = {
   options: options,
   util: {
     humanize: humanize,
-    Option: Option
+    Option: Option,
+    Breakpoints: Breakpoints
   },
   I17n: I17n,
   textbox: textbox,
@@ -23626,17 +23791,19 @@ $(function () {
        .replace(/'/g, "&#039;");
   }
 
-  function renderHtml() {
-    var html = $('#preview div div').html();
+  function renderHtml(component) {
+    var html = React.renderComponentToString(component);
     html = html.replace(/data-reactid="(.[^"]*)"/gm, '');
+    //html = html.replace(/data-react-checksum="(.[^"]*)"/gm, '');
     $html.html(escapeHtml(beautifyHtml(html)));
     hljs.highlightBlock($html.get(0));
   }
 
-  function renderComponent(component) {
-    React.renderComponent(component(), $preview.get(0));
+  function renderComponent(factory) {
+    var component = factory();
+    React.renderComponent(component, $preview.get(0));
     $formValues.hide();
-    renderHtml();
+    renderHtml(component);
   }
 
   function renderFormValues(value) {
@@ -23676,8 +23843,6 @@ $(function () {
     cm.setValue(examples[id]);
     run();
   });
-
-  $preview.click(renderHtml);
 
   run();
 

@@ -86,17 +86,19 @@ $(function () {
        .replace(/'/g, "&#039;");
   }
 
-  function renderHtml() {
-    var html = $('#preview div div').html();
+  function renderHtml(component) {
+    var html = React.renderComponentToString(component);
     html = html.replace(/data-reactid="(.[^"]*)"/gm, '');
+    //html = html.replace(/data-react-checksum="(.[^"]*)"/gm, '');
     $html.html(escapeHtml(beautifyHtml(html)));
     hljs.highlightBlock($html.get(0));
   }
 
-  function renderComponent(component) {
-    React.renderComponent(component(), $preview.get(0));
+  function renderComponent(factory) {
+    var component = factory();
+    React.renderComponent(component, $preview.get(0));
     $formValues.hide();
-    renderHtml();
+    renderHtml(component);
   }
 
   function renderFormValues(value) {
@@ -136,8 +138,6 @@ $(function () {
     cm.setValue(examples[id]);
     run();
   });
-
-  $preview.click(renderHtml);
 
   run();
 
