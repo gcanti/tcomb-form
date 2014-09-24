@@ -141,6 +141,10 @@ var Form = createForm(Person, {
 });
 ```
 
+## opts.i17n: maybe(I17n)
+
+i17n support
+
 # createList
 
 ```js
@@ -222,6 +226,10 @@ var Form = createList(Colors, {
   }
 });
 ```
+
+## opts.i17n: maybe(I17n)
+
+i17n support
 
 # textbox
 

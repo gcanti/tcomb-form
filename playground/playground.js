@@ -289,7 +289,7 @@ function textbox(type, opts) {
 
   var defaultValue = getOrElse(opts.value, null);
   if (opts.i17n) {
-    defaultValue = opts.i17n.format(defaultValue);
+    defaultValue = opts.i17n.format(defaultValue, type);
   }
 
   var label = getLabel(opts.label, opts.breakpoints);
@@ -313,7 +313,7 @@ function textbox(type, opts) {
     getRawValue: function () {
       var value = this.refs.input.getDOMNode().value.trim() || null;
       if (opts.i17n) {
-        value = opts.i17n.parse(value);
+        value = opts.i17n.parse(value, type);
       }
       return value;
     },
@@ -655,13 +655,14 @@ var FormType = subtype(Type, function (type) {
 var FormAuto = enums.of('none placeholders labels', 'FormAuto');
 
 var FormOpts = struct({
-  ctx:    Any,
-  value:  maybe(Obj),
-  label:  Any,
-  auto:   maybe(FormAuto),
-  order:  maybe(list(Str)),
-  fields: maybe(Obj),
-  breakpoints:  maybe(Breakpoints)
+  ctx:          Any,
+  value:        maybe(Obj),
+  label:        Any,
+  auto:         maybe(FormAuto),
+  order:        maybe(list(Str)),
+  fields:       maybe(Obj),
+  breakpoints:  maybe(Breakpoints),
+  i17n:         maybe(I17n)
 }, 'FormOpts');
 
 function createForm(type, opts) {
@@ -687,7 +688,8 @@ function createForm(type, opts) {
     var o = mixin({
       ctx: opts.ctx,
       value: defaultValue[name],
-      breakpoints: opts.breakpoints
+      breakpoints: opts.breakpoints,
+      i17n: opts.i17n
     }, fields[name]);
 
     // get the input from the type
@@ -799,7 +801,8 @@ var ListOpts = struct({
   disableAdd:     maybe(Bool),
   disableRemove:  maybe(Bool),
   disableOrder:   maybe(Bool),
-  item:           maybe(Obj)
+  item:           maybe(Obj),
+  i17n:           maybe(I17n)
 }, 'ListOpts');
 
 function createList(type, opts) {
@@ -898,8 +901,9 @@ function createList(type, opts) {
         // copy opts to preserve the original
         var o = mixin({
           ctx: opts.ctx,
-          value: this.state.value[i]
-        }, opts.item);
+          value: this.state.value[i],
+          i17n: opts.i17n
+        }, opts.item, true);
         
         children.push(
           React.DOM.div({className: "row", key: i}, 
