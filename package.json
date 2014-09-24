@@ -1,7 +1,7 @@
 {
   "name": "tcomb-form",
-  "version": "0.1.0",
-  "description": "Form generation and validation based on type combinators",
+  "version": "0.1.1",
+  "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
   "main": "index.js",
   "scripts": {
     "dev": "watchify -t reactify dev/dev.jsx -o dev/dev.js -v",
