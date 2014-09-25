@@ -689,7 +689,7 @@ function createForm(type, opts) {
       value: defaultValue[name],
       breakpoints: opts.breakpoints,
       i17n: opts.i17n
-    }, fields[name]);
+    }, fields[name], true);
 
     // get the input from the type
     var Input = o.input ? o.input : getInput(type);

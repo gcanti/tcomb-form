@@ -86,7 +86,9 @@ $(function () {
        .replace(/'/g, "&#039;");
   }
 
-  function renderHtml(component) {
+  var component;
+
+  function renderHtml() {
     var html = React.renderComponentToString(component);
     html = html.replace(/data-reactid="(.[^"]*)"/gm, '');
     //html = html.replace(/data-react-checksum="(.[^"]*)"/gm, '');
@@ -94,11 +96,11 @@ $(function () {
     hljs.highlightBlock($html.get(0));
   }
 
-  function renderComponent(factory) {
-    var component = factory();
+  function renderFactory(factory) {
+    component = factory();
     React.renderComponent(component, $preview.get(0));
     $formValues.hide();
-    renderHtml(component);
+    renderHtml();
   }
 
   function renderFormValues(value) {
@@ -109,7 +111,7 @@ $(function () {
   }
 
   function renderError(err) {
-    var html = '<p class="lead">Error!</p>';
+    var html = '<h3>Error!</h3>';
     html += '<div class="alert alert-danger">' + err.message + '</div>';
     $formValues.show().html(html);
   }
@@ -117,8 +119,8 @@ $(function () {
   function run() {
     var code = cm.getValue();
     try {
-      var component = evalCode(code);
-      renderComponent(component);
+      var factory = evalCode(code);
+      renderFactory(factory);
     } catch (err) {
       renderError(err);
     }
