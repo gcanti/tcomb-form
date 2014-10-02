@@ -276,7 +276,9 @@ function textboxOpts(type) {
     addonBefore:  Any,
     addonAfter:   Any,
     breakpoints:  maybe(Breakpoints),
-    height:       maybe(Size)
+    height:       maybe(Size),
+    onKeyDown:    maybe(Func),
+    onChange:     maybe(Func)
   }, 'TextboxOpts');
 }
 
@@ -333,14 +335,18 @@ function textbox(type, opts) {
           defaultValue={defaultValue} 
           disabled={opts.disabled}
           readOnly={opts.readOnly}
-          placeholder={opts.placeholder}/> :
+          placeholder={opts.placeholder}
+          onKeyDown={opts.onKeyDown}
+          onChange={opts.onChange}/> :
         <input ref="input" 
           className={cx(inputClasses)} 
           type={opts.type || 'text'} 
           defaultValue={defaultValue}
           disabled={opts.disabled}
           readOnly={opts.readOnly}
-          placeholder={opts.placeholder}/>;
+          placeholder={opts.placeholder}
+          onKeyDown={opts.onKeyDown}
+          onChange={opts.onChange}/>;
 
       if (addonBefore || addonAfter) {
         input = (
@@ -564,7 +570,7 @@ function radio(type, opts) {
 // checkbox
 //
 
-// checkbox accepts only Bool, subtypes of Bool
+// checkbox accepts only Bool or subtypes of Bool
 var CheckboxType = subtype(Type, function (type) {
   if (type === Bool) {
     return true;
@@ -694,7 +700,7 @@ function createForm(type, opts) {
     // get the input from the type
     var Input = o.input ? o.input : getInput(type);
 
-    // handle optional fields
+    // handle optional fields auto label
     var optional = getKind(type) === 'maybe' ? options.optionalText : '';
 
     // lists, forms, checkboxes and radios must always have a label

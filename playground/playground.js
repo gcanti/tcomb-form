@@ -103,7 +103,7 @@ function getChoices(map, order, emptyChoice) {
     return {value: value, text: map[value]};
   });
   // apply an order (asc, desc) to options
-  choices.sort(Order.meta.map[order] || 'asc');
+  choices.sort(Order.meta.map[order || 'asc']);
   if (emptyChoice) {
     // add an empty choice to the beginning
     choices.unshift(emptyChoice);
@@ -277,7 +277,9 @@ function textboxOpts(type) {
     addonBefore:  Any,
     addonAfter:   Any,
     breakpoints:  maybe(Breakpoints),
-    height:       maybe(Size)
+    height:       maybe(Size),
+    onKeyDown:    maybe(Func),
+    onChange:     maybe(Func)
   }, 'TextboxOpts');
 }
 
@@ -334,14 +336,18 @@ function textbox(type, opts) {
           defaultValue: defaultValue, 
           disabled: opts.disabled, 
           readOnly: opts.readOnly, 
-          placeholder: opts.placeholder}) :
+          placeholder: opts.placeholder, 
+          onKeyDown: opts.onKeyDown, 
+          onChange: opts.onChange}) :
         React.DOM.input({ref: "input", 
           className: cx(inputClasses), 
           type: opts.type || 'text', 
           defaultValue: defaultValue, 
           disabled: opts.disabled, 
           readOnly: opts.readOnly, 
-          placeholder: opts.placeholder});
+          placeholder: opts.placeholder, 
+          onKeyDown: opts.onKeyDown, 
+          onChange: opts.onChange});
 
       if (addonBefore || addonAfter) {
         input = (
@@ -565,7 +571,7 @@ function radio(type, opts) {
 // checkbox
 //
 
-// checkbox accepts only Bool, subtypes of Bool
+// checkbox accepts only Bool or subtypes of Bool
 var CheckboxType = subtype(Type, function (type) {
   if (type === Bool) {
     return true;
@@ -695,7 +701,7 @@ function createForm(type, opts) {
     // get the input from the type
     var Input = o.input ? o.input : getInput(type);
 
-    // handle optional fields
+    // handle optional fields auto label
     var optional = getKind(type) === 'maybe' ? options.optionalText : '';
 
     // lists, forms, checkboxes and radios must always have a label
@@ -23759,7 +23765,9 @@ $(function () {
     {id: 'global', label: '10. How to set constraints on the whole form'},
     {id: 'lists', label: '11. Lists'},
     {id: 'listOfStructs', label: '12. Lists of structs'},
-    {id: 'nestedLists', label: '13. Nested lists'}
+    {id: 'nestedLists', label: '13. Nested lists'},
+    {id: 'goodies', label: '14. Bootstrap goodies'},
+    {id: 'horizontal', label: '15. Horizontal forms'}
   ];
 
   var examples = {};
@@ -23780,11 +23788,6 @@ $(function () {
   var $formValues = $('#formValues');
   var $examples =   $('#examples select');
   var POSTFIX =     $('#postfix').html();
-
-  function evalCode(code) {
-    var js = code + POSTFIX;
-    return eval(js);
-  }
 
   function escapeHtml(html) {
     return html
@@ -23825,10 +23828,12 @@ $(function () {
     $formValues.show().html(html);
   }
 
-  function run() {
+  function run(id) {
     var code = cm.getValue();
     try {
-      var factory = evalCode(code);
+      var className = id === 'horizontal' ? '"form-horizontal"' : 'null';
+      var js = code + POSTFIX.replace(/:className/, className);
+      var factory = eval(js);
       renderFactory(factory);
     } catch (err) {
       renderError(err);
@@ -23847,10 +23852,10 @@ $(function () {
   $examples.on('change', function () {
     var id = $(this).val();
     cm.setValue(examples[id]);
-    run();
+    run(id);
   });
 
-  run();
+  run(defaultExample);
 
 });
 },{"../index":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","js-beautify":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/index.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js"}],"/usr/local/lib/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
