@@ -1,3 +1,5 @@
+> "La semplicità è l'ultima sofisticazione" (Leonardo da Vinci)
+
 # Domain Driven Forms
 
 The [tcomb library](https://github.com/gcanti/tcomb) provides a concise but expressive way to define domain models in javascript.
