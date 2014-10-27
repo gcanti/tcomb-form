@@ -103,7 +103,7 @@ function getChoices(map, order, emptyChoice) {
     return {value: value, text: map[value]};
   });
   // apply an order (asc, desc) to options
-  choices.sort(Order.meta.map[order] || 'asc');
+  choices.sort(Order.meta.map[order || 'asc']);
   if (emptyChoice) {
     // add an empty choice to the beginning
     choices.unshift(emptyChoice);
@@ -190,7 +190,7 @@ function getOption(option, key) {
 // returns the list of options of a select
 function getOptions(options, order, emptyOption) {
   if (Func.is(options)) {
-    // x is an Enum
+    // options is an Enum
     return getChoices(options.meta.map, order, emptyOption).map(getOption);  
   }
   var ret = [];

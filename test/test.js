@@ -277,6 +277,113 @@ describe('select', function () {
     eq(dom.children[0].attrs['disabled'], true);
   });
 
+  it('should handle opts.options', function () {
+    var Factory = select(Country, {
+      options: [
+        {value: 'US', text: 'US'},
+        {value: 'IT', text: 'IT'}
+      ]
+    });
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].children, [
+      {
+        "tag": "option",
+        "attrs": {
+          "key": 0,
+          "value": "US"
+        },
+        "children": "US"
+      },
+      {
+        "tag": "option",
+        "attrs": {
+          "key": 1,
+          "value": "IT"
+        },
+        "children": "IT"
+      }
+    ]);
+  });
+
+  it('should handle grouped options', function () {
+    var Factory = select(Country, {
+      options: [
+        {value: 'value5', text: 'description5'}, // an option
+        {group: 'group1', options: [ // a group of options
+          {value: 'value1', text: 'description1'},
+          {value: 'value3', text: 'description3'}
+        ]},
+        {group: 'group2', options: [ // another group of options
+          {value: 'value4', text: 'description4'},
+          {value: 'value2', text: 'description2'}
+        ]}
+      ]
+    });
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].children, [
+      {
+        "tag": "option",
+        "attrs": {
+          "key": 0,
+          "value": "value5"
+        },
+        "children": "description5"
+      },
+      {
+        "tag": "optgroup",
+        "attrs": {
+          "label": "group1",
+          "key": 1
+        },
+        "children": [
+          {
+            "tag": "option",
+            "attrs": {
+              "key": "1-0",
+              "value": "value1"
+            },
+            "children": "description1"
+          },
+          {
+            "tag": "option",
+            "attrs": {
+              "key": "1-1",
+              "value": "value3"
+            },
+            "children": "description3"
+          }
+        ]
+      },
+      {
+        "tag": "optgroup",
+        "attrs": {
+          "label": "group2",
+          "key": 2
+        },
+        "children": [
+          {
+            "tag": "option",
+            "attrs": {
+              "key": "2-0",
+              "value": "value4"
+            },
+            "children": "description4"
+          },
+          {
+            "tag": "option",
+            "attrs": {
+              "key": "2-1",
+              "value": "value2"
+            },
+            "children": "description2"
+          }
+        ]
+      }
+    ]);
+  });
+
 });
 
 describe('checkbox', function () {
