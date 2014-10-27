@@ -84,6 +84,7 @@ var App = React.createClass({
 - [select](API.md#select)
 - [radio](API.md#radio)
 - [checkbox](API.md#checkbox)
+- [Custom inputs](API.md#custom-inputs)
 
 # Tests
 

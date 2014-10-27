@@ -460,3 +460,36 @@ Adds a label below the checkbox.
 
 Customize the `className` of the containing `div`.
 
+# Custom inputs
+
+A custom input is simply a function `(type, opts) -> ReactClass` where the ReactClass must have a `getValue` method.
+
+```js
+function hiddenInput(type, opts) {
+  return React.createClass({
+    getValue: function () {
+      return opts.value;
+    },
+    render: function () {
+      return React.DOM.input({type: 'hidden', value: opts.value});
+    }
+  });
+}
+
+var Person = struct({
+  name: Str,
+  surname: Str,
+  secret: Str // this will be the `type` argument passed to `hiddenInput`
+});
+
+var Form = createForm(Person, {
+  fields: {
+    // this will be the `opts` argument passed to `hiddenInput`
+    secret: {
+      // override the default input for Str (textbox)
+      input: hiddenInput,
+      value: 'mysecret'
+    }
+  }
+})
+```

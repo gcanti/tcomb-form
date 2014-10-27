@@ -182,12 +182,34 @@ Breakpoints.prototype.toCheckboxClassName = function () {
   return cx(classes);
 };
 
+function getOption(option, key) {
+  return <option key={key} value={option.value}>{option.text}</option>;
+}
+
 // returns the list of options of a select
-function getOptions(map, order, emptyOption) {
-  var choices = getChoices(map, order, emptyOption);
-  return choices.map(function (c, i) {
-    return <option key={i} value={c.value}>{c.text}</option>;
+function getOptions(options, order, emptyOption) {
+  if (Func.is(options)) {
+    // x is an Enum
+    return getChoices(options.meta.map, order, emptyOption).map(getOption);  
+  }
+  var ret = [];
+  if (emptyOption) {
+    ret.push(getOption(emptyOption, -1));
+  }
+  options.forEach(function (x, i) {
+    if (x.group) {
+      ret.push(
+        <optgroup label={x.group} key={i}>
+          {x.options.map(function (o, j) {
+            return getOption(o, String(i) + '-' + String(j));
+          })}
+        </optgroup>
+      );
+    } else {
+      ret.push(getOption(x, i));
+    }
   });
+  return ret;
 }
 
 //
@@ -259,11 +281,12 @@ function getInput(type) {
 //
 
 // attr `type` of input tag
-var TypeAttr = enums.of('text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
+var TypeAttr = enums.of('hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 function textboxOpts(type) {
   return struct({
     ctx:          Any,
+    name:         maybe(Str),
     type:         maybe(TypeAttr),
     value:        maybe(type),
     label:        Any,
@@ -331,6 +354,7 @@ function textbox(type, opts) {
       var input = opts.type === 'textarea' ? 
         <textarea 
           ref="input" 
+          name={opts.name}
           className={cx(inputClasses)} 
           defaultValue={defaultValue} 
           disabled={opts.disabled}
@@ -338,7 +362,9 @@ function textbox(type, opts) {
           placeholder={opts.placeholder}
           onKeyDown={opts.onKeyDown}
           onChange={opts.onChange}/> :
-        <input ref="input" 
+        <input 
+          ref="input"
+          name={opts.name}
           className={cx(inputClasses)} 
           type={opts.type || 'text'} 
           defaultValue={defaultValue}
@@ -395,6 +421,7 @@ var EnumType = subtype(Type, function (type) {
 function selectOpts(type) {
   return struct({
     ctx:          Any,
+    options:      Any,
     value:        maybe(type),
     label:        Any,
     help:         Any, 
@@ -417,7 +444,7 @@ function select(type, opts) {
   var defaultValue = getOrElse(opts.value, emptyValue);
   var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
-  var options = getOptions(Enum.meta.map, opts.order, opts.emptyOption);
+  var options = getOptions(opts.options || Enum, opts.order, opts.emptyOption);
 
   var inputClasses = {
     'form-control': true

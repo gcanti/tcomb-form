@@ -103,7 +103,7 @@ function getChoices(map, order, emptyChoice) {
     return {value: value, text: map[value]};
   });
   // apply an order (asc, desc) to options
-  choices.sort(Order.meta.map[order || 'asc']);
+  choices.sort(Order.meta.map[order] || 'asc');
   if (emptyChoice) {
     // add an empty choice to the beginning
     choices.unshift(emptyChoice);
@@ -183,12 +183,34 @@ Breakpoints.prototype.toCheckboxClassName = function () {
   return cx(classes);
 };
 
+function getOption(option, key) {
+  return React.DOM.option({key: key, value: option.value}, option.text);
+}
+
 // returns the list of options of a select
-function getOptions(map, order, emptyOption) {
-  var choices = getChoices(map, order, emptyOption);
-  return choices.map(function (c, i) {
-    return React.DOM.option({key: i, value: c.value}, c.text);
+function getOptions(options, order, emptyOption) {
+  if (Func.is(options)) {
+    // x is an Enum
+    return getChoices(options.meta.map, order, emptyOption).map(getOption);  
+  }
+  var ret = [];
+  if (emptyOption) {
+    ret.push(getOption(emptyOption, -1));
+  }
+  options.forEach(function (x, i) {
+    if (x.group) {
+      ret.push(
+        React.DOM.optgroup({label: x.group, key: i}, 
+          x.options.map(function (o, j) {
+            return getOption(o, String(i) + '-' + String(j));
+          })
+        )
+      );
+    } else {
+      ret.push(getOption(x, i));
+    }
   });
+  return ret;
 }
 
 //
@@ -260,11 +282,12 @@ function getInput(type) {
 //
 
 // attr `type` of input tag
-var TypeAttr = enums.of('text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
+var TypeAttr = enums.of('hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 function textboxOpts(type) {
   return struct({
     ctx:          Any,
+    name:         maybe(Str),
     type:         maybe(TypeAttr),
     value:        maybe(type),
     label:        Any,
@@ -332,6 +355,7 @@ function textbox(type, opts) {
       var input = opts.type === 'textarea' ? 
         React.DOM.textarea({
           ref: "input", 
+          name: opts.name, 
           className: cx(inputClasses), 
           defaultValue: defaultValue, 
           disabled: opts.disabled, 
@@ -339,7 +363,9 @@ function textbox(type, opts) {
           placeholder: opts.placeholder, 
           onKeyDown: opts.onKeyDown, 
           onChange: opts.onChange}) :
-        React.DOM.input({ref: "input", 
+        React.DOM.input({
+          ref: "input", 
+          name: opts.name, 
           className: cx(inputClasses), 
           type: opts.type || 'text', 
           defaultValue: defaultValue, 
@@ -396,6 +422,7 @@ var EnumType = subtype(Type, function (type) {
 function selectOpts(type) {
   return struct({
     ctx:          Any,
+    options:      Any,
     value:        maybe(type),
     label:        Any,
     help:         Any, 
@@ -418,7 +445,7 @@ function select(type, opts) {
   var defaultValue = getOrElse(opts.value, emptyValue);
   var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
-  var options = getOptions(Enum.meta.map, opts.order, opts.emptyOption);
+  var options = getOptions(opts.options || Enum, opts.order, opts.emptyOption);
 
   var inputClasses = {
     'form-control': true
@@ -7591,6 +7618,7 @@ var HTMLDOMPropertyConfig = {
     loop: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     max: null,
     maxLength: MUST_USE_ATTRIBUTE,
+    media: MUST_USE_ATTRIBUTE,
     mediaGroup: null,
     method: null,
     min: null,
@@ -7598,6 +7626,7 @@ var HTMLDOMPropertyConfig = {
     muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     name: null,
     noValidate: HAS_BOOLEAN_VALUE,
+    open: null,
     pattern: null,
     placeholder: null,
     poster: null,
@@ -7618,11 +7647,12 @@ var HTMLDOMPropertyConfig = {
     selected: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     shape: null,
     size: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
+    sizes: MUST_USE_ATTRIBUTE,
     span: HAS_POSITIVE_NUMERIC_VALUE,
     spellCheck: null,
     src: null,
     srcDoc: MUST_USE_PROPERTY,
-    srcSet: null,
+    srcSet: MUST_USE_ATTRIBUTE,
     start: HAS_NUMERIC_VALUE,
     step: null,
     style: null,
@@ -8116,8 +8146,20 @@ var ReactServerRendering = require("./ReactServerRendering");
 var ReactTextComponent = require("./ReactTextComponent");
 
 var onlyChild = require("./onlyChild");
+var warning = require("./warning");
 
 ReactDefaultInjection.inject();
+
+// Specifying arguments isn't necessary since we just use apply anyway, but it
+// makes it clear for those actually consuming this API.
+function createDescriptor(type, props, children) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return type.apply(null, args);
+}
+
+if ("production" !== process.env.NODE_ENV) {
+  var _warnedForDeprecation = false;
+}
 
 var React = {
   Children: {
@@ -8132,10 +8174,18 @@ var React = {
     EventPluginUtils.useTouchEvents = shouldUseTouch;
   },
   createClass: ReactCompositeComponent.createClass,
-  createDescriptor: function(type, props, children) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    return type.apply(null, args);
+  createDescriptor: function() {
+    if ("production" !== process.env.NODE_ENV) {
+      ("production" !== process.env.NODE_ENV ? warning(
+        _warnedForDeprecation,
+        'React.createDescriptor is deprecated and will be removed in the ' +
+        'next version of React. Use React.createElement instead.'
+      ) : null);
+      _warnedForDeprecation = true;
+    }
+    return createDescriptor.apply(this, arguments);
   },
+  createElement: createDescriptor,
   constructAndRenderComponent: ReactMount.constructAndRenderComponent,
   constructAndRenderComponentByID: ReactMount.constructAndRenderComponentByID,
   renderComponent: ReactPerf.measure(
@@ -8204,12 +8254,12 @@ if ("production" !== process.env.NODE_ENV) {
 
 // Version exists only in the open-source version of React, not in Facebook's
 // internal version.
-React.version = '0.11.1';
+React.version = '0.11.2';
 
 module.exports = React;
 
 }).call(this,require('_process'))
-},{"./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./EventPluginUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./ReactChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactChildren.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactContext":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactDOMComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js","./ReactDefaultInjection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultInjection.js","./ReactDescriptor":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDescriptor.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactMultiChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChild.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactPropTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypes.js","./ReactServerRendering":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRendering.js","./ReactTextComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactTextComponent.js","./onlyChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/onlyChild.js","_process":"/usr/local/lib/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js":[function(require,module,exports){
+},{"./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./EventPluginUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./ReactChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactChildren.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactContext":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactDOMComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js","./ReactDefaultInjection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultInjection.js","./ReactDescriptor":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDescriptor.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactMultiChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChild.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactPropTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypes.js","./ReactServerRendering":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRendering.js","./ReactTextComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactTextComponent.js","./onlyChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/onlyChild.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/usr/local/lib/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014 Facebook, Inc.
@@ -10995,6 +11045,7 @@ var ReactDOM = mapObject({
   del: false,
   details: false,
   dfn: false,
+  dialog: false,
   div: false,
   dl: false,
   dt: false,
@@ -11042,6 +11093,7 @@ var ReactDOM = mapObject({
   output: false,
   p: false,
   param: true,
+  picture: false,
   pre: false,
   progress: false,
   q: false,
@@ -23767,7 +23819,8 @@ $(function () {
     {id: 'listOfStructs', label: '12. Lists of structs'},
     {id: 'nestedLists', label: '13. Nested lists'},
     {id: 'goodies', label: '14. Bootstrap goodies'},
-    {id: 'horizontal', label: '15. Horizontal forms'}
+    {id: 'horizontal', label: '15. Horizontal forms'},
+    {id: 'customInput', label: '16. Custom input'}
   ];
 
   var examples = {};

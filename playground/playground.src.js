@@ -52,7 +52,8 @@ $(function () {
     {id: 'listOfStructs', label: '12. Lists of structs'},
     {id: 'nestedLists', label: '13. Nested lists'},
     {id: 'goodies', label: '14. Bootstrap goodies'},
-    {id: 'horizontal', label: '15. Horizontal forms'}
+    {id: 'horizontal', label: '15. Horizontal forms'},
+    {id: 'customInput', label: '16. Custom input'}
   ];
 
   var examples = {};
