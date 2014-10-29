@@ -972,6 +972,11 @@ function createList(type, opts) {
 
 }
 
+function create(type, opts) {
+  var kind = getKind(stripMaybeOrSubtype(type));
+  return kind === 'struct' ? createForm(type, opts) : createList(type, opts);
+}
+
 // ===============================
 // options: here you can customize
 // ===============================
@@ -1005,7 +1010,8 @@ t.form = {
   radio: radio,
   checkbox: checkbox,
   createForm: createForm,
-  createList: createList
+  createList: createList,
+  create: create
 };
 
 module.exports = t;

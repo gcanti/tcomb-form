@@ -8,11 +8,13 @@ var Bool = t.Bool;
 var Num = t.Num;
 var maybe = t.maybe;
 var struct = t.struct;
+var list = t.list;
 var textbox = t.form.textbox;
 var select = t.form.select;
 var checkbox = t.form.checkbox;
 var radio = t.form.radio;
 var createForm = t.form.createForm;
+var create = t.form.create;
 
 //
 // setup
@@ -563,6 +565,30 @@ describe('createForm', function () {
     eq(dom.children[0][1].children[0].attrs.value, 'b');
     eq(dom.children[0][2].children[1][0].children[0].attrs.value, 'd');
     eq(dom.children[0][2].children[1][1].children[0].attrs.value, 'e');
+  });
+
+});
+
+describe('create', function () {
+
+  var Person = struct({
+    name: Str,
+    surname: Str
+  });
+
+  it('should handle structs', function () {
+    var Factory = create(Person);
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0][0].children[0].attrs.placeholder, 'Name');
+    eq(dom.children[0][1].children[0].attrs.placeholder, 'Surname');
+  });
+
+  it('should handle lists', function () {
+    var Factory = create(list(Str));
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[1].children.children, 'Add');
   });
 
 });

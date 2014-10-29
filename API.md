@@ -400,6 +400,15 @@ Disable the input.
 
 Set height, one of `xs`, `sm`, `md`, `lg`.
 
+## opts.options: maybe(list(Option))
+
+```js
+var Option = struct({
+  value:  Str,
+  text:   Str
+}, 'Option');
+```
+
 # radio
 
 ```js

@@ -2,6 +2,7 @@ v0.1.4
 
 - allow `hidden` type for the textbox component, fix #13
 - add custom options support (allows grouped options too), fix #12
+- added `create` API, fix #9
 
 v0.1.3
 
