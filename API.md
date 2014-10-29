@@ -1,5 +1,13 @@
 If you don't know how to define types with tcomb you may want to take a look at its [README](https://github.com/gcanti/tcomb/blob/master/README.md) file.
 
+# create
+
+```js
+create(type, [opts])
+```
+
+Dispatches to `createForm` or `createList` based on the argument `type`.
+
 # createForm
 
 ```js
@@ -402,11 +410,64 @@ Set height, one of `xs`, `sm`, `md`, `lg`.
 
 ## opts.options: maybe(list(Option))
 
+Allows to override the default options created by the library.
+
 ```js
-var Option = struct({
-  value:  Str,
-  text:   Str
-}, 'Option');
+var MyEnum = enums({
+  value1: 'description1',
+  value2: 'description2',
+  value3: 'description3'
+});
+
+var MyStruct = struct({
+  myenum: MyEnum
+});
+
+var Form = t.form.create(MyStruct, {
+  fields: {
+    myenum: {
+      options: [
+        {value: 'value1', text: 'another description 1'},
+        {value: 'value3', text: 'another description 3'},
+        {value: 'value2', text: 'another description 2'}
+      ]
+    }
+  }
+});
+```
+
+You can also handle grouped options:
+
+```js
+var MyEnum = enums({
+  value1: 'description1',
+  value2: 'description2',
+  value3: 'description3',
+  value4: 'description4',
+  value5: 'description5'
+});
+
+var MyStruct = struct({
+  myenum: MyEnum
+});
+
+var Form = t.form.createForm(MyStruct, {
+  fields: {
+    myenum: {
+      options: [
+        {value: 'value5', text: 'description5'}, // an option
+        {group: 'group1', options: [ // a group of options
+          {value: 'value1', text: 'description1'},
+          {value: 'value3', text: 'description3'}
+        ]},
+        {group: 'group2', options: [ // another group of options
+          {value: 'value4', text: 'description4'},
+          {value: 'value2', text: 'description2'}
+        ]}
+      ]
+    }
+  }
+});
 ```
 
 # radio
