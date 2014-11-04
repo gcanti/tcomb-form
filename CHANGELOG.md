@@ -1,3 +1,7 @@
+v0.1.5
+
+- upgrade to tcomb-validation v0.1.3
+
 v0.1.4
 
 - allow `hidden` type for the textbox component, fix #13

@@ -25,7 +25,6 @@ var Bool =        t.Bool;
 var Obj =         t.Obj;
 var Arr =         t.Arr;
 var Func =        t.Func;
-var irriducible = t.irriducible;
 var subtype =     t.subtype;
 var maybe =       t.maybe;
 var enums =       t.enums;
@@ -34,12 +33,10 @@ var struct =      t.struct;
 var tuple =       t.tuple;
 var func =        t.func;
 var mixin =       t.util.mixin;
-var isType =      t.util.isType;
+var Type =        t.Type;
 var getKind =     t.util.getKind;
 var getName =     t.util.getName;
 var Result =      t.validate.Result;
-
-var Type = irriducible('Type', isType);
 
 var Order = enums({
   asc: function (a, b) {
@@ -307,7 +304,7 @@ function textboxOpts(type) {
 
 function textbox(type, opts) {
 
-  assert(isType(type));
+  assert(Type.is(type));
 
   opts = new (textboxOpts(type))(opts || {});
 
