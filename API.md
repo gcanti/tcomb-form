@@ -252,6 +252,10 @@ textbox(type, [opts])
 
 Useful to pass a context to deeply nested inputs.
 
+## opts.name: maybe(Str)
+
+Sets the `name` attribute of the textbox / textarea input.
+
 ## opts.type: maybe(Str)
 
 One of
@@ -356,6 +360,10 @@ textbox(type, [opts])
 
 Useful to pass a context to deeply nested inputs.
 
+## opts.name: maybe(Str)
+
+Sets the `name` attribute of the select input.
+
 ## opts.value: maybe(type)
 
 The default value of the select.
@@ -371,6 +379,30 @@ Adds a label below the select.
 ## opts.groupClasses: maybe(Obj)
 
 Customize the `className` of the containing `div`.
+
+## opts.multiple: maybe(Bool)
+
+Sets the `multiple` attribute of the select input.
+
+```js
+var Country = t.enums({
+  IT: 'Italy',
+  US: 'United States'
+});
+
+var Person = struct({
+  country: list(Country)
+});
+
+var Form = t.form.createForm(Person, {
+  fields: {
+    country: {
+      multiple: true,
+      input: t.form.select
+    }
+  }
+});
+```
 
 ## opts.emptyOption: maybe(Option)
 
@@ -483,6 +515,10 @@ textbox(type, [opts])
 
 Useful to pass a context to deeply nested inputs.
 
+## opts.name: maybe(Str)
+
+Sets the `name` attribute of all the radio inputs.
+
 ## opts.value: Any
 
 The default value of the radio.
@@ -513,6 +549,10 @@ checkbox(type, [opts])
 ## opts.ctx: Any
 
 Useful to pass a context to deeply nested inputs.
+
+## opts.name: maybe(Str)
+
+Sets the `name` attribute of the checkbox input.
 
 ## opts.value: maybe(type)
 

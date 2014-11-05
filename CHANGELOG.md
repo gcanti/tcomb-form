@@ -1,3 +1,8 @@
+v0.1.6
+
+- added partial i18n support with `options.bundle`, fix #4
+- `createForm` and `createList` now return a `fieldset` tag as a top level element, fix #2 (partially)
+
 v0.1.5
 
 - upgrade to tcomb-validation v0.1.3

@@ -22,6 +22,7 @@ $(function () {
   var createForm = t.form.createForm;
   var createList = t.form.createList;
   var radio = t.form.radio;
+  var select = t.form.select;
 
   //
   // setup
@@ -53,7 +54,8 @@ $(function () {
     {id: 'nestedLists', label: '13. Nested lists'},
     {id: 'goodies', label: '14. Bootstrap goodies'},
     {id: 'horizontal', label: '15. Horizontal forms'},
-    {id: 'customInput', label: '16. Custom input'}
+    {id: 'customInput', label: '16. Custom input'},
+    {id: 'multiple', label: '17. Multiple select'}
   ];
 
   var examples = {};

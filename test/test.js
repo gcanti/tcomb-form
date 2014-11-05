@@ -63,6 +63,13 @@ describe('textbox', function () {
     eq(dom.children[0].tag, 'textarea');
   });
 
+  it('should handle opts.name', function () {
+    var Factory = textbox(Str, {name: 'mytextbox'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs.name, 'mytextbox');
+  });
+
   it('should handle opts.value', function () {
     var Factory = textbox(Str, {value: 'hello'});
     var input = Factory();
@@ -196,6 +203,13 @@ describe('select', function () {
     ]);
   });
 
+  it('should handle opts.name', function () {
+    var Factory = select(Country, {name: 'myselect'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs.name, 'myselect');
+  });
+
   it('should handle opts.value', function () {
     var Factory = select(Country, {value: 'US'});
     var input = Factory();
@@ -238,6 +252,13 @@ describe('select', function () {
       },
       "children": "mycaption"
     });
+  });
+
+  it('should handle opts.multiple', function () {
+    var Factory = select(Country, {multiple: true});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs.multiple, true);
   });
 
   it('should handle opts.order', function () {
@@ -397,6 +418,13 @@ describe('checkbox', function () {
     eq(dom.children[0].children.children[0].attrs.checked, true);
   });
 
+  it('should handle opts.name', function () {
+    var Factory = checkbox(Bool, {name: 'mycheckbox'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].children.children[0].attrs.name, 'mycheckbox');
+  });
+
   it('should handle opts.label', function () {
     var Factory = checkbox(Bool, {label: 'hello'});
     var input = Factory();
@@ -434,6 +462,14 @@ describe('radio', function () {
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0][1].children.children[0].attrs.checked, true);
+  });
+
+  it('should handle opts.name', function () {
+    var Factory = radio(Country, {name: 'myradio'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0][0].children.children[0].attrs.name, 'myradio');
+    eq(dom.children[0][1].children.children[0].attrs.name, 'myradio');
   });
 
   it('should handle opts.label', function () {
