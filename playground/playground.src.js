@@ -55,7 +55,8 @@ $(function () {
     {id: 'goodies', label: '14. Bootstrap goodies'},
     {id: 'horizontal', label: '15. Horizontal forms'},
     {id: 'customInput', label: '16. Custom input'},
-    {id: 'multiple', label: '17. Multiple select'}
+    {id: 'multiple', label: '17. Multiple select'},
+    {id: 'hasError', label: '18. Setting an error message'}
   ];
 
   var examples = {};

@@ -228,7 +228,7 @@ var Form = createForm(Person, {
         },
         // this is used from the UI to the model
         parse: function (s) {
-          return parseFloat(s, 10);
+          return parseFloat(s);
         }
       }
     }
@@ -407,6 +407,20 @@ var Form = t.form.createForm(Person, {
     country: {
       multiple: true,
       input: t.form.select
+    }
+  }
+});
+</script>
+<script type="text/example" id="hasError">var SignUp = struct({
+  username: Str,
+  password: Str
+});
+
+var Form = createForm(SignUp, {
+  fields: {
+    username: {
+      message: 'Duplicated username',
+      hasError: true 
     }
   }
 });
