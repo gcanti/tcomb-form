@@ -1,9 +1,9 @@
 v0.1.6
 
 - `createForm` and `createList` now return a `fieldset` tag as a top level element, fix #2 (partially)
-- added `bundle` option (i18n support) and `options.defaultBundle`, fix #4
+- added `bundle` option (i18n support) fix #4
 - added `hasError` and `message` options
-- added `options.defaultI17n`, fix #14
+- added `defaultI17n`, fix #14
 
 v0.1.5
 

@@ -40,13 +40,41 @@ var Order = enums({
   }
 }, 'Order');
 
-// represents the ability to localize the values
-// parse: (form input, type) -> coerced value for validation
-// format: (value, type) -> formatted value displayed in the input component
+// values localization
 var I17n = struct({
-  format: Func,
-  parse:  Func
+  format: Func, // parse: (form input, type) -> coerced value for validation
+  parse:  Func  // format: (value, type) -> formatted value displayed in the input component
 }, 'I17n');
+
+var defaultI17n = new I17n({
+  parse: function (input, type) {
+    return type === Num ?
+      parseFloat(input) :
+      input;
+  },
+  format: function (value) {
+    return value;
+  }
+});
+
+// labels internationalization
+var I18n = struct({
+  select: Str,    // automatic placeholder for selects
+  optional: Str,  // automatic placeholder for optional values
+  add: Str,       // button caption to add an element to a list
+  remove: Str,    // button caption to remove an element from a list
+  up: Str,        // button caption to move up an element of a list
+  down: Str       // button caption to move down an element of a list
+}, 'I18n');
+
+var defaultI18n = new I18n({
+  select:   'Select your ',
+  optional: ' (optional)',
+  add:      'Add',
+  remove:   'Remove',
+  up:       'Up',
+  down:     'Down'
+});
 
 // represents an <option> tag
 var Option = struct({
@@ -285,7 +313,7 @@ function getInput(type) {
 }
 
 // common options
-var BaseOpts = struct({
+var CommonOpts = struct({
   ctx:          Any,
   name:         maybe(Str),
   label:        Any,
@@ -302,7 +330,7 @@ var BaseOpts = struct({
 // attr `type` of input tag
 var TypeAttr = enums.of('hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
-var TextboxOpts = BaseOpts.extend([{
+var TextboxOpts = CommonOpts.extend([{
   type:         maybe(TypeAttr),
   groupClasses: maybe(Obj),
   placeholder:  maybe(Str),
@@ -326,11 +354,8 @@ function textbox(type, opts) {
   opts = new (getTextboxOpts(type))(opts || {});
   var innerType = stripOuterType(type);
   var typeAttr = opts.type || 'text';
-  var i17n = opts.i17n || options.defaultI17n;
-
-  var defaultValue = getOrElse(opts.value, null);
-  defaultValue = i17n.format(defaultValue, innerType);
-
+  var i17n = opts.i17n || defaultI17n;
+  var defaultValue = i17n.format(getOrElse(opts.value, null), innerType);
   var label = getLabel(opts.label, opts.breakpoints);
   var help = getHelp(opts.help);
   var addonBefore = getAddon(opts.addonBefore);
@@ -420,7 +445,7 @@ function textbox(type, opts) {
 // select
 //
 
-var SelectOpts = BaseOpts.extend([{
+var SelectOpts = CommonOpts.extend([{
   options:      Any,
   groupClasses: maybe(Obj),
   emptyOption:  maybe(Option),
@@ -530,7 +555,7 @@ function select(type, opts) {
 // radio
 //
 
-var RadioOpts = BaseOpts.extend([{
+var RadioOpts = CommonOpts.extend([{
   groupClasses: maybe(Obj),
   order:        maybe(Order),
   breakpoints:  maybe(Breakpoints)
@@ -620,7 +645,7 @@ function radio(type, opts) {
 // checkbox
 //
 
-var CheckboxOpts = BaseOpts.extend([{
+var CheckboxOpts = CommonOpts.extend([{
   groupClasses: maybe(Obj),
   breakpoints:  maybe(Breakpoints),
 }]);
@@ -692,15 +717,6 @@ function checkbox(type, opts) {
 // forms
 //
 
-var Bundle = struct({
-  select: Str,
-  optional: Str,
-  add: Str,
-  remove: Str,
-  up: Str,
-  down: Str
-});
-
 var FormAuto = enums.of('none placeholders labels', 'FormAuto');
 
 var FormOpts = struct({
@@ -712,7 +728,7 @@ var FormOpts = struct({
   fields:       maybe(Obj),
   breakpoints:  maybe(Breakpoints),
   i17n:         maybe(I17n),
-  bundle:       maybe(Bundle)
+  i18n:         maybe(I18n)
 }, 'FormOpts');
 
 function createForm(type, opts) {
@@ -730,7 +746,7 @@ function createForm(type, opts) {
   var fields = opts.fields || {};
   var defaultValue = opts.value || {};
   var label = getLabel(opts.label);
-  var bundle = opts.bundle ? new Bundle(opts.bundle) : options.defaultBundle;
+  var i18n = opts.i18n ? new I18n(opts.i18n) : defaultI18n;
 
   var auto = opts.auto || 'placeholders';
   var factories = order.map(function (name) {
@@ -742,14 +758,14 @@ function createForm(type, opts) {
       value: defaultValue[name],
       breakpoints: opts.breakpoints,
       i17n: opts.i17n,
-      bundle: opts.bundle
+      i18n: opts.i18n
     }, fields[name], true);
 
     // get the input from the type
     var Input = o.input ? o.input : getInput(type);
 
     // handle optional fields auto label
-    var optional = getKind(type) === 'maybe' ? bundle.optional : '';
+    var optional = getKind(type) === 'maybe' ? i18n.optional : '';
 
     // lists, forms, checkboxes and radios must always have a label
     if (Input === createList || Input === createForm || Input === checkbox || Input === radio) {
@@ -767,7 +783,7 @@ function createForm(type, opts) {
         }
       } else if (auto === 'placeholders' && !o.label) {
         if (Input === select) {
-          o.emptyOption = o.emptyOption || {value: '', text: humanize(bundle.select + name + optional)};
+          o.emptyOption = o.emptyOption || {value: '', text: humanize(i18n.select + name + optional)};
         } else if (Input === textbox) {
           o.placeholder = o.placeholder || humanize(name + optional);
         }
@@ -847,7 +863,7 @@ var ListOpts = struct({
   disableOrder:   maybe(Bool),
   item:           maybe(Obj),
   i17n:           maybe(I17n),
-  bundle:         maybe(Bundle)
+  i18n:           maybe(I18n)
 }, 'ListOpts');
 
 function createList(type, opts) {
@@ -861,7 +877,7 @@ function createList(type, opts) {
   var Input = opts.input || getInput(ItemType);
   var defaultValue = getOrElse(opts.value, []);
   var label = getLabel(opts.label);
-  var bundle = opts.bundle ? new Bundle(opts.bundle) : options.defaultBundle;
+  var i18n = opts.i18n ? new I18n(opts.i18n) : defaultI18n;
 
   return React.createClass({
 
@@ -952,7 +968,8 @@ function createList(type, opts) {
         var o = mixin({
           ctx: opts.ctx,
           value: this.state.value[i],
-          i17n: opts.i17n
+          i17n: opts.i17n,
+          i18n: opts.i18n
         }, opts.item, true);
         
         children.push(
@@ -962,9 +979,9 @@ function createList(type, opts) {
             ), 
             React.DOM.div({className: "col-md-5"}, 
               React.DOM.div({className: "btn-group"}, 
-                opts.disableRemove ? null : React.DOM.button({className: "btn btn-default btn-remove", onClick: this.remove.bind(this, i)}, bundle.remove), 
-                !opts.disableOrder ? React.DOM.button({className: "btn btn-default btn-move-up", onClick: this.moveUp.bind(this, i)}, bundle.up) : null, 
-                !opts.disableOrder ? React.DOM.button({className: "btn btn-default btn-move-down", onClick: this.moveDown.bind(this, i)}, bundle.down) : null
+                opts.disableRemove ? null : React.DOM.button({className: "btn btn-default btn-remove", onClick: this.remove.bind(this, i)}, i18n.remove), 
+                !opts.disableOrder ? React.DOM.button({className: "btn btn-default btn-move-up", onClick: this.moveUp.bind(this, i)}, i18n.up) : null, 
+                !opts.disableOrder ? React.DOM.button({className: "btn btn-default btn-move-down", onClick: this.moveDown.bind(this, i)}, i18n.down) : null
               )
             )
           )
@@ -973,7 +990,7 @@ function createList(type, opts) {
 
       var btnAdd = opts.disableAdd ? null : (
         React.DOM.div({className: "form-group"}, 
-          React.DOM.button({className: "btn btn-default btn-add", onClick: this.add}, bundle.add)
+          React.DOM.button({className: "btn btn-default btn-add", onClick: this.add}, i18n.add)
         )
       );
 
@@ -1001,25 +1018,6 @@ function create(type, opts) {
 // ===============================
 
 var options = {
-  defaultBundle: new Bundle({
-    select:   'Select your ',
-    optional: ' (optional)',
-    add:      'Add',
-    remove:   'Remove',
-    up:       'Up',
-    down:     'Down'
-  }),
-  defaultI17n: new I17n({
-    parse: function (input, type) {
-      if (type === Num) {
-        return parseFloat(input);
-      }
-      return input;
-    },
-    format: function (value) {
-      return value;
-    }
-  }),
   inputs: {
     irriducible: {
       Bool: checkbox
@@ -1042,7 +1040,7 @@ t.form = {
     Breakpoints: Breakpoints
   },
   I17n: I17n,
-  Bundle: Bundle,
+  I18n: I18n,
   textbox: textbox,
   select: select,
   radio: radio,
