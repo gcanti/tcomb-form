@@ -14,6 +14,7 @@ var select = t.form.select;
 var checkbox = t.form.checkbox;
 var radio = t.form.radio;
 var createForm = t.form.createForm;
+var createList = t.form.createList;
 var create = t.form.create;
 
 //
@@ -63,11 +64,47 @@ describe('textbox', function () {
     eq(dom.children[0].tag, 'textarea');
   });
 
+  it('should handle opts.i17n', function () {
+    var i17n = {
+      parse: function (str) {
+
+      },
+      format: function (value) {
+        return t.Nil.is(value) ? null : new Date(value).toISOString().slice(0, 10);
+      }
+    };
+    var Factory = textbox(Str, {value: 123472000000, i17n: i17n});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0].attrs.value, '1973-11-30');
+  });
+
   it('should handle opts.name', function () {
     var Factory = textbox(Str, {name: 'mytextbox'});
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].attrs.name, 'mytextbox');
+  });
+
+  it('should handle opts.hasError', function () {
+    var Factory = textbox(Str, {hasError: true});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+  });
+
+  it('should handle opts.message', function () {
+    var Factory = textbox(Str, {message: 'mymessage'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group');
+    eq(dom.children.length, 1);
+
+    Factory = textbox(Str, {message: 'mymessage', hasError: true});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+    eq(dom.children[1].attrs.className, 'error-block help-block');
   });
 
   it('should handle opts.value', function () {
@@ -175,6 +212,27 @@ describe('select', function () {
   var Country = t.enums({
     IT: 'Italy',
     US: 'United States'
+  });
+
+  it('should handle opts.hasError', function () {
+    var Factory = select(Country, {hasError: true});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+  });
+
+  it('should handle opts.message', function () {
+    var Factory = select(Country, {message: 'mymessage'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group');
+    eq(dom.children.length, 1);
+
+    Factory = select(Country, {message: 'mymessage', hasError: true});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+    eq(dom.children[1].attrs.className, 'error-block help-block');
   });
 
   it('should output a select', function () {
@@ -418,6 +476,27 @@ describe('checkbox', function () {
     eq(dom.children[0].children.children[0].attrs.checked, true);
   });
 
+  it('should handle opts.hasError', function () {
+    var Factory = checkbox(Bool, {hasError: true});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+  });
+
+  it('should handle opts.message', function () {
+    var Factory = checkbox(Bool, {message: 'mymessage'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group');
+    eq(dom.children.length, 1);
+
+    Factory = checkbox(Bool, {message: 'mymessage', hasError: true});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+    eq(dom.children[1].attrs.className, 'error-block help-block');
+  });
+
   it('should handle opts.name', function () {
     var Factory = checkbox(Bool, {name: 'mycheckbox'});
     var input = Factory();
@@ -462,6 +541,27 @@ describe('radio', function () {
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0][1].children.children[0].attrs.checked, true);
+  });
+
+  it('should handle opts.hasError', function () {
+    var Factory = radio(Country, {hasError: true});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+  });
+
+  it('should handle opts.message', function () {
+    var Factory = radio(Country, {message: 'mymessage'});
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group');
+    eq(dom.children.length, 1);
+
+    Factory = radio(Country, {message: 'mymessage', hasError: true});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+    eq(dom.children[1].attrs.className, 'error-block help-block');
   });
 
   it('should handle opts.name', function () {
@@ -512,6 +612,38 @@ describe('createForm', function () {
     optionalEnum: maybe(Country),
     requiredRadio: Country,
     optionalRadio: maybe(Country)
+  });
+
+  var Person = struct({
+    name: Str,
+    surname: maybe(Str),
+    country: Country
+  });
+
+  var i18n = {
+    select: 'Seleziona ',
+    optional: ' (opzionale)',
+    add: 'Aggiungi',
+    remove: 'Elimina',
+    up: 'Su',
+    down: 'Giù'
+  };
+
+  it('should handle opts.bundle', function () {
+    var Factory = createForm(Person, {
+      i18n: i18n
+    });
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0][1].children[0].attrs.placeholder, 'Surname (opzionale)');
+    eq(dom.children[0][2].children[0].children[0].children, 'Seleziona country');
+  });
+
+  it('should return fieldset as tag container', function () {
+    var Factory = createForm(Person);
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.tag, 'fieldset');
   });
 
   it('should handle opts.auto = "placeholders"', function () {
@@ -601,6 +733,40 @@ describe('createForm', function () {
     eq(dom.children[0][1].children[0].attrs.value, 'b');
     eq(dom.children[0][2].children[1][0].children[0].attrs.value, 'd');
     eq(dom.children[0][2].children[1][1].children[0].attrs.value, 'e');
+  });
+
+});
+
+describe('createList', function () {
+
+  var Tags = list(Str);
+
+  var i18n = {
+    select: 'Seleziona ',
+    optional: ' (opzionale)',
+    add: 'Aggiungi',
+    remove: 'Elimina',
+    up: 'Su',
+    down: 'Giù'
+  };
+
+  it('should return fieldset as tag container', function () {
+    var Factory = createList(Tags);
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.tag, 'fieldset');
+  });
+
+  it('should handle opts.bundle', function () {
+    var Factory = createList(Tags, {
+      value: ['mytag'],
+      i18n: i18n
+    });
+    var input = Factory();
+    var dom = dvdom(input);
+    eq(dom.children[0][0].children[1].children.children[0].children, 'Elimina');
+    eq(dom.children[0][0].children[1].children.children[1].children, 'Su');
+    eq(dom.children[0][0].children[1].children.children[2].children, 'Giù');
   });
 
 });

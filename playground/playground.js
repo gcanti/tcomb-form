@@ -1,6 +1,11 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/giulio/Documents/Projects/github/tcomb-form/index.js":[function(require,module,exports){
 /** @jsx React.DOM */
 
+//     tcomb-form 0.1.6
+//     https://github.com/gcanti/tcomb-form
+//     (c) 2014 Giulio Canti <giulio.canti@gmail.com>
+//     tcomb-form may be freely distributed under the MIT license.
+
 'use strict';
 
 var React = require('react');
@@ -315,6 +320,7 @@ function getInput(type) {
 // common options
 var CommonOpts = struct({
   ctx:          Any,
+  value:        Any,
   name:         maybe(Str),
   label:        Any,
   help:         Any,
@@ -341,17 +347,13 @@ var TextboxOpts = CommonOpts.extend([{
   addonAfter:   Any,
   breakpoints:  maybe(Breakpoints),
   height:       maybe(Size)
-}]);
-
-function getTextboxOpts(type) {
-  return TextboxOpts.extend([{value: maybe(type)}], 'TextboxOpts');
-}
+}], 'TextboxOpts');
 
 function textbox(type, opts) {
 
   assert(Type.is(type));
 
-  opts = new (getTextboxOpts(type))(opts || {});
+  opts = new TextboxOpts(opts || {});
   var innerType = stripOuterType(type);
   var typeAttr = opts.type || 'text';
   var i17n = opts.i17n || defaultI17n;
@@ -454,11 +456,7 @@ var SelectOpts = CommonOpts.extend([{
   breakpoints:  maybe(Breakpoints),
   height:       maybe(Size),
   multiple:     maybe(Bool)
-}]);
-
-function getSelectOpts(type) {
-  return SelectOpts.extend([{value: maybe(type)}], 'SelectOpts');
-}
+}], 'SelectOpts');
 
 var selectOuterTypes = {maybe: 1, subtype: 1, list: 1};
 
@@ -466,7 +464,7 @@ function select(type, opts) {
 
   assert(Type.is(type));
 
-  opts = new (getSelectOpts(type))(opts || {});
+  opts = new SelectOpts(opts || {});
 
   var Enum = stripOuterType(type, selectOuterTypes);
   var isMultiple = opts.multiple === true;
@@ -559,17 +557,13 @@ var RadioOpts = CommonOpts.extend([{
   groupClasses: maybe(Obj),
   order:        maybe(Order),
   breakpoints:  maybe(Breakpoints)
-}]);
-
-function getRadioOpts(type) {
-  return RadioOpts.extend([{value: maybe(type)}], 'RadioOpts');
-}
+}], 'RadioOpts');
 
 function radio(type, opts) {
 
   assert(Type.is(type));
 
-  opts = new (getRadioOpts(type))(opts || {});
+  opts = new RadioOpts(opts || {});
 
   var Enum = stripOuterType(type);
   var defaultValue = getOrElse(opts.value, null);
@@ -648,17 +642,13 @@ function radio(type, opts) {
 var CheckboxOpts = CommonOpts.extend([{
   groupClasses: maybe(Obj),
   breakpoints:  maybe(Breakpoints),
-}]);
-
-function getCheckboxOpts(type) {
-  return RadioOpts.extend([{value: maybe(type)}], 'CheckboxOpts');
-}
+}], 'CheckboxOpts');
 
 function checkbox(type, opts) {
 
   assert(Type.is(type));
 
-  opts = new (getCheckboxOpts(type))(opts || {});
+  opts = new CheckboxOpts(opts || {});
 
   var defaultValue = getOrElse(opts.value, false);
   var help = getHelp(opts.help);
