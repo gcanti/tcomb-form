@@ -167,9 +167,13 @@ function getHelp(help, classes) {
   return help ? React.DOM.span({className: cx(classes)}, help) : null;
 }
 
-function getError(error, hasError) {
+function getError(message, state) {
+  if (!state.hasError) { return null; }
+  if (Func.is(message)) {
+    message = message(state.value);
+  }
   // add 'error-block' style class to allow display customization
-  return hasError ? getHelp(error, {'error-block': true}) : null;
+  return getHelp(message, {'error-block': true});
 }
 
 function getAddon(addon) {
@@ -282,18 +286,18 @@ function moveDown(arr, i) {
 // default React class methods
 //
 
-function getInitialState(hasError) {
+function getInitialState(hasError, defaultValue) {
   return function () {
-    return { hasError: getOrElse(hasError, false) };
+    return {hasError: getOrElse(hasError, false), value: defaultValue};
   };
 }
 
-function getValue(type, rawValue) {
+function getValue(type) {
   return function () {
-    var value = rawValue || this.getRawValue();
+    var value = this.getRawValue();
     var result = t.validate(value, type);
     var isValid = result.isValid();
-    this.setState({hasError: !isValid});
+    this.setState({hasError: !isValid, value: value});
     return isValid ? type(value) : result;
   };
 }
@@ -323,7 +327,7 @@ var CommonOpts = struct({
   name:         maybe(Str),
   label:        Any,
   help:         Any,
-  message:      maybe(Str),
+  message:      maybe(t.union([Str, Func])),
   hasError:     maybe(Bool),
   onChange:     maybe(Func)
 });
@@ -373,7 +377,7 @@ function textbox(type, opts) {
     
     displayName: 'Textbox',
     
-    getInitialState: getInitialState(opts.hasError),
+    getInitialState: getInitialState(opts.hasError, defaultValue),
     
     getRawValue: function () {
       var value = this.refs.input.getDOMNode().value.trim() || null;
@@ -385,7 +389,7 @@ function textbox(type, opts) {
 
     render: function () {
 
-      var error = getError(opts.message, this.state.hasError);
+      var error = getError(opts.message, this.state);
 
       var groupClasses = mixin({
         'form-group': true,
@@ -485,7 +489,7 @@ function select(type, opts) {
     
     displayName: 'Select',
     
-    getInitialState: getInitialState(opts.hasError),
+    getInitialState: getInitialState(opts.hasError, defaultValue),
     
     getRawValue: function () {
       var select = this.refs.input.getDOMNode();
@@ -506,7 +510,7 @@ function select(type, opts) {
 
     render: function () {
 
-      var error = getError(opts.message, this.state.hasError);
+      var error = getError(opts.message, this.state);
 
       var groupClasses = mixin({
         'form-group': true,
@@ -576,7 +580,7 @@ function radio(type, opts) {
     
     displayName: 'Radio',
     
-    getInitialState: getInitialState(opts.hasError),
+    getInitialState: getInitialState(opts.hasError, defaultValue),
     
     getRawValue: function () {
       var value = null;
@@ -594,7 +598,7 @@ function radio(type, opts) {
 
     render: function () {
 
-      var error = getError(opts.message, this.state.hasError);
+      var error = getError(opts.message, this.state);
 
       var groupClasses = mixin({
         'form-group': true,
@@ -656,7 +660,7 @@ function checkbox(type, opts) {
     
     displayName: 'Checkbox',
     
-    getInitialState: getInitialState(opts.hasError),
+    getInitialState: getInitialState(opts.hasError, defaultValue),
     
     getRawValue: function () {
       return this.refs.input.getDOMNode().checked;
@@ -666,7 +670,7 @@ function checkbox(type, opts) {
 
     render: function () {
 
-      var error = getError(opts.message, this.state.hasError);
+      var error = getError(opts.message, this.state);
 
       var groupClasses = mixin({
         'form-group': true,
@@ -787,7 +791,7 @@ function createForm(type, opts) {
 
     displayName: 'Form',
 
-    getInitialState: getInitialState(opts.hasError),
+    getInitialState: getInitialState(opts.hasError, defaultValue),
 
     getValue: function (depth) {
 
@@ -812,7 +816,7 @@ function createForm(type, opts) {
 
       result = t.validate(new Struct(value), type);
       var isValid = result.isValid();
-      this.setState({hasError: !isValid});
+      this.setState({hasError: !isValid, value: value});
       return isValid ? type(value) : depth ? result : null;
     },
 
@@ -872,12 +876,7 @@ function createList(type, opts) {
 
     displayName: 'List',
 
-    getInitialState: function () {
-      return { 
-        hasError: getOrElse(opts.hasError, false), 
-        value: defaultValue 
-      };
-    },
+    getInitialState: getInitialState(opts.hasError, defaultValue),
 
     getValue: function (depth) {
 

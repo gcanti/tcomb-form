@@ -105,6 +105,17 @@ describe('textbox', function () {
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
     eq(dom.children[1].attrs.className, 'error-block help-block');
+    eq(dom.children[1].children, 'mymessage');
+
+    function message(value) {
+      return 'Message for ' + value;
+    }
+    Factory = textbox(Str, {message: message, hasError: true, value: 1});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+    eq(dom.children[1].attrs.className, 'error-block help-block');
+    eq(dom.children[1].children, 'Message for 1');
   });
 
   it('should handle opts.value', function () {
@@ -233,6 +244,17 @@ describe('select', function () {
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
     eq(dom.children[1].attrs.className, 'error-block help-block');
+    eq(dom.children[1].children, 'mymessage');
+
+    function message(value) {
+      return 'Message for ' + value;
+    }
+    Factory = select(Country, {message: message, hasError: true, value: 'x'});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+    eq(dom.children[1].attrs.className, 'error-block help-block');
+    eq(dom.children[1].children, 'Message for x');
   });
 
   it('should output a select', function () {
@@ -495,6 +517,17 @@ describe('checkbox', function () {
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
     eq(dom.children[1].attrs.className, 'error-block help-block');
+    eq(dom.children[1].children, 'mymessage');
+
+    function message(value) {
+      return 'Message for ' + value;
+    }
+    Factory = checkbox(Bool, {message: message, hasError: true, value: 'x'});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+    eq(dom.children[1].attrs.className, 'error-block help-block');
+    eq(dom.children[1].children, 'Message for x');
   });
 
   it('should handle opts.name', function () {
@@ -562,6 +595,17 @@ describe('radio', function () {
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
     eq(dom.children[1].attrs.className, 'error-block help-block');
+    eq(dom.children[1].children, 'mymessage');
+
+    function message(value) {
+      return 'Message for ' + value;
+    }
+    Factory = radio(Country, {message: message, hasError: true, value: 'x'});
+    input = Factory();
+    dom = dvdom(input);
+    eq(dom.attrs.className, 'form-group has-error');
+    eq(dom.children[1].attrs.className, 'error-block help-block');
+    eq(dom.children[1].children, 'Message for x');
   });
 
   it('should handle opts.name', function () {
