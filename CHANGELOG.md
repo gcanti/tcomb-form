@@ -1,3 +1,7 @@
+v0.1.7
+
+- `opts.message` can be a function
+
 v0.1.6
 
 - `createForm` and `createList` now return a `fieldset` tag as a top level element, fix #2 (partially)
