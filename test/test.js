@@ -2,6 +2,7 @@
 var assert = require('assert');
 var t = require('../index');
 var vdom = require('react-vdom');
+var React = require('react');
 
 var Str = t.Str;
 var Bool = t.Bool;
@@ -50,18 +51,18 @@ describe('humanize', function () {
 describe('textbox', function () {
 
   it('should handle default type', function () {
-    var Factory = textbox(Str);
+    var Factory = React.createFactory(textbox(Str));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].tag, 'input');
-    eq(dom.children[0].attrs.type, 'text');
+    eq(dom.children.tag, 'input');
+    eq(dom.children.attrs.type, 'text');
   });
 
   it('should handle opts.type', function () {
-    var Factory = textbox(Str, {type: 'textarea'});
+    var Factory = React.createFactory(textbox(Str, {type: 'textarea'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].tag, 'textarea');
+    eq(dom.children.tag, 'textarea');
   });
 
   it('should handle opts.i17n', function () {
@@ -73,34 +74,34 @@ describe('textbox', function () {
         return t.Nil.is(value) ? null : new Date(value).toISOString().slice(0, 10);
       }
     };
-    var Factory = textbox(Str, {value: 123472000000, i17n: i17n});
+    var Factory = React.createFactory(textbox(Str, {value: 123472000000, i17n: i17n}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs.value, '1973-11-30');
+    eq(dom.children.attrs.defaultValue, '1973-11-30');
   });
 
   it('should handle opts.name', function () {
-    var Factory = textbox(Str, {name: 'mytextbox'});
+    var Factory = React.createFactory(textbox(Str, {name: 'mytextbox'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs.name, 'mytextbox');
+    eq(dom.children.attrs.name, 'mytextbox');
   });
 
   it('should handle opts.hasError', function () {
-    var Factory = textbox(Str, {hasError: true});
+    var Factory = React.createFactory(textbox(Str, {hasError: true}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
   });
 
   it('should handle opts.message', function () {
-    var Factory = textbox(Str, {message: 'mymessage'});
+    var Factory = React.createFactory(textbox(Str, {message: 'mymessage'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs.className, 'form-group');
-    eq(dom.children.length, 1);
+    eq(dom.children.tag, 'input');
 
-    Factory = textbox(Str, {message: 'mymessage', hasError: true});
+    Factory = React.createFactory(textbox(Str, {message: 'mymessage', hasError: true}));
     input = Factory();
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
@@ -110,7 +111,7 @@ describe('textbox', function () {
     function message(value) {
       return 'Message for ' + value;
     }
-    Factory = textbox(Str, {message: message, hasError: true, value: 1});
+    Factory = React.createFactory(textbox(Str, {message: message, hasError: true, value: 1}));
     input = Factory();
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
@@ -119,21 +120,21 @@ describe('textbox', function () {
   });
 
   it('should handle opts.value', function () {
-    var Factory = textbox(Str, {value: 'hello'});
+    var Factory = React.createFactory(textbox(Str, {value: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs.value, 'hello');
+    eq(dom.children.attrs.defaultValue, 'hello');
   });
 
   it('should handle opts.label', function () {
-    var Factory = textbox(Str, {label: 'hello'});
+    var Factory = React.createFactory(textbox(Str, {label: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children, 'hello');
   });
 
   it('should handle opts.help', function () {
-    var Factory = textbox(Str, {help: 'hello'});
+    var Factory = React.createFactory(textbox(Str, {help: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[1].tag, 'span');
@@ -142,65 +143,65 @@ describe('textbox', function () {
   });
 
   it('should handle opts.groupClasses', function () {
-    var Factory = textbox(Str, {groupClasses: {'hello': true}});
+    var Factory = React.createFactory(textbox(Str, {groupClasses: {'hello': true}}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs['className'], 'form-group hello');
   });
 
   it('should handle opts.disabled', function () {
-    var Factory = textbox(Str, {disabled: true});
+    var Factory = React.createFactory(textbox(Str, {disabled: true}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs['disabled'], true);
+    eq(dom.children.attrs['disabled'], true);
 
-    Factory = textbox(Str, {disabled: true, type: 'textarea'});
+    Factory = React.createFactory(textbox(Str, {disabled: true, type: 'textarea'}));
     input = Factory();
     dom = dvdom(input);
-    eq(dom.children[0].attrs['disabled'], true);
+    eq(dom.children.attrs['disabled'], true);
   });
 
   it('should handle opts.readOnly', function () {
-    var Factory = textbox(Str, {readOnly: true});
+    var Factory = React.createFactory(textbox(Str, {readOnly: true}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs['readOnly'], true);
+    eq(dom.children.attrs['readOnly'], true);
 
-    Factory = textbox(Str, {readOnly: true, type: 'textarea'});
+    Factory = React.createFactory(textbox(Str, {readOnly: true, type: 'textarea'}));
     input = Factory();
     dom = dvdom(input);
-    eq(dom.children[0].attrs['readOnly'], true);
+    eq(dom.children.attrs['readOnly'], true);
   });
 
   it('should handle opts.placeholder', function () {
-    var Factory = textbox(Str, {placeholder: 'hello'});
+    var Factory = React.createFactory(textbox(Str, {placeholder: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs['placeholder'], 'hello');
+    eq(dom.children.attrs['placeholder'], 'hello');
   });
 
   it('should handle opts.addonBefore', function () {
-    var Factory = textbox(Str, {addonBefore: '@'});
+    var Factory = React.createFactory(textbox(Str, {addonBefore: '@'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs['className'], 'input-group');
-    eq(dom.children[0].children[0].tag, 'span');
-    eq(dom.children[0].children[0].attrs['className'], 'input-group-addon');
-    eq(dom.children[0].children[0].children, '@');
+    eq(dom.children.attrs['className'], 'input-group');
+    eq(dom.children.children[0].tag, 'span');
+    eq(dom.children.children[0].attrs['className'], 'input-group-addon');
+    eq(dom.children.children[0].children, '@');
   });
 
   it('should handle opts.addonAfter', function () {
-    var Factory = textbox(Str, {addonAfter: '@'});
+    var Factory = React.createFactory(textbox(Str, {addonAfter: '@'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs['className'], 'input-group');
-    eq(dom.children[0].children[1].tag, 'span');
-    eq(dom.children[0].children[1].attrs['className'], 'input-group-addon');
-    eq(dom.children[0].children[1].children, '@');
+    eq(dom.children.attrs['className'], 'input-group');
+    eq(dom.children.children[1].tag, 'span');
+    eq(dom.children.children[1].attrs['className'], 'input-group-addon');
+    eq(dom.children.children[1].children, '@');
   });
 
   it('should handle i17n', function () {
-    var Factory = textbox(Num, {
+    var Factory = React.createFactory(textbox(Num, {
       value: 1000,
       i17n: {
         format: function (value) {
@@ -210,10 +211,10 @@ describe('textbox', function () {
           return parseFloat(s, 10);
         }
       }
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs.value, '1,000');
+    eq(dom.children.attrs.defaultValue, '1,000');
   });
 
 });
@@ -226,20 +227,20 @@ describe('select', function () {
   });
 
   it('should handle opts.hasError', function () {
-    var Factory = select(Country, {hasError: true});
+    var Factory = React.createFactory(select(Country, {hasError: true}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
   });
 
   it('should handle opts.message', function () {
-    var Factory = select(Country, {message: 'mymessage'});
+    var Factory = React.createFactory(select(Country, {message: 'mymessage'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs.className, 'form-group');
-    eq(dom.children.length, 1);
+    eq(dom.children.tag, 'select');
 
-    Factory = select(Country, {message: 'mymessage', hasError: true});
+    Factory = React.createFactory(select(Country, {message: 'mymessage', hasError: true}));
     input = Factory();
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
@@ -249,7 +250,7 @@ describe('select', function () {
     function message(value) {
       return 'Message for ' + value;
     }
-    Factory = select(Country, {message: message, hasError: true, value: 'x'});
+    Factory = React.createFactory(select(Country, {message: message, hasError: true, value: 'x'}));
     input = Factory();
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
@@ -258,16 +259,15 @@ describe('select', function () {
   });
 
   it('should output a select', function () {
-    var Factory = select(Country, {value: 'US'});
+    var Factory = React.createFactory(select(Country, {value: 'US'}));
     var input = Factory();
     var dom = dvdom(input);
     //dump(dom);
-    eq(dom.children[0].tag, 'select');
-    eq(dom.children[0].children, [
+    eq(dom.children.tag, 'select');
+    eq(dom.children.children, [
       {
         "tag": "option",
         "attrs": {
-          "key": 0,
           "value": "IT"
         },
         "children": "Italy"
@@ -275,7 +275,6 @@ describe('select', function () {
       {
         "tag": "option",
         "attrs": {
-          "key": 1,
           "value": "US"
         },
         "children": "United States"
@@ -284,28 +283,28 @@ describe('select', function () {
   });
 
   it('should handle opts.name', function () {
-    var Factory = select(Country, {name: 'myselect'});
+    var Factory = React.createFactory(select(Country, {name: 'myselect'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs.name, 'myselect');
+    eq(dom.children.attrs.name, 'myselect');
   });
 
   it('should handle opts.value', function () {
-    var Factory = select(Country, {value: 'US'});
+    var Factory = React.createFactory(select(Country, {value: 'US'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs.defaultValue, 'US');
+    eq(dom.children.attrs.defaultValue, 'US');
   });
 
   it('should handle opts.label', function () {
-    var Factory = select(Country, {label: 'hello'});
+    var Factory = React.createFactory(select(Country, {label: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children, 'hello');
   });
 
   it('should handle opts.help', function () {
-    var Factory = select(Country, {help: 'hello'});
+    var Factory = React.createFactory(select(Country, {help: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[1].tag, 'span');
@@ -314,20 +313,19 @@ describe('select', function () {
   });
 
   it('should handle opts.groupClasses', function () {
-    var Factory = select(Country, {groupClasses: {'hello': true}});
+    var Factory = React.createFactory(select(Country, {groupClasses: {'hello': true}}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs['className'], 'form-group hello');
   });
 
   it('should handle opts.emptyOption', function () {
-    var Factory = select(Country, {emptyOption: {value: 'myvalue', text: 'mycaption'}});
+    var Factory = React.createFactory(select(Country, {emptyOption: {value: 'myvalue', text: 'mycaption'}}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children[0], {
+    eq(dom.children.children[0], {
       "tag": "option",
       "attrs": {
-        "key": 0,
         "value": "myvalue"
       },
       "children": "mycaption"
@@ -335,21 +333,20 @@ describe('select', function () {
   });
 
   it('should handle opts.multiple', function () {
-    var Factory = select(Country, {multiple: true});
+    var Factory = React.createFactory(select(Country, {multiple: true}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs.multiple, true);
+    eq(dom.children.attrs.multiple, true);
   });
 
   it('should handle opts.order', function () {
-    var Factory = select(Country, {order: 'desc', emptyOption: {value: 'myvalue', text: 'mycaption'}});
+    var Factory = React.createFactory(select(Country, {order: 'desc', emptyOption: {value: 'myvalue', text: 'mycaption'}}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children, [
+    eq(dom.children.children, [
       {
         "tag": "option",
         "attrs": {
-          "key": 0,
           "value": "myvalue"
         },
         "children": "mycaption"
@@ -357,7 +354,6 @@ describe('select', function () {
       {
         "tag": "option",
         "attrs": {
-          "key": 1,
           "value": "US"
         },
         "children": "United States"
@@ -365,7 +361,6 @@ describe('select', function () {
       {
         "tag": "option",
         "attrs": {
-          "key": 2,
           "value": "IT"
         },
         "children": "Italy"
@@ -374,26 +369,25 @@ describe('select', function () {
   });
 
   it('should handle opts.disabled', function () {
-    var Factory = select(Country, {disabled: true});
+    var Factory = React.createFactory(select(Country, {disabled: true}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].attrs['disabled'], true);
+    eq(dom.children.attrs['disabled'], true);
   });
 
   it('should handle opts.options', function () {
-    var Factory = select(Country, {
+    var Factory = React.createFactory(select(Country, {
       options: [
         {value: 'US', text: 'US'},
         {value: 'IT', text: 'IT'}
       ]
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children, [
+    eq(dom.children.children, [
       {
         "tag": "option",
         "attrs": {
-          "key": 0,
           "value": "US"
         },
         "children": "US"
@@ -401,7 +395,6 @@ describe('select', function () {
       {
         "tag": "option",
         "attrs": {
-          "key": 1,
           "value": "IT"
         },
         "children": "IT"
@@ -410,7 +403,7 @@ describe('select', function () {
   });
 
   it('should handle grouped options', function () {
-    var Factory = select(Country, {
+    var Factory = React.createFactory(select(Country, {
       options: [
         {value: 'value5', text: 'description5'}, // an option
         {group: 'group1', options: [ // a group of options
@@ -422,14 +415,13 @@ describe('select', function () {
           {value: 'value2', text: 'description2'}
         ]}
       ]
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children, [
+    eq(dom.children.children, [
       {
         "tag": "option",
         "attrs": {
-          "key": 0,
           "value": "value5"
         },
         "children": "description5"
@@ -437,14 +429,12 @@ describe('select', function () {
       {
         "tag": "optgroup",
         "attrs": {
-          "label": "group1",
-          "key": 1
+          "label": "group1"
         },
         "children": [
           {
             "tag": "option",
             "attrs": {
-              "key": "1-0",
               "value": "value1"
             },
             "children": "description1"
@@ -452,7 +442,6 @@ describe('select', function () {
           {
             "tag": "option",
             "attrs": {
-              "key": "1-1",
               "value": "value3"
             },
             "children": "description3"
@@ -462,14 +451,12 @@ describe('select', function () {
       {
         "tag": "optgroup",
         "attrs": {
-          "label": "group2",
-          "key": 2
+          "label": "group2"
         },
         "children": [
           {
             "tag": "option",
             "attrs": {
-              "key": "2-0",
               "value": "value4"
             },
             "children": "description4"
@@ -477,7 +464,6 @@ describe('select', function () {
           {
             "tag": "option",
             "attrs": {
-              "key": "2-1",
               "value": "value2"
             },
             "children": "description2"
@@ -492,27 +478,27 @@ describe('select', function () {
 describe('checkbox', function () {
 
   it('should handle opts.value', function () {
-    var Factory = checkbox(Bool, {value: true});
+    var Factory = React.createFactory(checkbox(Bool, {value: true}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children.children[0].attrs.checked, true);
+    eq(dom.children.children.children[0].attrs.defaultChecked, true);
   });
 
   it('should handle opts.hasError', function () {
-    var Factory = checkbox(Bool, {hasError: true});
+    var Factory = React.createFactory(checkbox(Bool, {hasError: true}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
   });
 
   it('should handle opts.message', function () {
-    var Factory = checkbox(Bool, {message: 'mymessage'});
+    var Factory = React.createFactory(checkbox(Bool, {message: 'mymessage'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs.className, 'form-group');
-    eq(dom.children.length, 1);
+    eq(dom.children.tag, 'div');
 
-    Factory = checkbox(Bool, {message: 'mymessage', hasError: true});
+    Factory = React.createFactory(checkbox(Bool, {message: 'mymessage', hasError: true}));
     input = Factory();
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
@@ -522,7 +508,7 @@ describe('checkbox', function () {
     function message(value) {
       return 'Message for ' + value;
     }
-    Factory = checkbox(Bool, {message: message, hasError: true, value: 'x'});
+    Factory = React.createFactory(checkbox(Bool, {message: message, hasError: true, value: 'x'}));
     input = Factory();
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
@@ -531,21 +517,21 @@ describe('checkbox', function () {
   });
 
   it('should handle opts.name', function () {
-    var Factory = checkbox(Bool, {name: 'mycheckbox'});
+    var Factory = React.createFactory(checkbox(Bool, {name: 'mycheckbox'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children.children[0].attrs.name, 'mycheckbox');
+    eq(dom.children.children.children[0].attrs.name, 'mycheckbox');
   });
 
   it('should handle opts.label', function () {
-    var Factory = checkbox(Bool, {label: 'hello'});
+    var Factory = React.createFactory(checkbox(Bool, {label: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0].children.children[2], 'hello');
+    eq(dom.children.children.children[2], 'hello');
   });
 
   it('should handle opts.help', function () {
-    var Factory = checkbox(Bool, {help: 'hello'});
+    var Factory = React.createFactory(checkbox(Bool, {help: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[1].tag, 'span');
@@ -554,7 +540,7 @@ describe('checkbox', function () {
   });
 
   it('should handle opts.groupClasses', function () {
-    var Factory = checkbox(Bool, {groupClasses: {'hello': true}});
+    var Factory = React.createFactory(checkbox(Bool, {groupClasses: {'hello': true}}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs['className'], 'form-group hello');
@@ -570,70 +556,70 @@ describe('radio', function () {
   });
 
   it('should handle opts.value', function () {
-    var Factory = radio(Country, {value: 'US'});
+    var Factory = React.createFactory(radio(Country, {value: 'US'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][1].children.children[0].attrs.checked, true);
+    eq(dom.children[1].children.children[0].attrs.defaultChecked, true);
   });
 
   it('should handle opts.hasError', function () {
-    var Factory = radio(Country, {hasError: true});
+    var Factory = React.createFactory(radio(Country, {hasError: true}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
   });
 
   it('should handle opts.message', function () {
-    var Factory = radio(Country, {message: 'mymessage'});
+    var Factory = React.createFactory(radio(Country, {message: 'mymessage'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs.className, 'form-group');
-    eq(dom.children.length, 1);
+    eq(dom.children.length, 2);
 
-    Factory = radio(Country, {message: 'mymessage', hasError: true});
+    Factory = React.createFactory(radio(Country, {message: 'mymessage', hasError: true}));
     input = Factory();
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
-    eq(dom.children[1].attrs.className, 'error-block help-block');
-    eq(dom.children[1].children, 'mymessage');
+    eq(dom.children[2].attrs.className, 'error-block help-block');
+    eq(dom.children[2].children, 'mymessage');
 
     function message(value) {
       return 'Message for ' + value;
     }
-    Factory = radio(Country, {message: message, hasError: true, value: 'x'});
+    Factory = React.createFactory(radio(Country, {message: message, hasError: true, value: 'x'}));
     input = Factory();
     dom = dvdom(input);
     eq(dom.attrs.className, 'form-group has-error');
-    eq(dom.children[1].attrs.className, 'error-block help-block');
-    eq(dom.children[1].children, 'Message for x');
+    eq(dom.children[2].attrs.className, 'error-block help-block');
+    eq(dom.children[2].children, 'Message for x');
   });
 
   it('should handle opts.name', function () {
-    var Factory = radio(Country, {name: 'myradio'});
+    var Factory = React.createFactory(radio(Country, {name: 'myradio'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][0].children.children[0].attrs.name, 'myradio');
-    eq(dom.children[0][1].children.children[0].attrs.name, 'myradio');
+    eq(dom.children[0].children.children[0].attrs.name, 'myradio');
+    eq(dom.children[1].children.children[0].attrs.name, 'myradio');
   });
 
   it('should handle opts.label', function () {
-    var Factory = radio(Country, {label: 'hello'});
+    var Factory = React.createFactory(radio(Country, {label: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children, 'hello');
   });
 
   it('should handle opts.help', function () {
-    var Factory = radio(Country, {help: 'hello'});
+    var Factory = React.createFactory(radio(Country, {help: 'hello'}));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[1].tag, 'span');
-    eq(dom.children[1].attrs['className'], 'help-block');
-    eq(dom.children[1].children, 'hello');
+    eq(dom.children[2].tag, 'span');
+    eq(dom.children[2].attrs['className'], 'help-block');
+    eq(dom.children[2].children, 'hello');
   });
 
   it('should handle opts.groupClasses', function () {
-    var Factory = radio(Country, {groupClasses: {'hello': true}});
+    var Factory = React.createFactory(radio(Country, {groupClasses: {'hello': true}}));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.attrs['className'], 'form-group hello');
@@ -679,8 +665,8 @@ describe('createForm', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][1].children[0].attrs.placeholder, 'Surname (opzionale)');
-    eq(dom.children[0][2].children[0].children[0].children, 'Seleziona country');
+    eq(dom.children[1].children.attrs.placeholder, 'Surname (opzionale)');
+    eq(dom.children[2].children.children[0].children, 'Seleziona country');
   });
 
   it('should return fieldset as tag container', function () {
@@ -700,14 +686,14 @@ describe('createForm', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][0].children[0].attrs.placeholder, 'Required str');
-    eq(dom.children[0][1].children[0].attrs.placeholder, 'Optional str (optional)');
-    eq(dom.children[0][2].children[0].children.children[2].children, 'Bool');
-    eq(dom.children[0][3].children[0].children[0].children, 'Select your required enum');
-    eq(dom.children[0][4].children[0].children[0].children, 'Select your optional enum (optional)');
-    eq(dom.children[0][5].children[0].children.children, 'Required radio');
-    eq(dom.children[0][6].children[0].children.children[0], 'Optional radio');
-    eq(dom.children[0][6].children[0].children.children[1].children, ' (optional)');
+    eq(dom.children[0].children.attrs.placeholder, 'Required str');
+    eq(dom.children[1].children.attrs.placeholder, 'Optional str (optional)');
+    eq(dom.children[2].children.children.children[2].children, 'Bool');
+    eq(dom.children[3].children.children[0].children, 'Select your required enum');
+    eq(dom.children[4].children.children[0].children, 'Select your optional enum (optional)');
+    eq(dom.children[5].children[0].children.children, 'Required radio');
+    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
+    eq(dom.children[6].children[0].children.children[1].children, ' (optional)');
   });
 
   it('should handle opts.auto = "labels"', function () {
@@ -721,14 +707,14 @@ describe('createForm', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][0].children[0].children.children, 'Required str');
-    eq(dom.children[0][1].children[0].children.children[0], 'Optional str');
-    eq(dom.children[0][1].children[0].children.children[1].children, ' (optional)');
-    eq(dom.children[0][2].children[0].children.children[2].children, 'Bool');
-    eq(dom.children[0][3].children[0].children.children, 'Required enum');
-    eq(dom.children[0][4].children[0].children.children[0], 'Optional enum');
-    eq(dom.children[0][5].children[0].children.children, 'Required radio');
-    eq(dom.children[0][6].children[0].children.children[0], 'Optional radio');
+    eq(dom.children[0].children[0].children.children, 'Required str');
+    eq(dom.children[1].children[0].children.children[0], 'Optional str');
+    eq(dom.children[1].children[0].children.children[1].children, ' (optional)');
+    eq(dom.children[2].children.children.children[2].children, 'Bool');
+    eq(dom.children[3].children[0].children.children, 'Required enum');
+    eq(dom.children[4].children[0].children.children[0], 'Optional enum');
+    eq(dom.children[5].children[0].children.children, 'Required radio');
+    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
   });
 
   it('should handle opts.auto = "none"', function () {
@@ -742,13 +728,13 @@ describe('createForm', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][0].children[0].tag, 'input');
-    eq(dom.children[0][1].children[0].tag, 'input');
-    eq(dom.children[0][2].children[0].children.children[2].children, 'Bool');
-    eq(dom.children[0][3].children[0].tag, 'select');
-    eq(dom.children[0][4].children[0].tag, 'select');
-    eq(dom.children[0][5].children[0].children.children, 'Required radio');
-    eq(dom.children[0][6].children[0].children.children[0], 'Optional radio');
+    eq(dom.children[0].children.tag, 'input');
+    eq(dom.children[1].children.tag, 'input');
+    eq(dom.children[2].children.children.children[2].children, 'Bool');
+    eq(dom.children[3].children.tag, 'select');
+    eq(dom.children[4].children.tag, 'select');
+    eq(dom.children[5].children[0].children.children, 'Required radio');
+    eq(dom.children[6].children[0].children.children[0], 'Optional radio');
   });
 
   it('should handle opts.value', function () {
@@ -773,10 +759,10 @@ describe('createForm', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][0].children[0].attrs.value, 'a');
-    eq(dom.children[0][1].children[0].attrs.value, 'b');
-    eq(dom.children[0][2].children[1][0].children[0].attrs.value, 'd');
-    eq(dom.children[0][2].children[1][1].children[0].attrs.value, 'e');
+    eq(dom.children[0].children.attrs.defaultValue, 'a');
+    eq(dom.children[1].children.attrs.defaultValue, 'b');
+    eq(dom.children[2].children[1].children.attrs.defaultValue, 'd');
+    eq(dom.children[2].children[2].children.attrs.defaultValue, 'e');
   });
 
 });
@@ -808,9 +794,9 @@ describe('createList', function () {
     });
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][0].children[1].children.children[0].children, 'Elimina');
-    eq(dom.children[0][0].children[1].children.children[1].children, 'Su');
-    eq(dom.children[0][0].children[1].children.children[2].children, 'Giù');
+    eq(dom.children[0].children[1].children.children[0].children, 'Elimina');
+    eq(dom.children[0].children[1].children.children[1].children, 'Su');
+    eq(dom.children[0].children[1].children.children[2].children, 'Giù');
   });
 
 });
@@ -826,15 +812,15 @@ describe('create', function () {
     var Factory = create(Person);
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[0][0].children[0].attrs.placeholder, 'Name');
-    eq(dom.children[0][1].children[0].attrs.placeholder, 'Surname');
+    eq(dom.children[0].children.attrs.placeholder, 'Name');
+    eq(dom.children[1].children.attrs.placeholder, 'Surname');
   });
 
   it('should handle lists', function () {
     var Factory = create(list(Str));
     var input = Factory();
     var dom = dvdom(input);
-    eq(dom.children[1].children.children, 'Add');
+    eq(dom.children.children.children, 'Add');
   });
 
 });

@@ -1,3 +1,11 @@
+v0.2.0
+
+- upgrade to React v0.12.0
+
+v0.1.7
+
+- `opts.message` can be a function
+
 v0.1.6
 
 - `createForm` and `createList` now return a `fieldset` tag as a top level element, fix #2 (partially)
