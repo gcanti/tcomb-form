@@ -1,10 +1,5 @@
 /** @jsx React.DOM */
 
-//     tcomb-form 0.1.6
-//     https://github.com/gcanti/tcomb-form
-//     (c) 2014 Giulio Canti <giulio.canti@gmail.com>
-//     tcomb-form may be freely distributed under the MIT license.
-
 'use strict';
 
 var React = require('react');
@@ -232,7 +227,7 @@ function getOption(option, key) {
 function getOptions(options, order, emptyOption) {
   if (Func.is(options)) {
     // options is an Enum
-    return getChoices(options.meta.map, order, emptyOption).map(getOption);  
+    return getChoices(options.meta.map, order, emptyOption).map(getOption);
   }
   var ret = [];
   if (emptyOption) {
@@ -374,17 +369,17 @@ function textbox(type, opts) {
   }
 
   return React.createClass({
-    
+
     displayName: 'Textbox',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var value = this.refs.input.getDOMNode().value.trim() || null;
       value = i17n.parse(value, innerType);
       return value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -486,11 +481,11 @@ function select(type, opts) {
   }
 
   return React.createClass({
-    
+
     displayName: 'Select',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var select = this.refs.input.getDOMNode();
       if (isMultiple) {
@@ -505,7 +500,7 @@ function select(type, opts) {
       }
       return select.value === emptyValue ? null : select.value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -518,10 +513,10 @@ function select(type, opts) {
       }, opts.groupClasses);
 
       var input = (
-        <select 
+        <select
           ref="input"
           name={opts.name}
-          className={cx(inputClasses)} 
+          className={cx(inputClasses)}
           disabled={opts.disabled}
           readOnly={opts.readOnly}
           defaultValue={defaultValue}
@@ -577,11 +572,11 @@ function radio(type, opts) {
   var name = opts.name || uuid();
 
   return React.createClass({
-    
+
     displayName: 'Radio',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var value = null;
       for (var i = 0 ; i < len ; i++ ) {
@@ -593,7 +588,7 @@ function radio(type, opts) {
       }
       return value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -657,15 +652,15 @@ function checkbox(type, opts) {
   var help = getHelp(opts.help);
 
   return React.createClass({
-    
+
     displayName: 'Checkbox',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       return this.refs.input.getDOMNode().checked;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -800,7 +795,7 @@ function createForm(type, opts) {
       var errors = [];
       var value = {};
       var result;
-      
+
       for ( var i = 0 ; i < len ; i++ ) {
         var name = order[i];
         var result = this.refs[name].getValue(depth + 1);
@@ -885,7 +880,7 @@ function createList(type, opts) {
       var errors = [];
       var value = [];
       var result;
-      
+
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
         var result = this.refs[i].getValue(depth + 1);
         if (Result.is(result)) {
@@ -951,7 +946,7 @@ function createList(type, opts) {
 
       var children = [];
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
-        
+
         // copy opts to preserve the original
         var o = mixin({
           ctx: opts.ctx,
@@ -959,7 +954,7 @@ function createList(type, opts) {
           i17n: opts.i17n,
           i18n: opts.i18n
         }, opts.item, true);
-        
+
         children.push(
           <div className="row" key={i}>
             <div className="col-md-7">
@@ -996,8 +991,8 @@ function createList(type, opts) {
 }
 
 function create(type, opts) {
-  return getKind(stripOuterType(type)) === 'struct' ? 
-    createForm(type, opts) : 
+  return getKind(stripOuterType(type)) === 'struct' ?
+    createForm(type, opts) :
     createList(type, opts);
 }
 

@@ -1,4 +1,5 @@
-"use strict";
+'use strict';
+
 var assert = require('assert');
 var t = require('../index');
 var vdom = require('react-vdom');
@@ -23,14 +24,10 @@ var create = t.form.create;
 var ok = function (x) { assert.strictEqual(true, x); };
 var eq = assert.deepEqual;
 
-function dump(dom) {
-  console.log(JSON.stringify(dom, null, 2));
-}
-
 function dvdom(input, doDump) {
   var dom = vdom(input);
   if (doDump) {
-    dump(dom);
+    console.log(JSON.stringify(dom, null, 2));
   }
   return dom;
 }
@@ -261,7 +258,6 @@ describe('select', function () {
     var Factory = select(Country, {value: 'US'});
     var input = Factory();
     var dom = dvdom(input);
-    //dump(dom);
     eq(dom.children[0].tag, 'select');
     eq(dom.children[0].children, [
       {

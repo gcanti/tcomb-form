@@ -1,3 +1,7 @@
+v0.1.8
+
+- repo refactoring to simplify setup
+
 v0.1.7
 
 - `opts.message` can be a function
