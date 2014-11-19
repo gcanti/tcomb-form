@@ -262,7 +262,6 @@ describe('select', function () {
     var Factory = React.createFactory(select(Country, {value: 'US'}));
     var input = Factory();
     var dom = dvdom(input);
-    //dump(dom);
     eq(dom.children.tag, 'select');
     eq(dom.children.children, [
       {

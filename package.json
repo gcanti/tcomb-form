@@ -19,12 +19,11 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
-    "tcomb-validation": "^0.2.0"
+    "tcomb-validation": "^0.2.0",
+    "react": "^0.12.1"
   },
   "devDependencies": {
-    "react-vdom": "^0.2.0",
-    "react": "^0.12.0",
-    "reactify": "^0.14.1"
+    "react-vdom": "^0.2.1"
   },
   "tags": [
     "form",
