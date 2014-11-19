@@ -1,10 +1,9 @@
-/** @jsx React.DOM */
-
-//     tcomb-form 0.1.6
-//     https://github.com/gcanti/tcomb-form
-//     (c) 2014 Giulio Canti <giulio.canti@gmail.com>
-//     tcomb-form may be freely distributed under the MIT license.
-
+/**
+ * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
+ * @version v0.2.0
+ * @link https://github.com/gcanti/tcomb-form
+ * @license MIT
+ */
 'use strict';
 
 var React = require('react');
@@ -31,7 +30,7 @@ var mixin =       t.util.mixin;
 var Type =        t.Type;
 var getKind =     t.util.getKind;
 var getName =     t.util.getName;
-var Result =      t.validate.Result;
+var ValidationResult = t.ValidationResult;
 
 // represents the options order of a select input
 // the `map` values  being used to actually sort the options
@@ -148,8 +147,8 @@ function getChoices(map, order, emptyChoice) {
 function getOptionalLabel(name, optional) {
   name = humanize(name);
   return optional ?
-    React.DOM.span(null, name, React.DOM.small({className: "text-muted"}, optional)) :
-    React.DOM.span(null, name);
+    React.createElement("span", null, name, React.createElement("small", {className: "text-muted"}, optional)) :
+    React.createElement("span", null, name);
 }
 
 function getLabel(label, breakpoints) {
@@ -158,13 +157,13 @@ function getLabel(label, breakpoints) {
     classes['control-label'] = true;
     classes[breakpoints.toLabelClassName()] = true;
   }
-  return label ? React.DOM.label({className: cx(classes)}, label) : null;
+  return label ? React.createElement("label", {className: cx(classes)}, label) : null;
 }
 
 function getHelp(help, classes) {
   classes = classes || {};
   classes['help-block'] = true;
-  return help ? React.DOM.span({className: cx(classes)}, help) : null;
+  return help ? React.createElement("span", {className: cx(classes)}, help) : null;
 }
 
 function getError(message, state) {
@@ -177,7 +176,7 @@ function getError(message, state) {
 }
 
 function getAddon(addon) {
-  return addon ? React.DOM.span({className: "input-group-addon"}, addon) : null;
+  return addon ? React.createElement("span", {className: "input-group-addon"}, addon) : null;
 }
 
 var Positive = subtype(Num, function (n) {
@@ -225,14 +224,14 @@ Breakpoints.prototype.toCheckboxClassName = function () {
 };
 
 function getOption(option, key) {
-  return React.DOM.option({key: key, value: option.value}, option.text);
+  return React.createElement("option", {key: key, value: option.value}, option.text);
 }
 
 // returns the list of options of a select
 function getOptions(options, order, emptyOption) {
   if (Func.is(options)) {
     // options is an Enum
-    return getChoices(options.meta.map, order, emptyOption).map(getOption);  
+    return getChoices(options.meta.map, order, emptyOption).map(getOption);
   }
   var ret = [];
   if (emptyOption) {
@@ -241,7 +240,7 @@ function getOptions(options, order, emptyOption) {
   options.forEach(function (x, i) {
     if (x.group) {
       ret.push(
-        React.DOM.optgroup({label: x.group, key: i}, 
+        React.createElement("optgroup", {label: x.group, key: i}, 
           x.options.map(function (o, j) {
             return getOption(o, String(i) + '-' + String(j));
           })
@@ -298,7 +297,7 @@ function getValue(type) {
     var result = t.validate(value, type);
     var isValid = result.isValid();
     this.setState({hasError: !isValid, value: value});
-    return isValid ? type(value) : result;
+    return isValid ? result.value : result;
   };
 }
 
@@ -374,17 +373,17 @@ function textbox(type, opts) {
   }
 
   return React.createClass({
-    
+
     displayName: 'Textbox',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var value = this.refs.input.getDOMNode().value.trim() || null;
       value = i17n.parse(value, innerType);
       return value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -416,7 +415,7 @@ function textbox(type, opts) {
 
       if (addonBefore || addonAfter) {
         input = (
-          React.DOM.div({className: "input-group"}, 
+          React.createElement("div", {className: "input-group"}, 
             addonBefore, 
             input, 
             addonAfter
@@ -426,14 +425,14 @@ function textbox(type, opts) {
 
       if (opts.breakpoints) {
         input = (
-          React.DOM.div({className: opts.breakpoints.toInputClassName()}, 
+          React.createElement("div", {className: opts.breakpoints.toInputClassName()}, 
             input
           )
         );
       }
 
       return (
-        React.DOM.div({className: cx(groupClasses)}, 
+        React.createElement("div", {className: cx(groupClasses)}, 
           label, 
           input, 
           error, 
@@ -486,11 +485,11 @@ function select(type, opts) {
   }
 
   return React.createClass({
-    
+
     displayName: 'Select',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var select = this.refs.input.getDOMNode();
       if (isMultiple) {
@@ -505,7 +504,7 @@ function select(type, opts) {
       }
       return select.value === emptyValue ? null : select.value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -518,7 +517,7 @@ function select(type, opts) {
       }, opts.groupClasses);
 
       var input = (
-        React.DOM.select({
+        React.createElement("select", {
           ref: "input", 
           name: opts.name, 
           className: cx(inputClasses), 
@@ -532,14 +531,14 @@ function select(type, opts) {
 
       if (opts.breakpoints) {
         input = (
-          React.DOM.div({className: opts.breakpoints.toInputClassName()}, 
+          React.createElement("div", {className: opts.breakpoints.toInputClassName()}, 
             input
           )
         );
       }
 
       return (
-        React.DOM.div({className: cx(groupClasses)}, 
+        React.createElement("div", {className: cx(groupClasses)}, 
           label, 
           input, 
           error, 
@@ -577,11 +576,11 @@ function radio(type, opts) {
   var name = opts.name || uuid();
 
   return React.createClass({
-    
+
     displayName: 'Radio',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var value = null;
       for (var i = 0 ; i < len ; i++ ) {
@@ -593,7 +592,7 @@ function radio(type, opts) {
       }
       return value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -607,9 +606,9 @@ function radio(type, opts) {
 
       var input = choices.map(function (c, i) {
         return (
-          React.DOM.div({className: "radio", key: i}, 
-            React.DOM.label(null, 
-              React.DOM.input({type: "radio", ref: name + i, name: name, value: c.value, defaultChecked: c.value === defaultValue}), 
+          React.createElement("div", {className: "radio", key: i}, 
+            React.createElement("label", null, 
+              React.createElement("input", {type: "radio", ref: name + i, name: name, value: c.value, defaultChecked: c.value === defaultValue}), 
               c.text
             )
           )
@@ -618,14 +617,14 @@ function radio(type, opts) {
 
       if (opts.breakpoints) {
         input = (
-          React.DOM.div({className: opts.breakpoints.toInputClassName()}, 
+          React.createElement("div", {className: opts.breakpoints.toInputClassName()}, 
             input
           )
         );
       }
 
       return (
-        React.DOM.div({className: cx(groupClasses)}, 
+        React.createElement("div", {className: cx(groupClasses)}, 
           label, 
           input, 
           error, 
@@ -657,15 +656,15 @@ function checkbox(type, opts) {
   var help = getHelp(opts.help);
 
   return React.createClass({
-    
+
     displayName: 'Checkbox',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       return this.refs.input.getDOMNode().checked;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -678,23 +677,23 @@ function checkbox(type, opts) {
       }, opts.groupClasses);
 
       var input = (
-        React.DOM.div({className: "checkbox"}, 
-          React.DOM.label(null, 
-            React.DOM.input({ref: "input", type: "checkbox", name: opts.name, defaultChecked: defaultValue}), " ", opts.label
+        React.createElement("div", {className: "checkbox"}, 
+          React.createElement("label", null, 
+            React.createElement("input", {ref: "input", type: "checkbox", name: opts.name, defaultChecked: defaultValue}), " ", opts.label
           )
         )
       );
 
       if (opts.breakpoints) {
         input = (
-          React.DOM.div({className: opts.breakpoints.toCheckboxClassName()}, 
+          React.createElement("div", {className: opts.breakpoints.toCheckboxClassName()}, 
             input
           )
         );
       }
 
       return (
-        React.DOM.div({className: cx(groupClasses)}, 
+        React.createElement("div", {className: cx(groupClasses)}, 
           input, 
           error, 
           help
@@ -784,7 +783,7 @@ function createForm(type, opts) {
 
     }
 
-    return Input(type, o);
+    return React.createFactory(Input(type, o));
   });
 
   return React.createClass({
@@ -800,24 +799,26 @@ function createForm(type, opts) {
       var errors = [];
       var value = {};
       var result;
-      
+
       for ( var i = 0 ; i < len ; i++ ) {
         var name = order[i];
         var result = this.refs[name].getValue(depth + 1);
-        if (Result.is(result)) {
+        if (ValidationResult.is(result)) {
           errors = errors.concat(result.errors);
+          value[name] = result.value;
         } else {
           value[name] = result;
         }
       }
+
       if (errors.length) {
-        return depth ? new Result({errors: errors}) : null;
+        return depth ? new ValidationResult({errors: errors, value: value}) : null;
       }
 
       result = t.validate(new Struct(value), type);
       var isValid = result.isValid();
       this.setState({hasError: !isValid, value: value});
-      return isValid ? type(value) : depth ? result : null;
+      return isValid ? result.value : depth ? result : null;
     },
 
     render: function () {
@@ -832,7 +833,7 @@ function createForm(type, opts) {
       });
 
       return (
-        React.DOM.fieldset({className: cx(classes)}, 
+        React.createElement("fieldset", {className: cx(classes)}, 
           label, 
           children
         )
@@ -885,23 +886,24 @@ function createList(type, opts) {
       var errors = [];
       var value = [];
       var result;
-      
+
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
         var result = this.refs[i].getValue(depth + 1);
-        if (Result.is(result)) {
-          errors = errors.concat(result.errors);
+        if (ValidationResult.is(result)) {
+          value[name] = result.value;
         } else {
           value.push(result);
         }
       }
+
       if (errors.length) {
-        return depth ? new Result({errors: errors}) : null;
+        return depth ? new ValidationResult({errors: errors, value: value}) : null;
       }
 
       result = t.validate(value, type);
       var isValid = result.isValid();
       this.setState({hasError: !isValid, value: value});
-      return isValid ? type(value) : depth ? result : null;
+      return isValid ? result.value : depth ? result : null;
     },
 
     add: function (evt) {
@@ -951,7 +953,7 @@ function createList(type, opts) {
 
       var children = [];
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
-        
+
         // copy opts to preserve the original
         var o = mixin({
           ctx: opts.ctx,
@@ -959,17 +961,17 @@ function createList(type, opts) {
           i17n: opts.i17n,
           i18n: opts.i18n
         }, opts.item, true);
-        
+
         children.push(
-          React.DOM.div({className: "row", key: i}, 
-            React.DOM.div({className: "col-md-7"}, 
-              Input(ItemType, o)({ref: i})
+          React.createElement("div", {className: "row", key: i}, 
+            React.createElement("div", {className: "col-md-7"}, 
+              React.createFactory(Input(ItemType, o))({ref: i})
             ), 
-            React.DOM.div({className: "col-md-5"}, 
-              React.DOM.div({className: "btn-group"}, 
-                opts.disableRemove ? null : React.DOM.button({className: "btn btn-default btn-remove", onClick: this.remove.bind(this, i)}, i18n.remove), 
-                !opts.disableOrder ? React.DOM.button({className: "btn btn-default btn-move-up", onClick: this.moveUp.bind(this, i)}, i18n.up) : null, 
-                !opts.disableOrder ? React.DOM.button({className: "btn btn-default btn-move-down", onClick: this.moveDown.bind(this, i)}, i18n.down) : null
+            React.createElement("div", {className: "col-md-5"}, 
+              React.createElement("div", {className: "btn-group"}, 
+                opts.disableRemove ? null : React.createElement("button", {className: "btn btn-default btn-remove", onClick: this.remove.bind(this, i)}, i18n.remove), 
+                !opts.disableOrder ? React.createElement("button", {className: "btn btn-default btn-move-up", onClick: this.moveUp.bind(this, i)}, i18n.up) : null, 
+                !opts.disableOrder ? React.createElement("button", {className: "btn btn-default btn-move-down", onClick: this.moveDown.bind(this, i)}, i18n.down) : null
               )
             )
           )
@@ -977,13 +979,13 @@ function createList(type, opts) {
       }
 
       var btnAdd = opts.disableAdd ? null : (
-        React.DOM.div({className: "form-group"}, 
-          React.DOM.button({className: "btn btn-default btn-add", onClick: this.add}, i18n.add)
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("button", {className: "btn btn-default btn-add", onClick: this.add}, i18n.add)
         )
       );
 
       return (
-        React.DOM.fieldset({className: cx(classes)}, 
+        React.createElement("fieldset", {className: cx(classes)}, 
           label, 
           children, 
           btnAdd
@@ -996,8 +998,8 @@ function createList(type, opts) {
 }
 
 function create(type, opts) {
-  return getKind(stripOuterType(type)) === 'struct' ? 
-    createForm(type, opts) : 
+  return getKind(stripOuterType(type)) === 'struct' ?
+    createForm(type, opts) :
     createList(type, opts);
 }
 

@@ -1,0 +1,38 @@
+body {
+  color: #333;
+}
+
+pre {
+  background-color: transparent;
+  border: 0;  
+  padding: 0px;
+}
+
+.header {
+  border-bottom: 1px solid #eee;
+}
+
+.repo-link { 
+  padding: 40px 0 0 0;
+}
+
+.CodeMirror {
+  font-family: Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  height: 350px;
+  padding: 10px 10px;
+  background: #fff8ed;
+  border: 1px solid #f6e4cc;
+}
+
+#preview {
+  margin-bottom: 40px;
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+
+#html {
+  font-size: 11px;
+}
+

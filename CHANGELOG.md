@@ -1,6 +1,10 @@
 v0.2.0
 
-- upgrade to React v0.12.0
+- update to React v0.12.0
+
+v0.1.8
+
+- repo refactoring to simplify setup (gulp)
 
 v0.1.7
 

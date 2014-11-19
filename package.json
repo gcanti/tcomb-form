@@ -1,12 +1,10 @@
 {
   "name": "tcomb-form",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
   "main": "index.js",
   "scripts": {
-    "dev": "watchify -t reactify dev/dev.jsx -o dev/dev.js -v",
-    "build": "jsx -x jsx --no-cache-dir ./src . -w",
-    "playground": "watchify playground/playground.src.js -o playground/playground.js -v"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -23,7 +21,15 @@
     "react": "^0.12.1"
   },
   "devDependencies": {
-    "react-vdom": "^0.2.1"
+    "gulp": "^3.8.10",
+    "gulp-header": "^1.2.2",
+    "gulp-react": "^2.0.0",
+    "gulp-rename": "^1.2.0",
+    "react-vdom": "^0.2.1",
+    "browserify": "^6.3.2",
+    "reactify": "^0.17.0",
+    "vinyl-source-stream": "^1.0.0",
+    "js-beautify": "^1.5.4"
   },
   "tags": [
     "form",

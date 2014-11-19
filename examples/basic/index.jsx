@@ -1,12 +1,10 @@
-/** @jsx React.DOM */
-
 var React = require('react');
 var t = require('../../index');
 
 // define a type
 var Person = t.struct({
   name: t.Str,
-  surname: t.Bool
+  surname: t.Str
 });
 
 // create the form
@@ -32,5 +30,4 @@ var App = React.createClass({
 });
 
 var node = document.getElementById('app');
-console.log(React);
-React.renderComponent(<App />, node);
+React.render(<App />, node);

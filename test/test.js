@@ -659,9 +659,9 @@ describe('createForm', function () {
   };
 
   it('should handle opts.bundle', function () {
-    var Factory = createForm(Person, {
+    var Factory = React.createFactory(createForm(Person, {
       i18n: i18n
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[1].children.attrs.placeholder, 'Surname (opzionale)');
@@ -669,20 +669,20 @@ describe('createForm', function () {
   });
 
   it('should return fieldset as tag container', function () {
-    var Factory = createForm(Person);
+    var Factory = React.createFactory(createForm(Person));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.tag, 'fieldset');
   });
 
   it('should handle opts.auto = "placeholders"', function () {
-    var Factory = createForm(User, {
+    var Factory = React.createFactory(createForm(User, {
       order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
       fields: {
         requiredRadio: {input: t.form.radio},
         optionalRadio: {input: t.form.radio}
       }
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children.attrs.placeholder, 'Required str');
@@ -696,14 +696,14 @@ describe('createForm', function () {
   });
 
   it('should handle opts.auto = "labels"', function () {
-    var Factory = createForm(User, {
+    var Factory = React.createFactory(createForm(User, {
       auto: 'labels',
       order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
       fields: {
         requiredRadio: {input: t.form.radio},
         optionalRadio: {input: t.form.radio}
       }
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children[0].children.children, 'Required str');
@@ -717,14 +717,14 @@ describe('createForm', function () {
   });
 
   it('should handle opts.auto = "none"', function () {
-    var Factory = createForm(User, {
+    var Factory = React.createFactory(createForm(User, {
       auto: 'none',
       order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
       fields: {
         requiredRadio: {input: t.form.radio},
         optionalRadio: {input: t.form.radio}
       }
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children.tag, 'input');
@@ -745,7 +745,7 @@ describe('createForm', function () {
         e: Str
       })
     });
-    var Factory = createForm(Type, {
+    var Factory = React.createFactory(createForm(Type, {
       order: ['a', 'b', 'c'],
       value: {
         a: 'a',
@@ -755,7 +755,7 @@ describe('createForm', function () {
           e: 'e'
         }
       }
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children.attrs.defaultValue, 'a');
@@ -780,17 +780,17 @@ describe('createList', function () {
   };
 
   it('should return fieldset as tag container', function () {
-    var Factory = createList(Tags);
+    var Factory = React.createFactory(createList(Tags));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.tag, 'fieldset');
   });
 
   it('should handle opts.bundle', function () {
-    var Factory = createList(Tags, {
+    var Factory = React.createFactory(createList(Tags, {
       value: ['mytag'],
       i18n: i18n
-    });
+    }));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children[1].children.children[0].children, 'Elimina');
@@ -808,7 +808,7 @@ describe('create', function () {
   });
 
   it('should handle structs', function () {
-    var Factory = create(Person);
+    var Factory = React.createFactory(create(Person));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children[0].children.attrs.placeholder, 'Name');
@@ -816,7 +816,7 @@ describe('create', function () {
   });
 
   it('should handle lists', function () {
-    var Factory = create(list(Str));
+    var Factory = React.createFactory(create(list(Str)));
     var input = Factory();
     var dom = dvdom(input);
     eq(dom.children.children.children, 'Add');

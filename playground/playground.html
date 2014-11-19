@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tcomb-form playground</title>
+
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/codemirror.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.5.0/mode/javascript/javascript.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <script type="text/javascript" src="playground.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row header">
+        <div class="col-md-6">
+          <h1><a href="https://github.com/gcanti/tcomb-form">Domain Driven Forms</a></h1>
+          <p class="lead">Automatically generate form markup from a domain model.</p>
+          <p>
+            If you're interested in using domain driven forms or just think it's cool, hit me up on twitter <a href="https://twitter.com/GiulioCanti">@GiulioCanti</a> and let me know.
+          </p>
+        </div>
+        <div class="col-md-6">
+          <div class="repo-link">
+            <p><b>Benefits</b></p>
+            <ul>
+              <li>Write a lot less HTML</li>
+              <li>Usability and accessibility for free (automatic labels, inline validation, etc)</li>
+              <li>No need to update forms when domain model changes</li>
+            </ul>
+            <p class="text-right"><span>My other </span><a href="/">projects</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Source</h3>
+          <p class="text-muted">Live code editor. Changes will be reflected in the preview and HTML to the right.</p>
+          <div>
+            <div class="form-group">
+              <p><b>Examples</b></p>
+              <div id="examples" class="form-group"></div>
+            </div>
+            <div class="form-group">
+              <textarea id="code" class="form-control" type="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div id="formValues"></div>
+          <h3>Preview</h3>
+          <div id="preview"></div>
+          <h3>HTML output</h3>
+          <p class="text-muted">Markup is annotated with semantic classes. Demo is styled with Bootstrap 3.</p>
+          <div>
+            <div class="form-group">
+              <pre><code id="html"></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<script type="text/postfix" id="postfix">
+React.createClass({
+  onClick: function (evt) {
+    evt.preventDefault();
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+      renderFormValues(value);
+    }
+  },
+  render: function () {
+    return (
+      React.createElement("form", null,
+        React.createElement(Form, {ref: "form"}),
+        React.createElement("button", {className: "btn btn-primary", onClick: this.onClick}, "Click me")
+      )
+    );
+  }
+});
+</script>
+<script type="text/example" id="showcase">// play with the form to the right: you can add,
+// remove and sort colors. Then start the tutorial from the
+// example `1. Required fields`
+
+var Palette = struct({
+  name: Str,
+  draft: Bool,
+  colors: list(Str)
+});
+
+var Form = createForm(Palette, {
+  value: { colors: ['#d53f54', '#5b79e4'] },
+  fields: {
+    colors: { item: {type: 'color'} }
+  }
+});
+</script>
+<script type="text/example" id="requiredFields">var Person = struct({
+  name: Str,    // required string
+  surname: Str  // required string
+});
+
+// the form is mounted by React.js to the right
+// placeholders are auto generated
+var Form = createForm(Person);
+</script>
+<script type="text/example" id="labels">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+// to customize the fields, pass a second
+// argument to `createForm(type, [opts])`
+
+var Form = createForm(Person, {
+  //auto: 'labels'      // decomment this
+});
+</script>
+<script type="text/example" id="optionalFields">var Person = struct({
+  name: Str,
+  surname: Str,
+  nickname: maybe(Str) // use maybe() to get an optional string
+});
+
+// try to replace `surname: Str` with `surname: maybe(Str)`
+// to make surname optional
+
+// "(optional)" is auto appended
+var Form = createForm(Person);
+</script>
+<script type="text/example" id="subtypes">// a subtype is a pair (type, predicate)
+// where predicate is a function with signature (x) -> boolean
+
+var Password = subtype(Str, function (s) {
+  return s.length >= 6;
+});
+
+var User = struct({
+  username: Str,
+  password: Password  // a required string with at least 6 chars
+});
+
+var Form = createForm(User, {
+  fields: {
+    password: {
+      // help the user with a message
+      help: 'Insert at least 6 chars'
+    }
+  }
+});
+</script>
+<script type="text/example" id="customize">var User = struct({
+  username: Str,
+  password: Str,
+  rememberMe: Bool // a boolean is rendered as a checkbox
+});
+
+var Form = createForm(User, {
+
+  // custom fields order
+  order: ['username', 'rememberMe', 'password'],
+
+  fields: {
+    username: {
+      label: 'Insert your username' // you can override labels
+    },
+    password: {
+      // you can override the type (HTML5 types supported)
+      // try to change it to see the available types
+      type: 'password'
+    }
+  }
+});
+</script>
+<script type="text/example" id="enumsSelect">var Country = enums({ IT: 'Italy', US: 'United States' });
+
+var Person = struct({
+  name: Str,
+  country: Country
+});
+
+var Form = createForm(Person, {
+  fields: {
+    country: {
+      // decomment to override empty option
+      //emptyOption: {value: '', text: '-'},
+      order: 'desc' // try `asc`
+    }
+  }
+});
+</script>
+<script type="text/example" id="enumsRadio">var Country = enums({ IT: 'Italy', US: 'United States' });
+
+var Person = struct({
+  name: Str,
+  country: Country
+});
+
+var Form = createForm(Person, {
+  fields: {
+    country: {
+      // you can override the input used to display
+      input: radio
+    }
+  }
+});
+</script>
+<script type="text/example" id="i17n">var Person = struct({
+  name: Str,
+  age: Num // a number property
+});
+
+var Form = createForm(Person, {
+  fields: {
+    age: {
+      i17n: {
+        // this is used from the model to the UI
+        format: function (value) {
+          return value;
+        },
+        // this is used from the UI to the model
+        parse: function (s) {
+          return parseFloat(s);
+        }
+      }
+    }
+  }
+});
+</script>
+<script type="text/example" id="defaultValues">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+var Form = createForm(Person, {
+  // you can set a default value for every field
+  value: {
+    name: 'Giulio',
+    surname: 'Canti'
+  }
+});
+</script>
+<script type="text/example" id="global">// if you select the checkbox, then the email field is required
+var predicate = function (x) {
+  return !(x.send === true && Nil.is(x.email));
+};
+
+var Subscription = subtype(struct({
+  username: Str,
+  send: Bool,
+  email: maybe(Str)
+}), predicate);
+
+var Form = createForm(Subscription, {
+  order: ['username', 'send', 'email'],
+  fields: {
+    send: {label: 'Send me email notifications'},
+    email: {help: 'Required if you select `Send me email notifications`'}
+  }
+});
+</script>
+<script type="text/example" id="goodies">var Person = struct({
+  name: Str,
+  surname: Str,
+  preferredSong: Str,
+  twitter: Str
+});
+
+var Form = createForm(Person, {
+  fields: {
+    // control sizing
+    name: {height: 'lg'},
+    // readOnly
+    surname: {readOnly: true, value: 'Canti'},
+    // addon after
+    preferredSong: {
+      addonAfter: React.DOM.span({className: 'glyphicon glyphicon-music'})
+    },
+    // addon before
+    twitter: {
+      addonBefore: '@'
+    }
+  }
+});
+</script>
+<script type="text/example" id="horizontal">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+var Form = createForm(Person, {
+  auto: 'labels',
+  // you can set the columns width for [lg, md, sm, xs]
+  // try to resize the viewport..
+  breakpoints: {
+    lg: [2, 10],
+    md: [6, 6]
+  }
+});
+</script>
+<script type="text/example" id="lists">var Tags = list(Str);
+
+var Form = createList(Tags);
+</script>
+<script type="text/example" id="listOfStructs">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+var Persons = list(Person);
+
+var Form = createList(Persons);
+</script>
+<script type="text/example" id="nestedLists">var Person = struct({
+  name: Str,
+  surname: Str
+});
+
+var Family = struct({
+  address: Str,
+  mother: Person,
+  father: Person,
+  children: list(Person)
+});
+
+var Form = createForm(Family, {
+  value: {
+    "address": "2082 Alexander Avenue Oakland, CA 94612",
+    "mother": {
+      "name": "Brandy",
+      "surname": "Hargrove"
+    },
+    "father": {
+      "name": "Darrell",
+      "surname": "R. Silva"
+    },
+    "children": [
+      {
+        "name": "Scott",
+        "surname": "Silva"
+      },
+      {
+        "name": "Valerie",
+        "surname": "Hargrove"
+      }
+    ]
+  },
+  fields: {
+    address: { disabled: true }
+  }
+});
+</script>
+<script type="text/example" id="customInput">// a custom input is simply a function (type, opts) -> ReactClass
+// where the ReactClass must have a `getValue` method
+function hiddenInput(type, opts) {
+  return React.createClass({
+    getValue: function () {
+      return opts.value;
+    },
+    render: function () {
+      return React.DOM.input({type: 'hidden', value: opts.value});
+    }
+  });
+}
+
+var Person = struct({
+  name: Str,
+  surname: Str,
+  secret: Str
+});
+
+var Form = createForm(Person, {
+  fields: {
+    secret: {
+      // override the default input for Str (textbox)
+      input: hiddenInput,
+      value: 'mysecret'
+    }
+  }
+})
+</script>
+<script type="text/example" id="multiple">// multiple select
+var Country = t.enums({
+  IT: 'Italy',
+  US: 'United States',
+  FR: 'France',
+  ES: 'Spain'
+});
+
+var Person = struct({
+  name: Str,
+  country: subtype(list(Country), function (values) {
+    return values.length >= 2;
+  })
+});
+
+var Form = t.form.createForm(Person, {
+  fields: {
+    country: {
+      multiple: true,
+      input: t.form.select
+    }
+  }
+});
+</script>
+<script type="text/example" id="hasError">var SignUp = struct({
+  username: Str,
+  password: Str
+});
+
+var Form = createForm(SignUp, {
+  fields: {
+    username: {
+      message: 'Duplicated username',
+      hasError: true
+    }
+  }
+});
+</script>
+
+
+    <a href="https://github.com/gcanti/tcomb-form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+
+
+  </body>
+</html>
+

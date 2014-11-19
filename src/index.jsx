@@ -1,10 +1,3 @@
-/** @jsx React.DOM */
-
-//     tcomb-form 0.1.6
-//     https://github.com/gcanti/tcomb-form
-//     (c) 2014 Giulio Canti <giulio.canti@gmail.com>
-//     tcomb-form may be freely distributed under the MIT license.
-
 'use strict';
 
 var React = require('react');
@@ -31,7 +24,7 @@ var mixin =       t.util.mixin;
 var Type =        t.Type;
 var getKind =     t.util.getKind;
 var getName =     t.util.getName;
-var Result =      t.validate.Result;
+var ValidationResult = t.ValidationResult;
 
 // represents the options order of a select input
 // the `map` values  being used to actually sort the options
@@ -232,7 +225,7 @@ function getOption(option, key) {
 function getOptions(options, order, emptyOption) {
   if (Func.is(options)) {
     // options is an Enum
-    return getChoices(options.meta.map, order, emptyOption).map(getOption);  
+    return getChoices(options.meta.map, order, emptyOption).map(getOption);
   }
   var ret = [];
   if (emptyOption) {
@@ -298,7 +291,7 @@ function getValue(type) {
     var result = t.validate(value, type);
     var isValid = result.isValid();
     this.setState({hasError: !isValid, value: value});
-    return isValid ? type(value) : result;
+    return isValid ? result.value : result;
   };
 }
 
@@ -374,17 +367,17 @@ function textbox(type, opts) {
   }
 
   return React.createClass({
-    
+
     displayName: 'Textbox',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var value = this.refs.input.getDOMNode().value.trim() || null;
       value = i17n.parse(value, innerType);
       return value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -486,11 +479,11 @@ function select(type, opts) {
   }
 
   return React.createClass({
-    
+
     displayName: 'Select',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var select = this.refs.input.getDOMNode();
       if (isMultiple) {
@@ -505,7 +498,7 @@ function select(type, opts) {
       }
       return select.value === emptyValue ? null : select.value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -518,10 +511,10 @@ function select(type, opts) {
       }, opts.groupClasses);
 
       var input = (
-        <select 
+        <select
           ref="input"
           name={opts.name}
-          className={cx(inputClasses)} 
+          className={cx(inputClasses)}
           disabled={opts.disabled}
           readOnly={opts.readOnly}
           defaultValue={defaultValue}
@@ -577,11 +570,11 @@ function radio(type, opts) {
   var name = opts.name || uuid();
 
   return React.createClass({
-    
+
     displayName: 'Radio',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       var value = null;
       for (var i = 0 ; i < len ; i++ ) {
@@ -593,7 +586,7 @@ function radio(type, opts) {
       }
       return value;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -657,15 +650,15 @@ function checkbox(type, opts) {
   var help = getHelp(opts.help);
 
   return React.createClass({
-    
+
     displayName: 'Checkbox',
-    
+
     getInitialState: getInitialState(opts.hasError, defaultValue),
-    
+
     getRawValue: function () {
       return this.refs.input.getDOMNode().checked;
     },
-    
+
     getValue: getValue(type),
 
     render: function () {
@@ -784,7 +777,7 @@ function createForm(type, opts) {
 
     }
 
-    return Input(type, o);
+    return React.createFactory(Input(type, o));
   });
 
   return React.createClass({
@@ -800,24 +793,26 @@ function createForm(type, opts) {
       var errors = [];
       var value = {};
       var result;
-      
+
       for ( var i = 0 ; i < len ; i++ ) {
         var name = order[i];
         var result = this.refs[name].getValue(depth + 1);
-        if (Result.is(result)) {
+        if (ValidationResult.is(result)) {
           errors = errors.concat(result.errors);
+          value[name] = result.value;
         } else {
           value[name] = result;
         }
       }
+
       if (errors.length) {
-        return depth ? new Result({errors: errors}) : null;
+        return depth ? new ValidationResult({errors: errors, value: value}) : null;
       }
 
       result = t.validate(new Struct(value), type);
       var isValid = result.isValid();
       this.setState({hasError: !isValid, value: value});
-      return isValid ? type(value) : depth ? result : null;
+      return isValid ? result.value : depth ? result : null;
     },
 
     render: function () {
@@ -885,23 +880,24 @@ function createList(type, opts) {
       var errors = [];
       var value = [];
       var result;
-      
+
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
         var result = this.refs[i].getValue(depth + 1);
-        if (Result.is(result)) {
-          errors = errors.concat(result.errors);
+        if (ValidationResult.is(result)) {
+          value[name] = result.value;
         } else {
           value.push(result);
         }
       }
+
       if (errors.length) {
-        return depth ? new Result({errors: errors}) : null;
+        return depth ? new ValidationResult({errors: errors, value: value}) : null;
       }
 
       result = t.validate(value, type);
       var isValid = result.isValid();
       this.setState({hasError: !isValid, value: value});
-      return isValid ? type(value) : depth ? result : null;
+      return isValid ? result.value : depth ? result : null;
     },
 
     add: function (evt) {
@@ -951,7 +947,7 @@ function createList(type, opts) {
 
       var children = [];
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
-        
+
         // copy opts to preserve the original
         var o = mixin({
           ctx: opts.ctx,
@@ -959,11 +955,11 @@ function createList(type, opts) {
           i17n: opts.i17n,
           i18n: opts.i18n
         }, opts.item, true);
-        
+
         children.push(
           <div className="row" key={i}>
             <div className="col-md-7">
-              {Input(ItemType, o)({ref: i})}
+              {React.createFactory(Input(ItemType, o))({ref: i})}
             </div>
             <div className="col-md-5">
               <div className="btn-group">
@@ -996,8 +992,8 @@ function createList(type, opts) {
 }
 
 function create(type, opts) {
-  return getKind(stripOuterType(type)) === 'struct' ? 
-    createForm(type, opts) : 
+  return getKind(stripOuterType(type)) === 'struct' ?
+    createForm(type, opts) :
     createList(type, opts);
 }
 
