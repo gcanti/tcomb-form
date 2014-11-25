@@ -45,7 +45,7 @@ var I17n = struct({
 
 var defaultI17n = new I17n({
   parse: function (input, type) {
-    return type === Num ?
+    return type === Num && !Nil.is(input) ?
       parseFloat(input) :
       input;
   },

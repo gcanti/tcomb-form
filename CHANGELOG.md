@@ -1,6 +1,10 @@
+v0.2.1
+
+- `createForm` doesn't handle correctly a `maybe(Num)` field, fix #20
+
 v0.2.0
 
-- update to React v0.12.0
+- update to React v0.12.1
 
 v0.1.8
 
