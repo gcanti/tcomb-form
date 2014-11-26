@@ -2,6 +2,7 @@ v0.2.1
 
 - `createForm` doesn't handle correctly a `maybe(Num)` field, fix #20
 - better documentation
+- add a default value for the `name` attribute to all inputs, fix #17
 
 v0.2.0
 
