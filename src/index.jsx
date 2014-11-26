@@ -26,6 +26,8 @@ var getKind =     t.util.getKind;
 var getName =     t.util.getName;
 var ValidationResult = t.ValidationResult;
 
+var ReactElement = t.irriducible('ReactElement', React.isValidElement);
+
 // represents the options order of a select input
 // the `map` values  being used to actually sort the options
 var Order = enums({
@@ -710,7 +712,7 @@ var FormOpts = struct({
   value:        maybe(Obj),
   label:        Any,
   auto:         maybe(FormAuto),
-  order:        maybe(list(Str)),
+  order:        maybe(list(t.union([Str, ReactElement]))),
   fields:       maybe(Obj),
   breakpoints:  maybe(Breakpoints),
   i17n:         maybe(I17n),
@@ -728,14 +730,24 @@ function createForm(type, opts) {
   var keys = Object.keys(props);
   var order = opts.order || keys;
   var len = order.length;
-  assert(keys.length === len, 'Invalid `order` of value `%j` supplied to `createForm`, all type props must be specified', order);
   var fields = opts.fields || {};
   var defaultValue = opts.value || {};
   var label = getLabel(opts.label);
   var i18n = opts.i18n ? new I18n(opts.i18n) : defaultI18n;
 
   var auto = opts.auto || 'placeholders';
-  var factories = order.map(function (name) {
+  var factories = order.map(function getInputFactory(name) {
+
+    if (!props.hasOwnProperty(name)) {
+      return function (config) {
+        return (
+          <div key={config.key} className="form-group">
+            {name}
+          </div>
+        );
+      };
+    }
+
     var type = props[name];
 
     // copy opts to preserve the original
