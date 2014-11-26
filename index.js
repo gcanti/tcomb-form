@@ -133,8 +133,10 @@ function getChoices(map, order, emptyChoice) {
   var choices = Object.keys(map).map(function (value, i) {
     return {value: value, text: map[value]};
   });
-  // apply an order (asc, desc) to options
-  choices.sort(Order.meta.map[order || 'asc']);
+  if (order) {
+    // apply an order (asc, desc) to options
+    choices.sort(Order.meta.map[order]);
+  }
   if (emptyChoice) {
     // add an empty choice as the first choice
     choices.unshift(emptyChoice);
