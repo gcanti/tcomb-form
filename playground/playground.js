@@ -1,6 +1,6 @@
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
- * @version v0.2.0
+ * @version v0.2.1
  * @link https://github.com/gcanti/tcomb-form
  * @license MIT
  */
@@ -157,7 +157,7 @@ $(function () {
 },{"../index":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","js-beautify":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/index.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/index.js":[function(require,module,exports){
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
- * @version v0.2.0
+ * @version v0.2.1
  * @link https://github.com/gcanti/tcomb-form
  * @license MIT
  */
@@ -189,6 +189,8 @@ var getKind =     t.util.getKind;
 var getName =     t.util.getName;
 var ValidationResult = t.ValidationResult;
 
+var ReactElement = t.irriducible('ReactElement', React.isValidElement);
+
 // represents the options order of a select input
 // the `map` values  being used to actually sort the options
 var Order = enums({
@@ -208,7 +210,7 @@ var I17n = struct({
 
 var defaultI17n = new I17n({
   parse: function (input, type) {
-    return type === Num ?
+    return type === Num && !Nil.is(input) ?
       parseFloat(input) :
       input;
   },
@@ -873,7 +875,7 @@ var FormOpts = struct({
   value:        maybe(Obj),
   label:        Any,
   auto:         maybe(FormAuto),
-  order:        maybe(list(Str)),
+  order:        maybe(list(t.union([Str, ReactElement]))),
   fields:       maybe(Obj),
   breakpoints:  maybe(Breakpoints),
   i17n:         maybe(I17n),
@@ -891,14 +893,24 @@ function createForm(type, opts) {
   var keys = Object.keys(props);
   var order = opts.order || keys;
   var len = order.length;
-  assert(keys.length === len, 'Invalid `order` of value `%j` supplied to `createForm`, all type props must be specified', order);
   var fields = opts.fields || {};
   var defaultValue = opts.value || {};
   var label = getLabel(opts.label);
   var i18n = opts.i18n ? new I18n(opts.i18n) : defaultI18n;
 
   var auto = opts.auto || 'placeholders';
-  var factories = order.map(function (name) {
+  var factories = order.map(function getInputFactory(name) {
+
+    if (!props.hasOwnProperty(name)) {
+      return function (config) {
+        return (
+          React.createElement("div", {key: config.key, className: "form-group"}, 
+            name
+          )
+        );
+      };
+    }
+
     var type = props[name];
 
     // copy opts to preserve the original
@@ -924,6 +936,14 @@ function createForm(type, opts) {
     if (Input === createForm) {
       o.auto = auto;
     } else {
+
+      // add default name attribute
+      if (Input === createList) {
+        o.item = o.item || {};
+        o.item.name = o.item.name || name;
+      } else {
+        o.name = o.name || name;
+      }
 
       if (auto === 'labels') {
         o.label = o.label || getOptionalLabel(name, optional);
@@ -1116,7 +1136,8 @@ function createList(type, opts) {
           ctx: opts.ctx,
           value: this.state.value[i],
           i17n: opts.i17n,
-          i18n: opts.i18n
+          i18n: opts.i18n,
+          name: opts.name
         }, opts.item, true);
 
         children.push(

@@ -780,6 +780,14 @@ function createForm(type, opts) {
       o.auto = auto;
     } else {
 
+      // add default name attribute
+      if (Input === createList) {
+        o.item = o.item || {};
+        o.item.name = o.item.name || name;
+      } else {
+        o.name = o.name || name;
+      }
+
       if (auto === 'labels') {
         o.label = o.label || getOptionalLabel(name, optional);
         if (Input === select) {
@@ -971,7 +979,8 @@ function createList(type, opts) {
           ctx: opts.ctx,
           value: this.state.value[i],
           i17n: opts.i17n,
-          i18n: opts.i18n
+          i18n: opts.i18n,
+          name: opts.name
         }, opts.item, true);
 
         children.push(
