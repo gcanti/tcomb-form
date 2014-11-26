@@ -129,7 +129,7 @@ function getChoices(map, order, emptyChoice) {
   });
   if (order) {
     // apply an order (asc, desc) to options
-    choices.sort(Order.meta.map[order || 'asc']);
+    choices.sort(Order.meta.map[order]);
   }
   if (emptyChoice) {
     // add an empty choice as the first choice
