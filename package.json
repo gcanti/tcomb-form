@@ -4,7 +4,8 @@
   "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "browser-test": "browserify test/test | testling -u"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,9 @@
     "browserify": "^6.3.2",
     "reactify": "^0.17.0",
     "vinyl-source-stream": "^1.0.0",
-    "js-beautify": "^1.5.4"
+    "js-beautify": "^1.5.4",
+    "tape": "^3.0.3",
+    "testling": "^1.7.1"
   },
   "tags": [
     "form",
