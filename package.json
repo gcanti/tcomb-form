@@ -1,6 +1,6 @@
 {
   "name": "tcomb-form",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
   "main": "index.js",
   "scripts": {

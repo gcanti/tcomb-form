@@ -18,6 +18,16 @@ var banner = ['/**',
   ''].join('\n');
 
 // ------------------------------------
+// watch (main task for development)
+// ------------------------------------
+var paths = {
+  jsx: ['src/**/*.jsx'],
+};
+gulp.task('watch', ['build'], function() {
+  gulp.watch(paths.jsx, ['build']);
+});
+
+// ------------------------------------
 // default (main task for releases)
 // ------------------------------------
 gulp.task('default', ['build', 'examples', 'playground']);

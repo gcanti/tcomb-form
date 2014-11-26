@@ -1,6 +1,7 @@
 v0.2.1
 
 - `createForm` doesn't handle correctly a `maybe(Num)` field, fix #20
+- better documentation
 
 v0.2.0
 

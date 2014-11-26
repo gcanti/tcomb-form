@@ -11,45 +11,69 @@ Dispatches to `createForm` or `createList` based on the argument `type`.
 # createForm
 
 ```js
-createForm(type, [opts])
+createForm(type, [options])
 ```
 
 Returns a React.js component handling the form fields defined by the `type` struct.
 
 - `type`: a `struct` or a `subtype` of a `struct`
-- `opts`: a hash containing directives on how you want render the form
+- `options`: an optional hash containing directives on how you want to render the form
+
+The props of the struct can be:
+
+- irriducibles or maybe irriducibles
+- a struct (maybe sub structs are not allowed)
+- a list (maybe sub lists are not allowed)
 
 Example
 
 ```js
-var Person = struct({
-  name: Str,
-  surname: Str
+var t = require('tcomb-form');
+
+// define a type
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str
 });
 
-var Form = createForm(Person);
+// create the form
+var Form = t.form.createForm(Person);
+
+// use the form in your component
+var App = React.createClass({
+  onClick: function (evt) {
+    evt.preventDefault();
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+    }
+  },
+  render: function () {
+    return (
+      <form onClick={this.onClick}>
+        <Form ref="form"/>
+        <button className="btn btn-primary">Click me</button>
+      </form>
+    );
+  }
+});
 ```
 
 ## getValue()
 
 Returns an instance of `type` if the validation succeded, `null` otherwise.
 
-## opts.ctx: Any
+## Options
+
+### ctx: Any
 
 Useful to pass a context to deeply nested inputs.
 
-## opts.value: maybe(Obj)
+### value: maybe(Obj)
 
 A hash containing the default values of the form fields.
 
-Example
-
 ```js
-var Person = struct({
-  name: Str,
-  surname: Str
-});
-
 var Form = createForm(Person, {
   value: {
     name: 'Giulio',
@@ -58,111 +82,75 @@ var Form = createForm(Person, {
 });
 ```
 
-## opts.label: Any
+### label: Any
 
 Adds a label above the form.
 
-Example
-
 ```js
-var Person = struct({
-  name: Str,
-  surname: Str
-});
-
 var Form = createForm(Person, {
   label: 'Insert your data'
 });
 ```
 
-## opts.auto
+### auto: enums.of('placeholders labels none')
 
 One of `placeholders` (default), `labels`, `none`. Adds automatically generated placeholders or labels
 to the form. Set `auto` to `none` if you don't want neither.
 
-Example
-
 ```js
-var Person = struct({
-  name: Str,
-  surname: Str
-});
-
 var Form = createForm(Person, {
   auto: 'labels'
 });
 ```
 
-## opts.order: maybe(list(Str))
+### order: maybe(list(union[Str, ReactElement]))
 
-Renders the form fields in the specified order
-
-Example
+Renders the form fields in the specified order.
 
 ```js
-var Person = struct({
-  name: Str,
-  surname: Str
-});
-
 var Form = createForm(Person, {
   order: ['surname', 'name'] // `surname` field first, then `name` field
 });
 ```
 
-## opts.fields: maybe(Obj)
+### fields: maybe(Obj)
 
-A hash containing the options for every fields. See the section `opts` of the inputs types
-for details.
+A hash containing the options for every fields. See the section `options` of the inputs types for details.
 
 ```js
-var Person = struct({
-  name: Str,
-  surname: Str
-});
-
 var Form = createForm(Person, {
   fields: {
-    name: { label: 'Your name' },       // override default placeholder / label
-    surname: { label: 'Your surname' }  // override default placeholder / label
+    // override default placeholder / label
+    name: { label: 'Your name' },
+    // override default placeholder / label
+    surname: { label: 'Your surname' }  
   }
 });
 ```
 
-## opts.breakpoints: maybe(Breakpoints)
+### breakpoints: maybe(Breakpoints)
 
-Useful when the form is horizonatal.
+Useful when the form is horizontal.
 An hash containing the optional keys: `xs`, `sm`, `md`, `lg`.
-For each key you can set the width of the label and the width of the input.
-
-Example
+For each key you can set the width of the label and the width of the input, following Bootstrap 3 conventions.
 
 ```js
-var Person = struct({
-  name: Str,
-  surname: Str,
-});
-
 var Form = createForm(Person, {
   auto: 'labels',
   breakpoints: { md: [2, 10] }
 });
 ```
 
-## opts.i17n: maybe(I17n)
-
-i17n support
-
 # createList
 
 ```js
-createList(type, [opts])
+createList(type, [options])
 ```
 
 Returns a React.js component handling the items defined by the `type` list.
 
 - `type`: a `list` or a `subtype` of a `list`
-- `opts`: a hash containing directives on how you want render the list
+- `options`: a hash containing directives on how you want render the list
 
 Example
 
@@ -176,54 +164,49 @@ var Form = createList(Tags);
 
 Returns an instance of `type` if the validation succeded, `null` otherwise.
 
-## opts.ctx: Any
+## options
+
+### ctx: Any
 
 Useful to pass a context to deeply nested inputs.
 
-## opts.value: maybe(Arr)
+### value: maybe(Arr)
 
-A hash containing the default values of the form fields.
-
-Example
+An array containing the default values of the form fields.
 
 ```js
-var Tags = list(Str);
-
 var Form = createList(Tags, {
   value: ['domain', 'driven', 'forms']
 });
 ```
 
-## opts.label: Any
+### label: Any
 
 Adds a label above the form.
 
 Example
 
 ```js
-var Tags = list(Str);
-
 var Form = createList(Tags, {
   label: 'Insert your tags'
 });
 ```
 
-## opts.disableAdd: maybe(Bool)
+### disableAdd: maybe(Bool)
 
 If set to `true` removes the possibility to add an item to the list.
 
-## opts.disableRemove: maybe(Bool)
+### disableRemove: maybe(Bool)
 
 If set to `true` removes the possibility to remove the items from the list.
 
-## opts.disableOrder: maybe(Bool)
+### disableOrder: maybe(Bool)
 
 If set to `true` removes the possibility to sort the items in the list.
 
-## opts.item: maybe(Obj)
+### item: maybe(Obj)
 
-A hash containing the options for every item in the list. See the section `opts` of the inputs types
-for details.
+A hash containing the options for every item in the list. See the section `options` of the inputs types for details.
 
 ```js
 var Colors = list(Str);
@@ -235,32 +218,125 @@ var Form = createList(Colors, {
 });
 ```
 
-## opts.i17n: maybe(I17n)
+# Inputs
 
-i17n support
+All inputs have the following signature:
+
+```js
+function(type, [options])
+```
+
+- `type`: a type that it makes sense to render in the input
+- `options`: a hash containing directives on how you want render the input
+
+All inputs support the following options:
+
+## Options
+
+### ctx: Any
+
+Useful to pass a context to deeply nested inputs.
+
+### value: Any
+
+The default value of the input.
+
+### label: Any
+
+Adds a label to the input.
+
+### help: Any
+
+Adds a label below the input containing a help for the user.
+
+### name: maybe(Str)
+
+Sets the `name` attribute of the input.
+
+### hasError: maybe(Bool)
+
+Show the input in "error mode".
+
+### message: maybe(union([Str, Func]))
+
+If `hasError = true` adds a label below the input containing the specified error message. `message` can be a function with the following signature
+
+```js
+function (value: Any) -> Str
+```
+
+where `value` is the current value of the input.
+
+An example of setting error messages at runtime using `setState`:
+
+```js
+var Model = t.struct({
+  email: t.Str
+});
+
+function sendDataToServer(values) {
+  return {email: 'Duplicated email'};
+}
+
+var RegisterForm = React.createClass({
+
+  getInitialState: function () {
+    return {};
+  },
+
+  onClick: function(evt) {
+    evt.preventDefault();
+    var values = this.refs.form.getValue();
+    if (values) {
+      var errors = sendDataToServer(values);
+      if (errors.email) {
+        this.setState({
+          email: values.email,
+          emailMessage: errors.email
+        });
+      }
+    }
+  },
+
+  render: function() {
+
+    var Form = t.form.createForm(Model, {
+      fields: {
+        email: {
+          type: 'email',
+          value: this.state.email, // keeps the user input
+          hasError: !!this.state.emailMessage,
+          message: this.state.emailMessage
+        }
+      }
+    });
+
+    return (
+      <form onSubmit={this.onClick}>
+        <Form ref="form"/>
+        <input type="submit" className="button" value="Register" />
+      </form>
+    );
+  }
+});
+```
 
 # textbox
 
 ```js
-textbox(type, [opts])
+textbox(type, [options])
 ```
 
 - `type`: every type that it makes sense to render in a textbox / textarea
-- `opts`: a hash containing directives on how you want render the textbox / textarea
+- `options`: a hash containing directives on how you want render the textbox / textarea
 
-## opts.ctx: Any
+## Options
 
-Useful to pass a context to deeply nested inputs.
+### type: maybe(Str)
 
-## opts.name: maybe(Str)
+One of:
 
-Sets the `name` attribute of the textbox / textarea input.
-
-## opts.type: maybe(Str)
-
-One of
-
-- `text`
+- `text` **default**
 - `textarea`
 - `password`
 - `color`
@@ -277,27 +353,11 @@ One of
 - `url`
 - `week`
 
-## opts.value: Any
-
-The default value of the textbox / textarea.
-
-## opts.label: Any
-
-Adds a label above the textbox / textarea.
-
-## opts.help: Any
-
-Adds a label below the textbox / textarea.
-
-## opts.groupClasses: maybe(Obj)
-
-Customize the `className` of the containing `div`.
-
-## opts.placeholder: maybe(Str)
+### placeholder: maybe(Str)
 
 Overrrides the default placeholder.
 
-## opts.i17n: maybe(I17n)
+### i17n: maybe(I17n)
 
 i17n support
 
@@ -327,60 +387,55 @@ var Form = createForm(Person, {
 });
 ```
 
-## opts.disabled: maybe(Bool)
+### disabled: maybe(Bool)
 
-Disable the input.
+Makes the textbox disabled.
 
-## opts.readOnly: maybe(Bool)
+### readOnly: maybe(Bool)
 
-Makes the the input readOnly.
+Makes the textbox readOnly.
 
-## opts.addonBefore: Any
+### Bootstrap goodies options
 
-Bootstrap 3 addon before.
+- addonBefore: Any. Bootstrap 3 addon before
+- addonAfter: Any. Bootstrap 3 addon after
+- height: maybe(Size). One of `xs`, `sm`, `md`, `lg`
 
-## opts.addonAfter: Any
+```js
+var Person = struct({
+  name: Str,
+  surname: Str,
+  preferredSong: Str,
+  twitter: Str
+});
 
-Bootstrap 3 addon after.
+var Form = createForm(Person, {
+  fields: {
+    // control sizing
+    name: {height: 'lg'},
+    // addon after
+    preferredSong: {
+      addonAfter: React.DOM.span({className: 'glyphicon glyphicon-music'})
+    },
+    // addon before
+    twitter: {
+      addonBefore: '@'
+    }
+  }  
+});
 
-## opts.height: maybe(Size)
-
-Set height, one of `xs`, `sm`, `md`, `lg`.
+```
 
 # select
 
 ```js
-textbox(type, [opts])
+select(type, [options])
 ```
 
 - `type`: an `enums` or a `subtype` of an `enums`
-- `opts`: a hash containing directives on how you want render the select
+- `options`: a hash containing directives on how you want render the select
 
-## opts.ctx: Any
-
-Useful to pass a context to deeply nested inputs.
-
-## opts.name: maybe(Str)
-
-Sets the `name` attribute of the select input.
-
-## opts.value: maybe(type)
-
-The default value of the select.
-
-## opts.label: Any
-
-Adds a label above the select.
-
-## opts.help: Any 
-
-Adds a label below the select.
-
-## opts.groupClasses: maybe(Obj)
-
-Customize the `className` of the containing `div`.
-
-## opts.multiple: maybe(Bool)
+### multiple: maybe(Bool)
 
 Sets the `multiple` attribute of the select input.
 
@@ -404,12 +459,10 @@ var Form = t.form.createForm(Person, {
 });
 ```
 
-## opts.emptyOption: maybe(Option)
+### emptyOption: maybe(Option)
 
 Adds a first option to the select representing a "no choice".
 Overrides the default one.
-
-Example
 
 ```js
 var Country = enums({ IT: 'Italy', US: 'United States' });
@@ -428,19 +481,19 @@ var Form = createForm(Person, {
 });
 ```
 
-## opts.order: maybe(Order)
+### order: maybe(Order)
 
 Sorts the options `asc` or `desc`.
 
-## opts.disabled: maybe(Bool)
+### disabled: maybe(Bool)
 
-Disable the input.
+Makes the select disabled.
 
-## opts.height: maybe(Size)
+### height: maybe(Size)
 
 Set height, one of `xs`, `sm`, `md`, `lg`.
 
-## opts.options: maybe(list(Option))
+### options: maybe(list(Option))
 
 Allows to override the default options created by the library.
 
@@ -505,70 +558,22 @@ var Form = t.form.createForm(MyStruct, {
 # radio
 
 ```js
-textbox(type, [opts])
+radio(type, [options])
 ```
 
 - `type`: an `enums` or a `subtype` of an `enums`
-- `opts`: a hash containing directives on how you want render the radio
+- `options`: a hash containing directives on how you want render the radio
 
-## opts.ctx: Any
-
-Useful to pass a context to deeply nested inputs.
-
-## opts.name: maybe(Str)
-
-Sets the `name` attribute of all the radio inputs.
-
-## opts.value: Any
-
-The default value of the radio.
-
-## opts.label: Any
-
-Adds a label above the radio.
-
-## opts.help: Any
-
-Adds a label below the radio.
-
-## opts.groupClasses: maybe(Obj)
-
-Customize the `className` of the containing `div`.
-
-## opts.order: maybe(Order)
+### order: maybe(Order)
 
 # checkbox
 
 ```js
-checkbox(type, [opts])
+checkbox(type, [options])
 ```
 
 - `type`: a `Bool` or a `subtype` of a `Bool`
-- `opts`: a hash containing directives on how you want render the checkbox
-
-## opts.ctx: Any
-
-Useful to pass a context to deeply nested inputs.
-
-## opts.name: maybe(Str)
-
-Sets the `name` attribute of the checkbox input.
-
-## opts.value: maybe(type)
-
-The default value of the checkbox.
-
-## opts.label: Any
-
-Adds a label above the checkbox.
-
-## opts.help: Any
-
-Adds a label below the checkbox.
-
-## opts.groupClasses: maybe(Obj)
-
-Customize the `className` of the containing `div`.
+- `options`: a hash containing directives on how you want render the checkbox
 
 # Custom inputs
 

@@ -43,7 +43,7 @@ var t = require('tcomb-form');
 // define a type
 var Person = t.struct({
   name: t.Str,
-  surname: t.Bool
+  surname: t.Str
 });
 
 // create the form
@@ -60,9 +60,9 @@ var App = React.createClass({
   },
   render: function () {
     return (
-      <form>
+      <form onClick={this.onClick}>
         <Form ref="form"/>
-        <button className="btn btn-primary" onClick={this.onClick}>Click me</button>
+        <button className="btn btn-primary">Click me</button>
       </form>
     );
   }
