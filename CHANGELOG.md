@@ -1,3 +1,9 @@
+v0.2.2
+
+- upgrade to tcomb-validation v0.2.1
+- better lists management
+- `createForm` and `createList` apis are deprecated and they will be removed in the next release. Use `create` instead.
+
 v0.2.1
 
 - `createForm` doesn't handle correctly a `maybe(Num)` field, fix #20

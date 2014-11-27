@@ -3,27 +3,15 @@ If you don't know how to define types with tcomb you may want to take a look at 
 # create
 
 ```js
-create(type, [opts])
+create(type, [options])
 ```
 
-Dispatches to `createForm` or `createList` based on the argument `type`.
+Returns a React.js component handling the form fields defined by `type`.
 
-# createForm
-
-```js
-createForm(type, [options])
-```
-
-Returns a React.js component handling the form fields defined by the `type` struct.
-
-- `type`: a `struct` or a `subtype` of a `struct`
+- `type`: a `tcomb` type
 - `options`: an optional hash containing directives on how you want to render the form
 
-The props of the struct can be:
-
-- irriducibles or maybe irriducibles
-- a struct (maybe sub structs are not allowed)
-- a list (maybe sub lists are not allowed)
+# structs
 
 Example
 
@@ -37,7 +25,7 @@ var Person = t.struct({
 });
 
 // create the form
-var Form = t.form.createForm(Person);
+var Form = t.form.create(Person);
 
 // use the form in your component
 var App = React.createClass({
@@ -74,7 +62,7 @@ Useful to pass a context to deeply nested inputs.
 A hash containing the default values of the form fields.
 
 ```js
-var Form = createForm(Person, {
+var Form = create(Person, {
   value: {
     name: 'Giulio',
     surname: 'Canti'
@@ -87,7 +75,7 @@ var Form = createForm(Person, {
 Adds a label above the form.
 
 ```js
-var Form = createForm(Person, {
+var Form = create(Person, {
   label: 'Insert your data'
 });
 ```
@@ -98,7 +86,7 @@ One of `placeholders` (default), `labels`, `none`. Adds automatically generated 
 to the form. Set `auto` to `none` if you don't want neither.
 
 ```js
-var Form = createForm(Person, {
+var Form = create(Person, {
   auto: 'labels'
 });
 ```
@@ -108,7 +96,7 @@ var Form = createForm(Person, {
 Renders the form fields in the specified order.
 
 ```js
-var Form = createForm(Person, {
+var Form = create(Person, {
   order: ['surname', 'name'] // `surname` field first, then `name` field
 });
 ```
@@ -118,12 +106,12 @@ var Form = createForm(Person, {
 A hash containing the options for every fields. See the section `options` of the inputs types for details.
 
 ```js
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     // override default placeholder / label
     name: { label: 'Your name' },
     // override default placeholder / label
-    surname: { label: 'Your surname' }  
+    surname: { label: 'Your surname' }
   }
 });
 ```
@@ -135,29 +123,20 @@ An hash containing the optional keys: `xs`, `sm`, `md`, `lg`.
 For each key you can set the width of the label and the width of the input, following Bootstrap 3 conventions.
 
 ```js
-var Form = createForm(Person, {
+var Form = create(Person, {
   auto: 'labels',
   breakpoints: { md: [2, 10] }
 });
 ```
 
-# createList
-
-```js
-createList(type, [options])
-```
-
-Returns a React.js component handling the items defined by the `type` list.
-
-- `type`: a `list` or a `subtype` of a `list`
-- `options`: a hash containing directives on how you want render the list
+# lists
 
 Example
 
 ```js
 var Tags = list(Str);
 
-var Form = createList(Tags);
+var Form = create(Tags);
 ```
 
 ## getValue()
@@ -175,7 +154,7 @@ Useful to pass a context to deeply nested inputs.
 An array containing the default values of the form fields.
 
 ```js
-var Form = createList(Tags, {
+var Form = create(Tags, {
   value: ['domain', 'driven', 'forms']
 });
 ```
@@ -187,7 +166,7 @@ Adds a label above the form.
 Example
 
 ```js
-var Form = createList(Tags, {
+var Form = create(Tags, {
   label: 'Insert your tags'
 });
 ```
@@ -211,7 +190,7 @@ A hash containing the options for every item in the list. See the section `optio
 ```js
 var Colors = list(Str);
 
-var Form = createList(Colors, {
+var Form = create(Colors, {
   item: {
     type: 'color' // use HTML5 color textbox
   }
@@ -300,7 +279,7 @@ var RegisterForm = React.createClass({
 
   render: function() {
 
-    var Form = t.form.createForm(Model, {
+    var Form = t.form.create(Model, {
       fields: {
         email: {
           type: 'email',
@@ -369,7 +348,7 @@ var Person = struct({
   age: Num // a number property
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     age: {
       i17n: {
@@ -409,7 +388,7 @@ var Person = struct({
   twitter: Str
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     // control sizing
     name: {height: 'lg'},
@@ -421,7 +400,7 @@ var Form = createForm(Person, {
     twitter: {
       addonBefore: '@'
     }
-  }  
+  }
 });
 
 ```
@@ -449,7 +428,7 @@ var Person = struct({
   country: list(Country)
 });
 
-var Form = t.form.createForm(Person, {
+var Form = t.form.create(Person, {
   fields: {
     country: {
       multiple: true,
@@ -472,7 +451,7 @@ var Person = struct({
   country: Country
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     country: {
       emptyOption: {value: '', text: '-'}
@@ -536,7 +515,7 @@ var MyStruct = struct({
   myenum: MyEnum
 });
 
-var Form = t.form.createForm(MyStruct, {
+var Form = t.form.create(MyStruct, {
   fields: {
     myenum: {
       options: [
@@ -597,7 +576,7 @@ var Person = struct({
   secret: Str // this will be the `type` argument passed to `hiddenInput`
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     // this will be the `opts` argument passed to `hiddenInput`
     secret: {

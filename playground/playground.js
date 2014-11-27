@@ -1,13 +1,14 @@
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
- * @version v0.2.1
+ * @version v0.2.2
  * @link https://github.com/gcanti/tcomb-form
  * @license MIT
  */
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./playground/playground.jsx":[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 $(function () {
 
   var React = require('react');
+  window.React = React;
   var t = require('../index');
   var beautifyHtml = require('js-beautify').html;
 
@@ -26,8 +27,7 @@ $(function () {
   var subtype = t.subtype;
   var struct = t.struct;
 
-  var createForm = t.form.createForm;
-  var createList = t.form.createList;
+  var create = t.form.create;
   var radio = t.form.radio;
   var select = t.form.select;
 
@@ -154,10 +154,10 @@ $(function () {
   run(defaultExample);
 
 });
-},{"../index":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","js-beautify":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/index.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/index.js":[function(require,module,exports){
+},{"../index":2,"js-beautify":4,"react":154}],2:[function(require,module,exports){
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
- * @version v0.2.1
+ * @version v0.2.2
  * @link https://github.com/gcanti/tcomb-form
  * @license MIT
  */
@@ -454,11 +454,9 @@ function getInitialState(hasError, defaultValue) {
 
 function getValue(type) {
   return function () {
-    var value = this.getRawValue();
-    var result = t.validate(value, type);
-    var isValid = result.isValid();
-    this.setState({hasError: !isValid, value: value});
-    return isValid ? result.value : result;
+    var result = t.validate(this.getRawValue(), type);
+    this.setState({hasError: !result.isValid(), value: result.value});
+    return result;
   };
 }
 
@@ -891,6 +889,7 @@ function createForm(type, opts) {
   opts = new FormOpts(opts || {});
 
   var Struct = stripOuterType(type);
+  assert(getKind(Struct) === 'struct');
   var props = Struct.meta.props;
   var keys = Object.keys(props);
   var order = opts.order || keys;
@@ -971,33 +970,44 @@ function createForm(type, opts) {
 
     getInitialState: getInitialState(opts.hasError, defaultValue),
 
-    getValue: function (depth) {
-
-      depth = depth || 0;
+    getValue: function (doReturnValidationResult) {
 
       var errors = [];
       var value = {};
+      var isValid = true;
       var result;
 
       for ( var i = 0 ; i < len ; i++ ) {
         var name = order[i];
-        var result = this.refs[name].getValue(depth + 1);
+        var result = this.refs[name].getValue(true);
         if (ValidationResult.is(result)) {
-          errors = errors.concat(result.errors);
+          if (!result.isValid()) {
+            isValid = false;
+            errors = errors.concat(result.errors);
+          }
           value[name] = result.value;
         } else {
           value[name] = result;
         }
       }
 
-      if (errors.length) {
-        return depth ? new ValidationResult({errors: errors, value: value}) : null;
+      if (!isValid) {
+        this.setState({hasError: false, value: value});
+        return doReturnValidationResult ? new ValidationResult({errors: errors, value: value}) : null;
       }
 
-      result = t.validate(new Struct(value), type);
-      var isValid = result.isValid();
-      this.setState({hasError: !isValid, value: value});
-      return isValid ? result.value : depth ? result : null;
+      value = new Struct(value);
+
+      if (getKind(type) === 'subtype') {
+        result = t.validate(value, type);
+        if (!result.isValid()) {
+          this.setState({hasError: true, value: value});
+          return doReturnValidationResult ? result : null;
+        }
+      }
+
+      this.setState({hasError: false, value: value});
+      return doReturnValidationResult ? new ValidationResult({errors: [], value: value}) : value;
     },
 
     render: function () {
@@ -1042,6 +1052,7 @@ var ListOpts = struct({
 function createList(type, opts) {
 
   assert(Type.is(type));
+  assert(getKind(type) === 'list');
 
   opts = new ListOpts(opts || {});
 
@@ -1058,68 +1069,67 @@ function createList(type, opts) {
 
     getInitialState: getInitialState(opts.hasError, defaultValue),
 
-    getValue: function (depth) {
-
-      depth = depth || 0;
+    getValue: function (doReturnValidationResult) {
 
       var errors = [];
       var value = [];
+      var isValid = true;
       var result;
 
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
-        var result = this.refs[i].getValue(depth + 1);
+        var result = this.refs[i].getValue(true);
         if (ValidationResult.is(result)) {
-          value[name] = result.value;
+          if (!result.isValid()) {
+            isValid = false;
+            errors = errors.concat(result.errors);
+          }
+          value.push(result.value);
         } else {
           value.push(result);
         }
       }
 
-      if (errors.length) {
-        return depth ? new ValidationResult({errors: errors, value: value}) : null;
+      if (!isValid) {
+        return doReturnValidationResult ? new ValidationResult({errors: errors, value: value}) : null;
       }
-
-      result = t.validate(value, type);
-      var isValid = result.isValid();
-      this.setState({hasError: !isValid, value: value});
-      return isValid ? result.value : depth ? result : null;
+      return doReturnValidationResult ? new ValidationResult({errors: [], value: value}) : value;
     },
 
     add: function (evt) {
-      evt.preventDefault();
+      evt && evt.preventDefault();
       var value = this.getValue();
       if (value) {
         value = value.concat(null);
-        this.setState({hasError: this.state.hasError, value: value});
+        this.setState({value: value});
       }
     },
 
     remove: function (i, evt) {
-      evt.preventDefault();
+      evt && evt.preventDefault();
       var value = this.getValue();
       if (value) {
         value = remove(value, i);
       } else {
         value = remove(this.state.value, i);
       }
-      this.setState({hasError: this.state.hasError, value: value});
+      this.setState({value: value});
     },
 
     moveUp: function (i, evt) {
-      evt.preventDefault();
+      evt && evt.preventDefault();
       var value = this.getValue();
       if (i > 0 && value) {
         value = moveUp(value, i);
-        this.setState({hasError: this.state.hasError, value: value});
+        this.setState({value: value});
       }
     },
 
     moveDown: function (i, evt) {
-      evt.preventDefault();
+      evt && evt.preventDefault();
       var value = this.getValue();
       if (i < this.state.value.length - 1 && value) {
         value = moveDown(value, i);
-        this.setState({hasError: this.state.hasError, value: value});
+        this.setState({value: value});
       }
     },
 
@@ -1202,6 +1212,8 @@ var options = {
 // exports
 //
 
+var isConsoleSupported = typeof console !== 'undefined' && Func.is(console.warn);
+
 t.form = {
   options: options,
   util: {
@@ -1215,15 +1227,27 @@ t.form = {
   select: select,
   radio: radio,
   checkbox: checkbox,
-  createForm: createForm,
-  createList: createList,
+  createForm: function (type, opts) {
+    // deprecated api
+    if (isConsoleSupported) {
+      console.warn('Warning: `createForm` is deprecated and it will be removed in the next release. Use `create` instead.');
+    }
+    return createForm(type, opts);
+  },
+  createList: function (type, opts) {
+    // deprecated api
+    if (isConsoleSupported) {
+      console.warn('Warning: `createList` is deprecated and it will be removed in the next release. Use `create` instead.');
+    }
+    return createList(type, opts);
+  },
   create: create
 };
 
 module.exports = t;
 
 
-},{"react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","react/lib/cx":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/cx.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
+},{"react":154,"react/lib/cx":112,"tcomb-validation":155}],3:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1311,7 +1335,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/index.js":[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
 The following batches are equivalent:
 
@@ -1368,7 +1392,7 @@ if (typeof define === "function" && define.amd) {
 }
 
 
-},{"./lib/beautify":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/lib/beautify.js","./lib/beautify-css":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/lib/beautify-css.js","./lib/beautify-html":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/lib/beautify-html.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/lib/beautify-css.js":[function(require,module,exports){
+},{"./lib/beautify":7,"./lib/beautify-css":5,"./lib/beautify-html":6}],5:[function(require,module,exports){
 (function (global){
 /*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
 /*
@@ -1811,7 +1835,7 @@ if (typeof define === "function" && define.amd) {
 }());
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/lib/beautify-html.js":[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
 /*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
 /*
@@ -2695,7 +2719,7 @@ if (typeof define === "function" && define.amd) {
 }());
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./beautify-css.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/lib/beautify-css.js","./beautify.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/lib/beautify.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/js-beautify/js/lib/beautify.js":[function(require,module,exports){
+},{"./beautify-css.js":5,"./beautify.js":7}],7:[function(require,module,exports){
 (function (global){
 /*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
 /*
@@ -4624,7 +4648,7 @@ if (typeof define === "function" && define.amd) {
 }());
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js":[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -4651,7 +4675,7 @@ var AutoFocusMixin = {
 
 module.exports = AutoFocusMixin;
 
-},{"./focusNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/focusNode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/BeforeInputEventPlugin.js":[function(require,module,exports){
+},{"./focusNode":119}],9:[function(require,module,exports){
 /**
  * Copyright 2013 Facebook, Inc.
  * All rights reserved.
@@ -4873,7 +4897,7 @@ var BeforeInputEventPlugin = {
 
 module.exports = BeforeInputEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./SyntheticInputEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticInputEvent.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSProperty.js":[function(require,module,exports){
+},{"./EventConstants":22,"./EventPropagators":27,"./ExecutionEnvironment":28,"./SyntheticInputEvent":96,"./keyOf":141}],10:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -4989,7 +5013,7 @@ var CSSProperty = {
 
 module.exports = CSSProperty;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSPropertyOperations.js":[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -5124,7 +5148,7 @@ var CSSPropertyOperations = {
 module.exports = CSSPropertyOperations;
 
 }).call(this,require('_process'))
-},{"./CSSProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSProperty.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./camelizeStyleName":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/camelizeStyleName.js","./dangerousStyleValue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/dangerousStyleValue.js","./hyphenateStyleName":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/hyphenateStyleName.js","./memoizeStringOnly":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/memoizeStringOnly.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CallbackQueue.js":[function(require,module,exports){
+},{"./CSSProperty":10,"./ExecutionEnvironment":28,"./camelizeStyleName":107,"./dangerousStyleValue":113,"./hyphenateStyleName":132,"./memoizeStringOnly":143,"./warning":153,"_process":3}],12:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -5224,7 +5248,7 @@ PooledClass.addPoolingTo(CallbackQueue);
 module.exports = CallbackQueue;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ChangeEventPlugin.js":[function(require,module,exports){
+},{"./Object.assign":33,"./PooledClass":34,"./invariant":134,"_process":3}],13:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -5606,7 +5630,7 @@ var ChangeEventPlugin = {
 
 module.exports = ChangeEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js","./isEventSupported":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isEventSupported.js","./isTextInputElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextInputElement.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ClientReactRootIndex.js":[function(require,module,exports){
+},{"./EventConstants":22,"./EventPluginHub":24,"./EventPropagators":27,"./ExecutionEnvironment":28,"./ReactUpdates":86,"./SyntheticEvent":94,"./isEventSupported":135,"./isTextInputElement":137,"./keyOf":141}],14:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -5631,7 +5655,7 @@ var ClientReactRootIndex = {
 
 module.exports = ClientReactRootIndex;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CompositionEventPlugin.js":[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -5890,7 +5914,7 @@ var CompositionEventPlugin = {
 
 module.exports = CompositionEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./ReactInputSelection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInputSelection.js","./SyntheticCompositionEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticCompositionEvent.js","./getTextContentAccessor":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getTextContentAccessor.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMChildrenOperations.js":[function(require,module,exports){
+},{"./EventConstants":22,"./EventPropagators":27,"./ExecutionEnvironment":28,"./ReactInputSelection":66,"./SyntheticCompositionEvent":92,"./getTextContentAccessor":129,"./keyOf":141}],16:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -6065,7 +6089,7 @@ var DOMChildrenOperations = {
 module.exports = DOMChildrenOperations;
 
 }).call(this,require('_process'))
-},{"./Danger":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Danger.js","./ReactMultiChildUpdateTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChildUpdateTypes.js","./getTextContentAccessor":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getTextContentAccessor.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js":[function(require,module,exports){
+},{"./Danger":19,"./ReactMultiChildUpdateTypes":72,"./getTextContentAccessor":129,"./invariant":134,"_process":3}],17:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -6364,7 +6388,7 @@ var DOMProperty = {
 module.exports = DOMProperty;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js":[function(require,module,exports){
+},{"./invariant":134,"_process":3}],18:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -6561,7 +6585,7 @@ var DOMPropertyOperations = {
 module.exports = DOMPropertyOperations;
 
 }).call(this,require('_process'))
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./escapeTextForBrowser":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextForBrowser.js","./memoizeStringOnly":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/memoizeStringOnly.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Danger.js":[function(require,module,exports){
+},{"./DOMProperty":17,"./escapeTextForBrowser":117,"./memoizeStringOnly":143,"./warning":153,"_process":3}],19:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -6747,7 +6771,7 @@ var Danger = {
 module.exports = Danger;
 
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./createNodesFromMarkup":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createNodesFromMarkup.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","./getMarkupWrap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getMarkupWrap.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DefaultEventPluginOrder.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":28,"./createNodesFromMarkup":111,"./emptyFunction":115,"./getMarkupWrap":126,"./invariant":134,"_process":3}],20:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -6787,7 +6811,7 @@ var DefaultEventPluginOrder = [
 
 module.exports = DefaultEventPluginOrder;
 
-},{"./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EnterLeaveEventPlugin.js":[function(require,module,exports){
+},{"./keyOf":141}],21:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -6927,7 +6951,7 @@ var EnterLeaveEventPlugin = {
 
 module.exports = EnterLeaveEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./SyntheticMouseEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js":[function(require,module,exports){
+},{"./EventConstants":22,"./EventPropagators":27,"./ReactMount":70,"./SyntheticMouseEvent":98,"./keyOf":141}],22:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -6999,7 +7023,7 @@ var EventConstants = {
 
 module.exports = EventConstants;
 
-},{"./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventListener.js":[function(require,module,exports){
+},{"./keyMirror":140}],23:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014 Facebook, Inc.
@@ -7089,7 +7113,7 @@ var EventListener = {
 module.exports = EventListener;
 
 }).call(this,require('_process'))
-},{"./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js":[function(require,module,exports){
+},{"./emptyFunction":115,"_process":3}],24:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -7365,7 +7389,7 @@ var EventPluginHub = {
 module.exports = EventPluginHub;
 
 }).call(this,require('_process'))
-},{"./EventPluginRegistry":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginRegistry.js","./EventPluginUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js","./accumulateInto":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/forEachAccumulated.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginRegistry.js":[function(require,module,exports){
+},{"./EventPluginRegistry":25,"./EventPluginUtils":26,"./accumulateInto":104,"./forEachAccumulated":120,"./invariant":134,"_process":3}],25:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -7645,7 +7669,7 @@ var EventPluginRegistry = {
 module.exports = EventPluginRegistry;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js":[function(require,module,exports){
+},{"./invariant":134,"_process":3}],26:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -7866,7 +7890,7 @@ var EventPluginUtils = {
 module.exports = EventPluginUtils;
 
 }).call(this,require('_process'))
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js":[function(require,module,exports){
+},{"./EventConstants":22,"./invariant":134,"_process":3}],27:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -8008,7 +8032,7 @@ var EventPropagators = {
 module.exports = EventPropagators;
 
 }).call(this,require('_process'))
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js","./accumulateInto":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/forEachAccumulated.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js":[function(require,module,exports){
+},{"./EventConstants":22,"./EventPluginHub":24,"./accumulateInto":104,"./forEachAccumulated":120,"_process":3}],28:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -8053,7 +8077,7 @@ var ExecutionEnvironment = {
 
 module.exports = ExecutionEnvironment;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/HTMLDOMPropertyConfig.js":[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -8239,7 +8263,7 @@ var HTMLDOMPropertyConfig = {
 
 module.exports = HTMLDOMPropertyConfig;
 
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LinkedValueUtils.js":[function(require,module,exports){
+},{"./DOMProperty":17,"./ExecutionEnvironment":28}],30:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -8395,7 +8419,7 @@ var LinkedValueUtils = {
 module.exports = LinkedValueUtils;
 
 }).call(this,require('_process'))
-},{"./ReactPropTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypes.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LocalEventTrapMixin.js":[function(require,module,exports){
+},{"./ReactPropTypes":79,"./invariant":134,"_process":3}],31:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -8445,7 +8469,7 @@ var LocalEventTrapMixin = {
 module.exports = LocalEventTrapMixin;
 
 }).call(this,require('_process'))
-},{"./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./accumulateInto":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/forEachAccumulated.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/MobileSafariClickEventPlugin.js":[function(require,module,exports){
+},{"./ReactBrowserEventEmitter":37,"./accumulateInto":104,"./forEachAccumulated":120,"./invariant":134,"_process":3}],32:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -8503,7 +8527,7 @@ var MobileSafariClickEventPlugin = {
 
 module.exports = MobileSafariClickEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js":[function(require,module,exports){
+},{"./EventConstants":22,"./emptyFunction":115}],33:[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
  * All rights reserved.
@@ -8550,7 +8574,7 @@ function assign(target, sources) {
 
 module.exports = assign;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js":[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -8666,7 +8690,7 @@ var PooledClass = {
 module.exports = PooledClass;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/React.js":[function(require,module,exports){
+},{"./invariant":134,"_process":3}],35:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -8854,7 +8878,7 @@ React.version = '0.12.1';
 module.exports = React;
 
 }).call(this,require('_process'))
-},{"./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./EventPluginUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactChildren.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactContext":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactDOMComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js","./ReactDefaultInjection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultInjection.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactLegacyElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLegacyElement.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactMultiChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChild.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactPropTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypes.js","./ReactServerRendering":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRendering.js","./ReactTextComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactTextComponent.js","./deprecated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/deprecated.js","./onlyChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/onlyChild.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js":[function(require,module,exports){
+},{"./DOMPropertyOperations":18,"./EventPluginUtils":26,"./ExecutionEnvironment":28,"./Object.assign":33,"./ReactChildren":38,"./ReactComponent":39,"./ReactCompositeComponent":41,"./ReactContext":42,"./ReactCurrentOwner":43,"./ReactDOM":44,"./ReactDOMComponent":46,"./ReactDefaultInjection":56,"./ReactElement":59,"./ReactElementValidator":60,"./ReactInstanceHandles":67,"./ReactLegacyElement":68,"./ReactMount":70,"./ReactMultiChild":71,"./ReactPerf":75,"./ReactPropTypes":79,"./ReactServerRendering":83,"./ReactTextComponent":85,"./deprecated":114,"./onlyChild":145,"_process":3}],36:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -8897,7 +8921,7 @@ var ReactBrowserComponentMixin = {
 module.exports = ReactBrowserComponentMixin;
 
 }).call(this,require('_process'))
-},{"./ReactEmptyComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js":[function(require,module,exports){
+},{"./ReactEmptyComponent":61,"./ReactMount":70,"./invariant":134,"_process":3}],37:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -9252,7 +9276,7 @@ var ReactBrowserEventEmitter = assign({}, ReactEventEmitterMixin, {
 
 module.exports = ReactBrowserEventEmitter;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js","./EventPluginRegistry":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginRegistry.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactEventEmitterMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEventEmitterMixin.js","./ViewportMetrics":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ViewportMetrics.js","./isEventSupported":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isEventSupported.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactChildren.js":[function(require,module,exports){
+},{"./EventConstants":22,"./EventPluginHub":24,"./EventPluginRegistry":25,"./Object.assign":33,"./ReactEventEmitterMixin":63,"./ViewportMetrics":103,"./isEventSupported":135}],38:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -9402,7 +9426,7 @@ var ReactChildren = {
 module.exports = ReactChildren;
 
 }).call(this,require('_process'))
-},{"./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./traverseAllChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/traverseAllChildren.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js":[function(require,module,exports){
+},{"./PooledClass":34,"./traverseAllChildren":152,"./warning":153,"_process":3}],39:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -9845,7 +9869,7 @@ var ReactComponent = {
 module.exports = ReactComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactOwner.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentBrowserEnvironment.js":[function(require,module,exports){
+},{"./Object.assign":33,"./ReactElement":59,"./ReactOwner":74,"./ReactUpdates":86,"./invariant":134,"./keyMirror":140,"_process":3}],40:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -9967,7 +9991,7 @@ var ReactComponentBrowserEnvironment = {
 module.exports = ReactComponentBrowserEnvironment;
 
 }).call(this,require('_process'))
-},{"./ReactDOMIDOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMIDOperations.js","./ReactMarkupChecksum":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMarkupChecksum.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactReconcileTransaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconcileTransaction.js","./getReactRootElementInContainer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getReactRootElementInContainer.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./setInnerHTML":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setInnerHTML.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js":[function(require,module,exports){
+},{"./ReactDOMIDOperations":48,"./ReactMarkupChecksum":69,"./ReactMount":70,"./ReactPerf":75,"./ReactReconcileTransaction":81,"./getReactRootElementInContainer":128,"./invariant":134,"./setInnerHTML":148,"_process":3}],41:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -11407,7 +11431,7 @@ var ReactCompositeComponent = {
 module.exports = ReactCompositeComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactContext":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js","./ReactEmptyComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js","./ReactErrorUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactErrorUtils.js","./ReactLegacyElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLegacyElement.js","./ReactOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactOwner.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactPropTransferer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTransferer.js","./ReactPropTypeLocationNames":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocationNames.js","./ReactPropTypeLocations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocations.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./instantiateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js","./mapObject":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/mapObject.js","./monitorCodeUse":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/monitorCodeUse.js","./shouldUpdateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shouldUpdateReactComponent.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js":[function(require,module,exports){
+},{"./Object.assign":33,"./ReactComponent":39,"./ReactContext":42,"./ReactCurrentOwner":43,"./ReactElement":59,"./ReactElementValidator":60,"./ReactEmptyComponent":61,"./ReactErrorUtils":62,"./ReactLegacyElement":68,"./ReactOwner":74,"./ReactPerf":75,"./ReactPropTransferer":76,"./ReactPropTypeLocationNames":77,"./ReactPropTypeLocations":78,"./ReactUpdates":86,"./instantiateReactComponent":133,"./invariant":134,"./keyMirror":140,"./keyOf":141,"./mapObject":142,"./monitorCodeUse":144,"./shouldUpdateReactComponent":150,"./warning":153,"_process":3}],42:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -11469,7 +11493,7 @@ var ReactContext = {
 
 module.exports = ReactContext;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js":[function(require,module,exports){
+},{"./Object.assign":33}],43:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -11503,7 +11527,7 @@ var ReactCurrentOwner = {
 
 module.exports = ReactCurrentOwner;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js":[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -11686,7 +11710,7 @@ var ReactDOM = mapObject({
 module.exports = ReactDOM;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js","./ReactLegacyElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLegacyElement.js","./mapObject":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/mapObject.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMButton.js":[function(require,module,exports){
+},{"./ReactElement":59,"./ReactElementValidator":60,"./ReactLegacyElement":68,"./mapObject":142,"_process":3}],45:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -11751,7 +11775,7 @@ var ReactDOMButton = ReactCompositeComponent.createClass({
 
 module.exports = ReactDOMButton;
 
-},{"./AutoFocusMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js":[function(require,module,exports){
+},{"./AutoFocusMixin":8,"./ReactBrowserComponentMixin":36,"./ReactCompositeComponent":41,"./ReactDOM":44,"./ReactElement":59,"./keyMirror":140}],46:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -12238,7 +12262,7 @@ assign(
 module.exports = ReactDOMComponent;
 
 }).call(this,require('_process'))
-},{"./CSSPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSPropertyOperations.js","./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactMultiChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChild.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./escapeTextForBrowser":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextForBrowser.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./isEventSupported":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isEventSupported.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js","./monitorCodeUse":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/monitorCodeUse.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMForm.js":[function(require,module,exports){
+},{"./CSSPropertyOperations":11,"./DOMProperty":17,"./DOMPropertyOperations":18,"./Object.assign":33,"./ReactBrowserComponentMixin":36,"./ReactBrowserEventEmitter":37,"./ReactComponent":39,"./ReactMount":70,"./ReactMultiChild":71,"./ReactPerf":75,"./escapeTextForBrowser":117,"./invariant":134,"./isEventSupported":135,"./keyOf":141,"./monitorCodeUse":144,"_process":3}],47:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -12288,7 +12312,7 @@ var ReactDOMForm = ReactCompositeComponent.createClass({
 
 module.exports = ReactDOMForm;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./LocalEventTrapMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LocalEventTrapMixin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMIDOperations.js":[function(require,module,exports){
+},{"./EventConstants":22,"./LocalEventTrapMixin":31,"./ReactBrowserComponentMixin":36,"./ReactCompositeComponent":41,"./ReactDOM":44,"./ReactElement":59}],48:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -12474,7 +12498,7 @@ var ReactDOMIDOperations = {
 module.exports = ReactDOMIDOperations;
 
 }).call(this,require('_process'))
-},{"./CSSPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSPropertyOperations.js","./DOMChildrenOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMChildrenOperations.js","./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./setInnerHTML":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setInnerHTML.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMImg.js":[function(require,module,exports){
+},{"./CSSPropertyOperations":11,"./DOMChildrenOperations":16,"./DOMPropertyOperations":18,"./ReactMount":70,"./ReactPerf":75,"./invariant":134,"./setInnerHTML":148,"_process":3}],49:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -12522,7 +12546,7 @@ var ReactDOMImg = ReactCompositeComponent.createClass({
 
 module.exports = ReactDOMImg;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./LocalEventTrapMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LocalEventTrapMixin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMInput.js":[function(require,module,exports){
+},{"./EventConstants":22,"./LocalEventTrapMixin":31,"./ReactBrowserComponentMixin":36,"./ReactCompositeComponent":41,"./ReactDOM":44,"./ReactElement":59}],50:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -12700,7 +12724,7 @@ var ReactDOMInput = ReactCompositeComponent.createClass({
 module.exports = ReactDOMInput;
 
 }).call(this,require('_process'))
-},{"./AutoFocusMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js","./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./LinkedValueUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LinkedValueUtils.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMOption.js":[function(require,module,exports){
+},{"./AutoFocusMixin":8,"./DOMPropertyOperations":18,"./LinkedValueUtils":30,"./Object.assign":33,"./ReactBrowserComponentMixin":36,"./ReactCompositeComponent":41,"./ReactDOM":44,"./ReactElement":59,"./ReactMount":70,"./ReactUpdates":86,"./invariant":134,"_process":3}],51:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -12753,7 +12777,7 @@ var ReactDOMOption = ReactCompositeComponent.createClass({
 module.exports = ReactDOMOption;
 
 }).call(this,require('_process'))
-},{"./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMSelect.js":[function(require,module,exports){
+},{"./ReactBrowserComponentMixin":36,"./ReactCompositeComponent":41,"./ReactDOM":44,"./ReactElement":59,"./warning":153,"_process":3}],52:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -12937,7 +12961,7 @@ var ReactDOMSelect = ReactCompositeComponent.createClass({
 
 module.exports = ReactDOMSelect;
 
-},{"./AutoFocusMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js","./LinkedValueUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LinkedValueUtils.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMSelection.js":[function(require,module,exports){
+},{"./AutoFocusMixin":8,"./LinkedValueUtils":30,"./Object.assign":33,"./ReactBrowserComponentMixin":36,"./ReactCompositeComponent":41,"./ReactDOM":44,"./ReactElement":59,"./ReactUpdates":86}],53:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -13146,7 +13170,7 @@ var ReactDOMSelection = {
 
 module.exports = ReactDOMSelection;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./getNodeForCharacterOffset":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getNodeForCharacterOffset.js","./getTextContentAccessor":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getTextContentAccessor.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMTextarea.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":28,"./getNodeForCharacterOffset":127,"./getTextContentAccessor":129}],54:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -13287,7 +13311,7 @@ var ReactDOMTextarea = ReactCompositeComponent.createClass({
 module.exports = ReactDOMTextarea;
 
 }).call(this,require('_process'))
-},{"./AutoFocusMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js","./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./LinkedValueUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LinkedValueUtils.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultBatchingStrategy.js":[function(require,module,exports){
+},{"./AutoFocusMixin":8,"./DOMPropertyOperations":18,"./LinkedValueUtils":30,"./Object.assign":33,"./ReactBrowserComponentMixin":36,"./ReactCompositeComponent":41,"./ReactDOM":44,"./ReactElement":59,"./ReactUpdates":86,"./invariant":134,"./warning":153,"_process":3}],55:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -13360,7 +13384,7 @@ var ReactDefaultBatchingStrategy = {
 
 module.exports = ReactDefaultBatchingStrategy;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./Transaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultInjection.js":[function(require,module,exports){
+},{"./Object.assign":33,"./ReactUpdates":86,"./Transaction":102,"./emptyFunction":115}],56:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -13489,7 +13513,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
-},{"./BeforeInputEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/BeforeInputEventPlugin.js","./ChangeEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ChangeEventPlugin.js","./ClientReactRootIndex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ClientReactRootIndex.js","./CompositionEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CompositionEventPlugin.js","./DefaultEventPluginOrder":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DefaultEventPluginOrder.js","./EnterLeaveEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EnterLeaveEventPlugin.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./HTMLDOMPropertyConfig":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/HTMLDOMPropertyConfig.js","./MobileSafariClickEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/MobileSafariClickEventPlugin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactComponentBrowserEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentBrowserEnvironment.js","./ReactDOMButton":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMButton.js","./ReactDOMComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js","./ReactDOMForm":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMForm.js","./ReactDOMImg":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMImg.js","./ReactDOMInput":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMInput.js","./ReactDOMOption":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMOption.js","./ReactDOMSelect":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMSelect.js","./ReactDOMTextarea":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMTextarea.js","./ReactDefaultBatchingStrategy":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultBatchingStrategy.js","./ReactDefaultPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultPerf.js","./ReactEventListener":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEventListener.js","./ReactInjection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInjection.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./SVGDOMPropertyConfig":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SVGDOMPropertyConfig.js","./SelectEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SelectEventPlugin.js","./ServerReactRootIndex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ServerReactRootIndex.js","./SimpleEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SimpleEventPlugin.js","./createFullPageComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createFullPageComponent.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultPerf.js":[function(require,module,exports){
+},{"./BeforeInputEventPlugin":9,"./ChangeEventPlugin":13,"./ClientReactRootIndex":14,"./CompositionEventPlugin":15,"./DefaultEventPluginOrder":20,"./EnterLeaveEventPlugin":21,"./ExecutionEnvironment":28,"./HTMLDOMPropertyConfig":29,"./MobileSafariClickEventPlugin":32,"./ReactBrowserComponentMixin":36,"./ReactComponentBrowserEnvironment":40,"./ReactDOMButton":45,"./ReactDOMComponent":46,"./ReactDOMForm":47,"./ReactDOMImg":49,"./ReactDOMInput":50,"./ReactDOMOption":51,"./ReactDOMSelect":52,"./ReactDOMTextarea":54,"./ReactDefaultBatchingStrategy":55,"./ReactDefaultPerf":57,"./ReactEventListener":64,"./ReactInjection":65,"./ReactInstanceHandles":67,"./ReactMount":70,"./SVGDOMPropertyConfig":87,"./SelectEventPlugin":88,"./ServerReactRootIndex":89,"./SimpleEventPlugin":90,"./createFullPageComponent":110,"_process":3}],57:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -13749,7 +13773,7 @@ var ReactDefaultPerf = {
 
 module.exports = ReactDefaultPerf;
 
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./ReactDefaultPerfAnalysis":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultPerfAnalysis.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./performanceNow":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/performanceNow.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultPerfAnalysis.js":[function(require,module,exports){
+},{"./DOMProperty":17,"./ReactDefaultPerfAnalysis":58,"./ReactMount":70,"./ReactPerf":75,"./performanceNow":147}],58:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -13955,7 +13979,7 @@ var ReactDefaultPerfAnalysis = {
 
 module.exports = ReactDefaultPerfAnalysis;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js":[function(require,module,exports){
+},{"./Object.assign":33}],59:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -14201,7 +14225,7 @@ ReactElement.isValidElement = function(object) {
 module.exports = ReactElement;
 
 }).call(this,require('_process'))
-},{"./ReactContext":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js":[function(require,module,exports){
+},{"./ReactContext":42,"./ReactCurrentOwner":43,"./warning":153,"_process":3}],60:[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
  * All rights reserved.
@@ -14469,7 +14493,7 @@ var ReactElementValidator = {
 
 module.exports = ReactElementValidator;
 
-},{"./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactPropTypeLocations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocations.js","./monitorCodeUse":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/monitorCodeUse.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js":[function(require,module,exports){
+},{"./ReactCurrentOwner":43,"./ReactElement":59,"./ReactPropTypeLocations":78,"./monitorCodeUse":144}],61:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -14546,7 +14570,7 @@ var ReactEmptyComponent = {
 module.exports = ReactEmptyComponent;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactErrorUtils.js":[function(require,module,exports){
+},{"./ReactElement":59,"./invariant":134,"_process":3}],62:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -14578,7 +14602,7 @@ var ReactErrorUtils = {
 
 module.exports = ReactErrorUtils;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEventEmitterMixin.js":[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -14628,7 +14652,7 @@ var ReactEventEmitterMixin = {
 
 module.exports = ReactEventEmitterMixin;
 
-},{"./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEventListener.js":[function(require,module,exports){
+},{"./EventPluginHub":24}],64:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -14812,7 +14836,7 @@ var ReactEventListener = {
 
 module.exports = ReactEventListener;
 
-},{"./EventListener":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventListener.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./getEventTarget":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventTarget.js","./getUnboundedScrollPosition":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getUnboundedScrollPosition.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInjection.js":[function(require,module,exports){
+},{"./EventListener":23,"./ExecutionEnvironment":28,"./Object.assign":33,"./PooledClass":34,"./ReactInstanceHandles":67,"./ReactMount":70,"./ReactUpdates":86,"./getEventTarget":125,"./getUnboundedScrollPosition":130}],65:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -14852,7 +14876,7 @@ var ReactInjection = {
 
 module.exports = ReactInjection;
 
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactEmptyComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js","./ReactNativeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactNativeComponent.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactRootIndex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactRootIndex.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInputSelection.js":[function(require,module,exports){
+},{"./DOMProperty":17,"./EventPluginHub":24,"./ReactBrowserEventEmitter":37,"./ReactComponent":39,"./ReactCompositeComponent":41,"./ReactEmptyComponent":61,"./ReactNativeComponent":73,"./ReactPerf":75,"./ReactRootIndex":82,"./ReactUpdates":86}],66:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -14988,7 +15012,7 @@ var ReactInputSelection = {
 
 module.exports = ReactInputSelection;
 
-},{"./ReactDOMSelection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMSelection.js","./containsNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/containsNode.js","./focusNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/focusNode.js","./getActiveElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getActiveElement.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js":[function(require,module,exports){
+},{"./ReactDOMSelection":53,"./containsNode":108,"./focusNode":119,"./getActiveElement":121}],67:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -15323,7 +15347,7 @@ var ReactInstanceHandles = {
 module.exports = ReactInstanceHandles;
 
 }).call(this,require('_process'))
-},{"./ReactRootIndex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactRootIndex.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLegacyElement.js":[function(require,module,exports){
+},{"./ReactRootIndex":82,"./invariant":134,"_process":3}],68:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -15570,7 +15594,7 @@ ReactLegacyElementFactory._isLegacyCallWarningEnabled = true;
 module.exports = ReactLegacyElementFactory;
 
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./monitorCodeUse":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/monitorCodeUse.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMarkupChecksum.js":[function(require,module,exports){
+},{"./ReactCurrentOwner":43,"./invariant":134,"./monitorCodeUse":144,"./warning":153,"_process":3}],69:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -15618,7 +15642,7 @@ var ReactMarkupChecksum = {
 
 module.exports = ReactMarkupChecksum;
 
-},{"./adler32":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/adler32.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js":[function(require,module,exports){
+},{"./adler32":105}],70:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -16316,7 +16340,7 @@ ReactMount.renderComponent = deprecated(
 module.exports = ReactMount;
 
 }).call(this,require('_process'))
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactLegacyElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLegacyElement.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./containsNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/containsNode.js","./deprecated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/deprecated.js","./getReactRootElementInContainer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getReactRootElementInContainer.js","./instantiateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./shouldUpdateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shouldUpdateReactComponent.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChild.js":[function(require,module,exports){
+},{"./DOMProperty":17,"./ReactBrowserEventEmitter":37,"./ReactCurrentOwner":43,"./ReactElement":59,"./ReactInstanceHandles":67,"./ReactLegacyElement":68,"./ReactPerf":75,"./containsNode":108,"./deprecated":114,"./getReactRootElementInContainer":128,"./instantiateReactComponent":133,"./invariant":134,"./shouldUpdateReactComponent":150,"./warning":153,"_process":3}],71:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -16744,7 +16768,7 @@ var ReactMultiChild = {
 
 module.exports = ReactMultiChild;
 
-},{"./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactMultiChildUpdateTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChildUpdateTypes.js","./flattenChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/flattenChildren.js","./instantiateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js","./shouldUpdateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shouldUpdateReactComponent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChildUpdateTypes.js":[function(require,module,exports){
+},{"./ReactComponent":39,"./ReactMultiChildUpdateTypes":72,"./flattenChildren":118,"./instantiateReactComponent":133,"./shouldUpdateReactComponent":150}],72:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -16777,7 +16801,7 @@ var ReactMultiChildUpdateTypes = keyMirror({
 
 module.exports = ReactMultiChildUpdateTypes;
 
-},{"./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactNativeComponent.js":[function(require,module,exports){
+},{"./keyMirror":140}],73:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -16850,7 +16874,7 @@ var ReactNativeComponent = {
 module.exports = ReactNativeComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactOwner.js":[function(require,module,exports){
+},{"./Object.assign":33,"./invariant":134,"_process":3}],74:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -17006,7 +17030,7 @@ var ReactOwner = {
 module.exports = ReactOwner;
 
 }).call(this,require('_process'))
-},{"./emptyObject":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyObject.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js":[function(require,module,exports){
+},{"./emptyObject":116,"./invariant":134,"_process":3}],75:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -17090,7 +17114,7 @@ function _noMeasure(objName, fnName, func) {
 module.exports = ReactPerf;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTransferer.js":[function(require,module,exports){
+},{"_process":3}],76:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -17257,7 +17281,7 @@ var ReactPropTransferer = {
 module.exports = ReactPropTransferer;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./joinClasses":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/joinClasses.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocationNames.js":[function(require,module,exports){
+},{"./Object.assign":33,"./emptyFunction":115,"./invariant":134,"./joinClasses":139,"./warning":153,"_process":3}],77:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -17285,7 +17309,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = ReactPropTypeLocationNames;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocations.js":[function(require,module,exports){
+},{"_process":3}],78:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -17309,7 +17333,7 @@ var ReactPropTypeLocations = keyMirror({
 
 module.exports = ReactPropTypeLocations;
 
-},{"./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypes.js":[function(require,module,exports){
+},{"./keyMirror":140}],79:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -17663,7 +17687,7 @@ function getPreciseType(propValue) {
 
 module.exports = ReactPropTypes;
 
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactPropTypeLocationNames":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocationNames.js","./deprecated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/deprecated.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPutListenerQueue.js":[function(require,module,exports){
+},{"./ReactElement":59,"./ReactPropTypeLocationNames":77,"./deprecated":114,"./emptyFunction":115}],80:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -17719,7 +17743,7 @@ PooledClass.addPoolingTo(ReactPutListenerQueue);
 
 module.exports = ReactPutListenerQueue;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconcileTransaction.js":[function(require,module,exports){
+},{"./Object.assign":33,"./PooledClass":34,"./ReactBrowserEventEmitter":37}],81:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -17895,7 +17919,7 @@ PooledClass.addPoolingTo(ReactReconcileTransaction);
 
 module.exports = ReactReconcileTransaction;
 
-},{"./CallbackQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactInputSelection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInputSelection.js","./ReactPutListenerQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPutListenerQueue.js","./Transaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactRootIndex.js":[function(require,module,exports){
+},{"./CallbackQueue":12,"./Object.assign":33,"./PooledClass":34,"./ReactBrowserEventEmitter":37,"./ReactInputSelection":66,"./ReactPutListenerQueue":80,"./Transaction":102}],82:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -17926,7 +17950,7 @@ var ReactRootIndex = {
 
 module.exports = ReactRootIndex;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRendering.js":[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -18006,7 +18030,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMarkupChecksum":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMarkupChecksum.js","./ReactServerRenderingTransaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRenderingTransaction.js","./instantiateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRenderingTransaction.js":[function(require,module,exports){
+},{"./ReactElement":59,"./ReactInstanceHandles":67,"./ReactMarkupChecksum":69,"./ReactServerRenderingTransaction":84,"./instantiateReactComponent":133,"./invariant":134,"_process":3}],84:[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
  * All rights reserved.
@@ -18119,7 +18143,7 @@ PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 module.exports = ReactServerRenderingTransaction;
 
-},{"./CallbackQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactPutListenerQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPutListenerQueue.js","./Transaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactTextComponent.js":[function(require,module,exports){
+},{"./CallbackQueue":12,"./Object.assign":33,"./PooledClass":34,"./ReactPutListenerQueue":80,"./Transaction":102,"./emptyFunction":115}],85:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -18225,7 +18249,7 @@ ReactTextComponentFactory.type = ReactTextComponent;
 
 module.exports = ReactTextComponentFactory;
 
-},{"./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./escapeTextForBrowser":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextForBrowser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js":[function(require,module,exports){
+},{"./DOMPropertyOperations":18,"./Object.assign":33,"./ReactComponent":39,"./ReactElement":59,"./escapeTextForBrowser":117}],86:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -18515,7 +18539,7 @@ var ReactUpdates = {
 module.exports = ReactUpdates;
 
 }).call(this,require('_process'))
-},{"./CallbackQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./Transaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SVGDOMPropertyConfig.js":[function(require,module,exports){
+},{"./CallbackQueue":12,"./Object.assign":33,"./PooledClass":34,"./ReactCurrentOwner":43,"./ReactPerf":75,"./Transaction":102,"./invariant":134,"./warning":153,"_process":3}],87:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -18607,7 +18631,7 @@ var SVGDOMPropertyConfig = {
 
 module.exports = SVGDOMPropertyConfig;
 
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SelectEventPlugin.js":[function(require,module,exports){
+},{"./DOMProperty":17}],88:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -18802,7 +18826,7 @@ var SelectEventPlugin = {
 
 module.exports = SelectEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ReactInputSelection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInputSelection.js","./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js","./getActiveElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getActiveElement.js","./isTextInputElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextInputElement.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js","./shallowEqual":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shallowEqual.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ServerReactRootIndex.js":[function(require,module,exports){
+},{"./EventConstants":22,"./EventPropagators":27,"./ReactInputSelection":66,"./SyntheticEvent":94,"./getActiveElement":121,"./isTextInputElement":137,"./keyOf":141,"./shallowEqual":149}],89:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -18833,7 +18857,7 @@ var ServerReactRootIndex = {
 
 module.exports = ServerReactRootIndex;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SimpleEventPlugin.js":[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -19261,7 +19285,7 @@ var SimpleEventPlugin = {
 module.exports = SimpleEventPlugin;
 
 }).call(this,require('_process'))
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPluginUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./SyntheticClipboardEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticClipboardEvent.js","./SyntheticDragEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticDragEvent.js","./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js","./SyntheticFocusEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticFocusEvent.js","./SyntheticKeyboardEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticKeyboardEvent.js","./SyntheticMouseEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js","./SyntheticTouchEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticTouchEvent.js","./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js","./SyntheticWheelEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticWheelEvent.js","./getEventCharCode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventCharCode.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticClipboardEvent.js":[function(require,module,exports){
+},{"./EventConstants":22,"./EventPluginUtils":26,"./EventPropagators":27,"./SyntheticClipboardEvent":91,"./SyntheticDragEvent":93,"./SyntheticEvent":94,"./SyntheticFocusEvent":95,"./SyntheticKeyboardEvent":97,"./SyntheticMouseEvent":98,"./SyntheticTouchEvent":99,"./SyntheticUIEvent":100,"./SyntheticWheelEvent":101,"./getEventCharCode":122,"./invariant":134,"./keyOf":141,"./warning":153,"_process":3}],91:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19307,7 +19331,7 @@ SyntheticEvent.augmentClass(SyntheticClipboardEvent, ClipboardEventInterface);
 module.exports = SyntheticClipboardEvent;
 
 
-},{"./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticCompositionEvent.js":[function(require,module,exports){
+},{"./SyntheticEvent":94}],92:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19353,7 +19377,7 @@ SyntheticEvent.augmentClass(
 module.exports = SyntheticCompositionEvent;
 
 
-},{"./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticDragEvent.js":[function(require,module,exports){
+},{"./SyntheticEvent":94}],93:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19392,7 +19416,7 @@ SyntheticMouseEvent.augmentClass(SyntheticDragEvent, DragEventInterface);
 
 module.exports = SyntheticDragEvent;
 
-},{"./SyntheticMouseEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js":[function(require,module,exports){
+},{"./SyntheticMouseEvent":98}],94:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19550,7 +19574,7 @@ PooledClass.addPoolingTo(SyntheticEvent, PooledClass.threeArgumentPooler);
 
 module.exports = SyntheticEvent;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","./getEventTarget":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventTarget.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticFocusEvent.js":[function(require,module,exports){
+},{"./Object.assign":33,"./PooledClass":34,"./emptyFunction":115,"./getEventTarget":125}],95:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19589,7 +19613,7 @@ SyntheticUIEvent.augmentClass(SyntheticFocusEvent, FocusEventInterface);
 
 module.exports = SyntheticFocusEvent;
 
-},{"./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticInputEvent.js":[function(require,module,exports){
+},{"./SyntheticUIEvent":100}],96:[function(require,module,exports){
 /**
  * Copyright 2013 Facebook, Inc.
  * All rights reserved.
@@ -19636,7 +19660,7 @@ SyntheticEvent.augmentClass(
 module.exports = SyntheticInputEvent;
 
 
-},{"./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticKeyboardEvent.js":[function(require,module,exports){
+},{"./SyntheticEvent":94}],97:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19723,7 +19747,7 @@ SyntheticUIEvent.augmentClass(SyntheticKeyboardEvent, KeyboardEventInterface);
 
 module.exports = SyntheticKeyboardEvent;
 
-},{"./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js","./getEventCharCode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventCharCode.js","./getEventKey":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventKey.js","./getEventModifierState":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventModifierState.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js":[function(require,module,exports){
+},{"./SyntheticUIEvent":100,"./getEventCharCode":122,"./getEventKey":123,"./getEventModifierState":124}],98:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19806,7 +19830,7 @@ SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 
 module.exports = SyntheticMouseEvent;
 
-},{"./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js","./ViewportMetrics":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ViewportMetrics.js","./getEventModifierState":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventModifierState.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticTouchEvent.js":[function(require,module,exports){
+},{"./SyntheticUIEvent":100,"./ViewportMetrics":103,"./getEventModifierState":124}],99:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19854,7 +19878,7 @@ SyntheticUIEvent.augmentClass(SyntheticTouchEvent, TouchEventInterface);
 
 module.exports = SyntheticTouchEvent;
 
-},{"./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js","./getEventModifierState":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventModifierState.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js":[function(require,module,exports){
+},{"./SyntheticUIEvent":100,"./getEventModifierState":124}],100:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19916,7 +19940,7 @@ SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 
 module.exports = SyntheticUIEvent;
 
-},{"./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js","./getEventTarget":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventTarget.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticWheelEvent.js":[function(require,module,exports){
+},{"./SyntheticEvent":94,"./getEventTarget":125}],101:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -19977,7 +20001,7 @@ SyntheticMouseEvent.augmentClass(SyntheticWheelEvent, WheelEventInterface);
 
 module.exports = SyntheticWheelEvent;
 
-},{"./SyntheticMouseEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js":[function(require,module,exports){
+},{"./SyntheticMouseEvent":98}],102:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -20218,7 +20242,7 @@ var Transaction = {
 module.exports = Transaction;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ViewportMetrics.js":[function(require,module,exports){
+},{"./invariant":134,"_process":3}],103:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20250,7 +20274,7 @@ var ViewportMetrics = {
 
 module.exports = ViewportMetrics;
 
-},{"./getUnboundedScrollPosition":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getUnboundedScrollPosition.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/accumulateInto.js":[function(require,module,exports){
+},{"./getUnboundedScrollPosition":130}],104:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -20316,7 +20340,7 @@ function accumulateInto(current, next) {
 module.exports = accumulateInto;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/adler32.js":[function(require,module,exports){
+},{"./invariant":134,"_process":3}],105:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20350,7 +20374,7 @@ function adler32(data) {
 
 module.exports = adler32;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/camelize.js":[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20382,7 +20406,7 @@ function camelize(string) {
 
 module.exports = camelize;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/camelizeStyleName.js":[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
  * All rights reserved.
@@ -20424,7 +20448,7 @@ function camelizeStyleName(string) {
 
 module.exports = camelizeStyleName;
 
-},{"./camelize":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/camelize.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/containsNode.js":[function(require,module,exports){
+},{"./camelize":106}],108:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20468,7 +20492,7 @@ function containsNode(outerNode, innerNode) {
 
 module.exports = containsNode;
 
-},{"./isTextNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextNode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createArrayFrom.js":[function(require,module,exports){
+},{"./isTextNode":138}],109:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20554,7 +20578,7 @@ function createArrayFrom(obj) {
 
 module.exports = createArrayFrom;
 
-},{"./toArray":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/toArray.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createFullPageComponent.js":[function(require,module,exports){
+},{"./toArray":151}],110:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -20615,7 +20639,7 @@ function createFullPageComponent(tag) {
 module.exports = createFullPageComponent;
 
 }).call(this,require('_process'))
-},{"./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createNodesFromMarkup.js":[function(require,module,exports){
+},{"./ReactCompositeComponent":41,"./ReactElement":59,"./invariant":134,"_process":3}],111:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -20705,7 +20729,7 @@ function createNodesFromMarkup(markup, handleScript) {
 module.exports = createNodesFromMarkup;
 
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./createArrayFrom":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createArrayFrom.js","./getMarkupWrap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getMarkupWrap.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/cx.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":28,"./createArrayFrom":109,"./getMarkupWrap":126,"./invariant":134,"_process":3}],112:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20744,7 +20768,7 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/dangerousStyleValue.js":[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20802,7 +20826,7 @@ function dangerousStyleValue(name, value) {
 
 module.exports = dangerousStyleValue;
 
-},{"./CSSProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSProperty.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/deprecated.js":[function(require,module,exports){
+},{"./CSSProperty":10}],114:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -20853,7 +20877,7 @@ function deprecated(namespace, oldName, newName, ctx, fn) {
 module.exports = deprecated;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js":[function(require,module,exports){
+},{"./Object.assign":33,"./warning":153,"_process":3}],115:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20887,7 +20911,7 @@ emptyFunction.thatReturnsArgument = function(arg) { return arg; };
 
 module.exports = emptyFunction;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyObject.js":[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -20911,7 +20935,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = emptyObject;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextForBrowser.js":[function(require,module,exports){
+},{"_process":3}],117:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -20952,7 +20976,7 @@ function escapeTextForBrowser(text) {
 
 module.exports = escapeTextForBrowser;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/flattenChildren.js":[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -21021,7 +21045,7 @@ function flattenChildren(children) {
 module.exports = flattenChildren;
 
 }).call(this,require('_process'))
-},{"./ReactTextComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactTextComponent.js","./traverseAllChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/traverseAllChildren.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/focusNode.js":[function(require,module,exports){
+},{"./ReactTextComponent":85,"./traverseAllChildren":152,"./warning":153,"_process":3}],119:[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
  * All rights reserved.
@@ -21050,7 +21074,7 @@ function focusNode(node) {
 
 module.exports = focusNode;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/forEachAccumulated.js":[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21081,7 +21105,7 @@ var forEachAccumulated = function(arr, cb, scope) {
 
 module.exports = forEachAccumulated;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getActiveElement.js":[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21110,7 +21134,7 @@ function getActiveElement() /*?DOMElement*/ {
 
 module.exports = getActiveElement;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventCharCode.js":[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21162,7 +21186,7 @@ function getEventCharCode(nativeEvent) {
 
 module.exports = getEventCharCode;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventKey.js":[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21267,7 +21291,7 @@ function getEventKey(nativeEvent) {
 
 module.exports = getEventKey;
 
-},{"./getEventCharCode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventCharCode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventModifierState.js":[function(require,module,exports){
+},{"./getEventCharCode":122}],124:[function(require,module,exports){
 /**
  * Copyright 2013 Facebook, Inc.
  * All rights reserved.
@@ -21314,7 +21338,7 @@ function getEventModifierState(nativeEvent) {
 
 module.exports = getEventModifierState;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventTarget.js":[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21345,7 +21369,7 @@ function getEventTarget(nativeEvent) {
 
 module.exports = getEventTarget;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getMarkupWrap.js":[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -21462,7 +21486,7 @@ function getMarkupWrap(nodeName) {
 module.exports = getMarkupWrap;
 
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getNodeForCharacterOffset.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":28,"./invariant":134,"_process":3}],127:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21537,7 +21561,7 @@ function getNodeForCharacterOffset(root, offset) {
 
 module.exports = getNodeForCharacterOffset;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getReactRootElementInContainer.js":[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21572,7 +21596,7 @@ function getReactRootElementInContainer(container) {
 
 module.exports = getReactRootElementInContainer;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getTextContentAccessor.js":[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21609,7 +21633,7 @@ function getTextContentAccessor() {
 
 module.exports = getTextContentAccessor;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getUnboundedScrollPosition.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":28}],130:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21649,7 +21673,7 @@ function getUnboundedScrollPosition(scrollable) {
 
 module.exports = getUnboundedScrollPosition;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/hyphenate.js":[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21682,7 +21706,7 @@ function hyphenate(string) {
 
 module.exports = hyphenate;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/hyphenateStyleName.js":[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21723,7 +21747,7 @@ function hyphenateStyleName(string) {
 
 module.exports = hyphenateStyleName;
 
-},{"./hyphenate":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/hyphenate.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js":[function(require,module,exports){
+},{"./hyphenate":131}],133:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -21837,7 +21861,7 @@ function instantiateReactComponent(element, parentCompositeType) {
 module.exports = instantiateReactComponent;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactEmptyComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js","./ReactLegacyElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLegacyElement.js","./ReactNativeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactNativeComponent.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js":[function(require,module,exports){
+},{"./ReactElement":59,"./ReactEmptyComponent":61,"./ReactLegacyElement":68,"./ReactNativeComponent":73,"./warning":153,"_process":3}],134:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -21894,7 +21918,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isEventSupported.js":[function(require,module,exports){
+},{"_process":3}],135:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21959,7 +21983,7 @@ function isEventSupported(eventNameSuffix, capture) {
 
 module.exports = isEventSupported;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isNode.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":28}],136:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -21987,7 +22011,7 @@ function isNode(object) {
 
 module.exports = isNode;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextInputElement.js":[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22031,7 +22055,7 @@ function isTextInputElement(elem) {
 
 module.exports = isTextInputElement;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextNode.js":[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22056,7 +22080,7 @@ function isTextNode(object) {
 
 module.exports = isTextNode;
 
-},{"./isNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isNode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/joinClasses.js":[function(require,module,exports){
+},{"./isNode":136}],139:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22097,7 +22121,7 @@ function joinClasses(className/*, ... */) {
 
 module.exports = joinClasses;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js":[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -22152,7 +22176,7 @@ var keyMirror = function(obj) {
 module.exports = keyMirror;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js":[function(require,module,exports){
+},{"./invariant":134,"_process":3}],141:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22188,7 +22212,7 @@ var keyOf = function(oneKeyObj) {
 
 module.exports = keyOf;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/mapObject.js":[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22241,7 +22265,7 @@ function mapObject(object, callback, context) {
 
 module.exports = mapObject;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/memoizeStringOnly.js":[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22275,7 +22299,7 @@ function memoizeStringOnly(callback) {
 
 module.exports = memoizeStringOnly;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/monitorCodeUse.js":[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -22309,7 +22333,7 @@ function monitorCodeUse(eventName, data) {
 module.exports = monitorCodeUse;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/onlyChild.js":[function(require,module,exports){
+},{"./invariant":134,"_process":3}],145:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -22349,7 +22373,7 @@ function onlyChild(children) {
 module.exports = onlyChild;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/performance.js":[function(require,module,exports){
+},{"./ReactElement":59,"./invariant":134,"_process":3}],146:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22377,7 +22401,7 @@ if (ExecutionEnvironment.canUseDOM) {
 
 module.exports = performance || {};
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/performanceNow.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":28}],147:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22405,7 +22429,7 @@ var performanceNow = performance.now.bind(performance);
 
 module.exports = performanceNow;
 
-},{"./performance":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/performance.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setInnerHTML.js":[function(require,module,exports){
+},{"./performance":146}],148:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22483,7 +22507,7 @@ if (ExecutionEnvironment.canUseDOM) {
 
 module.exports = setInnerHTML;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shallowEqual.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":28}],149:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22527,7 +22551,7 @@ function shallowEqual(objA, objB) {
 
 module.exports = shallowEqual;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shouldUpdateReactComponent.js":[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -22565,7 +22589,7 @@ function shouldUpdateReactComponent(prevElement, nextElement) {
 
 module.exports = shouldUpdateReactComponent;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/toArray.js":[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -22637,7 +22661,7 @@ function toArray(obj) {
 module.exports = toArray;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/traverseAllChildren.js":[function(require,module,exports){
+},{"./invariant":134,"_process":3}],152:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -22820,7 +22844,7 @@ function traverseAllChildren(children, callback, traverseContext) {
 module.exports = traverseAllChildren;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js":[function(require,module,exports){
+},{"./ReactElement":59,"./ReactInstanceHandles":67,"./invariant":134,"_process":3}],153:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -22865,10 +22889,10 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js":[function(require,module,exports){
+},{"./emptyFunction":115,"_process":3}],154:[function(require,module,exports){
 module.exports = require('./lib/React');
 
-},{"./lib/React":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/React.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js":[function(require,module,exports){
+},{"./lib/React":35}],155:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -23082,7 +23106,7 @@ module.exports = require('./lib/React');
 
 }));
 
-},{"tcomb":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/node_modules/tcomb/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/node_modules/tcomb/index.js":[function(require,module,exports){
+},{"tcomb":156}],156:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -23418,7 +23442,9 @@ module.exports = require('./lib/React');
     };
 
     Struct.extend = function extendStruct(newProps, name) {
-      return struct([props].concat(newProps).reduce(mixin, {}), name);
+      var newStruct = struct([props].concat(newProps).reduce(mixin, {}), name);
+      mixin(newStruct.prototype, Struct.prototype); // prototypal inheritance
+      return newStruct;
     };
 
     return Struct;
@@ -23980,4 +24006,4 @@ module.exports = require('./lib/React');
   };
 }));
 
-},{}]},{},["./playground/playground.jsx"]);
+},{}]},{},[1]);

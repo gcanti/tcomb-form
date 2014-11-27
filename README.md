@@ -18,7 +18,7 @@ If you want to see this library in action, the playground contains a dozen examp
 
 # Benefits
 
-With tcomb-form you simply call `var Form = t.form.createForm(domainModel)` to generate a form based on that domain model. What does this get you?
+With tcomb-form you simply call `var Form = t.form.create(domainModel)` to generate a form based on that domain model. What does this get you?
 
 1. Write a lot less HTML
 2. Usability and accessibility for free (automatic labels, inline validation, etc)
@@ -47,7 +47,7 @@ var Person = t.struct({
 });
 
 // create the form
-var Form = t.form.createForm(Person);
+var Form = t.form.create(Person);
 
 // use the form in your component
 var App = React.createClass({
@@ -78,8 +78,8 @@ var App = React.createClass({
 
 [API.md](API.md)
 
-- [createForm](API.md#createform)
-- [createList](API.md#createlist)
+- [structs](API.md#structs)
+- [lists](API.md#lists)
 - [textbox](API.md#textbox)
 - [select](API.md#select)
 - [radio](API.md#radio)

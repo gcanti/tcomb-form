@@ -1,6 +1,7 @@
 $(function () {
 
   var React = require('react');
+  window.React = React;
   var t = require('../index');
   var beautifyHtml = require('js-beautify').html;
 
@@ -19,8 +20,7 @@ $(function () {
   var subtype = t.subtype;
   var struct = t.struct;
 
-  var createForm = t.form.createForm;
-  var createList = t.form.createList;
+  var create = t.form.create;
   var radio = t.form.radio;
   var select = t.form.select;
 

@@ -5,7 +5,6 @@ var browserify = require('browserify');
 var reactify = require('reactify');
 var rename = require('gulp-rename');
 var source = require('vinyl-source-stream');
-var path = require('path');
 
 var pkg = require('./package.json');
 var version = pkg.version;
@@ -21,19 +20,23 @@ var banner = ['/**',
 // watch (main task for development)
 // ------------------------------------
 var paths = {
-  jsx: ['src/**/*.jsx'],
+  src: ['src/**/*.jsx'],
+  playground: ['playground/**/*.jsx'],
+  examples:  ['examples/**/*.jsx']
 };
-gulp.task('watch', ['build'], function() {
-  gulp.watch(paths.jsx, ['build']);
+gulp.task('watch', ['default'], function() {
+  gulp.watch(paths.src, ['default']);
+  gulp.watch(paths.playground, ['playground']);
+  gulp.watch(paths.examples, ['examples']);
 });
 
 // ------------------------------------
 // default (main task for releases)
 // ------------------------------------
-gulp.task('default', ['build', 'examples', 'playground']);
+gulp.task('default', ['src', 'examples', 'playground']);
 
-gulp.task('build', function(){
-  return gulp.src('./src/index.jsx')
+gulp.task('src', function(){
+  return gulp.src('src/index.jsx')
     .pipe(react())
     .pipe(header(banner, { pkg : pkg } ))
     .pipe(gulp.dest('.'));
@@ -42,27 +45,23 @@ gulp.task('build', function(){
 gulp.task('playground', function(){
   browserify('./playground/playground.jsx', {
     transform: [reactify],
-    cache: {},
-    packageCache: {},
-    fullPaths: true
+    detectGlobals: true
   })
   .bundle()
-  .pipe(source(path.basename('./playground/playground.jsx')))
+  .pipe(source('playground/playground.jsx'))
   .pipe(rename('playground.js'))
   .pipe(header(banner, { pkg : pkg } ))
-  .pipe(gulp.dest('./playground'));
+  .pipe(gulp.dest('playground'));
 });
 
 gulp.task('examples', function(){
   browserify('./examples/basic/index.jsx', {
     transform: [reactify],
-    cache: {},
-    packageCache: {},
-    fullPaths: true
+    detectGlobals: true
   })
   .bundle()
-  .pipe(source(path.basename('./examples/basic/index.jsx')))
+  .pipe(source('examples/basic/index.jsx'))
   .pipe(rename('index.js'))
   .pipe(header(banner, { pkg : pkg } ))
-  .pipe(gulp.dest('./examples/basic'));
+  .pipe(gulp.dest('examples/basic'));
 });

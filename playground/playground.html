@@ -96,7 +96,7 @@ var Palette = struct({
   colors: list(Str)
 });
 
-var Form = createForm(Palette, {
+var Form = create(Palette, {
   value: { colors: ['#d53f54', '#5b79e4'] },
   fields: {
     colors: { item: {type: 'color'} }
@@ -110,7 +110,7 @@ var Form = createForm(Palette, {
 
 // the form is mounted by React.js to the right
 // placeholders are auto generated
-var Form = createForm(Person);
+var Form = create(Person);
 </script>
 <script type="text/example" id="labels">var Person = struct({
   name: Str,
@@ -118,9 +118,9 @@ var Form = createForm(Person);
 });
 
 // to customize the fields, pass a second
-// argument to `createForm(type, [opts])`
+// argument to `create(type, [opts])`
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   //auto: 'labels'      // decomment this
 });
 </script>
@@ -134,7 +134,7 @@ var Form = createForm(Person, {
 // to make surname optional
 
 // "(optional)" is auto appended
-var Form = createForm(Person);
+var Form = create(Person);
 </script>
 <script type="text/example" id="subtypes">// a subtype is a pair (type, predicate)
 // where predicate is a function with signature (x) -> boolean
@@ -148,7 +148,7 @@ var User = struct({
   password: Password  // a required string with at least 6 chars
 });
 
-var Form = createForm(User, {
+var Form = create(User, {
   fields: {
     password: {
       // help the user with a message
@@ -163,7 +163,7 @@ var Form = createForm(User, {
   rememberMe: Bool // a boolean is rendered as a checkbox
 });
 
-var Form = createForm(User, {
+var Form = create(User, {
 
   // custom fields order
   order: ['username', 'rememberMe', 'password'],
@@ -187,7 +187,7 @@ var Person = struct({
   country: Country
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     country: {
       // decomment to override empty option
@@ -204,7 +204,7 @@ var Person = struct({
   country: Country
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     country: {
       // you can override the input used to display
@@ -218,7 +218,7 @@ var Form = createForm(Person, {
   age: Num // a number property
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     age: {
       i17n: {
@@ -240,7 +240,7 @@ var Form = createForm(Person, {
   surname: Str
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   // you can set a default value for every field
   value: {
     name: 'Giulio',
@@ -259,7 +259,7 @@ var Subscription = subtype(struct({
   email: maybe(Str)
 }), predicate);
 
-var Form = createForm(Subscription, {
+var Form = create(Subscription, {
   order: ['username', 'send', 'email'],
   fields: {
     send: {label: 'Send me email notifications'},
@@ -274,7 +274,7 @@ var Form = createForm(Subscription, {
   twitter: Str
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     // control sizing
     name: {height: 'lg'},
@@ -296,7 +296,7 @@ var Form = createForm(Person, {
   surname: Str
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   auto: 'labels',
   // you can set the columns width for [lg, md, sm, xs]
   // try to resize the viewport..
@@ -308,7 +308,7 @@ var Form = createForm(Person, {
 </script>
 <script type="text/example" id="lists">var Tags = list(Str);
 
-var Form = createList(Tags);
+var Form = create(Tags);
 </script>
 <script type="text/example" id="listOfStructs">var Person = struct({
   name: Str,
@@ -317,7 +317,7 @@ var Form = createList(Tags);
 
 var Persons = list(Person);
 
-var Form = createList(Persons);
+var Form = create(Persons);
 </script>
 <script type="text/example" id="nestedLists">var Person = struct({
   name: Str,
@@ -331,7 +331,7 @@ var Family = struct({
   children: list(Person)
 });
 
-var Form = createForm(Family, {
+var Form = create(Family, {
   value: {
     "address": "2082 Alexander Avenue Oakland, CA 94612",
     "mother": {
@@ -377,7 +377,7 @@ var Person = struct({
   secret: Str
 });
 
-var Form = createForm(Person, {
+var Form = create(Person, {
   fields: {
     secret: {
       // override the default input for Str (textbox)
@@ -402,7 +402,7 @@ var Person = struct({
   })
 });
 
-var Form = t.form.createForm(Person, {
+var Form = t.form.create(Person, {
   fields: {
     country: {
       multiple: true,
@@ -416,7 +416,7 @@ var Form = t.form.createForm(Person, {
   password: Str
 });
 
-var Form = createForm(SignUp, {
+var Form = create(SignUp, {
   fields: {
     username: {
       message: 'Duplicated username',

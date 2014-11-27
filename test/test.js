@@ -15,8 +15,6 @@ var textbox = t.form.textbox;
 var select = t.form.select;
 var checkbox = t.form.checkbox;
 var radio = t.form.radio;
-var createForm = t.form.createForm;
-var createList = t.form.createList;
 var create = t.form.create;
 
 if (typeof window === 'undefined') {
@@ -663,7 +661,7 @@ if (typeof window === 'undefined') {
     };
 
     it('should handle opts.bundle', function () {
-      var Factory = React.createFactory(createForm(Person, {
+      var Factory = React.createFactory(create(Person, {
         i18n: i18n
       }));
       var input = Factory();
@@ -673,14 +671,14 @@ if (typeof window === 'undefined') {
     });
 
     it('should return fieldset as tag container', function () {
-      var Factory = React.createFactory(createForm(Person));
+      var Factory = React.createFactory(create(Person));
       var input = Factory();
       var dom = dvdom(input);
       eq(dom.tag, 'fieldset');
     });
 
     it('should handle opts.auto = "placeholders"', function () {
-      var Factory = React.createFactory(createForm(User, {
+      var Factory = React.createFactory(create(User, {
         order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
         fields: {
           requiredRadio: {input: t.form.radio},
@@ -700,7 +698,7 @@ if (typeof window === 'undefined') {
     });
 
     it('should handle opts.auto = "labels"', function () {
-      var Factory = React.createFactory(createForm(User, {
+      var Factory = React.createFactory(create(User, {
         auto: 'labels',
         order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
         fields: {
@@ -721,7 +719,7 @@ if (typeof window === 'undefined') {
     });
 
     it('should handle opts.auto = "none"', function () {
-      var Factory = React.createFactory(createForm(User, {
+      var Factory = React.createFactory(create(User, {
         auto: 'none',
         order: ['requiredStr', 'optionalStr', 'bool', 'requiredEnum', 'optionalEnum', 'requiredRadio', 'optionalRadio'],
         fields: {
@@ -749,7 +747,7 @@ if (typeof window === 'undefined') {
           e: Str
         })
       });
-      var Factory = React.createFactory(createForm(Type, {
+      var Factory = React.createFactory(create(Type, {
         order: ['a', 'b', 'c'],
         value: {
           a: 'a',
@@ -784,14 +782,14 @@ if (typeof window === 'undefined') {
     };
 
     it('should return fieldset as tag container', function () {
-      var Factory = React.createFactory(createList(Tags));
+      var Factory = React.createFactory(create(Tags));
       var input = Factory();
       var dom = dvdom(input);
       eq(dom.tag, 'fieldset');
     });
 
     it('should handle opts.bundle', function () {
-      var Factory = React.createFactory(createList(Tags, {
+      var Factory = React.createFactory(create(Tags, {
         value: ['mytag'],
         i18n: i18n
       }));
@@ -804,30 +802,6 @@ if (typeof window === 'undefined') {
 
   });
 
-  describe('create', function () {
-
-    var Person = struct({
-      name: Str,
-      surname: Str
-    });
-
-    it('should handle structs', function () {
-      var Factory = React.createFactory(create(Person));
-      var input = Factory();
-      var dom = dvdom(input);
-      eq(dom.children[0].children.attrs.placeholder, 'Name');
-      eq(dom.children[1].children.attrs.placeholder, 'Surname');
-    });
-
-    it('should handle lists', function () {
-      var Factory = React.createFactory(create(list(Str)));
-      var input = Factory();
-      var dom = dvdom(input);
-      eq(dom.children.children.children, 'Add');
-    });
-
-  });
-
 } else {
 
   //
@@ -835,15 +809,19 @@ if (typeof window === 'undefined') {
   // uses tape and a real captured browser
   //
 
-  var getFormValue = function getFormValue(type, options) {
-    var Form = React.createFactory(createForm(type, options));
+  var getForm = function (type, options) {
+    var Form = React.createFactory(create(type, options));
     var node = document.createElement('div');
     document.body.appendChild(node);
-    var form = React.render(Form(), node);
+    return React.render(Form(), node);
+  };
+
+  var getFormValue = function getFormValue(type, options) {
+    var form = getForm(type, options);
     return form.getValue();
   };
 
-  test('required fields', function (tape) {
+  test('struct required fields', function (tape) {
     tape.plan(3);
     var Person = struct({
       name: Str,
@@ -861,7 +839,7 @@ if (typeof window === 'undefined') {
     tape.deepEqual(value, getFormValue(Person, {value: value}));
   });
 
-  test('optional fields', function (tape) {
+  test('struct optional fields', function (tape) {
     tape.plan(3);
     var Person = struct({
       name: maybe(Str),
@@ -877,6 +855,16 @@ if (typeof window === 'undefined') {
       surname: 'canti'
     };
     tape.deepEqual(value, getFormValue(Person, {value: value}));
+  });
+
+  test('list add', function (tape) {
+    tape.plan(3);
+    var Tags = list(Str);
+    tape.deepEqual([], getFormValue(Tags));
+    var form = getForm(Tags);
+    form.add();
+    tape.deepEqual(null, form.getValue());
+    tape.deepEqual(true, form.refs[0].state.hasError);
   });
 
 }

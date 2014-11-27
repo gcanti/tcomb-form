@@ -1,6 +1,6 @@
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
- * @version v0.2.1
+ * @version v0.2.2
  * @link https://github.com/gcanti/tcomb-form
  * @license MIT
  */
@@ -297,11 +297,9 @@ function getInitialState(hasError, defaultValue) {
 
 function getValue(type) {
   return function () {
-    var value = this.getRawValue();
-    var result = t.validate(value, type);
-    var isValid = result.isValid();
-    this.setState({hasError: !isValid, value: value});
-    return isValid ? result.value : result;
+    var result = t.validate(this.getRawValue(), type);
+    this.setState({hasError: !result.isValid(), value: result.value});
+    return result;
   };
 }
 
@@ -734,6 +732,7 @@ function createForm(type, opts) {
   opts = new FormOpts(opts || {});
 
   var Struct = stripOuterType(type);
+  assert(getKind(Struct) === 'struct');
   var props = Struct.meta.props;
   var keys = Object.keys(props);
   var order = opts.order || keys;
@@ -814,33 +813,44 @@ function createForm(type, opts) {
 
     getInitialState: getInitialState(opts.hasError, defaultValue),
 
-    getValue: function (depth) {
-
-      depth = depth || 0;
+    getValue: function (doReturnValidationResult) {
 
       var errors = [];
       var value = {};
+      var isValid = true;
       var result;
 
       for ( var i = 0 ; i < len ; i++ ) {
         var name = order[i];
-        var result = this.refs[name].getValue(depth + 1);
+        var result = this.refs[name].getValue(true);
         if (ValidationResult.is(result)) {
-          errors = errors.concat(result.errors);
+          if (!result.isValid()) {
+            isValid = false;
+            errors = errors.concat(result.errors);
+          }
           value[name] = result.value;
         } else {
           value[name] = result;
         }
       }
 
-      if (errors.length) {
-        return depth ? new ValidationResult({errors: errors, value: value}) : null;
+      if (!isValid) {
+        this.setState({hasError: false, value: value});
+        return doReturnValidationResult ? new ValidationResult({errors: errors, value: value}) : null;
       }
 
-      result = t.validate(new Struct(value), type);
-      var isValid = result.isValid();
-      this.setState({hasError: !isValid, value: value});
-      return isValid ? result.value : depth ? result : null;
+      value = new Struct(value);
+
+      if (getKind(type) === 'subtype') {
+        result = t.validate(value, type);
+        if (!result.isValid()) {
+          this.setState({hasError: true, value: value});
+          return doReturnValidationResult ? result : null;
+        }
+      }
+
+      this.setState({hasError: false, value: value});
+      return doReturnValidationResult ? new ValidationResult({errors: [], value: value}) : value;
     },
 
     render: function () {
@@ -885,6 +895,7 @@ var ListOpts = struct({
 function createList(type, opts) {
 
   assert(Type.is(type));
+  assert(getKind(type) === 'list');
 
   opts = new ListOpts(opts || {});
 
@@ -901,68 +912,67 @@ function createList(type, opts) {
 
     getInitialState: getInitialState(opts.hasError, defaultValue),
 
-    getValue: function (depth) {
-
-      depth = depth || 0;
+    getValue: function (doReturnValidationResult) {
 
       var errors = [];
       var value = [];
+      var isValid = true;
       var result;
 
       for ( var i = 0, len = this.state.value.length ; i < len ; i++ ) {
-        var result = this.refs[i].getValue(depth + 1);
+        var result = this.refs[i].getValue(true);
         if (ValidationResult.is(result)) {
-          value[name] = result.value;
+          if (!result.isValid()) {
+            isValid = false;
+            errors = errors.concat(result.errors);
+          }
+          value.push(result.value);
         } else {
           value.push(result);
         }
       }
 
-      if (errors.length) {
-        return depth ? new ValidationResult({errors: errors, value: value}) : null;
+      if (!isValid) {
+        return doReturnValidationResult ? new ValidationResult({errors: errors, value: value}) : null;
       }
-
-      result = t.validate(value, type);
-      var isValid = result.isValid();
-      this.setState({hasError: !isValid, value: value});
-      return isValid ? result.value : depth ? result : null;
+      return doReturnValidationResult ? new ValidationResult({errors: [], value: value}) : value;
     },
 
     add: function (evt) {
-      evt.preventDefault();
+      evt && evt.preventDefault();
       var value = this.getValue();
       if (value) {
         value = value.concat(null);
-        this.setState({hasError: this.state.hasError, value: value});
+        this.setState({value: value});
       }
     },
 
     remove: function (i, evt) {
-      evt.preventDefault();
+      evt && evt.preventDefault();
       var value = this.getValue();
       if (value) {
         value = remove(value, i);
       } else {
         value = remove(this.state.value, i);
       }
-      this.setState({hasError: this.state.hasError, value: value});
+      this.setState({value: value});
     },
 
     moveUp: function (i, evt) {
-      evt.preventDefault();
+      evt && evt.preventDefault();
       var value = this.getValue();
       if (i > 0 && value) {
         value = moveUp(value, i);
-        this.setState({hasError: this.state.hasError, value: value});
+        this.setState({value: value});
       }
     },
 
     moveDown: function (i, evt) {
-      evt.preventDefault();
+      evt && evt.preventDefault();
       var value = this.getValue();
       if (i < this.state.value.length - 1 && value) {
         value = moveDown(value, i);
-        this.setState({hasError: this.state.hasError, value: value});
+        this.setState({value: value});
       }
     },
 
@@ -1045,6 +1055,8 @@ var options = {
 // exports
 //
 
+var isConsoleSupported = typeof console !== 'undefined' && Func.is(console.warn);
+
 t.form = {
   options: options,
   util: {
@@ -1058,8 +1070,20 @@ t.form = {
   select: select,
   radio: radio,
   checkbox: checkbox,
-  createForm: createForm,
-  createList: createList,
+  createForm: function (type, opts) {
+    // deprecated api
+    if (isConsoleSupported) {
+      console.warn('Warning: `createForm` is deprecated and it will be removed in the next release. Use `create` instead.');
+    }
+    return createForm(type, opts);
+  },
+  createList: function (type, opts) {
+    // deprecated api
+    if (isConsoleSupported) {
+      console.warn('Warning: `createList` is deprecated and it will be removed in the next release. Use `create` instead.');
+    }
+    return createList(type, opts);
+  },
   create: create
 };
 

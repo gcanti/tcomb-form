@@ -8,7 +8,7 @@ var Person = t.struct({
 });
 
 // create the form
-var Form = t.form.createForm(Person);
+var Form = t.form.create(Person);
 
 // use the form in your component
 var App = React.createClass({
