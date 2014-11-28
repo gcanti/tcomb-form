@@ -157,8 +157,8 @@ function getOptionalLabel(name, optional) {
 
 function getLabel(label, breakpoints) {
   var classes = {};
+  classes['control-label'] = true;
   if (breakpoints) {
-    classes['control-label'] = true;
     classes[breakpoints.toLabelClassName()] = true;
   }
   return label ? React.createElement("label", {className: cx(classes)}, label) : null;

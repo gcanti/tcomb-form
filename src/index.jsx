@@ -151,8 +151,8 @@ function getOptionalLabel(name, optional) {
 
 function getLabel(label, breakpoints) {
   var classes = {};
+  classes['control-label'] = true;
   if (breakpoints) {
-    classes['control-label'] = true;
     classes[breakpoints.toLabelClassName()] = true;
   }
   return label ? <label className={cx(classes)}>{label}</label> : null;
