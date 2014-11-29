@@ -3,9 +3,9 @@
 var t = require('tcomb-validation');
 
 // install bootstrap plugin
-require('./lib/plugins/bootstrap');
+require('./lib/style/bootstrap');
 // install react plugin
-require('./lib/plugins/react');
+require('./lib/render/react');
 
 var toDSL = require('./lib/core');
 
