@@ -21,7 +21,7 @@ var banner = ['/**',
 // watch (main task for development)
 // ------------------------------------
 var paths = {
-  dev: ['lib/**/*.js', 'dev/index.js']
+  dev: ['lib/**/*.js', 'dev/index.js', 'index.js']
 };
 gulp.task('watch', ['build'], function() {
   gulp.watch(paths.dev, ['dev']);

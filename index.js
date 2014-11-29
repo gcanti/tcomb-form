@@ -1,1 +1,22 @@
-module.exports = require('./lib/tcomb-form');
+'use strict';
+
+var t = require('tcomb-validation');
+
+// install bootstrap plugin
+require('./lib/plugins/bootstrap');
+// install react plugin
+require('./lib/plugins/react');
+
+var toDSL = require('./lib/core');
+
+function create(type, options) {
+  var dsl = toDSL(type, options);
+  return dsl.render();
+}
+
+t.form = {
+  toDSL: toDSL,
+  create: create
+};
+
+module.exports = t;
