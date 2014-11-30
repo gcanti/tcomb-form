@@ -1,11 +1,7 @@
 .*
 *.log
-bower.json
-Gruntfile.js
+gulpfile.js
+CHANGELOG.md
 node_modules
 test
-coverage
 dev
-playground
-examples
-src
