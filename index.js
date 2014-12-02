@@ -1,21 +1,21 @@
 'use strict';
 
 var t = require('tcomb-validation');
+var toDSL = require('./lib/toDSL');
+
+// install react plugin
+require('./lib/react');
 
 // install bootstrap plugin
-require('./lib/style/bootstrap');
-// install react plugin
-require('./lib/render/react');
-
-var toDSL = require('./lib/core');
+var style = require('./lib/bootstrap');
 
 function create(type, options) {
   var dsl = toDSL(type, options);
-  return dsl.render();
+  //console.log(JSON.stringify(dsl, null, 2));
+  return dsl.render(style);
 }
 
 t.form = {
-  toDSL: toDSL,
   create: create
 };
 

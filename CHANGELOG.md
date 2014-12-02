@@ -1,3 +1,17 @@
+v0.3.0
+
+- complete code refactoring
+- validation of all api input
+- automatically create unique name attributes
+- clear intermediate representation of the result as a DSL
+- splitted rendering and styling in two modules
+- different styling from Bootstrap is pluggable
+
+**BREAKING**
+
+- radio are now handled as selects with a `renderAs: 'radio'` option
+- no more "Choose your ..." option in selects
+
 v0.2.2
 
 - upgrade to tcomb-validation v0.2.1
