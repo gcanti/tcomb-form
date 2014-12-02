@@ -7,12 +7,11 @@ var toDSL = require('./lib/toDSL');
 require('./lib/react');
 
 // install bootstrap plugin
-var style = require('./lib/bootstrap');
+require('./lib/bootstrap');
 
 function create(type, options) {
   var dsl = toDSL(type, options);
-  //console.log(JSON.stringify(dsl, null, 2));
-  return dsl.render(style);
+  return dsl.render();
 }
 
 t.form = {

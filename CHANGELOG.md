@@ -1,16 +1,16 @@
 v0.3.0
 
 - complete code refactoring
-- validation of all api input
+- validation of all api options
 - automatically create unique name attributes
-- clear intermediate representation of the result as a DSL
-- splitted rendering and styling in two modules
-- different styling from Bootstrap is pluggable
+- intermediate representation of the result as a DSL
+- pluggable styles (default Bootstrap)
 
 **BREAKING**
 
 - radio are now handled as selects with a `renderAs: 'radio'` option
 - no more "Choose your ..." option in selects
+- i18n now is called `bundle`
 
 v0.2.2
 
