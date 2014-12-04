@@ -1,34 +1,48 @@
-# TODO
+# Tests
 
-- [] return null if validation failed
+- [x] return null if validation failed (but provide a `raw` option to return `ValidationResult`)
 - textbox (Str, Num)
-  - [] label as ReactElement
+  - [x] label as ReactElement
+  - [x] help as ReactElement
+  - [x] optional label
+  - [x] optional placeholder
   - [] prefix
   - [] postfix
   - [] height
-  - [] handle conversion for numbers
-  - [] error message
+  - [x] handle conversion for numbers
+  - [x] error message
 - checkbox (Bool)
-  - [] label as ReactElement
-  - [] error message
+  - [x] label as ReactElement
+  - [x] help as ReactElement
+  - [x] optional label
+  - [x] error message
 - select (enums)
-  - [] label as ReactElement
+  - [x] label as ReactElement
+  - [x] help as ReactElement
+  - [x] optional label
   - [] height
   - [] multiple
-  - [] error message
+  - [x] error message
   - [x] opt group
   - [x] custom options
 - radio
-  - [] label as ReactElement
+  - [x] label as ReactElement
+  - [x] help as ReactElement
   - [x] renderAs: 'radio'
-  - [] error message
+  - [x] optional label
+  - [x] error message
 - struct
+  - [x] auto labels, none
   - [] label as ReactElement
+  - [] optional label
+  - [] help as ReactElement
   - [] subtype
   - [] error message
   - [] interleave in `order` option verbatim (ReactElements)
 - list
   - [] label as ReactElement
+  - [] optional label
+  - [] help as ReactElement
   - [] subtype
   - [] error message
 - [] custom input
@@ -40,3 +54,4 @@
   - [] pure
   - [] ionic
 - [] horizontal forms
+
