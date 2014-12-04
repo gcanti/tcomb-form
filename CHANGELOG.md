@@ -3,7 +3,6 @@ v0.3.0
 - complete code refactoring
 - validation of all api options
 - automatically create unique name attributes
-- intermediate representation of the result as a DSL
 - pluggable styles (default Bootstrap)
 
 **BREAKING**

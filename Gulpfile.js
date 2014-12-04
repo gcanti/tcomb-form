@@ -39,6 +39,7 @@ gulp.task('dev', function(){
     transform: [reactify],
     detectGlobals: true
   })
+  .external('react')
   .bundle()
   .on('error', function (err) {
     gutil.beep();
