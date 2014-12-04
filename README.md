@@ -1,6 +1,42 @@
-# Architecture
+# TODO
 
-```
-                                           core              styler               renderer
-t.form.create(type: Type, options: Obj) ------------> dsl -------------> UVDOM --------------> Component
-```
+- [] return null if validation failed
+- textbox (Str, Num)
+  - [] label as ReactElement
+  - [] prefix
+  - [] postfix
+  - [] height
+  - [] handle conversion for numbers
+  - [] error message
+- checkbox (Bool)
+  - [] label as ReactElement
+  - [] error message
+- select (enums)
+  - [] label as ReactElement
+  - [] height
+  - [] multiple
+  - [] error message
+  - [x] opt group
+  - [x] custom options
+- radio
+  - [] label as ReactElement
+  - [x] renderAs: 'radio'
+  - [] error message
+- struct
+  - [] label as ReactElement
+  - [] subtype
+  - [] error message
+  - [] interleave in `order` option verbatim (ReactElements)
+- list
+  - [] label as ReactElement
+  - [] subtype
+  - [] error message
+- [] custom input
+- [] for attribute for labels
+- [] aria support
+- [] playground
+- styles
+  - [] foundation
+  - [] pure
+  - [] ionic
+- [] horizontal forms
