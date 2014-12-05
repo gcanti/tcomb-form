@@ -1,5 +1,13 @@
+# TODO
+
+- config.js (kinds, renderAs, irriducibles)
+- rinominare Bundle in I18n
+- portare gli stanziamenti dei protocolli di comunicazione con gli styles dalla parte di react
+
 # Tests
 
+- try to not break the apis
+  - [] i18n
 - [x] return null if validation failed (but provide a `raw` option to return `ValidationResult`)
 - textbox (Str, Num)
   - [x] label as ReactElement
@@ -21,7 +29,7 @@
   - [x] help as ReactElement
   - [x] optional label
   - [] height
-  - [] multiple
+  - [x] multiple
   - [x] error message
   - [x] opt group
   - [x] custom options

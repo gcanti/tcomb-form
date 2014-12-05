@@ -9,7 +9,10 @@ v0.3.0
 
 - radio are now handled as selects with a `renderAs: 'radio'` option
 - no more "Choose your ..." option in selects
-- i18n now is called `bundle`
+- no more need for `multiple` option
+- `i18n` option now is called `bundle`
+- `i17n` option is now called `transformer`
+- `input` option is now called `factory`
 
 v0.2.2
 
