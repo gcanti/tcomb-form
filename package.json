@@ -33,7 +33,8 @@
     "reactify": "^0.17.0",
     "tape": "^3.0.3",
     "testling": "^1.7.1",
-    "vinyl-source-stream": "^1.0.0"
+    "vinyl-source-stream": "^1.0.0",
+    "node-jsx": "^0.12.4"
   },
   "tags": [
     "form",

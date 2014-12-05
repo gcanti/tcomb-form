@@ -1,13 +1,5 @@
-# TODO
-
-- config.js (kinds, renderAs, irriducibles)
-- rinominare Bundle in I18n
-- portare gli stanziamenti dei protocolli di comunicazione con gli styles dalla parte di react
-
 # Tests
 
-- try to not break the apis
-  - [] i18n
 - [x] return null if validation failed (but provide a `raw` option to return `ValidationResult`)
 - textbox (Str, Num)
   - [x] label as ReactElement
@@ -41,16 +33,14 @@
   - [x] error message
 - struct
   - [x] auto labels, none
-  - [] label as ReactElement
-  - [] optional label
-  - [] help as ReactElement
+  - [x] label as ReactElement
+  - [x] help as ReactElement
   - [] subtype
   - [] error message
   - [] interleave in `order` option verbatim (ReactElements)
 - list
-  - [] label as ReactElement
-  - [] optional label
-  - [] help as ReactElement
+  - [x] label as ReactElement
+  - [x] help as ReactElement
   - [] subtype
   - [] error message
 - [] custom input
