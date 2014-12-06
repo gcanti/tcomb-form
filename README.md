@@ -6,8 +6,8 @@
   - [x] help as ReactElement
   - [x] optional label
   - [x] optional placeholder
-  - [] prefix
-  - [] postfix
+  - [x] addonBefore
+  - [x] addonAfter
   - [] height
   - [x] handle conversion for numbers
   - [x] error message
@@ -37,7 +37,7 @@
   - [x] help as ReactElement
   - [x] subtype
   - [x] error message
-  - [] interleave in `order` option verbatim (ReactElements)
+  - [x] interleave in `order` option verbatim (ReactElements)
 - list
   - [x] label as ReactElement
   - [x] help as ReactElement
