@@ -1,6 +1,6 @@
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
- * @version v0.2.2
+ * @version v0.2.3
  * @link https://github.com/gcanti/tcomb-form
  * @license MIT
  */
@@ -157,7 +157,7 @@ $(function () {
 },{"../index":2,"js-beautify":4,"react":154}],2:[function(require,module,exports){
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
- * @version v0.2.2
+ * @version v0.2.3
  * @link https://github.com/gcanti/tcomb-form
  * @license MIT
  */
@@ -314,8 +314,8 @@ function getOptionalLabel(name, optional) {
 
 function getLabel(label, breakpoints) {
   var classes = {};
+  classes['control-label'] = true;
   if (breakpoints) {
-    classes['control-label'] = true;
     classes[breakpoints.toLabelClassName()] = true;
   }
   return label ? React.createElement("label", {className: cx(classes)}, label) : null;
@@ -22963,13 +22963,13 @@ module.exports = require('./lib/React');
   // validate
   //
 
-  function _validate(x, type, path) {
-    var kind = t.util.getKind(type);
-    return validators[kind](x, type, path);
+  function validate(x, type) {
+    return new ValidationResult(recurse(x, type, []));
   }
 
-  function validate(x, type) {
-    return new ValidationResult(_validate(x, type, []));
+  function recurse(x, type, path) {
+    var kind = t.util.getKind(type);
+    return validators[kind](x, type, path);
   }
 
   var validators = {};
@@ -22993,7 +22993,7 @@ module.exports = require('./lib/React');
     var ret = {value: [], errors: []};
     // every item should be of type `type.meta.type`
     for (var i = 0, len = x.length ; i < len ; i++ ) {
-      var item = _validate(x[i], type.meta.type, path.concat(i));
+      var item = recurse(x[i], type.meta.type, path.concat(i));
       ret.value[i] = item.value;
       ret.errors = ret.errors.concat(item.errors);
     }
@@ -23003,7 +23003,7 @@ module.exports = require('./lib/React');
   validators.subtype = function validateSubtype(x, type, path) {
 
     // x should be a valid inner type
-    var ret = _validate(x, type.meta.type, path);
+    var ret = recurse(x, type.meta.type, path);
     if (ret.errors.length) {
       return ret;
     }
@@ -23020,7 +23020,7 @@ module.exports = require('./lib/React');
   validators.maybe = function validateMaybe(x, type, path) {
     return t.Nil.is(x) ?
       {value: null, errors: []} :
-      _validate(x, type.meta.type, path);
+      recurse(x, type.meta.type, path);
   };
 
   validators.struct = function validateStruct(x, type, path) {
@@ -23030,12 +23030,17 @@ module.exports = require('./lib/React');
       return {value: x, errors: [ValidationError.of(x, type, path)]};
     }
 
+    // [optimization]
+    if (type.is(x)) {
+      return {value: x, errors: []};
+    }
+
     var ret = {value: {}, errors: []};
     var props = type.meta.props;
     // every item should be of type `props[name]`
     for (var name in props) {
       if (props.hasOwnProperty(name)) {
-        var prop = _validate(x[name], props[name], path.concat(name));
+        var prop = recurse(x[name], props[name], path.concat(name));
         ret.value[name] = prop.value;
         ret.errors = ret.errors.concat(prop.errors);
       }
@@ -23059,7 +23064,7 @@ module.exports = require('./lib/React');
     var ret = {value: [], errors: []};
     // every item should be of type `types[i]`
     for (var i = 0 ; i < len ; i++ ) {
-      var item = _validate(x[i], types[i], path.concat(i));
+      var item = recurse(x[i], types[i], path.concat(i));
       ret.value[i] = item.value;
       ret.errors = ret.errors.concat(item.errors);
     }
@@ -23079,8 +23084,8 @@ module.exports = require('./lib/React');
     for (var k in x) {
       if (x.hasOwnProperty(k)) {
         path = path.concat(k);
-        var key = _validate(k, type.meta.domain, path);
-        var item = _validate(x[k], type.meta.codomain, path);
+        var key = recurse(k, type.meta.domain, path);
+        var item = recurse(x[k], type.meta.codomain, path);
         ret.value[k] = item.value;
         ret.errors = ret.errors.concat(key.errors, item.errors);
       }
@@ -23091,7 +23096,7 @@ module.exports = require('./lib/React');
   validators.union = function validateUnion(x, type, path) {
     var ctor = type.dispatch(x);
     return t.Func.is(ctor)?
-      _validate(x, ctor, path.concat(type.meta.types.indexOf(ctor))) :
+      recurse(x, ctor, path.concat(type.meta.types.indexOf(ctor))) :
       {value: x, errors: [ValidationError.of(x, type, path)]};
   };
 

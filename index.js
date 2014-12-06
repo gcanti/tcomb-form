@@ -1,6 +1,6 @@
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
- * @version v0.2.2
+ * @version v0.2.3
  * @link https://github.com/gcanti/tcomb-form
  * @license MIT
  */

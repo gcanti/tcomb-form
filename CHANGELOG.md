@@ -1,3 +1,7 @@
+v0.2.3
+
+- Always add control-label class to labels. Required for example for displaying validation states correctly.
+
 v0.2.2
 
 - upgrade to tcomb-validation v0.2.1
