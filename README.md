@@ -35,14 +35,14 @@
   - [x] auto labels, none
   - [x] label as ReactElement
   - [x] help as ReactElement
-  - [] subtype
-  - [] error message
+  - [x] subtype
+  - [x] error message
   - [] interleave in `order` option verbatim (ReactElements)
 - list
   - [x] label as ReactElement
   - [x] help as ReactElement
-  - [] subtype
-  - [] error message
+  - [x] subtype
+  - [x] error message
 - [] custom input
 - [] for attribute for labels
 - [] aria support
