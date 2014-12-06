@@ -1,10 +1,6 @@
 {
   "name": "tcomb-form",
-<<<<<<< HEAD
-  "version": "0.2.3",
-=======
   "version": "0.3.0",
->>>>>>> v2x-refactoring
   "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
   "main": "index.js",
   "scripts": {

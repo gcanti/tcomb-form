@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-v0.2.3
-
-- Always add control-label class to labels. Required for example for displaying validation states correctly.
-=======
-<<<<<<< HEAD
 v0.3.0
 
 - complete code refactoring
@@ -22,12 +16,10 @@ v0.3.0
 - `i17n` option is now called `transformer`
 - horizontal forms must be handled by the style: no more `breakpoints` option but a single `horizontal` boolean option
 - no more `height` option
-=======
+
 v0.2.3
 
 - Always add control-label class to labels. Required for example for displaying validation states correctly.
->>>>>>> master
->>>>>>> v2x-refactoring
 
 v0.2.2
 

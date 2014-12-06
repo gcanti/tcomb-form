@@ -1,4 +1,9 @@
-# Tests
+**Note**
+
+This library is under heavy refactoring.
+The current released version is on [branch v0.2](https://github.com/gcanti/tcomb-form/tree/v0.2)
+
+# Roadmap v0.3.0
 
 - [] custom input
 - [] for attribute for labels
