@@ -1,5 +1,14 @@
 # Tests
 
+- [] custom input
+- [] for attribute for labels
+- [] aria support
+- [] playground
+- styles
+  - [] foundation
+  - [] pure
+  - [] ionic
+- [x] horizontal forms
 - [x] return null if validation failed (but provide a `raw` option to return `ValidationResult`)
 - textbox (Str, Num)
   - [x] label as ReactElement
@@ -8,7 +17,6 @@
   - [x] optional placeholder
   - [x] addonBefore
   - [x] addonAfter
-  - [] height
   - [x] handle conversion for numbers
   - [x] error message
 - checkbox (Bool)
@@ -20,7 +28,6 @@
   - [x] label as ReactElement
   - [x] help as ReactElement
   - [x] optional label
-  - [] height
   - [x] multiple
   - [x] error message
   - [x] opt group
@@ -43,13 +50,4 @@
   - [x] help as ReactElement
   - [x] subtype
   - [x] error message
-- [] custom input
-- [] for attribute for labels
-- [] aria support
-- [] playground
-- styles
-  - [] foundation
-  - [] pure
-  - [] ionic
-- [] horizontal forms
 
