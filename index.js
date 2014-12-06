@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * tcomb-form - Domain Driven Forms. Automatically generate form markup from a domain model
  * @version v0.2.3
@@ -1089,3 +1090,6 @@ t.form = {
 
 module.exports = t;
 
+=======
+module.exports = require('./lib');
+>>>>>>> v2x-refactoring

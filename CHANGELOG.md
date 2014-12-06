@@ -1,6 +1,33 @@
+<<<<<<< HEAD
 v0.2.3
 
 - Always add control-label class to labels. Required for example for displaying validation states correctly.
+=======
+<<<<<<< HEAD
+v0.3.0
+
+- complete code refactoring
+- validation of all api options
+- automatically create unique `name` attributes for inputs
+- pluggable styles (default Bootstrap) with defined protocol
+- pluggable kind handlers
+- pluggable irriducible handlers
+- pluggable irriducible transformers
+
+**BREAKING**
+
+- radio are now handled as selects with a `renderAs: 'radio'` option
+- no more "Choose your ..." option in selects
+- no more need for `multiple` option
+- `i17n` option is now called `transformer`
+- horizontal forms must be handled by the style: no more `breakpoints` option but a single `horizontal` boolean option
+- no more `height` option
+=======
+v0.2.3
+
+- Always add control-label class to labels. Required for example for displaying validation states correctly.
+>>>>>>> master
+>>>>>>> v2x-refactoring
 
 v0.2.2
 

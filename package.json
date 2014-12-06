@@ -1,10 +1,14 @@
 {
   "name": "tcomb-form",
+<<<<<<< HEAD
   "version": "0.2.3",
+=======
+  "version": "0.3.0",
+>>>>>>> v2x-refactoring
   "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "node test/test",
     "test-browser": "browserify test/test | testling -u"
   },
   "repository": {
@@ -19,7 +23,7 @@
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
     "react": "^0.12.1",
-    "tcomb-validation": "^0.2.1"
+    "tcomb-validation": "^0.2.2"
   },
   "devDependencies": {
     "browserify": "^6.3.2",
@@ -27,12 +31,14 @@
     "gulp-header": "^1.2.2",
     "gulp-react": "^2.0.0",
     "gulp-rename": "^1.2.0",
+    "gulp-util": "^3.0.1",
     "js-beautify": "^1.5.4",
     "react-vdom": "^0.2.1",
     "reactify": "^0.17.0",
     "tape": "^3.0.3",
     "testling": "^1.7.1",
-    "vinyl-source-stream": "^1.0.0"
+    "vinyl-source-stream": "^1.0.0",
+    "node-jsx": "^0.12.4"
   },
   "tags": [
     "form",
