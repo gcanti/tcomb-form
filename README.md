@@ -37,7 +37,7 @@ The current stable release is on [branch v0.2](https://github.com/gcanti/tcomb-f
 # Roadmap to v0.3.0
 
 - [] check that fatories return a valid React component
-- [] add `template` option for input customization
+- [x] add `template` option for input customization
 - [x] enanche Context providing util methods to help writing new inputs
 - [] custom input
 - [] for attribute for labels
