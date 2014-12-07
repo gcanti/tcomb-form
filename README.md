@@ -44,6 +44,7 @@ The current stable release is on [branch v0.2](https://github.com/gcanti/tcomb-f
   - [] foundation
   - [] pure
   - [] ionic
+  - [] [flakes](http://getflakes.com/index.html)
 - [x] horizontal forms
 - [x] return null if validation failed (but provide a `raw` option to return `ValidationResult`)
 - textbox (Str, Num)
