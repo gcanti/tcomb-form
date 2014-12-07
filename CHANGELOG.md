@@ -16,6 +16,7 @@ v0.3.0
 - `i17n` option is now called `transformer`
 - horizontal forms must be handled by the style: no more `breakpoints` option but a single `horizontal` boolean option
 - no more `height` option
+- custom input now must be functions with signature: `(opts, ctx) -> React Class`
 
 v0.2.3
 
