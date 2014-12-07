@@ -36,6 +36,7 @@ The current stable release is on [branch v0.2](https://github.com/gcanti/tcomb-f
 
 # Roadmap to v0.3.0
 
+- [] enanche Context providing util methods to hwlp writing new inputs
 - [] custom input
 - [] for attribute for labels
 - [] aria support
