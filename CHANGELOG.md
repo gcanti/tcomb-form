@@ -10,6 +10,7 @@ v0.3.0
 
 **BREAKING**
 
+- `input` option is now `factory`
 - radio are now handled as selects with a `renderAs: 'radio'` option
 - no more "Choose your ..." option in selects
 - no more need for `multiple` option

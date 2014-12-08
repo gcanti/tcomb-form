@@ -34,6 +34,11 @@ With tcomb-form you simply call `var Form = t.form.create(domainModel)` to gener
 This library is under heavy development.
 The current stable release is on [branch v0.2](https://github.com/gcanti/tcomb-form/tree/v0.2)
 
+# Extension points
+
+- opts.factory
+- config
+
 # Roadmap to v0.3.0
 
 - [] check that fatories return a valid React component
@@ -44,10 +49,11 @@ The current stable release is on [branch v0.2](https://github.com/gcanti/tcomb-f
 - [] aria support
 - [] playground
 - styles
+  - [] bootstrap
   - [] foundation
   - [] pure
   - [] ionic
-  - [] [flakes](http://getflakes.com/index.html)
+  - [] gridforms / [flakes](http://getflakes.com/index.html)
 - [x] horizontal forms
 - [x] return null if validation failed (but provide a `raw` option to return `ValidationResult`)
 - textbox (Str, Num)
