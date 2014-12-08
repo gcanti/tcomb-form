@@ -34,66 +34,16 @@ With tcomb-form you simply call `var Form = t.form.create(domainModel)` to gener
 This library is under heavy development.
 The current stable release is on [branch v0.2](https://github.com/gcanti/tcomb-form/tree/v0.2)
 
-# Extension points
-
-- opts.factory
-- config
-
 # Roadmap to v0.3.0
 
-- [] check that fatories return a valid React component
-- [x] add `template` option for input customization
-- [x] enanche Context providing util methods to help writing new inputs
-- [] custom input
+- [] fatories must return a valid React component
 - [] for attribute for labels
 - [] aria support
-- [] playground
-- styles
+- [] build examples
+- [] rebuild the playground
+- templates
   - [] bootstrap
   - [] foundation
   - [] pure
   - [] ionic
   - [] gridforms / [flakes](http://getflakes.com/index.html)
-- [x] horizontal forms
-- [x] return null if validation failed (but provide a `raw` option to return `ValidationResult`)
-- textbox (Str, Num)
-  - [x] label as ReactElement
-  - [x] help as ReactElement
-  - [x] optional label
-  - [x] optional placeholder
-  - [x] addonBefore
-  - [x] addonAfter
-  - [x] handle conversion for numbers
-  - [x] error message
-- checkbox (Bool)
-  - [x] label as ReactElement
-  - [x] help as ReactElement
-  - [x] optional label
-  - [x] error message
-- select (enums)
-  - [x] label as ReactElement
-  - [x] help as ReactElement
-  - [x] optional label
-  - [x] multiple
-  - [x] error message
-  - [x] opt group
-  - [x] custom options
-- radio
-  - [x] label as ReactElement
-  - [x] help as ReactElement
-  - [x] renderAs: 'radio'
-  - [x] optional label
-  - [x] error message
-- struct
-  - [x] auto labels, none
-  - [x] label as ReactElement
-  - [x] help as ReactElement
-  - [x] subtype
-  - [x] error message
-  - [x] interleave in `order` option verbatim (ReactElements)
-- list
-  - [x] label as ReactElement
-  - [x] help as ReactElement
-  - [x] subtype
-  - [x] error message
-

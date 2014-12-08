@@ -21,20 +21,16 @@ var banner = ['/**',
 // watch (main task for development)
 // ------------------------------------
 var paths = {
-  dev: ['lib/**/*.js', 'dev/index.js', 'index.js']
+  dev: ['lib/**/*.js', 'dev/**/*.js']
 };
-gulp.task('watch', ['build'], function() {
+gulp.task('watch', ['dev'], function () {
   gulp.watch(paths.dev, ['dev']);
 });
 
 // ------------------------------------
-// default (main task for releases)
+// development
 // ------------------------------------
-gulp.task('default', ['build']);
-
-gulp.task('build', ['dev']);
-
-gulp.task('dev', function(){
+gulp.task('dev', function (){
   browserify('./dev/index.js', {
     transform: [reactify],
     detectGlobals: true

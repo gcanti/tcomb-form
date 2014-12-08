@@ -12,9 +12,8 @@ v0.3.0
 
 - `input` option is now `factory`
 - `emptyOption` option is now `nullOption`
-- radio are now handled as selects with a `renderAs: 'radio'` option
 - no more "Choose your ..." option in selects
-- no more need for `multiple` option
+- no more need for `multiple` option, use `t.form.factories.select` instead
 - `i17n` option is now called `transformer`
 - horizontal forms must be handled by the style: no more `breakpoints` option but a single `horizontal` boolean option
 - no more `height` option
