@@ -21,10 +21,12 @@ var banner = ['/**',
 // watch (main task for development)
 // ------------------------------------
 var paths = {
-  dev: ['lib/**/*.js', 'dev/**/*.js']
+  dev: ['lib/**/*.js', 'dev/**/*.js'],
+  examples: ['lib/**/*.js', 'examples/**/*.jsx']
 };
-gulp.task('watch', ['dev'], function () {
+gulp.task('watch', ['dev', 'examples'], function () {
   gulp.watch(paths.dev, ['dev']);
+  gulp.watch(paths.examples, ['examples']);
 });
 
 // ------------------------------------
@@ -47,3 +49,21 @@ gulp.task('dev', function (){
   .pipe(header(banner, { pkg : pkg } ))
   .pipe(gulp.dest('dev'));
 });
+
+// ------------------------------------
+// examples
+// ------------------------------------
+gulp.task('examples', function (){
+
+  browserify('./examples/gridforms/gridforms.jsx', {
+    transform: [reactify],
+    detectGlobals: true
+  })
+  .external('react')
+  .bundle()
+  .pipe(source('./examples/gridforms/gridforms.jsx'))
+  .pipe(rename('gridforms.js'))
+  .pipe(gulp.dest('./examples/gridforms'));
+
+});
+
