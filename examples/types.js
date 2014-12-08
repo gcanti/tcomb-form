@@ -1,0 +1,68 @@
+var t = require('tcomb-validation');
+
+var Vendor = t.enums.of([
+  'ted'
+, 'Magna Phasellus Dolor Incorporated'
+, 'Fames Ac Turpis Inc.'
+, 'Eu Eros Institute'
+, 'Suspendisse Sagittis Associates'
+, 'Tempor Lorem PC'
+, 'Nulla Facilisi Sed PC'
+, 'Dignissim Corp.'
+, 'Blandit Ltd'
+, 'Dapibus Gravida Aliquam LLP'
+, 'Cursus A Inc.'
+, 'Tellus PC'
+, 'Fusce Mi Foundation'
+, 'Dictum Sapien Aenean Associates'
+, 'In Tincidunt PC'
+, 'Sapien Aenean Ltd'
+, 'Libero Foundation'
+, 'Egestas Rhoncus Proin Corp.'
+, 'Feugiat Nec Diam Institute'
+, 'Turpis Foundation'
+, 'Pede Malesuada Vel Associates'
+, 'Eget Venenatis A PC'
+, 'Mollis Vitae Corporation'
+, 'Gravida Mauris Incorporated'
+, 'Tortor Consulting'
+, 'Habitant Morbi Tristique Corporation'
+, 'Enim Corp.'
+, 'Sed Turpis Nec LLC'
+, 'Enim Foundation'
+, 'Tincidunt Orci Quis Institute'
+, 'Lectus Pede LLC'
+, 'Class Corporation'
+, 'Erat Volutpat Nulla LLP'
+, 'Sed LLC'
+, 'Justo Faucibus Associates'
+, 'Vel Turpis Foundation'
+, 'Tellus Aenean Limited'
+, 'Tempus Scelerisque Corporation'
+, 'Eleifend LLP'
+, 'A Felis Ullamcorper Company'
+, 'Neque Non LLC'
+, 'Nibh Donec Est PC'
+]);
+
+var ProductType = t.enums.of([
+  'et magnis'
+, 'Vivamus rhoncus.'
+, 'egestas ligula.'
+, 'nulla. Cras'
+, 'Proin mi.'
+, 'turpis non'
+, 'ante ipsum'
+, 'arcu. Curabitur'
+, 'ante. Maecenas'
+, 'magna. Phasellus'
+, 'Suspendisse aliquet,'
+, 'purus gravida'
+, 'ac risus.'
+, 'mollis non,'
+]);
+
+module.exports = {
+  Vendor: Vendor,
+  ProductType: ProductType
+};

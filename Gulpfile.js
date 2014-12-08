@@ -65,5 +65,15 @@ gulp.task('examples', function (){
   .pipe(rename('gridforms.js'))
   .pipe(gulp.dest('./examples/gridforms'));
 
+  browserify('./examples/bootstrap/bootstrap.jsx', {
+    transform: [reactify],
+    detectGlobals: true
+  })
+  .external('react')
+  .bundle()
+  .pipe(source('./examples/bootstrap/bootstrap.jsx'))
+  .pipe(rename('bootstrap.js'))
+  .pipe(gulp.dest('./examples/bootstrap'));
+
 });
 

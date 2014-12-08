@@ -2,6 +2,7 @@ var React = require('react');
 var t = require('../../lib');
 var Str = t.Str;
 var Num = t.Num;
+var types = require('../types');
 
 // gridforms plugin
 t.form.config.templates = require('../../lib/templates/gridforms');
@@ -10,9 +11,9 @@ t.form.config.templates = require('../../lib/templates/gridforms');
 var Data = t.struct({
   productName: Str,
   tags: Str,
-  vendor: Str,
-  productType: Str,
-  productDescription: Str,
+  vendor: types.Vendor,
+  productType: types.ProductType,
+  productDescription: t.maybe(Str),
   sku: Str,
   initialStockLevel: Str,
   costPrice: Num,
@@ -22,15 +23,16 @@ var Data = t.struct({
 
 // React form component
 var Form = t.form.create(Data, {
+  label: 'Add to inventory',
   auto: 'labels',           // automatically create labels from field names
   template: structTemplate, // custom template for structs
   value: {
-    productName: 'a',
-    tags: 'b',
-    vendor: 'c',
-    productType: 'd',
+    productName: 'aaa',
+    tags: null,
+    vendor: 'bbb',
+    productType: 'ccc',
     productDescription: null,
-    sku: 'f',
+    sku: 'ddd',
     initialStockLevel: 1000,
     costPrice: 700,
     wholesalePrice: null,

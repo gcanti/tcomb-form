@@ -5,13 +5,13 @@ var Str = t.Str;
 var Num = t.Num;
 var types = require('../types');
 
-// gridforms plugin
-t.form.config.templates = require('../../lib/templates/gridforms');
+// bootstrap plugin
+t.form.config.templates = require('../../lib/templates/bootstrap');
 
 // model
 var Data = t.struct({
   productName: Str,
-  tags: Str,
+  tags: t.list(Str),
   vendor: types.Vendor,
   productType: types.ProductType,
   productDescription: t.maybe(Str),
@@ -25,8 +25,7 @@ var Data = t.struct({
 // React form component
 var Form = t.form.create(Data, {
   label: 'Add to inventory',
-  auto: 'labels',           // automatically create labels from field names
-  template: structTemplate, // custom template for structs
+  auto: 'labels', // automatically create labels from field names
   value: {
     productName: 'aaa',
     tags: null,
@@ -38,6 +37,11 @@ var Form = t.form.create(Data, {
     costPrice: 700,
     wholesalePrice: null,
     retailPrice: 1000
+  },
+  fields: {
+    tags: {
+      auto: 'placeholders'
+    }
   }
 });
 
@@ -56,7 +60,9 @@ var App = React.createClass({displayName: 'App',
     return (
       React.createElement("form", {onSubmit: this.onClick, className: "grid-form"}, 
         React.createElement(Form, {ref: "form"}), 
-        React.createElement("input", {type: "submit", value: "Save"})
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("input", {type: "submit", className: "btn btn-primary", value: "Save"})
+        )
       )
     );
   }
@@ -64,60 +70,7 @@ var App = React.createClass({displayName: 'App',
 
 React.render(React.createElement(App, null), document.getElementById('app'));
 
-// custom template for structs
-function structTemplate(locals) {
-
-  // hash field -> input
-  var inputs = locals.inputs;
-
-  return (
-    React.createElement("fieldset", null, 
-      React.createElement("legend", null, locals.label), 
-      React.createElement("div", {'data-row-span': "4"}, 
-        React.createElement("div", {'data-field-span': "3"}, 
-          inputs.productName
-        ), 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.tags
-        )
-      ), 
-      React.createElement("div", {'data-row-span': "2"}, 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.vendor
-        ), 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.productType
-        )
-      ), 
-      React.createElement("div", {'data-row-span': "1"}, 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.productDescription
-        )
-      ), 
-      React.createElement("div", {'data-row-span': "5"}, 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.sku
-        ), 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.initialStockLevel
-        ), 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.costPrice
-        ), 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.wholesalePrice
-        ), 
-        React.createElement("div", {'data-field-span': "1"}, 
-          inputs.retailPrice
-        )
-      )
-    )
-  );
-}
-
-
-
-},{"../../lib":6,"../../lib/templates/gridforms":9,"../types":2,"react":"react"}],2:[function(require,module,exports){
+},{"../../lib":6,"../../lib/templates/bootstrap":9,"../types":2,"react":"react"}],2:[function(require,module,exports){
 var t = require('tcomb-validation');
 
 var Vendor = t.enums.of([
@@ -1286,10 +1239,6 @@ module.exports = {
 },{"react":"react","tcomb-validation":16}],9:[function(require,module,exports){
 'use strict';
 
-//==================
-// WORK IN PROGRESS
-//==================
-
 var React = require('react');
 var style = require('../protocols/style');
 var cx = require('react/lib/cx');
@@ -1297,21 +1246,28 @@ var util = require('./util');
 
 module.exports = {
 
-  name: 'gridforms',
+  name: 'bootstrap',
 
+  // templates
   textbox: textbox,
   checkbox: checkbox,
   select: select,
   radio: radio,
   struct: struct,
-  list: list
+  list: list,
+
+  // utils
+  getCheckbox: getCheckbox,
+  getErrorBlock: getErrorBlock,
+  getHelpBlock: getHelpBlock,
+  getLabel: getLabel
 };
 
 function textbox(locals) {
 
-  var type = locals.type;
-
-  if (type === 'hidden') {
+  if (locals.type === 'hidden') {
+    // if the textbox is hidden, no decorations only `name`, `value`.
+    // And `ref` if you need to read the value
     return React.createElement("input", {
       type: "hidden", 
       name: locals.name, 
@@ -1319,42 +1275,229 @@ function textbox(locals) {
       ref: locals.ref});
   }
 
-  var control = util.getTextbox(locals);
+  var control = util.getTextbox(locals, 'form-control');
+  var label = getLabel(locals);
+  var error = getErrorBlock(locals);
+  var help = getHelpBlock(locals);
+
+  var groupClassName = {
+    'form-group': true,
+    'has-error': locals.hasError
+  };
 
   return (
-    React.createElement("div", null, 
-      React.createElement("label", {className: cx({'has-error': locals.hasError})}, locals.label), 
-      control
+    React.createElement("div", {className: cx(groupClassName)}, 
+      label, 
+      control, 
+      error, 
+      help
     )
   );
 }
 
 function checkbox(locals) {
-  throw new Error('checkboxes are not implemented (yet)');
+
+  var control = getCheckbox(locals);
+  var error = getErrorBlock(locals);
+  var help = getHelpBlock(locals);
+
+  var groupClassName = {
+    'form-group': true,
+    'has-error': locals.hasError
+  };
+
+  return (
+    React.createElement("div", {className: cx(groupClassName)}, 
+      React.createElement("div", {className: "checkbox"}, 
+        control, 
+        error, 
+        help
+      )
+    )
+  );
 }
 
 function select(locals) {
 
-  var control = util.getSelect(locals);
+  var control = util.getSelect(locals, 'form-control');
+  var label = getLabel(locals);
+  var error = getErrorBlock(locals);
+  var help = getHelpBlock(locals);
+
+  var groupClassName = {
+    'form-group': true,
+    'has-error': locals.hasError
+  };
 
   return (
-    React.createElement("div", null, 
-      React.createElement("label", {className: cx({'has-error': locals.hasError})}, locals.label), 
-      control
+    React.createElement("div", {className: cx(groupClassName)}, 
+      label, 
+      control, 
+      error, 
+      help
     )
   );
 }
 
 function radio(locals) {
-  throw new Error('radios are not implemented (yet)');
+
+  var controls = locals.options.map(function (option, i) {
+    return (
+      React.createElement("div", {className: "radio", key: option.value}, 
+        React.createElement("label", null, 
+          React.createElement("input", {type: "radio", 
+            name: locals.name, 
+            value: option.value, 
+            defaultChecked: option.value === locals.value, 
+            ref: locals.ref + i}), 
+          option.text
+        )
+      )
+    );
+  });
+
+  var label = getLabel(locals);
+  var error = getErrorBlock(locals);
+  var help = getHelpBlock(locals);
+
+  var groupClassName = {
+    'form-group': true,
+    'has-error': locals.hasError
+  };
+
+  return (
+    React.createElement("div", {className: cx(groupClassName)}, 
+      label, 
+      controls, 
+      error, 
+      help
+    )
+  );
 }
 
 function struct(locals) {
-  throw new Error('In grid forms you must write a custom template for structs');
+
+  var rows = locals.order.map(function (name) {
+    // handle verbatims
+    return locals.inputs.hasOwnProperty(name) ?
+      locals.inputs[name] :
+      name;
+  });
+
+  var legend = null;
+  if (locals.label) {
+    legend = React.createElement("legend", null, locals.label);
+  }
+
+  var className = {
+    'has-error': locals.hasError
+  };
+
+  return (
+    React.createElement("fieldset", {className: cx(className)}, 
+      legend, 
+      rows, 
+      getErrorBlock(locals), 
+      getHelpBlock(locals)
+    )
+  );
+}
+
+function getCheckbox(locals) {
+  return (
+    React.createElement("label", null, 
+      React.createElement("input", {type: "checkbox", ref: locals.ref}), " ", React.createElement("span", null, locals.label)
+    )
+  );
 }
 
 function list(locals) {
-  throw new Error('lists are not implemented (yet)');
+
+  var rows = locals.rows.map(function (row, i) {
+    if (!row.buttons.length) {
+      return (
+        React.createElement("div", {className: "row", key: row.key}, 
+          React.createElement("div", {className: "col-md-12"}, 
+            row.component
+          )
+        )
+      );
+    }
+    return (
+      React.createElement("div", {className: "row", key: row.key}, 
+        React.createElement("div", {className: "col-md-7"}, 
+          row.component
+        ), 
+        React.createElement("div", {className: "col-md-5"}, 
+          React.createElement("div", {className: "btn-group"}, 
+            
+              row.buttons.map(function (button, i) {
+                return (
+                  React.createElement("button", {className: "btn btn-default", onClick: button.click, key: i}, button.label)
+                );
+              })
+            
+          )
+        )
+      )
+    );
+  });
+
+  var legend = null;
+  if (locals.label) {
+    legend = React.createElement("legend", null, locals.label);
+  }
+
+  var addButton = null;
+  if (locals.add) {
+    addButton = (
+      React.createElement("div", {className: "form-group"}, 
+        React.createElement("button", {className: "btn btn-default", onClick: locals.add.click}, locals.add.label)
+      )
+    );
+  }
+
+  var className = {
+    'has-error': locals.hasError
+  };
+
+  return (
+    React.createElement("fieldset", {className: cx(className)}, 
+      legend, 
+      rows, 
+      addButton, 
+      getErrorBlock(locals), 
+      getHelpBlock(locals)
+    )
+  );
+
+}
+
+function getLabel(locals) {
+  if (!locals.label) { return; }
+  return (
+    React.createElement("label", {className: "control-label"}, 
+      locals.label
+    )
+  );
+}
+
+function getHelpBlock(locals) {
+  if (!locals.help) { return; }
+  return (
+    React.createElement("span", {className: "help-block"}, 
+      locals.help
+    )
+  );
+}
+
+function getErrorBlock(locals) {
+  if (!locals.message || !locals.hasError) { return; }
+  return (
+    React.createElement("span", {className: "help-block error-block"}, 
+      locals.message
+    )
+  );
 }
 
 },{"../protocols/style":8,"./util":10,"react":"react","react/lib/cx":15}],10:[function(require,module,exports){
