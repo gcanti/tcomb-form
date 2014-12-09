@@ -29,12 +29,12 @@
     "gulp-rename": "^1.2.0",
     "gulp-util": "^3.0.1",
     "js-beautify": "^1.5.4",
+    "node-jsx": "^0.12.4",
     "react-vdom": "^0.2.1",
     "reactify": "^0.17.0",
     "tape": "^3.0.3",
     "testling": "^1.7.1",
-    "vinyl-source-stream": "^1.0.0",
-    "node-jsx": "^0.12.4"
+    "vinyl-source-stream": "^1.0.0"
   },
   "tags": [
     "form",

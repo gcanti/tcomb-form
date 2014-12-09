@@ -25,7 +25,7 @@ var Registration = t.struct({
 
 var Form = t.form.create(Registration, {
   label: 'Registration',
-  //auto: 'labels',
+  auto: 'labels',
   fields: {
     password: {
       type: 'password'

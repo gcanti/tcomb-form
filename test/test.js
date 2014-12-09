@@ -1,42 +1,44 @@
 'use strict';
 
 require('node-jsx').install();
-var t = require('../index');
-
-var Str = t.Str;
-var maybe = t.maybe;
-var subtype = t.subtype;
-var list = t.list;
-
+var React = require('react');
 var test = require('tape');
+var vdom = require('react-vdom');
+var t = require('../.');
+
+function assertLocals(type, opts, asserts) {
+  opts = t.util.mixin({template: asserts}, opts);
+  var Input = t.form.create(type, opts);
+  vdom(React.createElement(Input, {}));
+}
 
 test('humanize', function (tape) {
   tape.plan(3);
+
   var humanize = require('../lib/util/humanize');
-  tape.deepEqual('Username', humanize('username'));
-  tape.deepEqual('Remember me', humanize('rememberMe'));
-  tape.deepEqual('Remember me', humanize('remember_me'));
+
+  tape.deepEqual(humanize('username'), 'Username');
+  tape.deepEqual(humanize('rememberMe'), 'Remember me');
+  tape.deepEqual(humanize('remember_me'), 'Remember me');
 });
 
-test('getReport', function (tape) {
-  tape.plan(15);
-  var getReport = require('../lib/util/getReport');
+test('textbox', function (tape) {
 
-  var predicate = function (x) { return true; };
-  tape.deepEqual(null, getReport(Str));
-  tape.deepEqual(null, getReport(maybe(Str)));
-  tape.deepEqual(null, getReport(subtype(maybe(Str), predicate)));
-  tape.deepEqual(null, getReport(maybe(subtype(Str, predicate))));
-  tape.deepEqual(null, getReport(list(Str)));
-  tape.deepEqual(null, getReport(list(maybe(Str))));
-  tape.deepEqual(null, getReport(list(maybe(Str))));
-  tape.deepEqual(null, getReport(list(subtype(maybe(Str), predicate))));
-  tape.deepEqual(null, getReport(list(maybe(subtype(Str, predicate)))));
-  tape.deepEqual(null, getReport(list(list(Str))));
-  tape.deepEqual(null, getReport(list(maybe(list(Str)))));
-  tape.deepEqual(null, getReport(list(subtype(list(Str), predicate))));
-  tape.deepEqual(null, getReport(list(subtype(maybe(list(Str)), predicate))));
-  tape.deepEqual(null, getReport(list(maybe(subtype(list(Str), predicate)))));
-  tape.deepEqual(null, getReport(maybe(list(Str))));
+  tape.test('default for `opts.type` should be `text`', function (tape) {
+    tape.plan(1);
+    assertLocals(t.Str, {}, function (locals) {
+      tape.deepEqual(locals.type, 'text');
+    });
+  });
+
+  tape.test('should handle `opts.type`', function (tape) {
+    tape.plan(2);
+    assertLocals(t.Str, {type: 'hidden'}, function (locals) {
+      tape.deepEqual(locals.type, 'hidden');
+    });
+    assertLocals(t.Str, {type: 'textarea'}, function (locals) {
+      tape.deepEqual(locals.type, 'textarea');
+    });
+  });
 
 });

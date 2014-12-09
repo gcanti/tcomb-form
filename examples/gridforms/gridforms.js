@@ -251,6 +251,7 @@ var Nil = t.Nil;
 var ValidationResult = t.ValidationResult;
 var getKind = t.util.getKind;
 var getName = t.util.getName;
+var mixin = t.util.mixin;
 
 // utils
 var humanize = require('./util/humanize');
@@ -289,7 +290,7 @@ config.irriducibles = {
   Bool: function (opts) { return checkbox; }
 };
 
-config.transformers = {
+var transformers = config.transformers = {
   Num: new api.Transformer({
     format: function (value) {
       return Nil.is(value) ? value : String(value);
@@ -353,9 +354,11 @@ function textbox(opts, ctx) {
 
   var transformer = opts.transformer;
   if (!transformer) {
-    // lookup a suitable transformer
-    transformer = config.transformers[getName(report.innerType)];
+    // lookup for a suitable transformer
+    transformer = transformers[getName(report.innerType)];
   }
+
+  var config = merge(ctx.config, opts.config);
 
   var template = opts.template || ctx.templates.textbox;
 
@@ -407,7 +410,8 @@ function textbox(opts, ctx) {
         disabled: opts.disabled,
         hasError: this.state.hasError,
         value: value,
-        message: getMessage(opts, this.state)
+        message: getMessage(opts, this.state),
+        config: config
       }));
     }
   });
@@ -427,6 +431,8 @@ function checkbox(opts, ctx) {
   var name = opts.name || ctx.getDefaultName();
 
   var value = !!either(opts.value, ctx.value);
+
+  var config = merge(ctx.config, opts.config);
 
   var template = opts.template || ctx.templates.checkbox;
 
@@ -466,7 +472,8 @@ function checkbox(opts, ctx) {
         disabled: opts.disabled,
         hasError: this.state.hasError,
         value: this.state.value,
-        message: getMessage(opts, this.state)
+        message: getMessage(opts, this.state),
+        config: config
       }));
     }
   });
@@ -507,6 +514,8 @@ function select(opts, ctx) {
   // add the empty option in first position
   var nullOption = opts.nullOption || {value: '', text: '-'};
   options.unshift(nullOption);
+
+  var config = merge(ctx.config, opts.config);
 
   var template = opts.template || ctx.templates.select;
 
@@ -568,7 +577,8 @@ function select(opts, ctx) {
         hasError: this.state.hasError,
         value: this.state.value,
         message: getMessage(opts, this.state),
-        multiple: multiple
+        multiple: multiple,
+        config: config
       }));
     }
   });
@@ -598,6 +608,8 @@ function radio(opts, ctx) {
   if (opts.order) {
     options.sort(api.Order.getComparator(opts.order));
   }
+
+  var config = merge(ctx.config, opts.config);
 
   var template = opts.template || ctx.templates.radio;
 
@@ -648,7 +660,8 @@ function radio(opts, ctx) {
         options: options,
         hasError: this.state.hasError,
         value: this.state.value,
-        message: getMessage(opts, this.state)
+        message: getMessage(opts, this.state),
+        config: config
       }));
     }
   });
@@ -673,27 +686,30 @@ function struct(opts, ctx) {
     label = ctx.getDefaultLabel();
   }
 
-  var templates = opts.templates || ctx.templates;
+  var config = merge(ctx.config, opts.config);
+
+  var templates = merge(ctx.templates, opts.templates);
 
   var fields = opts.fields || {};
   var components = {};
   order.forEach(function (prop) {
     if (props.hasOwnProperty(prop)) {
-      var factory = getFactory(props[prop], fields[prop]);
-      var Component = factory(fields[prop], new api.Context({
+      var propType = props[prop];
+      var propOpts = fields[prop] || {};
+      var factory = getFactory(propType, propOpts);
+      var Component = factory(propOpts, new api.Context({
         templates: templates,
         i18n: i18n,
-        report: new api.Context.getReport(props[prop]),
+        report: new api.Context.getReport(propType),
         path: ctx.path.concat(prop),
         auto: auto,
         label: humanize(prop),
-        value: value[prop]
+        value: value[prop],
+        config: merge(config, propOpts.config)
       }));
       components[prop] = Component;
     }
   });
-
-  var template = opts.template || templates.struct;
 
   return React.createClass({
 
@@ -711,9 +727,8 @@ function struct(opts, ctx) {
       var errors = [];
       var result;
 
-      for (var ref in components) {
-        if (components.hasOwnProperty(ref)) {
-          assert(!Nil.is(this.refs[ref]), 'missing `ref` for input `%s`, check out its template', ref);
+      for (var ref in this.refs) {
+        if (this.refs.hasOwnProperty(ref)) {
           result = this.refs[ref].getValue();
           errors = errors.concat(result.errors);
           value[ref] = result.value;
@@ -741,13 +756,15 @@ function struct(opts, ctx) {
         }
       }
 
-      return template(new theme.Struct({
+      return templates.struct(new theme.Struct({
         label: label,
         help: opts.help,
         order: order,
         inputs: inputs,
+        value: value,
         hasError: this.state.hasError,
-        message: getMessage(opts, this.state)
+        message: getMessage(opts, this.state),
+        config: config
       }));
     }
   });
@@ -770,19 +787,23 @@ function list(opts, ctx) {
     label = ctx.getDefaultLabel();
   }
 
-  var templates = opts.templates || ctx.templates;
+  var config = merge(ctx.config, opts.config);
+
+  var templates = merge(ctx.templates, opts.templates);
 
   var itemType = report.innerType.meta.type;
-  var itemFactory = getFactory(itemType, opts.item);
+  var itemOpts = opts.item || {};
+  var itemFactory = getFactory(itemType, itemOpts);
   var getComponent = function (value, i) {
-    return itemFactory(opts.item, new api.Context({
+    return itemFactory(itemOpts, new api.Context({
       templates: templates,
       i18n: i18n,
       report: api.Context.getReport(itemType),
       path: ctx.path.concat(i),
       auto: auto,
       label: '#' + (i + 1),
-      value: value
+      value: value,
+      config: merge(config, itemOpts.config)
     }));
   };
 
@@ -797,8 +818,6 @@ function list(opts, ctx) {
       key: uuid() // every component has a  unique generated key
     };
   });
-
-  var template = opts.template || templates.list;
 
   return React.createClass({
 
@@ -817,10 +836,11 @@ function list(opts, ctx) {
       var result;
 
       for (var i = 0, len = components.length ; i < len ; i++ ) {
-        assert(!Nil.is(this.refs[i]), 'missing `ref` for input `%s`, check out its template', i);
-        result = this.refs[i].getValue();
-        errors = errors.concat(result.errors);
-        value.push(result.value);
+        if (this.refs.hasOwnProperty(i)) {
+          result = this.refs[i].getValue();
+          errors = errors.concat(result.errors);
+          value.push(result.value);
+        }
       }
 
       // handle subtype
@@ -834,7 +854,7 @@ function list(opts, ctx) {
       return new ValidationResult({errors: errors, value: value});
     },
 
-    add: function (evt) {
+    addItem: function (evt) {
       evt.preventDefault();
       components.push({
         Component: getComponent(null, components.length - 1),
@@ -843,13 +863,13 @@ function list(opts, ctx) {
       this.forceUpdate();
     },
 
-    remove: function (i, evt) {
+    removeItem: function (i, evt) {
       evt.preventDefault();
       components.splice(i, 1);
       this.forceUpdate();
     },
 
-    up: function (i, evt) {
+    moveUpItem: function (i, evt) {
       evt.preventDefault();
       if (i > 0) {
         move(components, i, i - 1);
@@ -857,7 +877,7 @@ function list(opts, ctx) {
       }
     },
 
-    down: function (i, evt) {
+    moveDownItem: function (i, evt) {
       evt.preventDefault();
       if (i < components.length - 1) {
         move(components, i, i + 1);
@@ -870,9 +890,9 @@ function list(opts, ctx) {
       var items = components.map(function getItem(item, i) {
 
         var buttons = [];
-        if (!opts.disabledRemove) { buttons.push({ label: i18n.remove, click: this.remove.bind(this, i) }); }
-        if (!opts.disableOrder)   { buttons.push({ label: i18n.up, click: this.up.bind(this, i) }); }
-        if (!opts.disableOrder)   { buttons.push({ label: i18n.down, click: this.down.bind(this, i) }); }
+        if (!opts.disabledRemove) { buttons.push({ label: i18n.remove, click: this.removeItem.bind(this, i) }); }
+        if (!opts.disableOrder)   { buttons.push({ label: i18n.up, click: this.moveUpItem.bind(this, i) }); }
+        if (!opts.disableOrder)   { buttons.push({ label: i18n.down, click: this.moveDownItem.bind(this, i) }); }
 
         return {
           input: React.createElement(item.Component, {ref: i, key: item.key}),
@@ -881,16 +901,18 @@ function list(opts, ctx) {
         };
       }.bind(this));
 
-      return template(new theme.List({
+      return templates.list(new theme.List({
         label: label,
         help: opts.help,
         add: opts.disableAdd ? null : {
           label: i18n.add,
-          click: this.add
+          click: this.addItem
         },
         items: items,
+        value: value,
         hasError: this.state.hasError,
-        message: getMessage(opts, this.state)
+        message: getMessage(opts, this.state),
+        config: config
       }));
     }
   });
@@ -902,6 +924,10 @@ function list(opts, ctx) {
 
 function either(a, b) {
   return t.Nil.is(a) ? b : a;
+}
+
+function merge(a, b) {
+  return mixin(mixin({}, a), b, true);
 }
 
 function move(arr, fromIndex, toIndex) {
@@ -970,14 +996,17 @@ var Report = struct({
   innerType: maybe(t.Type)
 }, 'Report');
 
+var Templates = t.dict(Str, Func, 'Templates');
+
 var Context = struct({
-  templates: t.Obj,
+  templates: Templates,
   i18n: I18n,
   report: Report,
   path: list(union([Str, t.Num])),
   auto: Auto,
   label: Str,
-  value: Any
+  value: Any,
+  config: maybe(Obj)
 }, 'Context');
 
 Context.getReport = getReport;
@@ -1003,7 +1032,7 @@ Context.prototype.getDefaultLabel = function () {
 };
 
 Context.prototype.getDefaultDisplayName = function () {
-  return t.util.format('[`%s`, tcomb-form input]', (this.getDefaultName() || 'top level'));
+  return t.util.format('[`%s`, TcombFormInput]', (this.getDefaultName() || 'top level'));
 };
 
 var ReactElement = t.irriducible('ReactElement', React.isValidElement);
@@ -1031,7 +1060,6 @@ SelectOption.dispatch = function (x) {
 
 var TypeAttr = t.enums.of('hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
-// localization
 var Transformer = struct({
   format: Func,
   parse: Func
@@ -1049,7 +1077,8 @@ var Textbox = struct({
   readOnly: maybe(Bool),
   disabled: maybe(Bool),
   transformer: maybe(Transformer),
-  template: maybe(Func)
+  template: maybe(Func),
+  config: maybe(Obj)
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -1060,7 +1089,8 @@ var Checkbox = struct({
   name: maybe(t.Str),
   value: maybe(Bool),
   disabled: maybe(Bool),
-  template: maybe(Func)
+  template: maybe(Func),
+  config: maybe(Obj)
 }, 'Checkbox');
 
 function asc(a, b) {
@@ -1089,7 +1119,8 @@ var Select = struct({
   options: maybe(list(SelectOption)),
   nullOption: maybe(Option),
   disabled: maybe(Bool),
-  template: maybe(Func)
+  template: maybe(Func),
+  config: maybe(Obj)
 }, 'Select');
 
 var Radio = struct({
@@ -1101,13 +1132,13 @@ var Radio = struct({
   value: maybe(Str),
   order: maybe(Order),
   options: maybe(list(SelectOption)),
-  template: maybe(Func)
+  template: maybe(Func),
+  config: maybe(Obj)
 }, 'Select');
 
 var Struct = struct({
-  templates: maybe(t.Obj),
   i18n: maybe(I18n),
-  value: maybe(t.Obj),
+  value: maybe(Obj),
   auto: maybe(Auto),
   label: maybe(Label),
   help: maybe(Label),
@@ -1115,11 +1146,11 @@ var Struct = struct({
   message: maybe(Message),
   order: maybe(list(Label)),
   fields: maybe(Obj),
-  template: maybe(Func)
+  templates: maybe(Templates),
+  config: maybe(Obj)
 }, 'Struct');
 
 var List = struct({
-  templates: maybe(t.Obj),
   i18n: maybe(I18n),
   value: maybe(t.Arr),
   auto: maybe(Auto),
@@ -1131,7 +1162,8 @@ var List = struct({
   disableAdd: maybe(Bool),
   disableRemove: maybe(Bool),
   disableOrder: maybe(Bool),
-  template: maybe(Func)
+  templates: maybe(Templates),
+  config: maybe(Obj)
 }, 'List');
 
 module.exports = {
@@ -1154,6 +1186,7 @@ var Any = t.Any;
 var Str = t.Str;
 var Bool = t.Bool;
 var Func = t.Func;
+var Obj = t.Obj;
 var maybe = t.maybe;
 var list = t.list;
 var struct = t.struct;
@@ -1193,7 +1226,8 @@ var Textbox = struct({
   disabled: maybe(Bool),
   value: Any,
   hasError: maybe(Bool),
-  message: maybe(Label)
+  message: maybe(Label),
+  config: maybe(Obj)
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -1204,7 +1238,8 @@ var Checkbox = struct({
   disabled: maybe(Bool),
   value: Bool,
   hasError: maybe(Bool),
-  message: maybe(Label)
+  message: maybe(Label),
+  config: maybe(Obj)
 }, 'Checkbox');
 
 var Select = struct({
@@ -1217,7 +1252,8 @@ var Select = struct({
   multiple: maybe(Bool),
   value: maybe(union([Str, list(Str)])), // handle multiple
   hasError: maybe(Bool),
-  message: maybe(Label)
+  message: maybe(Label),
+  config: maybe(Obj)
 }, 'Select');
 
 var Radio = struct({
@@ -1228,7 +1264,8 @@ var Radio = struct({
   options: list(Option),
   value: maybe(Str),
   hasError: maybe(Bool),
-  message: maybe(Label)
+  message: maybe(Label),
+  config: maybe(Obj)
 }, 'Radio');
 
 var Struct = struct({
@@ -1236,8 +1273,10 @@ var Struct = struct({
   help: maybe(Label),
   order: list(Label),
   inputs: t.dict(Str, ReactElement),
+  value: Any,
   hasError: maybe(Bool),
-  message: maybe(Label)
+  message: maybe(Label),
+  config: maybe(Obj)
 }, 'Struct');
 
 var Button = struct({
@@ -1256,8 +1295,10 @@ var List = struct({
   help: maybe(Label),
   add: maybe(Button),
   items: list(ListItem),
+  value: Any,
   hasError: maybe(Bool),
-  message: maybe(Label)
+  message: maybe(Label),
+  config: maybe(Obj)
 });
 
 module.exports = {
@@ -1282,9 +1323,6 @@ var cx = require('react/lib/cx');
 var util = require('./util');
 
 module.exports = {
-
-  name: 'gridforms',
-
   textbox: textbox,
   checkbox: checkbox,
   select: select,
