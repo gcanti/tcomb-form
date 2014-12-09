@@ -61,6 +61,11 @@ gulp.task('examples', function (){
   })
   .external('react')
   .bundle()
+  .on('error', function (err) {
+    gutil.beep();
+    console.log(String(err));
+    this.end();
+  })
   .pipe(source('./examples/gridforms/gridforms.jsx'))
   .pipe(rename('gridforms.js'))
   .pipe(gulp.dest('./examples/gridforms'));
@@ -71,6 +76,11 @@ gulp.task('examples', function (){
   })
   .external('react')
   .bundle()
+  .on('error', function (err) {
+    gutil.beep();
+    console.log(String(err));
+    this.end();
+  })
   .pipe(source('./examples/bootstrap/bootstrap.jsx'))
   .pipe(rename('bootstrap.js'))
   .pipe(gulp.dest('./examples/bootstrap'));

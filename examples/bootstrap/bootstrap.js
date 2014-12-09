@@ -174,19 +174,15 @@ function create(type, opts) {
     auto: 'placeholders',
     label: ''
   });
-
   var factory = getFactory(type, opts);
   var Component = factory(opts, defaultContext);
-
-  var Root = React.createClass({
-
-    displayName: 'Root',
+  var RootComponent = React.createClass({displayName: 'RootComponent',
 
     // the public api returns `null` if validation failed
     // unless the optional boolean argument `raw` is set to `true`
     getValue: function (raw) {
 
-      var result = this.refs.root.getValue();
+      var result = this.refs.input.getValue();
 
       if (raw === true) { return result; }
       if (result.isValid()) { return result.value; }
@@ -194,11 +190,11 @@ function create(type, opts) {
     },
 
     render: function () {
-      return React.createElement(Component, {ref: 'root'});
+      return React.createElement(Component, {ref: 'input'});
     }
   });
 
-  return Root;
+  return RootComponent;
 }
 
 },{"./config":3,"./factories":5,"./protocols/api":7,"react":"react"}],5:[function(require,module,exports){
@@ -379,6 +375,7 @@ function textbox(opts, ctx) {
 function checkbox(opts, ctx) {
 
   opts = new api.Checkbox(opts || {});
+  var report = ctx.report;
 
   // checkboxes must always have a label
   var label = opts.label;
@@ -734,9 +731,9 @@ function list(opts, ctx) {
   var templates = opts.templates || ctx.templates;
 
   var itemType = report.innerType.meta.type;
-  var item = getFactory(itemType, opts.item);
-  var getComponent = function getComponent(value, i) {
-    return item(opts.item, new api.Context({
+  var itemFactory = getFactory(itemType, opts.item);
+  var getComponent = function (value, i) {
+    return itemFactory(opts.item, new api.Context({
       templates: templates,
       i18n: i18n,
       report: api.Context.getReport(itemType),
@@ -754,8 +751,8 @@ function list(opts, ctx) {
   // [mutable]
   var components = value.map(function (value, i) {
     return {
-      component: getComponent(value, i),
-      key: uuid() // every component is associed with a unique generated key
+      Component: getComponent(value, i),
+      key: uuid() // every component has a  unique generated key
     };
   });
 
@@ -798,7 +795,7 @@ function list(opts, ctx) {
     add: function (evt) {
       evt.preventDefault();
       components.push({
-        component: getComponent(null, components.length - 1),
+        Component: getComponent(null, components.length - 1),
         key: uuid()
       });
       this.forceUpdate();
@@ -828,7 +825,7 @@ function list(opts, ctx) {
 
     render: function () {
 
-      var rows = components.map(function getRow(row, i) {
+      var items = components.map(function getItem(item, i) {
 
         var buttons = [];
         if (!opts.disabledRemove) { buttons.push({ label: i18n.remove, click: this.remove.bind(this, i) }); }
@@ -836,8 +833,8 @@ function list(opts, ctx) {
         if (!opts.disableOrder)   { buttons.push({ label: i18n.down, click: this.down.bind(this, i) }); }
 
         return {
-          component: React.createElement(row.component, {ref: i, key: row.key}),
-          key: row.key,
+          input: React.createElement(item.Component, {ref: i, key: item.key}),
+          key: item.key,
           buttons: buttons
         };
       }.bind(this));
@@ -849,7 +846,7 @@ function list(opts, ctx) {
           label: i18n.add,
           click: this.add
         },
-        rows: rows,
+        items: items,
         hasError: this.state.hasError,
         message: getMessage(opts, this.state)
       }));
@@ -890,11 +887,10 @@ var create = require('./create');
 var config = require('./config');
 var factories = require('./factories');
 
-t.form = {
+t.form = t.util.mixin({
   create: create,
-  config: config,
-  factories: factories
-};
+  config: config
+}, factories);
 
 module.exports = t;
 },{"./config":3,"./create":4,"./factories":5,"tcomb-validation":16}],7:[function(require,module,exports){
@@ -1201,7 +1197,7 @@ var Struct = struct({
   label: maybe(Label),
   help: maybe(Label),
   order: list(Label),
-  inputs: t.dict(Str, t.Obj), // FIXME
+  inputs: t.dict(Str, ReactElement),
   hasError: maybe(Bool),
   message: maybe(Label)
 }, 'Struct');
@@ -1211,8 +1207,8 @@ var Button = struct({
   click: Func
 }, 'Button');
 
-var ListRow = struct({
-  component: ReactElement,
+var ListItem = struct({
+  input: ReactElement,
   key: Str,
   buttons: list(Button)
 });
@@ -1221,7 +1217,7 @@ var List = struct({
   label: maybe(Label),
   help: maybe(Label),
   add: maybe(Button),
-  rows: list(ListRow),
+  items: list(ListItem),
   hasError: maybe(Bool),
   message: maybe(Label)
 });
@@ -1257,7 +1253,6 @@ module.exports = {
   list: list,
 
   // utils
-  getCheckbox: getCheckbox,
   getErrorBlock: getErrorBlock,
   getHelpBlock: getHelpBlock,
   getLabel: getLabel
@@ -1266,16 +1261,10 @@ module.exports = {
 function textbox(locals) {
 
   if (locals.type === 'hidden') {
-    // if the textbox is hidden, no decorations only `name`, `value`.
-    // And `ref` if you need to read the value
-    return React.createElement("input", {
-      type: "hidden", 
-      name: locals.name, 
-      defaultValue: locals.value, 
-      ref: locals.ref});
+    return util.getHiddenTextbox(locals);
   }
 
-  var control = util.getTextbox(locals, 'form-control');
+  var textbox = util.getTextbox(locals, 'form-control');
   var label = getLabel(locals);
   var error = getErrorBlock(locals);
   var help = getHelpBlock(locals);
@@ -1288,7 +1277,7 @@ function textbox(locals) {
   return (
     React.createElement("div", {className: cx(groupClassName)}, 
       label, 
-      control, 
+      textbox, 
       error, 
       help
     )
@@ -1297,7 +1286,11 @@ function textbox(locals) {
 
 function checkbox(locals) {
 
-  var control = getCheckbox(locals);
+  var checkbox = (
+    React.createElement("label", null, 
+      util.getCheckbox(locals), " ", React.createElement("span", null, locals.label)
+    )
+  );
   var error = getErrorBlock(locals);
   var help = getHelpBlock(locals);
 
@@ -1309,7 +1302,7 @@ function checkbox(locals) {
   return (
     React.createElement("div", {className: cx(groupClassName)}, 
       React.createElement("div", {className: "checkbox"}, 
-        control, 
+        checkbox, 
         error, 
         help
       )
@@ -1319,7 +1312,7 @@ function checkbox(locals) {
 
 function select(locals) {
 
-  var control = util.getSelect(locals, 'form-control');
+  var select = util.getSelect(locals, 'form-control');
   var label = getLabel(locals);
   var error = getErrorBlock(locals);
   var help = getHelpBlock(locals);
@@ -1332,7 +1325,7 @@ function select(locals) {
   return (
     React.createElement("div", {className: cx(groupClassName)}, 
       label, 
-      control, 
+      select, 
       error, 
       help
     )
@@ -1341,15 +1334,18 @@ function select(locals) {
 
 function radio(locals) {
 
-  var controls = locals.options.map(function (option, i) {
+  var radios = locals.options.map(function (option, i) {
     return (
       React.createElement("div", {className: "radio", key: option.value}, 
         React.createElement("label", null, 
-          React.createElement("input", {type: "radio", 
-            name: locals.name, 
-            value: option.value, 
-            defaultChecked: option.value === locals.value, 
-            ref: locals.ref + i}), 
+          
+            util.getRadio({
+              name: locals.name,
+              value: option.value,
+              defaultChecked: (option.value === locals.value),
+              ref: locals.ref + i
+            }), 
+          
           option.text
         )
       )
@@ -1368,7 +1364,7 @@ function radio(locals) {
   return (
     React.createElement("div", {className: cx(groupClassName)}, 
       label, 
-      controls, 
+      radios, 
       error, 
       help
     )
@@ -1403,35 +1399,27 @@ function struct(locals) {
   );
 }
 
-function getCheckbox(locals) {
-  return (
-    React.createElement("label", null, 
-      React.createElement("input", {type: "checkbox", ref: locals.ref}), " ", React.createElement("span", null, locals.label)
-    )
-  );
-}
-
 function list(locals) {
 
-  var rows = locals.rows.map(function (row, i) {
-    if (!row.buttons.length) {
+  var items = locals.items.map(function (item, i) {
+    if (!item.buttons.length) {
       return (
-        React.createElement("div", {className: "row", key: row.key}, 
+        React.createElement("div", {className: "row", key: item.key}, 
           React.createElement("div", {className: "col-md-12"}, 
-            row.component
+            item.input
           )
         )
       );
     }
     return (
-      React.createElement("div", {className: "row", key: row.key}, 
+      React.createElement("div", {className: "row", key: item.key}, 
         React.createElement("div", {className: "col-md-7"}, 
-          row.component
+          item.input
         ), 
         React.createElement("div", {className: "col-md-5"}, 
           React.createElement("div", {className: "btn-group"}, 
             
-              row.buttons.map(function (button, i) {
+              item.buttons.map(function (button, i) {
                 return (
                   React.createElement("button", {className: "btn btn-default", onClick: button.click, key: i}, button.label)
                 );
@@ -1464,7 +1452,7 @@ function list(locals) {
   return (
     React.createElement("fieldset", {className: cx(className)}, 
       legend, 
-      rows, 
+      items, 
       addButton, 
       getErrorBlock(locals), 
       getHelpBlock(locals)
@@ -1507,10 +1495,37 @@ var React = require('react');
 var style = require('../protocols/style');
 
 module.exports = {
+  getRadio: getRadio,
+  getCheckbox: getCheckbox,
+  getHiddenTextbox: getHiddenTextbox,
   getTextbox: getTextbox,
   getOption: getOption,
   getSelect: getSelect
 };
+
+function getRadio(locals) {
+  return React.createElement("input", {type: "radio", 
+    name: locals.name, 
+    value: locals.value, 
+    defaultChecked: locals.defaultChecked, 
+    ref: locals.ref});
+}
+
+function getCheckbox(locals) {
+  return React.createElement("input", {
+    type: "checkbox", 
+    name: locals.name, 
+    defaultChecked: locals.defaultValue, 
+    ref: locals.ref});
+}
+
+function getHiddenTextbox(locals) {
+  return React.createElement("input", {
+    type: "hidden", 
+    name: locals.name, 
+    defaultValue: locals.value, 
+    ref: locals.ref});
+}
 
 function getTextbox(locals, className) {
 
@@ -1527,7 +1542,6 @@ function getTextbox(locals, className) {
     ref: locals.ref
   };
 
-  // textbox handle textarea too
   return (type === 'textbox') ?
     React.createElement('textarea', attrs) :
     React.createElement('input', attrs);
