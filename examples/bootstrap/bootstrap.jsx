@@ -1,11 +1,8 @@
 var React = require('react');
-var t = require('../../lib');
+var t = require('../../.');
 var Str = t.Str;
 var Num = t.Num;
 var types = require('../types');
-
-// bootstrap plugin
-t.form.config.templates = require('../../lib/templates/bootstrap');
 
 // model
 var Data = t.struct({
@@ -15,7 +12,7 @@ var Data = t.struct({
   productType: types.ProductType,
   productDescription: t.maybe(Str),
   sku: Str,
-  initialStockLevel: Str,
+  initialStockLevel: Num,
   costPrice: Num,
   wholesalePrice: Num,
   retailPrice: Num

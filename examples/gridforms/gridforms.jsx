@@ -15,7 +15,7 @@ var Data = t.struct({
   productType: types.ProductType,
   productDescription: t.maybe(Str),
   sku: Str,
-  initialStockLevel: Str,
+  initialStockLevel: Num,
   costPrice: Num,
   wholesalePrice: Num,
   retailPrice: Num
