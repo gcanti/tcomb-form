@@ -1,42 +1,40 @@
 var React = require('react');
 var t = require('../../.');
-var Str = t.Str;
-var Num = t.Num;
-var types = require('../types');
 
-// model
-var Data = t.struct({
-  productName: Str,
-  tags: t.list(Str),
-  vendor: types.Vendor,
-  productType: types.ProductType,
-  productDescription: t.maybe(Str),
-  sku: Str,
-  initialStockLevel: Num,
-  costPrice: Num,
-  wholesalePrice: Num,
-  retailPrice: Num
-});
+var Country = t.enums({
+  IT: 'Italy',
+  US: 'United States'
+}, 'Country');
 
-// React form component
-var Form = t.form.create(Data, {
-  label: 'Add to inventory',
-  auto: 'labels', // automatically create labels from field names
-  value: {
-    productName: 'aaa',
-    tags: null,
-    vendor: 'bbb',
-    productType: 'ccc',
-    productDescription: null,
-    sku: 'ddd',
-    initialStockLevel: 1000,
-    costPrice: 700,
-    wholesalePrice: null,
-    retailPrice: 1000
-  },
+var Gender = t.enums({
+  M: 'Male',
+  F: 'Female'
+}, 'Gender');
+
+var Registration = t.struct({
+  username: t.Str,
+  password: t.Str,
+  name: t.maybe(t.Str),
+  surname: t.maybe(t.Str),
+  rememberMe: t.Bool,
+  age: t.Num,
+  country: t.maybe(Country),
+  gender: t.maybe(Gender),
+  tags: t.list(t.Str)
+}, 'Registration');
+
+var Form = t.form.create(Registration, {
+  label: 'Registration',
+  //auto: 'labels',
   fields: {
-    tags: {
-      auto: 'placeholders'
+    password: {
+      type: 'password'
+    },
+    country: {
+      //nullOption: {value: '', text: 'Choose your country'}
+    },
+    gender: {
+      factory: t.form.radio
     }
   }
 });

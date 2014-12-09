@@ -1,25 +1,84 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var React = require('react');
 var t = require('../../lib');
-var Str = t.Str;
-var Num = t.Num;
-var types = require('../types');
 
-// gridforms plugin
+// configure gridforms plugin
 t.form.config.templates = require('../../lib/templates/gridforms');
 
 // model
+var Vendor = t.enums.of([
+  'ted'
+, 'Magna Phasellus Dolor Incorporated'
+, 'Fames Ac Turpis Inc.'
+, 'Eu Eros Institute'
+, 'Suspendisse Sagittis Associates'
+, 'Tempor Lorem PC'
+, 'Nulla Facilisi Sed PC'
+, 'Dignissim Corp.'
+, 'Blandit Ltd'
+, 'Dapibus Gravida Aliquam LLP'
+, 'Cursus A Inc.'
+, 'Tellus PC'
+, 'Fusce Mi Foundation'
+, 'Dictum Sapien Aenean Associates'
+, 'In Tincidunt PC'
+, 'Sapien Aenean Ltd'
+, 'Libero Foundation'
+, 'Egestas Rhoncus Proin Corp.'
+, 'Feugiat Nec Diam Institute'
+, 'Turpis Foundation'
+, 'Pede Malesuada Vel Associates'
+, 'Eget Venenatis A PC'
+, 'Mollis Vitae Corporation'
+, 'Gravida Mauris Incorporated'
+, 'Tortor Consulting'
+, 'Habitant Morbi Tristique Corporation'
+, 'Enim Corp.'
+, 'Sed Turpis Nec LLC'
+, 'Enim Foundation'
+, 'Tincidunt Orci Quis Institute'
+, 'Lectus Pede LLC'
+, 'Class Corporation'
+, 'Erat Volutpat Nulla LLP'
+, 'Sed LLC'
+, 'Justo Faucibus Associates'
+, 'Vel Turpis Foundation'
+, 'Tellus Aenean Limited'
+, 'Tempus Scelerisque Corporation'
+, 'Eleifend LLP'
+, 'A Felis Ullamcorper Company'
+, 'Neque Non LLC'
+, 'Nibh Donec Est PC'
+]);
+
+var ProductType = t.enums.of([
+  'et magnis'
+, 'Vivamus rhoncus.'
+, 'egestas ligula.'
+, 'nulla. Cras'
+, 'Proin mi.'
+, 'turpis non'
+, 'ante ipsum'
+, 'arcu. Curabitur'
+, 'ante. Maecenas'
+, 'magna. Phasellus'
+, 'Suspendisse aliquet,'
+, 'purus gravida'
+, 'ac risus.'
+, 'mollis non,'
+]);
+
 var Data = t.struct({
-  productName: Str,
-  tags: Str,
-  vendor: types.Vendor,
-  productType: types.ProductType,
-  productDescription: t.maybe(Str),
-  sku: Str,
-  initialStockLevel: Str,
-  costPrice: Num,
-  wholesalePrice: Num,
-  retailPrice: Num
+  productName: t.Str,
+  tags: t.Str,
+  vendor: Vendor,
+  productType: ProductType,
+  productDescription: t.maybe(t.Str),
+  sku: t.Str,
+  initialStockLevel: t.Num,
+  costPrice: t.Num,
+  wholesalePrice: t.Num,
+  retailPrice: t.Num
 });
 
 // React form component
@@ -117,77 +176,7 @@ function structTemplate(locals) {
 
 
 
-},{"../../lib":6,"../../lib/templates/gridforms":9,"../types":2,"react":"react"}],2:[function(require,module,exports){
-var t = require('tcomb-validation');
-
-var Vendor = t.enums.of([
-  'ted'
-, 'Magna Phasellus Dolor Incorporated'
-, 'Fames Ac Turpis Inc.'
-, 'Eu Eros Institute'
-, 'Suspendisse Sagittis Associates'
-, 'Tempor Lorem PC'
-, 'Nulla Facilisi Sed PC'
-, 'Dignissim Corp.'
-, 'Blandit Ltd'
-, 'Dapibus Gravida Aliquam LLP'
-, 'Cursus A Inc.'
-, 'Tellus PC'
-, 'Fusce Mi Foundation'
-, 'Dictum Sapien Aenean Associates'
-, 'In Tincidunt PC'
-, 'Sapien Aenean Ltd'
-, 'Libero Foundation'
-, 'Egestas Rhoncus Proin Corp.'
-, 'Feugiat Nec Diam Institute'
-, 'Turpis Foundation'
-, 'Pede Malesuada Vel Associates'
-, 'Eget Venenatis A PC'
-, 'Mollis Vitae Corporation'
-, 'Gravida Mauris Incorporated'
-, 'Tortor Consulting'
-, 'Habitant Morbi Tristique Corporation'
-, 'Enim Corp.'
-, 'Sed Turpis Nec LLC'
-, 'Enim Foundation'
-, 'Tincidunt Orci Quis Institute'
-, 'Lectus Pede LLC'
-, 'Class Corporation'
-, 'Erat Volutpat Nulla LLP'
-, 'Sed LLC'
-, 'Justo Faucibus Associates'
-, 'Vel Turpis Foundation'
-, 'Tellus Aenean Limited'
-, 'Tempus Scelerisque Corporation'
-, 'Eleifend LLP'
-, 'A Felis Ullamcorper Company'
-, 'Neque Non LLC'
-, 'Nibh Donec Est PC'
-]);
-
-var ProductType = t.enums.of([
-  'et magnis'
-, 'Vivamus rhoncus.'
-, 'egestas ligula.'
-, 'nulla. Cras'
-, 'Proin mi.'
-, 'turpis non'
-, 'ante ipsum'
-, 'arcu. Curabitur'
-, 'ante. Maecenas'
-, 'magna. Phasellus'
-, 'Suspendisse aliquet,'
-, 'purus gravida'
-, 'ac risus.'
-, 'mollis non,'
-]);
-
-module.exports = {
-  Vendor: Vendor,
-  ProductType: ProductType
-};
-
-},{"tcomb-validation":16}],3:[function(require,module,exports){
+},{"../../lib":5,"../../lib/templates/gridforms":8,"react":"react"}],2:[function(require,module,exports){
 var api = require('./protocols/api');
 
 var i18n = new api.I18n({
@@ -201,11 +190,11 @@ var i18n = new api.I18n({
 module.exports = {
   i18n: i18n
 };
-},{"./protocols/api":7}],4:[function(require,module,exports){
+},{"./protocols/api":6}],3:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
-var api = require('./protocols/api');
+var Context = require('./protocols/api').Context;
 var config = require('./config');
 var getFactory = require('./factories').getFactory;
 
@@ -213,17 +202,9 @@ module.exports = create;
 
 function create(type, opts) {
 
-  var defaultContext = new api.Context({
-    templates: config.templates,
-    i18n: config.i18n,
-    report: api.Context.getReport(type),
-    path: [],
-    auto: 'placeholders',
-    label: ''
-  });
   var factory = getFactory(type, opts);
-  var Component = factory(opts, defaultContext);
-  var RootComponent = React.createClass({displayName: 'RootComponent',
+
+  var Form = React.createClass({displayName: 'Form',
 
     // the public api returns `null` if validation failed
     // unless the optional boolean argument `raw` is set to `true`
@@ -237,20 +218,32 @@ function create(type, opts) {
     },
 
     render: function () {
+
+      var defaultContext = new Context({
+        templates: config.templates,
+        i18n: config.i18n,
+        report: Context.getReport(type),
+        path: [],
+        auto: 'placeholders',
+        label: '',
+        value: this.props.value
+      });
+      var Component = factory(opts, defaultContext);
+
       return React.createElement(Component, {ref: 'input'});
     }
   });
 
-  return RootComponent;
+  return Form;
 }
 
-},{"./config":3,"./factories":5,"./protocols/api":7,"react":"react"}],5:[function(require,module,exports){
+},{"./config":2,"./factories":4,"./protocols/api":6,"react":"react"}],4:[function(require,module,exports){
 'use strict';
 
 var React =   require('react');
 var t =       require('tcomb-validation');
 var api =     require('./protocols/api');
-var style =   require('./protocols/style');
+var theme =   require('./protocols/theme');
 var config =  require('./config');
 
 var assert = t.assert;
@@ -303,7 +296,8 @@ config.transformers = {
     },
     parse: function (value) {
       var n = parseFloat(value);
-      return isNaN(n) ? null : n;
+      var isNumeric = (value - n + 1) >= 0;
+      return isNumeric ? n : value;
     }
   })
 };
@@ -402,7 +396,7 @@ function textbox(opts, ctx) {
         value = transformer.format(value);
       }
 
-      return template(new style.Textbox({
+      return template(new theme.Textbox({
         ref: REF,
         type: opts.type || 'text',
         name: name,
@@ -464,7 +458,7 @@ function checkbox(opts, ctx) {
 
     render: function () {
 
-      return template(new style.Checkbox({
+      return template(new theme.Checkbox({
         ref: REF,
         name: name,
         label: label,
@@ -564,7 +558,7 @@ function select(opts, ctx) {
 
     render: function () {
 
-      return template(new style.Select({
+      return template(new theme.Select({
         ref: REF,
         name: name,
         label: label,
@@ -585,8 +579,9 @@ function radio(opts, ctx) {
   opts = new api.Radio(opts || {});
   var report = ctx.report;
 
+  // radios must always have a label
   var label = opts.label;
-  if (!label && ctx.auto === 'labels') {
+  if (!label) {
     label = ctx.getDefaultLabel();
   }
 
@@ -645,7 +640,7 @@ function radio(opts, ctx) {
 
     render: function () {
 
-      return template(new style.Radio({
+      return template(new theme.Radio({
         ref: REF,
         name: name,
         label: label,
@@ -746,7 +741,7 @@ function struct(opts, ctx) {
         }
       }
 
-      return template(new style.Struct({
+      return template(new theme.Struct({
         label: label,
         help: opts.help,
         order: order,
@@ -886,7 +881,7 @@ function list(opts, ctx) {
         };
       }.bind(this));
 
-      return template(new style.List({
+      return template(new theme.List({
         label: label,
         help: opts.help,
         add: opts.disableAdd ? null : {
@@ -926,7 +921,7 @@ function getMessage(opts, state) {
 }
 
 
-},{"./config":3,"./protocols/api":7,"./protocols/style":8,"./util/getOptionsOfEnum":11,"./util/humanize":13,"./util/uuid":14,"react":"react","tcomb-validation":16}],6:[function(require,module,exports){
+},{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/getOptionsOfEnum":10,"./util/humanize":12,"./util/uuid":13,"react":"react","tcomb-validation":15}],5:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -940,7 +935,7 @@ t.form = t.util.mixin({
 }, factories);
 
 module.exports = t;
-},{"./config":3,"./create":4,"./factories":5,"tcomb-validation":16}],7:[function(require,module,exports){
+},{"./config":2,"./create":3,"./factories":4,"tcomb-validation":15}],6:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1054,8 +1049,6 @@ var Textbox = struct({
   readOnly: maybe(Bool),
   disabled: maybe(Bool),
   transformer: maybe(Transformer),
-  addonBefore: maybe(Label),
-  addonAfter: maybe(Label),
   template: maybe(Func)
 }, 'Textbox');
 
@@ -1152,7 +1145,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"../util/getReport":12,"react":"react","tcomb-validation":16}],8:[function(require,module,exports){
+},{"../util/getReport":11,"react":"react","tcomb-validation":15}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1200,9 +1193,7 @@ var Textbox = struct({
   disabled: maybe(Bool),
   value: Any,
   hasError: maybe(Bool),
-  message: maybe(Label),
-  addonBefore: maybe(Label),
-  addonAfter: maybe(Label)
+  message: maybe(Label)
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -1279,7 +1270,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":16}],9:[function(require,module,exports){
+},{"react":"react","tcomb-validation":15}],8:[function(require,module,exports){
 'use strict';
 
 //==================
@@ -1287,7 +1278,6 @@ module.exports = {
 //==================
 
 var React = require('react');
-var style = require('../protocols/style');
 var cx = require('react/lib/cx');
 var util = require('./util');
 
@@ -1307,20 +1297,16 @@ function textbox(locals) {
 
   var type = locals.type;
 
-  if (type === 'hidden') {
-    return React.createElement("input", {
-      type: "hidden", 
-      name: locals.name, 
-      defaultValue: locals.value, 
-      ref: locals.ref});
+  if (locals.type === 'hidden') {
+    return util.getHiddenTextbox(locals);
   }
 
-  var control = util.getTextbox(locals);
+  var textbox = util.getTextbox(locals);
 
   return (
-    React.createElement("div", null, 
-      React.createElement("label", {className: cx({'has-error': locals.hasError})}, locals.label), 
-      control
+    React.createElement("div", {className: cx({'has-error': locals.hasError})}, 
+      React.createElement("label", null, locals.label), 
+      textbox
     )
   );
 }
@@ -1331,12 +1317,12 @@ function checkbox(locals) {
 
 function select(locals) {
 
-  var control = util.getSelect(locals);
+  var select = util.getSelect(locals);
 
   return (
-    React.createElement("div", null, 
-      React.createElement("label", {className: cx({'has-error': locals.hasError})}, locals.label), 
-      control
+    React.createElement("div", {className: cx({'has-error': locals.hasError})}, 
+      React.createElement("label", null, locals.label), 
+      select
     )
   );
 }
@@ -1353,11 +1339,11 @@ function list(locals) {
   throw new Error('lists are not implemented (yet)');
 }
 
-},{"../protocols/style":8,"./util":10,"react":"react","react/lib/cx":15}],10:[function(require,module,exports){
+},{"./util":9,"react":"react","react/lib/cx":14}],9:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
-var style = require('../protocols/style');
+var theme = require('../protocols/theme');
 
 module.exports = {
   getRadio: getRadio,
@@ -1413,7 +1399,7 @@ function getTextbox(locals, className) {
 }
 
 function getOption(option, i) {
-  return style.Option.is(option) ?
+  return theme.Option.is(option) ?
     React.createElement("option", {value: option.value, key: option.value}, option.text) :
     React.createElement("optgroup", {label: option.group, key: option.group}, 
       option.options.map(getOption)
@@ -1433,7 +1419,7 @@ function getSelect(locals, className) {
   );
 }
 
-},{"../protocols/style":8,"react":"react"}],11:[function(require,module,exports){
+},{"../protocols/theme":7,"react":"react"}],10:[function(require,module,exports){
 'use strict';
 
 module.exports = getOptionsOfEnum;
@@ -1449,7 +1435,7 @@ function getOptionsOfEnum(type) {
 }
 
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1487,7 +1473,7 @@ function getReport(type) {
 }
 
 
-},{"tcomb-validation":16}],13:[function(require,module,exports){
+},{"tcomb-validation":15}],12:[function(require,module,exports){
 // thanks to https://github.com/epeli/underscore.string
 
 module.exports = humanize;
@@ -1504,7 +1490,7 @@ function humanize(s){
   return capitalize(underscored(s).replace(/_id$/,'').replace(/_/g, ' '));
 }
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 module.exports = uuid;
@@ -1516,7 +1502,7 @@ function uuid() {
   });
 }
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -1555,7 +1541,7 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -1774,7 +1760,7 @@ module.exports = cx;
 
 }));
 
-},{"tcomb":17}],17:[function(require,module,exports){
+},{"tcomb":16}],16:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
