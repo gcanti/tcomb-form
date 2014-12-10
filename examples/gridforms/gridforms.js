@@ -191,12 +191,11 @@ module.exports = {
   i18n: i18n
 };
 },{"./protocols/api":6}],3:[function(require,module,exports){
-'use strict';
-
 var React = require('react');
 var Context = require('./protocols/api').Context;
 var config = require('./config');
 var getFactory = require('./factories').getFactory;
+var getReport = require('./util/getReport');
 
 module.exports = create;
 
@@ -222,7 +221,7 @@ function create(type, opts) {
       var defaultContext = new Context({
         templates: config.templates,
         i18n: config.i18n,
-        report: Context.getReport(type),
+        report: getReport(type),
         path: [],
         auto: 'placeholders',
         label: '',
@@ -237,25 +236,21 @@ function create(type, opts) {
   return Form;
 }
 
-},{"./config":2,"./factories":4,"./protocols/api":6,"react":"react"}],4:[function(require,module,exports){
+},{"./config":2,"./factories":4,"./protocols/api":6,"./util/getReport":13,"react":"react"}],4:[function(require,module,exports){
 'use strict';
 
-var React =   require('react');
-var t =       require('tcomb-validation');
-var api =     require('./protocols/api');
-var theme =   require('./protocols/theme');
-var config =  require('./config');
-
-var assert = t.assert;
-var Nil = t.Nil;
-var ValidationResult = t.ValidationResult;
-var getKind = t.util.getKind;
-var getName = t.util.getName;
-var mixin = t.util.mixin;
-
-// utils
-var humanize = require('./util/humanize');
+var React = require('react');
+var t = require('tcomb-validation');
+var api = require('./protocols/api');
+var theme = require('./protocols/theme');
+var config = require('./config');
+var either = require('./util/either');
+var getError = require('./util/getError');
 var getOptionsOfEnum = require('./util/getOptionsOfEnum');
+var getReport = require('./util/getReport');
+var humanize = require('./util/humanize');
+var merge = require('./util/merge');
+var move = require('./util/move');
 var uuid = require('./util/uuid');
 
 module.exports = {
@@ -268,16 +263,24 @@ module.exports = {
   list:       list
 };
 
+var assert = t.assert;
+var Nil = t.Nil;
+var ValidationResult = t.ValidationResult;
+var getKind = t.util.getKind;
+var getName = t.util.getName;
+var Context = api.Context;
+
 //
-// default configuration
+// configuration
 //
 
 config.kinds = {
   irriducible: function (type, opts) {
     var name = getName(type);
-    return config.irriducibles.hasOwnProperty(name) ?
-      config.irriducibles[name](opts) :
-      textbox; // fallback on textbox
+    if (t.Func.is(config.irriducibles[name])) {
+      return config.irriducibles[name](opts);
+    }
+    return textbox; // fallback on textbox
   },
   enums:    function () { return select; },
   struct:   function () { return struct; },
@@ -290,7 +293,7 @@ config.irriducibles = {
   Bool: function (opts) { return checkbox; }
 };
 
-var transformers = config.transformers = {
+config.transformers = {
   Num: new api.Transformer({
     format: function (value) {
       return Nil.is(value) ? value : String(value);
@@ -314,20 +317,20 @@ function getFactory(type, opts) {
 
   // [extension point]
   if (opts.factory) {
-
     assert(t.Func.is(opts.factory), 'invalid `factory` option, must be a function with signature (opts, [ctx]) -> React Class');
-
     return opts.factory;
   }
+
   var kind = getKind(type);
   if (config.kinds.hasOwnProperty(kind)) {
     return config.kinds[kind](type, opts);
   }
+
   t.fail(t.util.format('cannot handle type %s', getName(type)));
 }
 
 //
-// input factories
+// factories
 //
 
 var REF = 'input';
@@ -335,7 +338,6 @@ var REF = 'input';
 function textbox(opts, ctx) {
 
   opts = new api.Textbox(opts || {});
-  var report = ctx.report;
 
   var label = opts.label;
   if (!label && ctx.auto === 'labels') {
@@ -352,19 +354,13 @@ function textbox(opts, ctx) {
 
   var value = either(opts.value, ctx.value);
 
-  var transformer = opts.transformer;
-  if (!transformer) {
-    // lookup for a suitable transformer
-    transformer = transformers[getName(report.innerType)];
-  }
-
-  var config = merge(ctx.config, opts.config);
+  var transformer = opts.transformer || config.transformers[getName(ctx.report.innerType)];
 
   var template = opts.template || ctx.templates.textbox;
 
   return React.createClass({
 
-    displayName: ctx.getDefaultDisplayName(),
+    displayName: ctx.getDisplayName(),
 
     getInitialState: function () {
       return {
@@ -383,8 +379,7 @@ function textbox(opts, ctx) {
     },
 
     getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, report.type);
+      var result = t.validate(this.getRawValue(), ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -410,8 +405,8 @@ function textbox(opts, ctx) {
         disabled: opts.disabled,
         hasError: this.state.hasError,
         value: value,
-        message: getMessage(opts, this.state),
-        config: config
+        error: getError(opts.error, this.state),
+        config: merge(ctx.config, opts.config)
       }));
     }
   });
@@ -420,9 +415,8 @@ function textbox(opts, ctx) {
 function checkbox(opts, ctx) {
 
   opts = new api.Checkbox(opts || {});
-  var report = ctx.report;
 
-  // checkboxes must always have a label
+  // checkboxes must have a label
   var label = opts.label;
   if (!label) {
     label = ctx.getDefaultLabel();
@@ -432,13 +426,11 @@ function checkbox(opts, ctx) {
 
   var value = !!either(opts.value, ctx.value);
 
-  var config = merge(ctx.config, opts.config);
-
   var template = opts.template || ctx.templates.checkbox;
 
   return React.createClass({
 
-    displayName: ctx.getDefaultDisplayName(),
+    displayName: ctx.getDisplayName(),
 
     getInitialState: function () {
       return {
@@ -453,8 +445,7 @@ function checkbox(opts, ctx) {
     },
 
     getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, report.type);
+      var result = t.validate(this.getRawValue(), ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -463,7 +454,6 @@ function checkbox(opts, ctx) {
     },
 
     render: function () {
-
       return template(new theme.Checkbox({
         ref: REF,
         name: name,
@@ -472,8 +462,8 @@ function checkbox(opts, ctx) {
         disabled: opts.disabled,
         hasError: this.state.hasError,
         value: this.state.value,
-        message: getMessage(opts, this.state),
-        config: config
+        error: getError(opts.error, this.state),
+        config: merge(ctx.config, opts.config)
       }));
     }
   });
@@ -482,15 +472,14 @@ function checkbox(opts, ctx) {
 function select(opts, ctx) {
 
   opts = new api.Select(opts || {});
-  var report = ctx.report;
-  var enumType = report.innerType;
+
+  var Enum = ctx.report.innerType;
 
   // handle `multiple` attribute
   var multiple = false;
-  if (getKind(enumType) === 'list') {
+  if (getKind(Enum) === 'list') {
     multiple = true;
-    report = api.Context.getReport(enumType.meta.type);
-    enumType = report.innerType;
+    Enum = getReport(Enum.meta.type).innerType;
   }
 
   var label = opts.label;
@@ -502,26 +491,24 @@ function select(opts, ctx) {
 
   var value = either(opts.value, ctx.value);
 
-  var options = opts.options ?
-    opts.options.slice() :
-    getOptionsOfEnum(enumType);
+  var options = opts.options ? opts.options : getOptionsOfEnum(Enum);
 
   // sort opts
   if (opts.order) {
     options.sort(api.Order.getComparator(opts.order));
   }
 
-  // add the empty option in first position
+  // add a `null` option in first position
   var nullOption = opts.nullOption || {value: '', text: '-'};
-  options.unshift(nullOption);
-
-  var config = merge(ctx.config, opts.config);
+  if (!multiple) {
+    options.unshift(nullOption);
+  }
 
   var template = opts.template || ctx.templates.select;
 
   return React.createClass({
 
-    displayName: ctx.getDefaultDisplayName(),
+    displayName: ctx.getDisplayName(),
 
     getInitialState: function () {
       return {
@@ -535,7 +522,7 @@ function select(opts, ctx) {
       assert(!Nil.is(this.refs[REF]), 'missing `ref` for input `%s`, check out its template', name);
 
       var select = this.refs[REF].getDOMNode();
-      var value;
+      var value = select.value;
 
       if (multiple) {
         value = [];
@@ -545,19 +532,13 @@ function select(opts, ctx) {
               value.push(option.value);
             }
         }
-        return value;
       }
 
-      value = select.value;
-      if (value === nullOption.value) {
-        value = null;
-      }
-      return value;
+      return (value === nullOption.value) ? null : value;
     },
 
     getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, report.type);
+      var result = t.validate(this.getRawValue(), ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -566,7 +547,6 @@ function select(opts, ctx) {
     },
 
     render: function () {
-
       return template(new theme.Select({
         ref: REF,
         name: name,
@@ -576,9 +556,9 @@ function select(opts, ctx) {
         disabled: opts.disabled,
         hasError: this.state.hasError,
         value: this.state.value,
-        message: getMessage(opts, this.state),
+        error: getError(opts.error, this.state),
         multiple: multiple,
-        config: config
+        config: merge(ctx.config, opts.config)
       }));
     }
   });
@@ -587,7 +567,6 @@ function select(opts, ctx) {
 function radio(opts, ctx) {
 
   opts = new api.Radio(opts || {});
-  var report = ctx.report;
 
   // radios must always have a label
   var label = opts.label;
@@ -599,23 +578,18 @@ function radio(opts, ctx) {
 
   var value = either(opts.value, ctx.value);
 
-  var options = opts.opts;
-  if (!options) {
-    options = getOptionsOfEnum(report.innerType);
-  }
+  var options = opts.options || getOptionsOfEnum(ctx.report.innerType);
 
   // sort opts
   if (opts.order) {
     options.sort(api.Order.getComparator(opts.order));
   }
 
-  var config = merge(ctx.config, opts.config);
-
   var template = opts.template || ctx.templates.radio;
 
   return React.createClass({
 
-    displayName: ctx.getDefaultDisplayName(),
+    displayName: ctx.getDisplayName(),
 
     getInitialState: function () {
       return {
@@ -641,8 +615,7 @@ function radio(opts, ctx) {
     },
 
     getValue: function () {
-      var value = this.getRawValue();
-      var result = t.validate(value, report.type);
+      var result = t.validate(this.getRawValue(), ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -651,7 +624,6 @@ function radio(opts, ctx) {
     },
 
     render: function () {
-
       return template(new theme.Radio({
         ref: REF,
         name: name,
@@ -660,8 +632,8 @@ function radio(opts, ctx) {
         options: options,
         hasError: this.state.hasError,
         value: this.state.value,
-        message: getMessage(opts, this.state),
-        config: config
+        error: getError(opts.error, this.state),
+        config: merge(ctx.config, opts.config)
       }));
     }
   });
@@ -673,12 +645,11 @@ function struct(opts, ctx) {
   var report = ctx.report;
 
   assert(!report.maybe, 'maybe structs are not (yet) supported');
-  assert(getKind(report.innerType) === 'struct', 'struct must be called with a struct');
 
   var props = report.innerType.meta.props;
   var order = opts.order || Object.keys(props);
-  var auto = opts.auto || ctx.auto;
-  var i18n = opts.i18n || ctx.i18n;
+  var auto =  opts.auto || ctx.auto;
+  var i18n =  opts.i18n || ctx.i18n;
   var value = opts.value || ctx.value || {};
 
   var label = opts.label;
@@ -690,30 +661,33 @@ function struct(opts, ctx) {
 
   var templates = merge(ctx.templates, opts.templates);
 
-  var fields = opts.fields || {};
   var components = {};
+  var fields = opts.fields || {};
   order.forEach(function (prop) {
     if (props.hasOwnProperty(prop)) {
+
       var propType = props[prop];
       var propOpts = fields[prop] || {};
       var factory = getFactory(propType, propOpts);
-      var Component = factory(propOpts, new api.Context({
-        templates: templates,
-        i18n: i18n,
-        report: new api.Context.getReport(propType),
-        path: ctx.path.concat(prop),
-        auto: auto,
-        label: humanize(prop),
-        value: value[prop],
-        config: merge(config, propOpts.config)
+      var Component = factory(propOpts, new Context({
+        templates:  templates,
+        i18n:       i18n,
+        report:     new getReport(propType),
+        path:       ctx.path.concat(prop),
+        auto:       auto,
+        label:      humanize(prop),
+        value:      value[prop],
+        config:     merge(config, propOpts.config)
       }));
+
       components[prop] = Component;
+
     }
   });
 
   return React.createClass({
 
-    displayName: ctx.getDefaultDisplayName(),
+    displayName: ctx.getDisplayName(),
 
     getInitialState: function () {
       return {
@@ -735,13 +709,15 @@ function struct(opts, ctx) {
         }
       }
 
-      // handle subtype
-      if (report.subtype && errors.length === 0) {
-        this.setState({hasError: false});
-        value = new report.innerType(value);
-        result = t.validate(value, report.type);
-        errors = errors.concat(result.errors);
-        this.setState({hasError: errors.length > 0});
+      if (errors.length === 0) {
+        value = value = new report.innerType(value);
+        // handle subtype
+        if (report.subtype && errors.length === 0) {
+          this.setState({hasError: false});
+          result = t.validate(value, report.type);
+          errors = errors.concat(result.errors);
+          this.setState({hasError: errors.length > 0});
+        }
       }
 
       return new ValidationResult({errors: errors, value: value});
@@ -763,7 +739,7 @@ function struct(opts, ctx) {
         inputs: inputs,
         value: value,
         hasError: this.state.hasError,
-        message: getMessage(opts, this.state),
+        error: getError(opts.error, this.state),
         config: config
       }));
     }
@@ -776,7 +752,6 @@ function list(opts, ctx) {
   var report = ctx.report;
 
   assert(!report.maybe, 'maybe lists are not (yet) supported');
-  assert(getKind(report.innerType) === 'list', 'list must be called with not a list');
 
   var auto = opts.auto || ctx.auto;
   var i18n = opts.i18n || ctx.i18n;
@@ -795,10 +770,10 @@ function list(opts, ctx) {
   var itemOpts = opts.item || {};
   var itemFactory = getFactory(itemType, itemOpts);
   var getComponent = function (value, i) {
-    return itemFactory(itemOpts, new api.Context({
+    return itemFactory(itemOpts, new Context({
       templates: templates,
       i18n: i18n,
-      report: api.Context.getReport(itemType),
+      report: getReport(itemType),
       path: ctx.path.concat(i),
       auto: auto,
       label: '#' + (i + 1),
@@ -821,7 +796,7 @@ function list(opts, ctx) {
 
   return React.createClass({
 
-    displayName: ctx.getDefaultDisplayName(),
+    displayName: ctx.getDisplayName(),
 
     getInitialState: function () {
       return {
@@ -911,45 +886,14 @@ function list(opts, ctx) {
         items: items,
         value: value,
         hasError: this.state.hasError,
-        message: getMessage(opts, this.state),
+        error: getError(opts.error, this.state),
         config: config
       }));
     }
   });
 }
 
-//
-// helpers
-//
-
-function either(a, b) {
-  return t.Nil.is(a) ? b : a;
-}
-
-function merge(a, b) {
-  return mixin(mixin({}, a), b, true);
-}
-
-function move(arr, fromIndex, toIndex) {
-  var element = arr.splice(fromIndex, 1)[0];
-  arr.splice(toIndex, 0, element);
-}
-
-function getMessage(opts, state) {
-  if (!state.hasError) {
-    return null;
-  }
-  var message = opts.message;
-  if (t.Func.is(message)) {
-    message = message(state.value);
-  }
-  return message;
-}
-
-
-},{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/getOptionsOfEnum":10,"./util/humanize":12,"./util/uuid":13,"react":"react","tcomb-validation":15}],5:[function(require,module,exports){
-'use strict';
-
+},{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19}],5:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -961,12 +905,9 @@ t.form = t.util.mixin({
 }, factories);
 
 module.exports = t;
-},{"./config":2,"./create":3,"./factories":4,"tcomb-validation":15}],6:[function(require,module,exports){
-'use strict';
-
+},{"./config":2,"./create":3,"./factories":4,"tcomb-validation":19}],6:[function(require,module,exports){
 var React = require('react');
 var t = require('tcomb-validation');
-var getReport = require('../util/getReport');
 
 var Any = t.Any;
 var Str = t.Str;
@@ -1009,8 +950,6 @@ var Context = struct({
   config: maybe(Obj)
 }, 'Context');
 
-Context.getReport = getReport;
-
 /*
 
   Proposals:
@@ -1031,7 +970,7 @@ Context.prototype.getDefaultLabel = function () {
   return this.label + (this.report.maybe ? this.i18n.optional : '');
 };
 
-Context.prototype.getDefaultDisplayName = function () {
+Context.prototype.getDisplayName = function () {
   return t.util.format('[`%s`, TcombFormInput]', (this.getDefaultName() || 'top level'));
 };
 
@@ -1039,7 +978,7 @@ var ReactElement = t.irriducible('ReactElement', React.isValidElement);
 
 var Label = union([Str, ReactElement], 'Label');
 
-var Message = union([Label, Func], 'Message');
+var Error = union([Label, Func], 'Error');
 
 var Option = t.struct({
   value: Str,
@@ -1069,7 +1008,7 @@ var Textbox = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  message: maybe(Message),
+  error: maybe(Error),
   type: maybe(TypeAttr),
   name: maybe(t.Str),
   placeholder: maybe(Str),
@@ -1085,7 +1024,7 @@ var Checkbox = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  message: maybe(Message),
+  error: maybe(Error),
   name: maybe(t.Str),
   value: maybe(Bool),
   disabled: maybe(Bool),
@@ -1112,7 +1051,7 @@ var Select = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  message: maybe(Message),
+  error: maybe(Error),
   name: maybe(t.Str),
   value: maybe(Str),
   order: maybe(Order),
@@ -1127,7 +1066,7 @@ var Radio = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  message: maybe(Message),
+  error: maybe(Error),
   name: maybe(t.Str),
   value: maybe(Str),
   order: maybe(Order),
@@ -1143,7 +1082,7 @@ var Struct = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  message: maybe(Message),
+  error: maybe(Error),
   order: maybe(list(Label)),
   fields: maybe(Obj),
   templates: maybe(Templates),
@@ -1157,7 +1096,7 @@ var List = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  message: maybe(Message),
+  error: maybe(Error),
   item: maybe(Obj),
   disableAdd: maybe(Bool),
   disableRemove: maybe(Bool),
@@ -1168,8 +1107,16 @@ var List = struct({
 
 module.exports = {
   I18n: I18n,
+  Templates: Templates,
   Context: Context,
+  ReactElement: ReactElement,
+  Label: Label,
+  Error: Error,
+  Option: Option,
+  OptGroup: OptGroup,
+  SelectOption: SelectOption,
   Transformer: Transformer,
+  Order: Order,
   Textbox: Textbox,
   Checkbox: Checkbox,
   Select: Select,
@@ -1177,9 +1124,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"../util/getReport":11,"react":"react","tcomb-validation":15}],7:[function(require,module,exports){
-'use strict';
-
+},{"react":"react","tcomb-validation":19}],7:[function(require,module,exports){
 var React = require('react');
 var t = require('tcomb-validation');
 var Any = t.Any;
@@ -1226,7 +1171,7 @@ var Textbox = struct({
   disabled: maybe(Bool),
   value: Any,
   hasError: maybe(Bool),
-  message: maybe(Label),
+  error: maybe(Label),
   config: maybe(Obj)
 }, 'Textbox');
 
@@ -1238,7 +1183,7 @@ var Checkbox = struct({
   disabled: maybe(Bool),
   value: Bool,
   hasError: maybe(Bool),
-  message: maybe(Label),
+  error: maybe(Label),
   config: maybe(Obj)
 }, 'Checkbox');
 
@@ -1252,7 +1197,7 @@ var Select = struct({
   multiple: maybe(Bool),
   value: maybe(union([Str, list(Str)])), // handle multiple
   hasError: maybe(Bool),
-  message: maybe(Label),
+  error: maybe(Label),
   config: maybe(Obj)
 }, 'Select');
 
@@ -1264,7 +1209,7 @@ var Radio = struct({
   options: list(Option),
   value: maybe(Str),
   hasError: maybe(Bool),
-  message: maybe(Label),
+  error: maybe(Label),
   config: maybe(Obj)
 }, 'Radio');
 
@@ -1275,7 +1220,7 @@ var Struct = struct({
   inputs: t.dict(Str, ReactElement),
   value: Any,
   hasError: maybe(Bool),
-  message: maybe(Label),
+  error: maybe(Label),
   config: maybe(Obj)
 }, 'Struct');
 
@@ -1297,7 +1242,7 @@ var List = struct({
   items: list(ListItem),
   value: Any,
   hasError: maybe(Bool),
-  message: maybe(Label),
+  error: maybe(Label),
   config: maybe(Obj)
 });
 
@@ -1311,7 +1256,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":15}],8:[function(require,module,exports){
+},{"react":"react","tcomb-validation":19}],8:[function(require,module,exports){
 'use strict';
 
 //==================
@@ -1377,7 +1322,7 @@ function list(locals) {
   throw new Error('lists are not implemented (yet)');
 }
 
-},{"./util":9,"react":"react","react/lib/cx":14}],9:[function(require,module,exports){
+},{"./util":9,"react":"react","react/lib/cx":18}],9:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1458,25 +1403,41 @@ function getSelect(locals, className) {
 }
 
 },{"../protocols/theme":7,"react":"react"}],10:[function(require,module,exports){
-'use strict';
+var t = require('tcomb-validation');
 
+module.exports = either;
+
+function either(a, b) {
+  return t.Nil.is(a) ? b : a;
+}
+
+},{"tcomb-validation":19}],11:[function(require,module,exports){
+var t = require('tcomb-validation');
+
+module.exports = getError;
+
+function getError(error, state) {
+  if (!state.hasError) { return null; }
+  return t.Func.is(error) ? error(state.value) : error;
+}
+
+},{"tcomb-validation":19}],12:[function(require,module,exports){
 module.exports = getOptionsOfEnum;
 
 function getOptionsOfEnum(type) {
-  var map = type.meta.map;
-  return Object.keys(map).map(function (k) {
+  var enums = type.meta.map;
+  return Object.keys(enums).map(function (k) {
     return {
       value: k,
-      text: map[k]
+      text: enums[k]
     };
   });
 }
 
 
-},{}],11:[function(require,module,exports){
-'use strict';
-
+},{}],13:[function(require,module,exports){
 var t = require('tcomb-validation');
+var getKind = t.util.getKind;
 
 module.exports = getReport;
 
@@ -1488,7 +1449,7 @@ function getReport(type) {
   var kind;
 
   while (true) {
-    kind = t.util.getKind(innerType);
+    kind = getKind(innerType);
     if (kind === 'maybe') {
       maybe = true;
       innerType = innerType.meta.type;
@@ -1511,7 +1472,7 @@ function getReport(type) {
 }
 
 
-},{"tcomb-validation":15}],12:[function(require,module,exports){
+},{"tcomb-validation":19}],14:[function(require,module,exports){
 // thanks to https://github.com/epeli/underscore.string
 
 module.exports = humanize;
@@ -1528,9 +1489,25 @@ function humanize(s){
   return capitalize(underscored(s).replace(/_id$/,'').replace(/_/g, ' '));
 }
 
-},{}],13:[function(require,module,exports){
-'use strict';
+},{}],15:[function(require,module,exports){
+var t = require('tcomb-validation');
+var mixin = t.util.mixin;
 
+module.exports = merge;
+
+function merge(a, b) {
+  return mixin(mixin({}, a), b, true);
+}
+
+},{"tcomb-validation":19}],16:[function(require,module,exports){
+module.exports = move;
+
+function move(arr, fromIndex, toIndex) {
+  var element = arr.splice(fromIndex, 1)[0];
+  arr.splice(toIndex, 0, element);
+}
+
+},{}],17:[function(require,module,exports){
 module.exports = uuid;
 
 function uuid() {
@@ -1540,7 +1517,7 @@ function uuid() {
   });
 }
 
-},{}],14:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -1579,7 +1556,7 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{}],15:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -1798,7 +1775,7 @@ module.exports = cx;
 
 }));
 
-},{"tcomb":16}],16:[function(require,module,exports){
+},{"tcomb":20}],20:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
