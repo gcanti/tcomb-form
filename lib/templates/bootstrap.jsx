@@ -1,8 +1,77 @@
 'use strict';
 
 var React = require('react');
+var t = require('tcomb-validation');
 var cx = require('react/lib/cx');
 var util = require('./util.jsx');
+var theme = require('../protocols/theme');
+var Label = theme.Label;
+
+var Positive = t.subtype(t.Num, function (n) {
+  return n % 1 === 0 && n >= 0;
+}, 'Positive');
+
+var Cols = t.subtype(t.tuple([Positive, Positive]), function (cols) {
+  return cols[0] + cols[1] === 12;
+}, 'Cols');
+
+var Breakpoints = t.struct({
+  xs: t.maybe(Cols),
+  sm: t.maybe(Cols),
+  md: t.maybe(Cols),
+  lg: t.maybe(Cols)
+}, 'Breakpoints');
+
+Breakpoints.prototype.getClassName = function (f) {
+  var className = {};
+  for (var size in this) {
+    if (this.hasOwnProperty(size) && !t.Nil.is(this[size])) {
+      f(className, size, this[size]);
+    }
+  }
+  return className;
+};
+
+Breakpoints.prototype.getLabelClassName = function () {
+  var className = this.getClassName(function (className, size, col) {
+    className['col-' + size + '-' + col[0]] = true;
+  });
+  className['text-right'] = true;
+  return className
+};
+
+Breakpoints.prototype.getInputClassName = function () {
+  return this.getClassName(function (className, size, col) {
+    className['col-' + size + '-' + col[1]] = true;
+  });
+};
+
+Breakpoints.prototype.getOffsetClassName = function () {
+  return this.getClassName(function (className, size, col) {
+    className['col-' + size + '-offset-' + col[0]] = true;
+    className['col-' + size + '-' + col[1]] = true;
+  });
+};
+
+var TextboxConfig = t.struct({
+  addonBefore: t.maybe(Label),
+  addonAfter: t.maybe(Label),
+  horizontal: t.maybe(Breakpoints)
+}, 'TextboxConfig');
+
+var CheckboxConfig = t.struct({
+  horizontal: t.maybe(Breakpoints)
+}, 'CheckboxConfig');
+
+var SelectConfig = t.struct({
+  addonBefore: t.maybe(Label),
+  addonAfter: t.maybe(Label),
+  horizontal: t.maybe(Breakpoints)
+}, 'SelectConfig');
+
+var RadioConfig = t.struct({
+  horizontal: t.maybe(Breakpoints)
+}, 'RadioConfig');
 
 function textbox(locals) {
 
@@ -11,14 +80,40 @@ function textbox(locals) {
   }
 
   var textbox = util.getTextbox(locals, 'form-control');
-  var label = getLabel(locals);
+  var config = new TextboxConfig(locals.config || {});
+
+  // handle addonBefore / addonAfter
+  if (config.addonBefore || config.addonAfter) {
+    textbox = (
+      <div className="input-group">
+        {getAddon(config.addonBefore)}
+        {textbox}
+        {getAddon(config.addonAfter)}
+      </div>
+    );
+  }
+
+  var horizontal = config.horizontal;
+  var label = getLabel(locals, horizontal);
   var error = getErrorBlock(locals);
   var help = getHelpBlock(locals);
-
   var groupClassName = {
     'form-group': true,
     'has-error': locals.hasError
   };
+
+  if (horizontal) {
+    return (
+      <div className={cx(groupClassName)}>
+        {label}
+        <div className={cx(label ? horizontal.getInputClassName() : horizontal.getOffsetClassName())}>
+          {textbox}
+          {error}
+          {help}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cx(groupClassName)}>
@@ -32,18 +127,35 @@ function textbox(locals) {
 
 function checkbox(locals) {
 
+  var config = new CheckboxConfig(locals.config || {});
+  var error = getErrorBlock(locals);
+  var help = getHelpBlock(locals);
+
   var checkbox = (
     <label>
       {util.getCheckbox(locals)} <span>{locals.label}</span>
     </label>
   );
-  var error = getErrorBlock(locals);
-  var help = getHelpBlock(locals);
 
   var groupClassName = {
     'form-group': true,
     'has-error': locals.hasError
   };
+
+  var horizontal = config.horizontal;
+  if (horizontal) {
+    return (
+      <div className={cx(groupClassName)}>
+        <div className={cx(horizontal.getOffsetClassName())}>
+          <div className="checkbox">
+            {checkbox}
+            {error}
+            {help}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cx(groupClassName)}>
@@ -58,15 +170,42 @@ function checkbox(locals) {
 
 function select(locals) {
 
+  var config = new SelectConfig(locals.config || {});
+
   var select = util.getSelect(locals, 'form-control');
-  var label = getLabel(locals);
+
+  // handle addonBefore / addonAfter
+  if (config.addonBefore || config.addonAfter) {
+    select = (
+      <div className="input-group">
+        {getAddon(config.addonBefore)}
+        {select}
+        {getAddon(config.addonAfter)}
+      </div>
+    );
+  }
+
+  var horizontal = config.horizontal;
+  var label = getLabel(locals, horizontal);
   var error = getErrorBlock(locals);
   var help = getHelpBlock(locals);
-
   var groupClassName = {
     'form-group': true,
     'has-error': locals.hasError
   };
+
+  if (horizontal) {
+    return (
+      <div className={cx(groupClassName)}>
+        {label}
+        <div className={cx(label ? horizontal.getInputClassName() : horizontal.getOffsetClassName())}>
+          {select}
+          {error}
+          {help}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cx(groupClassName)}>
@@ -79,6 +218,8 @@ function select(locals) {
 }
 
 function radio(locals) {
+
+  var config = new RadioConfig(locals.config || {});
 
   var radios = locals.options.map(function (option, i) {
     return (
@@ -98,14 +239,27 @@ function radio(locals) {
     );
   });
 
-  var label = getLabel(locals);
+  var horizontal = config.horizontal;
+  var label = getLabel(locals, horizontal);
   var error = getErrorBlock(locals);
   var help = getHelpBlock(locals);
-
   var groupClassName = {
     'form-group': true,
     'has-error': locals.hasError
   };
+
+  if (horizontal) {
+    return (
+      <div className={cx(groupClassName)}>
+        {label}
+        <div className={cx(label ? horizontal.getInputClassName() : horizontal.getOffsetClassName())}>
+          {radios}
+          {error}
+          {help}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cx(groupClassName)}>
@@ -211,10 +365,12 @@ function list(locals) {
 // helpers
 //
 
-function getLabel(locals) {
+function getLabel(locals, breakpoints) {
   if (!locals.label) { return; }
+  var className = breakpoints ? breakpoints.getLabelClassName() : {};
+  className['control-label'] = true;
   return (
-    <label className="control-label">
+    <label className={cx(className)}>
       {locals.label}
     </label>
   );
@@ -234,6 +390,15 @@ function getErrorBlock(locals) {
   return (
     <span className="help-block error-block">
       {locals.error}
+    </span>
+  );
+}
+
+function getAddon(addon) {
+  if (!addon) { return; }
+  return (
+    <span className="input-group-addon">
+      {addon}
     </span>
   );
 }

@@ -1237,7 +1237,7 @@ var ListItem = struct({
   input: ReactElement,
   key: Str,
   buttons: list(Button)
-});
+}, 'ListItem');
 
 var List = struct({
   label: maybe(Label),
@@ -1248,9 +1248,10 @@ var List = struct({
   hasError: maybe(Bool),
   error: maybe(Label),
   config: maybe(Obj)
-});
+}, 'List');
 
 module.exports = {
+  Label: Label,
   Textbox: Textbox,
   Checkbox: Checkbox,
   Option: Option,

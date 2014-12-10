@@ -23,9 +23,8 @@ function getContext(ctx) {
   return new Context(ctx);
 }
 
-function assertLocals(factory, ctx, opts, template) {
+function assertLocals(factory, ctx, opts) {
   var ctx = getContext(ctx);
-  opts = t.util.mixin({template: template}, opts);
   var Component = factory(opts, ctx);
   vdom(React.createElement(Component)); // invoke render()
 }
@@ -36,38 +35,38 @@ test('textbox() factory', function (tape) {
 
   tape.test('the default of `opts.type` should be `text`', function (tape) {
     tape.plan(1);
-    assertLocals(textbox, {type: t.Str}, {}, function (locals) {
+    assertLocals(textbox, {type: t.Str}, {template: function (locals) {
       tape.deepEqual(locals.type, 'text');
-    });
+    }});
   });
 
   tape.test('should handle `opts.type`', function (tape) {
     tape.plan(2);
-    assertLocals(textbox, {type: t.Str}, {type: 'hidden'}, function (locals) {
+    assertLocals(textbox, {type: t.Str}, {type: 'hidden', template: function (locals) {
       tape.deepEqual(locals.type, 'hidden');
-    });
-    assertLocals(textbox, {type: t.Str}, {type: 'textarea'}, function (locals) {
+    }});
+    assertLocals(textbox, {type: t.Str}, {type: 'textarea', template: function (locals) {
       tape.deepEqual(locals.type, 'textarea');
-    });
+    }});
   });
 
   tape.test('should handle `opts.label`', function (tape) {
     tape.plan(4);
-    assertLocals(textbox, {type: t.Str}, {label: 'mylabel'}, function (locals) {
+    assertLocals(textbox, {type: t.Str}, {label: 'mylabel', template: function (locals) {
       tape.deepEqual(locals.label, 'mylabel');
       tape.deepEqual(locals.placeholder, null);
-    });
-    assertLocals(textbox, {type: t.Str}, {label: <i>JSX label</i>}, function (locals) {
+    }});
+    assertLocals(textbox, {type: t.Str}, {label: <i>JSX label</i>, template: function (locals) {
       tape.deepEqual(vdom(locals.label), {tag: 'i', attrs: {}, children: 'JSX label'});
       tape.deepEqual(locals.placeholder, null);
-    });
+    }});
   });
 
   tape.test('should have a default label when ctx.auto = `labels`', function (tape) {
     tape.plan(1);
-    assertLocals(textbox, {type: t.Str, auto: 'labels'}, null, function (locals) {
+    assertLocals(textbox, {type: t.Str, auto: 'labels'}, {template: function (locals) {
       tape.deepEqual(locals.label, 'default label');
-    });
+    }});
   });
 
 });
