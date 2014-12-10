@@ -3,7 +3,7 @@ var React = require('react');
 var t = require('../../lib');
 
 // configure gridforms plugin
-t.form.config.templates = require('../../lib/templates/gridforms');
+t.form.config.templates = require('../../lib/templates/gridforms.jsx');
 
 // model
 var Vendor = t.enums.of([
@@ -85,7 +85,7 @@ var Data = t.struct({
 var Form = t.form.create(Data, {
   label: 'Add to inventory',
   auto: 'labels',           // automatically create labels from field names
-  template: structTemplate, // custom template for structs
+  templates: {struct: structTemplate}, // custom template for structs
   value: {
     productName: 'aaa',
     tags: null,
@@ -176,7 +176,9 @@ function structTemplate(locals) {
 
 
 
-},{"../../lib":5,"../../lib/templates/gridforms":8,"react":"react"}],2:[function(require,module,exports){
+},{"../../lib":5,"../../lib/templates/gridforms.jsx":8,"react":"react"}],2:[function(require,module,exports){
+'use strict';
+
 var api = require('./protocols/api');
 
 var i18n = new api.I18n({
@@ -191,13 +193,13 @@ module.exports = {
   i18n: i18n
 };
 },{"./protocols/api":6}],3:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var Context = require('./protocols/api').Context;
 var config = require('./config');
 var getFactory = require('./factories').getFactory;
 var getReport = require('./util/getReport');
-
-module.exports = create;
 
 function create(type, opts) {
 
@@ -208,9 +210,7 @@ function create(type, opts) {
     // the public api returns `null` if validation failed
     // unless the optional boolean argument `raw` is set to `true`
     getValue: function (raw) {
-
       var result = this.refs.input.getValue();
-
       if (raw === true) { return result; }
       if (result.isValid()) { return result.value; }
       return null;
@@ -218,7 +218,7 @@ function create(type, opts) {
 
     render: function () {
 
-      var defaultContext = new Context({
+      var ctx = new Context({
         templates: config.templates,
         i18n: config.i18n,
         report: getReport(type),
@@ -227,7 +227,7 @@ function create(type, opts) {
         label: '',
         value: this.props.value
       });
-      var Component = factory(opts, defaultContext);
+      var Component = factory(opts, ctx);
 
       return React.createElement(Component, {ref: 'input'});
     }
@@ -236,6 +236,7 @@ function create(type, opts) {
   return Form;
 }
 
+module.exports = create;
 },{"./config":2,"./factories":4,"./protocols/api":6,"./util/getReport":13,"react":"react"}],4:[function(require,module,exports){
 'use strict';
 
@@ -252,16 +253,6 @@ var humanize = require('./util/humanize');
 var merge = require('./util/merge');
 var move = require('./util/move');
 var uuid = require('./util/uuid');
-
-module.exports = {
-  getFactory: getFactory,
-  textbox:    textbox,
-  checkbox:   checkbox,
-  select:     select,
-  radio:      radio,
-  struct:     struct,
-  list:       list
-};
 
 var assert = t.assert;
 var Nil = t.Nil;
@@ -290,7 +281,7 @@ config.kinds = {
 };
 
 config.irriducibles = {
-  Bool: function (opts) { return checkbox; }
+  Bool: function () { return checkbox; }
 };
 
 config.transformers = {
@@ -892,6 +883,15 @@ function list(opts, ctx) {
     }
   });
 }
+module.exports = {
+  getFactory: getFactory,
+  textbox:    textbox,
+  checkbox:   checkbox,
+  select:     select,
+  radio:      radio,
+  struct:     struct,
+  list:       list
+};
 
 },{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19}],5:[function(require,module,exports){
 var t = require('tcomb-validation');
@@ -906,6 +906,8 @@ t.form = t.util.mixin({
 
 module.exports = t;
 },{"./config":2,"./create":3,"./factories":4,"tcomb-validation":19}],6:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var t = require('tcomb-validation');
 
@@ -971,7 +973,7 @@ Context.prototype.getDefaultLabel = function () {
 };
 
 Context.prototype.getDisplayName = function () {
-  return t.util.format('[`%s`, TcombFormInput]', (this.getDefaultName() || 'top level'));
+  return t.util.format('[`%s`, TcombForm]', (this.getDefaultName() || 'top'));
 };
 
 var ReactElement = t.irriducible('ReactElement', React.isValidElement);
@@ -1125,6 +1127,8 @@ module.exports = {
   List: List
 };
 },{"react":"react","tcomb-validation":19}],7:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var t = require('tcomb-validation');
 var Any = t.Any;
@@ -1265,16 +1269,7 @@ module.exports = {
 
 var React = require('react');
 var cx = require('react/lib/cx');
-var util = require('./util');
-
-module.exports = {
-  textbox: textbox,
-  checkbox: checkbox,
-  select: select,
-  radio: radio,
-  struct: struct,
-  list: list
-};
+var util = require('./util.jsx');
 
 function textbox(locals) {
 
@@ -1322,20 +1317,21 @@ function list(locals) {
   throw new Error('lists are not implemented (yet)');
 }
 
-},{"./util":9,"react":"react","react/lib/cx":18}],9:[function(require,module,exports){
+module.exports = {
+  textbox: textbox,
+  checkbox: checkbox,
+  select: select,
+  radio: radio,
+  struct: struct,
+  list: list
+};
+
+
+},{"./util.jsx":9,"react":"react","react/lib/cx":18}],9:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
 var theme = require('../protocols/theme');
-
-module.exports = {
-  getRadio: getRadio,
-  getCheckbox: getCheckbox,
-  getHiddenTextbox: getHiddenTextbox,
-  getTextbox: getTextbox,
-  getOption: getOption,
-  getSelect: getSelect
-};
 
 function getRadio(locals) {
   return React.createElement("input", {type: "radio", 
@@ -1402,27 +1398,38 @@ function getSelect(locals, className) {
   );
 }
 
-},{"../protocols/theme":7,"react":"react"}],10:[function(require,module,exports){
-var t = require('tcomb-validation');
+module.exports = {
+  getRadio: getRadio,
+  getCheckbox: getCheckbox,
+  getHiddenTextbox: getHiddenTextbox,
+  getTextbox: getTextbox,
+  getOption: getOption,
+  getSelect: getSelect
+};
 
-module.exports = either;
+},{"../protocols/theme":7,"react":"react"}],10:[function(require,module,exports){
+'use strict';
+
+var t = require('tcomb-validation');
 
 function either(a, b) {
   return t.Nil.is(a) ? b : a;
 }
 
+module.exports = either;
 },{"tcomb-validation":19}],11:[function(require,module,exports){
-var t = require('tcomb-validation');
+'use strict';
 
-module.exports = getError;
+var t = require('tcomb-validation');
 
 function getError(error, state) {
   if (!state.hasError) { return null; }
   return t.Func.is(error) ? error(state.value) : error;
 }
 
+module.exports = getError;
 },{"tcomb-validation":19}],12:[function(require,module,exports){
-module.exports = getOptionsOfEnum;
+'use strict';
 
 function getOptionsOfEnum(type) {
   var enums = type.meta.map;
@@ -1434,12 +1441,12 @@ function getOptionsOfEnum(type) {
   });
 }
 
-
+module.exports = getOptionsOfEnum;
 },{}],13:[function(require,module,exports){
+'use strict';
+
 var t = require('tcomb-validation');
 var getKind = t.util.getKind;
-
-module.exports = getReport;
 
 function getReport(type) {
 
@@ -1471,11 +1478,11 @@ function getReport(type) {
   };
 }
 
-
+module.exports = getReport;
 },{"tcomb-validation":19}],14:[function(require,module,exports){
-// thanks to https://github.com/epeli/underscore.string
+'use strict';
 
-module.exports = humanize;
+// thanks to https://github.com/epeli/underscore.string
 
 function underscored(s){
   return s.trim().replace(/([a-z\d])([A-Z]+)/g, '$1_$2').replace(/[-\s]+/g, '_').toLowerCase();
@@ -1489,26 +1496,29 @@ function humanize(s){
   return capitalize(underscored(s).replace(/_id$/,'').replace(/_/g, ' '));
 }
 
+module.exports = humanize;
 },{}],15:[function(require,module,exports){
+'use strict';
+
 var t = require('tcomb-validation');
 var mixin = t.util.mixin;
-
-module.exports = merge;
 
 function merge(a, b) {
   return mixin(mixin({}, a), b, true);
 }
 
+module.exports = merge;
 },{"tcomb-validation":19}],16:[function(require,module,exports){
-module.exports = move;
+'use strict';
 
 function move(arr, fromIndex, toIndex) {
   var element = arr.splice(fromIndex, 1)[0];
   arr.splice(toIndex, 0, element);
 }
 
+module.exports = move;
 },{}],17:[function(require,module,exports){
-module.exports = uuid;
+'use strict';
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -1517,6 +1527,7 @@ function uuid() {
   });
 }
 
+module.exports = uuid;
 },{}],18:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.

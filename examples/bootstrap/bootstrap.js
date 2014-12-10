@@ -69,10 +69,12 @@ React.render(React.createElement(App, null), document.getElementById('app'));
 var t = require('./lib');
 
 // plug bootstrap style
-t.form.config.templates = require('./lib/templates/bootstrap');
+t.form.config.templates = require('./lib/templates/bootstrap.jsx');
 
 module.exports = t;
-},{"./lib":6,"./lib/templates/bootstrap":9}],3:[function(require,module,exports){
+},{"./lib":6,"./lib/templates/bootstrap.jsx":9}],3:[function(require,module,exports){
+'use strict';
+
 var api = require('./protocols/api');
 
 var i18n = new api.I18n({
@@ -87,13 +89,13 @@ module.exports = {
   i18n: i18n
 };
 },{"./protocols/api":7}],4:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var Context = require('./protocols/api').Context;
 var config = require('./config');
 var getFactory = require('./factories').getFactory;
 var getReport = require('./util/getReport');
-
-module.exports = create;
 
 function create(type, opts) {
 
@@ -104,9 +106,7 @@ function create(type, opts) {
     // the public api returns `null` if validation failed
     // unless the optional boolean argument `raw` is set to `true`
     getValue: function (raw) {
-
       var result = this.refs.input.getValue();
-
       if (raw === true) { return result; }
       if (result.isValid()) { return result.value; }
       return null;
@@ -114,7 +114,7 @@ function create(type, opts) {
 
     render: function () {
 
-      var defaultContext = new Context({
+      var ctx = new Context({
         templates: config.templates,
         i18n: config.i18n,
         report: getReport(type),
@@ -123,7 +123,7 @@ function create(type, opts) {
         label: '',
         value: this.props.value
       });
-      var Component = factory(opts, defaultContext);
+      var Component = factory(opts, ctx);
 
       return React.createElement(Component, {ref: 'input'});
     }
@@ -132,6 +132,7 @@ function create(type, opts) {
   return Form;
 }
 
+module.exports = create;
 },{"./config":3,"./factories":5,"./protocols/api":7,"./util/getReport":14,"react":"react"}],5:[function(require,module,exports){
 'use strict';
 
@@ -148,16 +149,6 @@ var humanize = require('./util/humanize');
 var merge = require('./util/merge');
 var move = require('./util/move');
 var uuid = require('./util/uuid');
-
-module.exports = {
-  getFactory: getFactory,
-  textbox:    textbox,
-  checkbox:   checkbox,
-  select:     select,
-  radio:      radio,
-  struct:     struct,
-  list:       list
-};
 
 var assert = t.assert;
 var Nil = t.Nil;
@@ -186,7 +177,7 @@ config.kinds = {
 };
 
 config.irriducibles = {
-  Bool: function (opts) { return checkbox; }
+  Bool: function () { return checkbox; }
 };
 
 config.transformers = {
@@ -788,6 +779,15 @@ function list(opts, ctx) {
     }
   });
 }
+module.exports = {
+  getFactory: getFactory,
+  textbox:    textbox,
+  checkbox:   checkbox,
+  select:     select,
+  radio:      radio,
+  struct:     struct,
+  list:       list
+};
 
 },{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/either":11,"./util/getError":12,"./util/getOptionsOfEnum":13,"./util/getReport":14,"./util/humanize":15,"./util/merge":16,"./util/move":17,"./util/uuid":18,"react":"react","tcomb-validation":20}],6:[function(require,module,exports){
 var t = require('tcomb-validation');
@@ -802,6 +802,8 @@ t.form = t.util.mixin({
 
 module.exports = t;
 },{"./config":3,"./create":4,"./factories":5,"tcomb-validation":20}],7:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var t = require('tcomb-validation');
 
@@ -867,7 +869,7 @@ Context.prototype.getDefaultLabel = function () {
 };
 
 Context.prototype.getDisplayName = function () {
-  return t.util.format('[`%s`, TcombFormInput]', (this.getDefaultName() || 'top level'));
+  return t.util.format('[`%s`, TcombForm]', (this.getDefaultName() || 'top'));
 };
 
 var ReactElement = t.irriducible('ReactElement', React.isValidElement);
@@ -1021,6 +1023,8 @@ module.exports = {
   List: List
 };
 },{"react":"react","tcomb-validation":20}],8:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var t = require('tcomb-validation');
 var Any = t.Any;
@@ -1157,16 +1161,7 @@ module.exports = {
 
 var React = require('react');
 var cx = require('react/lib/cx');
-var util = require('./util');
-
-module.exports = {
-  textbox: textbox,
-  checkbox: checkbox,
-  select: select,
-  radio: radio,
-  struct: struct,
-  list: list
-};
+var util = require('./util.jsx');
 
 function textbox(locals) {
 
@@ -1402,20 +1397,19 @@ function getErrorBlock(locals) {
   );
 }
 
-},{"./util":10,"react":"react","react/lib/cx":19}],10:[function(require,module,exports){
+module.exports = {
+  textbox: textbox,
+  checkbox: checkbox,
+  select: select,
+  radio: radio,
+  struct: struct,
+  list: list
+};
+},{"./util.jsx":10,"react":"react","react/lib/cx":19}],10:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
 var theme = require('../protocols/theme');
-
-module.exports = {
-  getRadio: getRadio,
-  getCheckbox: getCheckbox,
-  getHiddenTextbox: getHiddenTextbox,
-  getTextbox: getTextbox,
-  getOption: getOption,
-  getSelect: getSelect
-};
 
 function getRadio(locals) {
   return React.createElement("input", {type: "radio", 
@@ -1482,27 +1476,38 @@ function getSelect(locals, className) {
   );
 }
 
-},{"../protocols/theme":8,"react":"react"}],11:[function(require,module,exports){
-var t = require('tcomb-validation');
+module.exports = {
+  getRadio: getRadio,
+  getCheckbox: getCheckbox,
+  getHiddenTextbox: getHiddenTextbox,
+  getTextbox: getTextbox,
+  getOption: getOption,
+  getSelect: getSelect
+};
 
-module.exports = either;
+},{"../protocols/theme":8,"react":"react"}],11:[function(require,module,exports){
+'use strict';
+
+var t = require('tcomb-validation');
 
 function either(a, b) {
   return t.Nil.is(a) ? b : a;
 }
 
+module.exports = either;
 },{"tcomb-validation":20}],12:[function(require,module,exports){
-var t = require('tcomb-validation');
+'use strict';
 
-module.exports = getError;
+var t = require('tcomb-validation');
 
 function getError(error, state) {
   if (!state.hasError) { return null; }
   return t.Func.is(error) ? error(state.value) : error;
 }
 
+module.exports = getError;
 },{"tcomb-validation":20}],13:[function(require,module,exports){
-module.exports = getOptionsOfEnum;
+'use strict';
 
 function getOptionsOfEnum(type) {
   var enums = type.meta.map;
@@ -1514,12 +1519,12 @@ function getOptionsOfEnum(type) {
   });
 }
 
-
+module.exports = getOptionsOfEnum;
 },{}],14:[function(require,module,exports){
+'use strict';
+
 var t = require('tcomb-validation');
 var getKind = t.util.getKind;
-
-module.exports = getReport;
 
 function getReport(type) {
 
@@ -1551,11 +1556,11 @@ function getReport(type) {
   };
 }
 
-
+module.exports = getReport;
 },{"tcomb-validation":20}],15:[function(require,module,exports){
-// thanks to https://github.com/epeli/underscore.string
+'use strict';
 
-module.exports = humanize;
+// thanks to https://github.com/epeli/underscore.string
 
 function underscored(s){
   return s.trim().replace(/([a-z\d])([A-Z]+)/g, '$1_$2').replace(/[-\s]+/g, '_').toLowerCase();
@@ -1569,26 +1574,29 @@ function humanize(s){
   return capitalize(underscored(s).replace(/_id$/,'').replace(/_/g, ' '));
 }
 
+module.exports = humanize;
 },{}],16:[function(require,module,exports){
+'use strict';
+
 var t = require('tcomb-validation');
 var mixin = t.util.mixin;
-
-module.exports = merge;
 
 function merge(a, b) {
   return mixin(mixin({}, a), b, true);
 }
 
+module.exports = merge;
 },{"tcomb-validation":20}],17:[function(require,module,exports){
-module.exports = move;
+'use strict';
 
 function move(arr, fromIndex, toIndex) {
   var element = arr.splice(fromIndex, 1)[0];
   arr.splice(toIndex, 0, element);
 }
 
+module.exports = move;
 },{}],18:[function(require,module,exports){
-module.exports = uuid;
+'use strict';
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -1597,6 +1605,7 @@ function uuid() {
   });
 }
 
+module.exports = uuid;
 },{}],19:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.

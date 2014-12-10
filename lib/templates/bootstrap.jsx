@@ -2,16 +2,7 @@
 
 var React = require('react');
 var cx = require('react/lib/cx');
-var util = require('./util');
-
-module.exports = {
-  textbox: textbox,
-  checkbox: checkbox,
-  select: select,
-  radio: radio,
-  struct: struct,
-  list: list
-};
+var util = require('./util.jsx');
 
 function textbox(locals) {
 
@@ -246,3 +237,12 @@ function getErrorBlock(locals) {
     </span>
   );
 }
+
+module.exports = {
+  textbox: textbox,
+  checkbox: checkbox,
+  select: select,
+  radio: radio,
+  struct: struct,
+  list: list
+};

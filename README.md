@@ -34,16 +34,3 @@ With tcomb-form you simply call `var Form = t.form.create(domainModel)` to gener
 This library is under heavy development.
 The current stable release is on [branch v0.2](https://github.com/gcanti/tcomb-form/tree/v0.2)
 
-# Roadmap to v0.3.0
-
-- [] fatories must return a valid React component
-- [] for attribute for labels
-- [] aria support
-- [] build examples
-- [] rebuild the playground
-- templates
-  - [] bootstrap
-  - [] foundation
-  - [] pure
-  - [] ionic
-  - [] gridforms / [flakes](http://getflakes.com/index.html)

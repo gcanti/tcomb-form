@@ -2,7 +2,7 @@ var React = require('react');
 var t = require('../../lib');
 
 // configure gridforms plugin
-t.form.config.templates = require('../../lib/templates/gridforms');
+t.form.config.templates = require('../../lib/templates/gridforms.jsx');
 
 // model
 var Vendor = t.enums.of([
@@ -84,7 +84,7 @@ var Data = t.struct({
 var Form = t.form.create(Data, {
   label: 'Add to inventory',
   auto: 'labels',           // automatically create labels from field names
-  template: structTemplate, // custom template for structs
+  templates: {struct: structTemplate}, // custom template for structs
   value: {
     productName: 'aaa',
     tags: null,

@@ -3,15 +3,6 @@
 var React = require('react');
 var theme = require('../protocols/theme');
 
-module.exports = {
-  getRadio: getRadio,
-  getCheckbox: getCheckbox,
-  getHiddenTextbox: getHiddenTextbox,
-  getTextbox: getTextbox,
-  getOption: getOption,
-  getSelect: getSelect
-};
-
 function getRadio(locals) {
   return <input type="radio"
     name={locals.name}
@@ -76,3 +67,12 @@ function getSelect(locals, className) {
     </select>
   );
 }
+
+module.exports = {
+  getRadio: getRadio,
+  getCheckbox: getCheckbox,
+  getHiddenTextbox: getHiddenTextbox,
+  getTextbox: getTextbox,
+  getOption: getOption,
+  getSelect: getSelect
+};

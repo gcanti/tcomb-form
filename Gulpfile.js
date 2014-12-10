@@ -6,6 +6,8 @@ var reactify = require('reactify');
 var rename = require('gulp-rename');
 var source = require('vinyl-source-stream');
 var gutil = require('gulp-util');
+var jshint = require('gulp-jshint');
+var stylish = require('jshint-stylish');
 
 var pkg = require('./package.json');
 var version = pkg.version;
@@ -20,13 +22,12 @@ var banner = ['/**',
 // ------------------------------------
 // watch (main task for development)
 // ------------------------------------
-var paths = {
-  dev: ['lib/**/*.js', 'dev/**/*.js'],
-  examples: ['lib/**/*.js', 'examples/**/*.jsx']
-};
+var src = ['lib/**/*.js', 'lib/**/*.jsx'];
+var dev = src.concat('dev/**/*.js');
+var examples = src.concat('examples/**/*.jsx');
 gulp.task('watch', ['dev', 'examples'], function () {
-  gulp.watch(paths.dev, ['dev']);
-  gulp.watch(paths.examples, ['examples']);
+  gulp.watch(dev, ['dev']);
+  gulp.watch(examples, ['examples']);
 });
 
 // ------------------------------------
@@ -87,3 +88,12 @@ gulp.task('examples', function (){
 
 });
 
+// ------------------------------------
+// lint task
+// ------------------------------------
+
+gulp.task('lint', function() {
+  return gulp.src('./lib/**/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish));
+});
