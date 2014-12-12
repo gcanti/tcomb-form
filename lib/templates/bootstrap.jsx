@@ -301,7 +301,7 @@ function struct(locals) {
 
 function list(locals) {
 
-  var items = locals.items.map(function (item, i) {
+  var items = locals.items.map(function (item) {
     if (!item.buttons.length) {
       return (
         <div className="row" key={item.key}>
@@ -313,10 +313,10 @@ function list(locals) {
     }
     return (
       <div className="row" key={item.key}>
-        <div className="col-md-8">
+        <div className="col-md-6">
           {item.input}
         </div>
-        <div className="col-md-4">
+        <div className="col-md-6">
           <div className="btn-group">
             {
               item.buttons.map(function (button, i) {

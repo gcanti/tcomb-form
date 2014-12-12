@@ -18,15 +18,18 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
-    "react": "^0.12.1",
-    "tcomb-validation": "^0.2.3"
+    "uvdom": "^0.0.1",
+    "uvdom-bootstrap": "^0.0.1"
+  },
+  "peerDependencies": {
+    "tcomb-validation": "^0.2.3",
+    "react": "^0.12.0"
   },
   "devDependencies": {
     "browserify": "^6.3.2",
     "gulp": "^3.8.10",
     "gulp-header": "^1.2.2",
     "gulp-jshint": "^1.9.0",
-    "gulp-react": "^2.0.0",
     "gulp-rename": "^1.2.0",
     "gulp-util": "^3.0.1",
     "js-beautify": "^1.5.4",

@@ -105,9 +105,9 @@ var App = React.createClass({displayName: 'App',
 
   onClick: function(evt) {
     evt.preventDefault();
-    var values = this.refs.form.getValue();
-    if (values) {
-      document.getElementById('value').innerHTML = JSON.stringify(values, null, 2);
+    var value = this.refs.form.getValue();
+    if (value) {
+      document.getElementById('value').innerHTML = JSON.stringify(value, null, 2);
     }
   },
 
@@ -245,6 +245,8 @@ var t = require('tcomb-validation');
 var api = require('./protocols/api');
 var theme = require('./protocols/theme');
 var config = require('./config');
+var compile = require('uvdom/react').compile;
+
 var either = require('./util/either');
 var getError = require('./util/getError');
 var getOptionsOfEnum = require('./util/getOptionsOfEnum');
@@ -260,42 +262,6 @@ var ValidationResult = t.ValidationResult;
 var getKind = t.util.getKind;
 var getName = t.util.getName;
 var Context = api.Context;
-
-//
-// configuration
-//
-
-config.kinds = {
-  irriducible: function (type, opts) {
-    var name = getName(type);
-    if (t.Func.is(config.irriducibles[name])) {
-      return config.irriducibles[name](opts);
-    }
-    return textbox; // fallback on textbox
-  },
-  enums:    function () { return select; },
-  struct:   function () { return struct; },
-  list:     function () { return list; },
-  maybe:    function (type, opts) { return getFactory(type.meta.type, opts); },
-  subtype:  function (type, opts) { return getFactory(type.meta.type, opts); }
-};
-
-config.irriducibles = {
-  Bool: function () { return checkbox; }
-};
-
-config.transformers = {
-  Num: new api.Transformer({
-    format: function (value) {
-      return Nil.is(value) ? value : String(value);
-    },
-    parse: function (value) {
-      var n = parseFloat(value);
-      var isNumeric = (value - n + 1) >= 0;
-      return isNumeric ? n : value;
-    }
-  })
-};
 
 //
 // main function
@@ -385,7 +351,7 @@ function textbox(opts, ctx) {
         value = transformer.format(value);
       }
 
-      return template(new theme.Textbox({
+      return compile(template(new theme.Textbox({
         ref: REF,
         type: opts.type || 'text',
         name: name,
@@ -398,7 +364,7 @@ function textbox(opts, ctx) {
         value: value,
         error: getError(opts.error, this.state),
         config: merge(ctx.config, opts.config)
-      }));
+      })));
     }
   });
 }
@@ -415,7 +381,7 @@ function checkbox(opts, ctx) {
 
   var name = opts.name || ctx.getDefaultName();
 
-  var value = !!either(opts.value, ctx.value);
+  var value = !!either(opts.value, ctx.value === true);
 
   var template = opts.template || ctx.templates.checkbox;
 
@@ -445,7 +411,7 @@ function checkbox(opts, ctx) {
     },
 
     render: function () {
-      return template(new theme.Checkbox({
+      return compile(template(new theme.Checkbox({
         ref: REF,
         name: name,
         label: label,
@@ -455,7 +421,7 @@ function checkbox(opts, ctx) {
         value: this.state.value,
         error: getError(opts.error, this.state),
         config: merge(ctx.config, opts.config)
-      }));
+      })));
     }
   });
 }
@@ -538,7 +504,7 @@ function select(opts, ctx) {
     },
 
     render: function () {
-      return template(new theme.Select({
+      return compile(template(new theme.Select({
         ref: REF,
         name: name,
         label: label,
@@ -550,7 +516,7 @@ function select(opts, ctx) {
         error: getError(opts.error, this.state),
         multiple: multiple,
         config: merge(ctx.config, opts.config)
-      }));
+      })));
     }
   });
 }
@@ -615,7 +581,7 @@ function radio(opts, ctx) {
     },
 
     render: function () {
-      return template(new theme.Radio({
+      return compile(template(new theme.Radio({
         ref: REF,
         name: name,
         label: label,
@@ -625,7 +591,7 @@ function radio(opts, ctx) {
         value: this.state.value,
         error: getError(opts.error, this.state),
         config: merge(ctx.config, opts.config)
-      }));
+      })));
     }
   });
 }
@@ -668,7 +634,7 @@ function struct(opts, ctx) {
         auto:       auto,
         label:      humanize(prop),
         value:      value[prop],
-        config:     merge(config, propOpts.config)
+        config:     config
       }));
 
       components[prop] = Component;
@@ -723,7 +689,7 @@ function struct(opts, ctx) {
         }
       }
 
-      return templates.struct(new theme.Struct({
+      return compile(templates.struct(new theme.Struct({
         label: label,
         help: opts.help,
         order: order,
@@ -732,7 +698,7 @@ function struct(opts, ctx) {
         hasError: this.state.hasError,
         error: getError(opts.error, this.state),
         config: config
-      }));
+      })));
     }
   });
 }
@@ -769,7 +735,7 @@ function list(opts, ctx) {
       auto: auto,
       label: '#' + (i + 1),
       value: value,
-      config: merge(config, itemOpts.config)
+      config: config
     }));
   };
 
@@ -867,7 +833,7 @@ function list(opts, ctx) {
         };
       }.bind(this));
 
-      return templates.list(new theme.List({
+      return compile(templates.list(new theme.List({
         label: label,
         help: opts.help,
         add: opts.disableAdd ? null : {
@@ -879,10 +845,47 @@ function list(opts, ctx) {
         hasError: this.state.hasError,
         error: getError(opts.error, this.state),
         config: config
-      }));
+      })));
     }
   });
 }
+
+//
+// configuration
+//
+
+config.kinds = {
+  irriducible: function (type, opts) {
+    var name = getName(type);
+    if (t.Func.is(config.irriducibles[name])) {
+      return config.irriducibles[name](opts);
+    }
+    return textbox; // fallback on textbox
+  },
+  enums:    function () { return select; },
+  struct:   function () { return struct; },
+  list:     function () { return list; },
+  maybe:    function (type, opts) { return getFactory(type.meta.type, opts); },
+  subtype:  function (type, opts) { return getFactory(type.meta.type, opts); }
+};
+
+config.irriducibles = {
+  Bool: function () { return checkbox; }
+};
+
+config.transformers = {
+  Num: new api.Transformer({
+    format: function (value) {
+      return Nil.is(value) ? value : String(value);
+    },
+    parse: function (value) {
+      var n = parseFloat(value);
+      var isNumeric = (value - n + 1) >= 0;
+      return isNumeric ? n : value;
+    }
+  })
+};
+
 module.exports = {
   getFactory: getFactory,
   textbox:    textbox,
@@ -893,7 +896,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19}],5:[function(require,module,exports){
+},{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":21}],5:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -980,7 +983,7 @@ var ReactElement = t.irriducible('ReactElement', React.isValidElement);
 
 var Label = union([Str, ReactElement], 'Label');
 
-var Error = union([Label, Func], 'Error');
+var ErrorMessage = union([Label, Func], 'Error');
 
 var Option = t.struct({
   value: Str,
@@ -988,7 +991,7 @@ var Option = t.struct({
 }, 'Option');
 
 var OptGroup = t.struct({
-  group: Str,
+  label: Str,
   options: list(Option)
 }, 'OptGroup');
 
@@ -1010,7 +1013,7 @@ var Textbox = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   type: maybe(TypeAttr),
   name: maybe(t.Str),
   placeholder: maybe(Str),
@@ -1026,7 +1029,7 @@ var Checkbox = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   name: maybe(t.Str),
   value: maybe(Bool),
   disabled: maybe(Bool),
@@ -1053,7 +1056,7 @@ var Select = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   name: maybe(t.Str),
   value: maybe(Str),
   order: maybe(Order),
@@ -1068,7 +1071,7 @@ var Radio = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   name: maybe(t.Str),
   value: maybe(Str),
   order: maybe(Order),
@@ -1084,7 +1087,7 @@ var Struct = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   order: maybe(list(Label)),
   fields: maybe(Obj),
   templates: maybe(Templates),
@@ -1098,7 +1101,7 @@ var List = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   item: maybe(Obj),
   disableAdd: maybe(Bool),
   disableRemove: maybe(Bool),
@@ -1113,7 +1116,7 @@ module.exports = {
   Context: Context,
   ReactElement: ReactElement,
   Label: Label,
-  Error: Error,
+  ErrorMessage: ErrorMessage,
   Option: Option,
   OptGroup: OptGroup,
   SelectOption: SelectOption,
@@ -1151,7 +1154,7 @@ var Option = struct({
 }, 'Option');
 
 var OptGroup = struct({
-  group: Str,
+  label: Str,
   options: list(Option)
 }, 'OptGroup');
 
@@ -1346,7 +1349,7 @@ function getCheckbox(locals) {
   return React.createElement("input", {
     type: "checkbox", 
     name: locals.name, 
-    defaultChecked: locals.defaultValue, 
+    defaultChecked: locals.value, 
     ref: locals.ref});
 }
 
@@ -1381,7 +1384,7 @@ function getTextbox(locals, className) {
 function getOption(option, i) {
   return theme.Option.is(option) ?
     React.createElement("option", {value: option.value, key: option.value}, option.text) :
-    React.createElement("optgroup", {label: option.group, key: option.group}, 
+    React.createElement("optgroup", {label: option.label, key: option.label}, 
       option.options.map(getOption)
     )
 }
@@ -1523,7 +1526,7 @@ module.exports = move;
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    var r = Math.random()*16|0, v = (c === 'x') ? r : (r&0x3|0x8);
     return v.toString(16);
   });
 }
@@ -2696,4 +2699,73 @@ module.exports = cx;
   };
 }));
 
-},{}]},{},[1]);
+},{}],21:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var cx = require('react/lib/cx');
+
+// compile: x -> ReactElement
+function compile(x) {
+
+  // with host elements, compile behaves like the identity
+  if (React.isValidElement(x)) {
+    return x;
+  }
+
+  if (Array.isArray(x)) {
+    return x.map(compile);
+  }
+
+  if (typeof x === 'object' && x !== null) {
+
+    // attrs
+    var attrs = mixin({}, x.attrs);
+    if (attrs.className) {
+      attrs.className = cx(attrs.className) || null; // avoid class=""
+    }
+    if (x.key != null) { attrs.key = x.key; }
+    if (x.ref != null) { attrs.ref = x.ref; }
+
+    // events
+    if (x.events) {
+      for (var name in x.events) {
+        attrs[camelizeEvent(name)] = x.events[name];
+      }
+    }
+
+    // children
+    var children = compile(x.children);
+
+    // build ReactElement
+    return React.createElement.apply(React, [x.tag, attrs].concat(children));
+  }
+
+  return x;
+}
+
+//
+// helpers
+//
+
+// transforms an event name to a React event name
+// click -> onClick
+// blur -> onBlur
+function camelizeEvent(name) {
+  return 'on' + name.charAt(0).toUpperCase() + name.substring(1);
+}
+
+function mixin(x, y) {
+  if (!y) { return x; }
+  for (var k in y) {
+    if (y.hasOwnProperty(k)) {
+      x[k] = y[k];
+    }
+  }
+  return x;
+}
+
+module.exports = {
+  compile: compile
+};
+},{"react":"react","react/lib/cx":18}]},{},[1]);

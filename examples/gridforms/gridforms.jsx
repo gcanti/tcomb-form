@@ -104,9 +104,9 @@ var App = React.createClass({
 
   onClick: function(evt) {
     evt.preventDefault();
-    var values = this.refs.form.getValue();
-    if (values) {
-      document.getElementById('value').innerHTML = JSON.stringify(values, null, 2);
+    var value = this.refs.form.getValue();
+    if (value) {
+      document.getElementById('value').innerHTML = JSON.stringify(value, null, 2);
     }
   },
 

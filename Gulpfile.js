@@ -1,6 +1,4 @@
 var gulp =  require('gulp');
-var react = require('gulp-react');
-var header = require('gulp-header');
 var browserify = require('browserify');
 var reactify = require('reactify');
 var rename = require('gulp-rename');
@@ -9,50 +7,10 @@ var gutil = require('gulp-util');
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 
-var pkg = require('./package.json');
-var version = pkg.version;
-var banner = ['/**',
-  ' * <%= pkg.name %> - <%= pkg.description %>',
-  ' * @version v<%= pkg.version %>',
-  ' * @link <%= pkg.homepage %>',
-  ' * @license <%= pkg.license %>',
-  ' */',
-  ''].join('\n');
+gulp.task('default', ['examples']);
 
 // ------------------------------------
-// watch (main task for development)
-// ------------------------------------
-var src = ['lib/**/*.js', 'lib/**/*.jsx'];
-var dev = src.concat('dev/**/*.js');
-var examples = src.concat('examples/**/*.jsx');
-gulp.task('watch', ['dev', 'examples'], function () {
-  gulp.watch(dev, ['dev']);
-  gulp.watch(examples, ['examples']);
-});
-
-// ------------------------------------
-// development
-// ------------------------------------
-gulp.task('dev', function (){
-  browserify('./dev/index.js', {
-    transform: [reactify],
-    detectGlobals: true
-  })
-  .external('react')
-  .bundle()
-  .on('error', function (err) {
-    gutil.beep();
-    console.log(String(err));
-    this.end();
-  })
-  .pipe(source('dev/index.js'))
-  .pipe(rename('bundle.js'))
-  .pipe(header(banner, { pkg : pkg } ))
-  .pipe(gulp.dest('dev'));
-});
-
-// ------------------------------------
-// examples
+// builds the examples
 // ------------------------------------
 gulp.task('examples', function (){
 
@@ -89,7 +47,19 @@ gulp.task('examples', function (){
 });
 
 // ------------------------------------
-// lint task
+// watch
+// ------------------------------------
+var src = ['lib/**/*.js', 'lib/**/*.jsx'];
+var dev = src.concat('dev/**/*.js');
+var examples = src.concat('examples/**/*.jsx');
+
+gulp.task('watch', ['dev', 'examples'], function () {
+  gulp.watch(dev, ['dev']);
+  gulp.watch(examples, ['examples']);
+});
+
+// ------------------------------------
+// lint
 // ------------------------------------
 
 gulp.task('lint', function() {
@@ -97,3 +67,25 @@ gulp.task('lint', function() {
     .pipe(jshint())
     .pipe(jshint.reporter(stylish));
 });
+
+// ------------------------------------
+// development
+// ------------------------------------
+gulp.task('dev', function (){
+  browserify('./dev/index.js', {
+    transform: [reactify],
+    detectGlobals: true
+  })
+  .external('react')
+  .bundle()
+  .on('error', function (err) {
+    gutil.beep();
+    console.log(String(err));
+    this.end();
+  })
+  .pipe(source('dev/index.js'))
+  .pipe(rename('bundle.js'))
+  .pipe(gulp.dest('dev'));
+});
+
+

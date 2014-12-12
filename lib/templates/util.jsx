@@ -15,7 +15,7 @@ function getCheckbox(locals) {
   return <input
     type="checkbox"
     name={locals.name}
-    defaultChecked={locals.defaultValue}
+    defaultChecked={locals.value}
     ref={locals.ref}/>;
 }
 
@@ -50,7 +50,7 @@ function getTextbox(locals, className) {
 function getOption(option, i) {
   return theme.Option.is(option) ?
     <option value={option.value} key={option.value}>{option.text}</option> :
-    <optgroup label={option.group} key={option.group}>
+    <optgroup label={option.label} key={option.label}>
       {option.options.map(getOption)}
     </optgroup>
 }

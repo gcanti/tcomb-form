@@ -1,43 +1,17 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var t = require('../../.');
 
-var Country = t.enums({
-  IT: 'Italy',
-  US: 'United States'
-}, 'Country');
+var pre = document.getElementById('value');
 
-var Gender = t.enums({
-  M: 'Male',
-  F: 'Female'
-}, 'Gender');
+var Data = t.struct({
+  name: t.Str
+});
 
-var Registration = t.struct({
-  username: t.Str,
-  password: t.Str,
-  name: t.maybe(t.Str),
-  surname: t.maybe(t.Str),
-  rememberMe: t.Bool,
-  age: t.Num,
-  country: t.maybe(Country),
-  gender: t.maybe(Gender),
-  tags: t.list(t.Str)
-}, 'Registration');
-
-var Form = t.form.create(Registration, {
-  label: 'Registration',
-  auto: 'labels',
-  fields: {
-    password: {
-      type: 'password'
-    },
-    country: {
-      //nullOption: {value: '', text: 'Choose your country'}
-    },
-    gender: {
-      factory: t.form.radio
-    }
-  }
+// React form component
+var Form = t.form.create(Data, {
 });
 
 // rendering
@@ -47,7 +21,8 @@ var App = React.createClass({displayName: 'App',
     evt.preventDefault();
     var values = this.refs.form.getValue();
     if (values) {
-      document.getElementById('value').innerHTML = JSON.stringify(values, null, 2);
+      pre.style.display = 'block';
+      pre.innerHTML = JSON.stringify(values, null, 2);
     }
   },
 
@@ -56,7 +31,7 @@ var App = React.createClass({displayName: 'App',
       React.createElement("form", {onSubmit: this.onClick, className: "grid-form"}, 
         React.createElement(Form, {ref: "form"}), 
         React.createElement("div", {className: "form-group"}, 
-          React.createElement("input", {type: "submit", className: "btn btn-primary", value: "Save"})
+          React.createElement("input", {className: "btn btn-primary", type: "submit", value: "Save"})
         )
       )
     );
@@ -69,10 +44,10 @@ React.render(React.createElement(App, null), document.getElementById('app'));
 var t = require('./lib');
 
 // plug bootstrap style
-t.form.config.templates = require('./lib/templates/bootstrap.jsx');
+t.form.config.templates = require('./lib/templates/bootstrap');
 
 module.exports = t;
-},{"./lib":6,"./lib/templates/bootstrap.jsx":9}],3:[function(require,module,exports){
+},{"./lib":6,"./lib/templates/bootstrap":9}],3:[function(require,module,exports){
 'use strict';
 
 var api = require('./protocols/api');
@@ -133,7 +108,7 @@ function create(type, opts) {
 }
 
 module.exports = create;
-},{"./config":3,"./factories":5,"./protocols/api":7,"./util/getReport":14,"react":"react"}],5:[function(require,module,exports){
+},{"./config":3,"./factories":5,"./protocols/api":7,"./util/getReport":13,"react":"react"}],5:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -141,6 +116,8 @@ var t = require('tcomb-validation');
 var api = require('./protocols/api');
 var theme = require('./protocols/theme');
 var config = require('./config');
+var compile = require('uvdom/react').compile;
+
 var either = require('./util/either');
 var getError = require('./util/getError');
 var getOptionsOfEnum = require('./util/getOptionsOfEnum');
@@ -156,42 +133,6 @@ var ValidationResult = t.ValidationResult;
 var getKind = t.util.getKind;
 var getName = t.util.getName;
 var Context = api.Context;
-
-//
-// configuration
-//
-
-config.kinds = {
-  irriducible: function (type, opts) {
-    var name = getName(type);
-    if (t.Func.is(config.irriducibles[name])) {
-      return config.irriducibles[name](opts);
-    }
-    return textbox; // fallback on textbox
-  },
-  enums:    function () { return select; },
-  struct:   function () { return struct; },
-  list:     function () { return list; },
-  maybe:    function (type, opts) { return getFactory(type.meta.type, opts); },
-  subtype:  function (type, opts) { return getFactory(type.meta.type, opts); }
-};
-
-config.irriducibles = {
-  Bool: function () { return checkbox; }
-};
-
-config.transformers = {
-  Num: new api.Transformer({
-    format: function (value) {
-      return Nil.is(value) ? value : String(value);
-    },
-    parse: function (value) {
-      var n = parseFloat(value);
-      var isNumeric = (value - n + 1) >= 0;
-      return isNumeric ? n : value;
-    }
-  })
-};
 
 //
 // main function
@@ -281,7 +222,7 @@ function textbox(opts, ctx) {
         value = transformer.format(value);
       }
 
-      return template(new theme.Textbox({
+      return compile(template(new theme.Textbox({
         ref: REF,
         type: opts.type || 'text',
         name: name,
@@ -294,7 +235,7 @@ function textbox(opts, ctx) {
         value: value,
         error: getError(opts.error, this.state),
         config: merge(ctx.config, opts.config)
-      }));
+      })));
     }
   });
 }
@@ -311,7 +252,7 @@ function checkbox(opts, ctx) {
 
   var name = opts.name || ctx.getDefaultName();
 
-  var value = !!either(opts.value, ctx.value);
+  var value = !!either(opts.value, ctx.value === true);
 
   var template = opts.template || ctx.templates.checkbox;
 
@@ -341,7 +282,7 @@ function checkbox(opts, ctx) {
     },
 
     render: function () {
-      return template(new theme.Checkbox({
+      return compile(template(new theme.Checkbox({
         ref: REF,
         name: name,
         label: label,
@@ -351,7 +292,7 @@ function checkbox(opts, ctx) {
         value: this.state.value,
         error: getError(opts.error, this.state),
         config: merge(ctx.config, opts.config)
-      }));
+      })));
     }
   });
 }
@@ -434,7 +375,7 @@ function select(opts, ctx) {
     },
 
     render: function () {
-      return template(new theme.Select({
+      return compile(template(new theme.Select({
         ref: REF,
         name: name,
         label: label,
@@ -446,7 +387,7 @@ function select(opts, ctx) {
         error: getError(opts.error, this.state),
         multiple: multiple,
         config: merge(ctx.config, opts.config)
-      }));
+      })));
     }
   });
 }
@@ -511,7 +452,7 @@ function radio(opts, ctx) {
     },
 
     render: function () {
-      return template(new theme.Radio({
+      return compile(template(new theme.Radio({
         ref: REF,
         name: name,
         label: label,
@@ -521,7 +462,7 @@ function radio(opts, ctx) {
         value: this.state.value,
         error: getError(opts.error, this.state),
         config: merge(ctx.config, opts.config)
-      }));
+      })));
     }
   });
 }
@@ -564,7 +505,7 @@ function struct(opts, ctx) {
         auto:       auto,
         label:      humanize(prop),
         value:      value[prop],
-        config:     merge(config, propOpts.config)
+        config:     config
       }));
 
       components[prop] = Component;
@@ -619,7 +560,7 @@ function struct(opts, ctx) {
         }
       }
 
-      return templates.struct(new theme.Struct({
+      return compile(templates.struct(new theme.Struct({
         label: label,
         help: opts.help,
         order: order,
@@ -628,7 +569,7 @@ function struct(opts, ctx) {
         hasError: this.state.hasError,
         error: getError(opts.error, this.state),
         config: config
-      }));
+      })));
     }
   });
 }
@@ -665,7 +606,7 @@ function list(opts, ctx) {
       auto: auto,
       label: '#' + (i + 1),
       value: value,
-      config: merge(config, itemOpts.config)
+      config: config
     }));
   };
 
@@ -763,7 +704,7 @@ function list(opts, ctx) {
         };
       }.bind(this));
 
-      return templates.list(new theme.List({
+      return compile(templates.list(new theme.List({
         label: label,
         help: opts.help,
         add: opts.disableAdd ? null : {
@@ -775,10 +716,47 @@ function list(opts, ctx) {
         hasError: this.state.hasError,
         error: getError(opts.error, this.state),
         config: config
-      }));
+      })));
     }
   });
 }
+
+//
+// configuration
+//
+
+config.kinds = {
+  irriducible: function (type, opts) {
+    var name = getName(type);
+    if (t.Func.is(config.irriducibles[name])) {
+      return config.irriducibles[name](opts);
+    }
+    return textbox; // fallback on textbox
+  },
+  enums:    function () { return select; },
+  struct:   function () { return struct; },
+  list:     function () { return list; },
+  maybe:    function (type, opts) { return getFactory(type.meta.type, opts); },
+  subtype:  function (type, opts) { return getFactory(type.meta.type, opts); }
+};
+
+config.irriducibles = {
+  Bool: function () { return checkbox; }
+};
+
+config.transformers = {
+  Num: new api.Transformer({
+    format: function (value) {
+      return Nil.is(value) ? value : String(value);
+    },
+    parse: function (value) {
+      var n = parseFloat(value);
+      var isNumeric = (value - n + 1) >= 0;
+      return isNumeric ? n : value;
+    }
+  })
+};
+
 module.exports = {
   getFactory: getFactory,
   textbox:    textbox,
@@ -789,7 +767,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/either":11,"./util/getError":12,"./util/getOptionsOfEnum":13,"./util/getReport":14,"./util/humanize":15,"./util/merge":16,"./util/move":17,"./util/uuid":18,"react":"react","tcomb-validation":20}],6:[function(require,module,exports){
+},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":41}],6:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -801,7 +779,7 @@ t.form = t.util.mixin({
 }, factories);
 
 module.exports = t;
-},{"./config":3,"./create":4,"./factories":5,"tcomb-validation":20}],7:[function(require,module,exports){
+},{"./config":3,"./create":4,"./factories":5,"tcomb-validation":19}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -876,7 +854,7 @@ var ReactElement = t.irriducible('ReactElement', React.isValidElement);
 
 var Label = union([Str, ReactElement], 'Label');
 
-var Error = union([Label, Func], 'Error');
+var ErrorMessage = union([Label, Func], 'Error');
 
 var Option = t.struct({
   value: Str,
@@ -884,7 +862,7 @@ var Option = t.struct({
 }, 'Option');
 
 var OptGroup = t.struct({
-  group: Str,
+  label: Str,
   options: list(Option)
 }, 'OptGroup');
 
@@ -906,7 +884,7 @@ var Textbox = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   type: maybe(TypeAttr),
   name: maybe(t.Str),
   placeholder: maybe(Str),
@@ -922,7 +900,7 @@ var Checkbox = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   name: maybe(t.Str),
   value: maybe(Bool),
   disabled: maybe(Bool),
@@ -949,7 +927,7 @@ var Select = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   name: maybe(t.Str),
   value: maybe(Str),
   order: maybe(Order),
@@ -964,7 +942,7 @@ var Radio = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   name: maybe(t.Str),
   value: maybe(Str),
   order: maybe(Order),
@@ -980,7 +958,7 @@ var Struct = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   order: maybe(list(Label)),
   fields: maybe(Obj),
   templates: maybe(Templates),
@@ -994,7 +972,7 @@ var List = struct({
   label: maybe(Label),
   help: maybe(Label),
   hasError: maybe(Bool),
-  error: maybe(Error),
+  error: maybe(ErrorMessage),
   item: maybe(Obj),
   disableAdd: maybe(Bool),
   disableRemove: maybe(Bool),
@@ -1009,7 +987,7 @@ module.exports = {
   Context: Context,
   ReactElement: ReactElement,
   Label: Label,
-  Error: Error,
+  ErrorMessage: ErrorMessage,
   Option: Option,
   OptGroup: OptGroup,
   SelectOption: SelectOption,
@@ -1022,7 +1000,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":20}],8:[function(require,module,exports){
+},{"react":"react","tcomb-validation":19}],8:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1047,7 +1025,7 @@ var Option = struct({
 }, 'Option');
 
 var OptGroup = struct({
-  group: Str,
+  label: Str,
   options: list(Option)
 }, 'OptGroup');
 
@@ -1157,15 +1135,22 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":20}],9:[function(require,module,exports){
+},{"react":"react","tcomb-validation":19}],9:[function(require,module,exports){
 'use strict';
 
-var React = require('react');
 var t = require('tcomb-validation');
-var cx = require('react/lib/cx');
-var util = require('./util.jsx');
 var theme = require('../protocols/theme');
 var Label = theme.Label;
+var uform = require('uvdom-bootstrap/form');
+var getHelpBlock = uform.getHelpBlock;
+var getFieldset = uform.getFieldset;
+var getFormGroup = uform.getFormGroup;
+var getAddon = uform.getAddon;
+var getRow = uform.getRow;
+var getCol = uform.getCol;
+var getButton = uform.getButton;
+var getBreakpoints = uform.getBreakpoints;
+var getOffsets = uform.getOffsets;
 
 var Positive = t.subtype(t.Num, function (n) {
   return n % 1 === 0 && n >= 0;
@@ -1182,35 +1167,26 @@ var Breakpoints = t.struct({
   lg: t.maybe(Cols)
 }, 'Breakpoints');
 
-Breakpoints.prototype.getClassName = function (f) {
-  var className = {};
+Breakpoints.prototype.getBreakpoints = function (index) {
+  var breakpoints = {};
   for (var size in this) {
     if (this.hasOwnProperty(size) && !t.Nil.is(this[size])) {
-      f(className, size, this[size]);
+      breakpoints[size] = this[size][index];
     }
   }
-  return className;
+  return breakpoints;
 };
 
 Breakpoints.prototype.getLabelClassName = function () {
-  var className = this.getClassName(function (className, size, col) {
-    className['col-' + size + '-' + col[0]] = true;
-  });
-  className['text-right'] = true;
-  return className
+  return getBreakpoints(this.getBreakpoints(0));
 };
 
 Breakpoints.prototype.getInputClassName = function () {
-  return this.getClassName(function (className, size, col) {
-    className['col-' + size + '-' + col[1]] = true;
-  });
+  return getBreakpoints(this.getBreakpoints(1));
 };
 
 Breakpoints.prototype.getOffsetClassName = function () {
-  return this.getClassName(function (className, size, col) {
-    className['col-' + size + '-offset-' + col[0]] = true;
-    className['col-' + size + '-' + col[1]] = true;
-  });
+  return t.util.mixin(getOffsets(this.getBreakpoints(1)), getBreakpoints(this.getBreakpoints(1)));
 };
 
 var TextboxConfig = t.struct({
@@ -1233,202 +1209,258 @@ var RadioConfig = t.struct({
   horizontal: t.maybe(Breakpoints)
 }, 'RadioConfig');
 
+function getLabel(locals, horizontal) {
+  if (!locals.label) { return; }
+
+  var align = null;
+  var className = null;
+
+  if (horizontal) {
+    align = 'right';
+    className = horizontal.getLabelClassName();
+  }
+
+  return uform.getLabel({
+    label: locals.label,
+    align: align,
+    className: className
+  });
+}
+
+function getHelp(locals) {
+  if (!locals.help) { return; }
+
+  return getHelpBlock({
+    help: locals.help
+  });
+}
+
+function getError(locals) {
+  if (!locals.error) { return; }
+
+  return getHelpBlock({
+    help: locals.error,
+    hasError: locals.hasError
+  });
+}
+
 function textbox(locals) {
 
   if (locals.type === 'hidden') {
-    return util.getHiddenTextbox(locals);
+    return {
+      tag: 'input',
+      attrs: {
+        type: 'hidden',
+        name: locals.name,
+        defaultValue: locals.value,
+        ref: locals.ref
+      }
+    };
   }
 
-  var textbox = util.getTextbox(locals, 'form-control');
+  var control = uform.getTextbox({
+    type: locals.type,
+    defaultValue: locals.value,
+    name: locals.name,
+    disabled: locals.disabled,
+    readOnly: locals.readOnly,
+    placeholder: locals.placeholder,
+    ref: locals.ref
+  });
+
   var config = new TextboxConfig(locals.config || {});
 
   // handle addonBefore / addonAfter
   if (config.addonBefore || config.addonAfter) {
-    textbox = (
-      React.createElement("div", {className: "input-group"}, 
-        getAddon(config.addonBefore), 
-        textbox, 
-        getAddon(config.addonAfter)
-      )
-    );
+    control = uform.getInputGroup([
+      config.addonBefore ? getAddon(config.addonBefore) : null,
+      control,
+      config.addonAfter ? getAddon(config.addonAfter) : null
+    ]);
   }
 
   var horizontal = config.horizontal;
   var label = getLabel(locals, horizontal);
-  var error = getErrorBlock(locals);
-  var help = getHelpBlock(locals);
-  var groupClassName = {
-    'form-group': true,
-    'has-error': locals.hasError
-  };
+  var error = getError(locals);
+  var help = getHelp(locals);
+  var children;
 
   if (horizontal) {
-    return (
-      React.createElement("div", {className: cx(groupClassName)}, 
-        label, 
-        React.createElement("div", {className: cx(label ? horizontal.getInputClassName() : horizontal.getOffsetClassName())}, 
-          textbox, 
-          error, 
+    children = [
+      label,
+      {
+        tag: 'div',
+        attrs: {
+          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
+        },
+        children: [
+          control,
+          error,
           help
-        )
-      )
-    );
+        ]
+      }
+    ];
+  } else {
+    children = [
+      label,
+      control,
+      error,
+      help
+    ];
   }
 
-  return (
-    React.createElement("div", {className: cx(groupClassName)}, 
-      label, 
-      textbox, 
-      error, 
-      help
-    )
-  );
+  return getFormGroup({
+    hasError: locals.hasError,
+    children: children
+  });
 }
 
 function checkbox(locals) {
 
   var config = new CheckboxConfig(locals.config || {});
-  var error = getErrorBlock(locals);
-  var help = getHelpBlock(locals);
 
-  var checkbox = (
-    React.createElement("label", null, 
-      util.getCheckbox(locals), " ", React.createElement("span", null, locals.label)
-    )
-  );
+  var control = uform.getCheckbox({
+    name: locals.name,
+    defaultChecked: locals.value,
+    ref: locals.ref,
+    label: locals.label
+  });
 
-  var groupClassName = {
-    'form-group': true,
-    'has-error': locals.hasError
+  var error = getError(locals);
+  var help = getHelp(locals);
+  var children = {
+    tag: 'div',
+    attrs: {
+      className: {
+        'checkbox': true
+      }
+    },
+    children: [
+      control,
+      error,
+      help
+    ]
   };
 
   var horizontal = config.horizontal;
   if (horizontal) {
-    return (
-      React.createElement("div", {className: cx(groupClassName)}, 
-        React.createElement("div", {className: cx(horizontal.getOffsetClassName())}, 
-          React.createElement("div", {className: "checkbox"}, 
-            checkbox, 
-            error, 
-            help
-          )
-        )
-      )
-    );
+    children = {
+      tag: 'div',
+      attrs: {
+        className: horizontal.getOffsetClassName()
+      },
+      children: children
+    };
   }
 
-  return (
-    React.createElement("div", {className: cx(groupClassName)}, 
-      React.createElement("div", {className: "checkbox"}, 
-        checkbox, 
-        error, 
-        help
-      )
-    )
-  );
+  return getFormGroup({
+    hasError: locals.hasError,
+    children: children
+  });
+
 }
 
 function select(locals) {
 
   var config = new SelectConfig(locals.config || {});
 
-  var select = util.getSelect(locals, 'form-control');
+  var options = locals.options.map(function (x) {
+    return theme.Option.is(x) ? uform.getOption(x) : uform.getOptGroup(x);
+  });
 
-  // handle addonBefore / addonAfter
-  if (config.addonBefore || config.addonAfter) {
-    select = (
-      React.createElement("div", {className: "input-group"}, 
-        getAddon(config.addonBefore), 
-        select, 
-        getAddon(config.addonAfter)
-      )
-    );
-  }
-
+  var control = uform.getSelect({
+    name: locals.name,
+    defaultValue: locals.value,
+    disabled: locals.disabled,
+    ref: locals.ref,
+    options: options
+  });
   var horizontal = config.horizontal;
   var label = getLabel(locals, horizontal);
-  var error = getErrorBlock(locals);
-  var help = getHelpBlock(locals);
-  var groupClassName = {
-    'form-group': true,
-    'has-error': locals.hasError
-  };
+  var error = getError(locals);
+  var help = getHelp(locals);
+  var children;
 
   if (horizontal) {
-    return (
-      React.createElement("div", {className: cx(groupClassName)}, 
-        label, 
-        React.createElement("div", {className: cx(label ? horizontal.getInputClassName() : horizontal.getOffsetClassName())}, 
-          select, 
-          error, 
+    children = [
+      label,
+      {
+        tag: 'div',
+        attrs: {
+          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
+        },
+        children: [
+          control,
+          error,
           help
-        )
-      )
-    );
+        ]
+      }
+    ];
+  } else {
+    children = [
+      label,
+      control,
+      error,
+      help
+    ];
   }
 
-  return (
-    React.createElement("div", {className: cx(groupClassName)}, 
-      label, 
-      select, 
-      error, 
-      help
-    )
-  );
+  return getFormGroup({
+    hasError: locals.hasError,
+    children: children
+  });
+
 }
 
 function radio(locals) {
 
   var config = new RadioConfig(locals.config || {});
 
-  var radios = locals.options.map(function (option, i) {
-    return (
-      React.createElement("div", {className: "radio", key: option.value}, 
-        React.createElement("label", null, 
-          
-            util.getRadio({
-              name: locals.name,
-              value: option.value,
-              defaultChecked: (option.value === locals.value),
-              ref: locals.ref + i
-            }), 
-          
-          option.text
-        )
-      )
-    );
+  var control = locals.options.map(function (option, i) {
+    return uform.getRadio({
+      name: locals.name,
+      value: option.value,
+      label: option.text,
+      defaultChecked: (option.value === locals.value),
+      ref: locals.ref + i
+    });
   });
 
   var horizontal = config.horizontal;
   var label = getLabel(locals, horizontal);
-  var error = getErrorBlock(locals);
-  var help = getHelpBlock(locals);
-  var groupClassName = {
-    'form-group': true,
-    'has-error': locals.hasError
-  };
+  var error = getError(locals);
+  var help = getHelp(locals);
+  var children;
 
   if (horizontal) {
-    return (
-      React.createElement("div", {className: cx(groupClassName)}, 
-        label, 
-        React.createElement("div", {className: cx(label ? horizontal.getInputClassName() : horizontal.getOffsetClassName())}, 
-          radios, 
-          error, 
+    children = [
+      label,
+      {
+        tag: 'div',
+        attrs: {
+          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
+        },
+        children: [
+          control,
+          error,
           help
-        )
-      )
-    );
+        ]
+      }
+    ];
+  } else {
+    children = [
+      label,
+      control,
+      error,
+      help
+    ];
   }
 
-  return (
-    React.createElement("div", {className: cx(groupClassName)}, 
-      label, 
-      radios, 
-      error, 
-      help
-    )
-  );
+  return getFormGroup({
+    hasError: locals.hasError,
+    children: children
+  });
+
 }
 
 function struct(locals) {
@@ -1440,127 +1472,62 @@ function struct(locals) {
       name;
   });
 
-  var legend = null;
-  if (locals.label) {
-    legend = React.createElement("legend", null, locals.label);
-  }
-
-  var className = {
-    'has-error': locals.hasError
-  };
-
-  return (
-    React.createElement("fieldset", {className: cx(className)}, 
-      legend, 
-      rows, 
-      getErrorBlock(locals), 
-      getHelpBlock(locals)
-    )
-  );
+  return getFieldset({
+    label: locals.label,
+    children: [
+      rows,
+      getError(locals),
+      getHelp(locals)
+    ]
+  });
 }
 
 function list(locals) {
 
-  var items = locals.items.map(function (item, i) {
+  var items = locals.items.map(function (item) {
+
     if (!item.buttons.length) {
-      return (
-        React.createElement("div", {className: "row", key: item.key}, 
-          React.createElement("div", {className: "col-md-12"}, 
-            item.input
-          )
-        )
-      );
+      return getRow({
+        key: item.key,
+        children: getCol({
+          breakpoints: {md: 12},
+          children: item.input
+        })
+      });
     }
-    return (
-      React.createElement("div", {className: "row", key: item.key}, 
-        React.createElement("div", {className: "col-md-8"}, 
-          item.input
-        ), 
-        React.createElement("div", {className: "col-md-4"}, 
-          React.createElement("div", {className: "btn-group"}, 
-            
-              item.buttons.map(function (button, i) {
-                return (
-                  React.createElement("button", {className: "btn btn-default", onClick: button.click, key: i}, button.label)
-                );
-              })
-            
-          )
-        )
-      )
-    );
+
+    return getRow({
+      key: item.key,
+      children: [
+        getCol({
+          breakpoints: {md: 6},
+          children: item.input
+        }),
+        getCol({
+          breakpoints: {md: 6},
+          children: uform.getButtonGroup(item.buttons.map(function (button, i) {
+            return getButton({
+              click: button.click,
+              key: i,
+              label: button.label
+            });
+          }))
+        })
+      ]
+    });
   });
 
-  var legend = null;
-  if (locals.label) {
-    legend = React.createElement("legend", null, locals.label);
-  }
-
-  var addButton = null;
   if (locals.add) {
-    addButton = (
-      React.createElement("div", {className: "form-group"}, 
-        React.createElement("button", {className: "btn btn-default", onClick: locals.add.click}, locals.add.label)
-      )
-    );
+    items.push(getFormGroup({
+      children: getButton(locals.add)
+    }));
   }
 
-  var className = {
-    'has-error': locals.hasError
-  };
-
-  return (
-    React.createElement("fieldset", {className: cx(className)}, 
-      legend, 
-      items, 
-      addButton, 
-      getErrorBlock(locals), 
-      getHelpBlock(locals)
-    )
-  );
-
-}
-
-//
-// helpers
-//
-
-function getLabel(locals, breakpoints) {
-  if (!locals.label) { return; }
-  var className = breakpoints ? breakpoints.getLabelClassName() : {};
-  className['control-label'] = true;
-  return (
-    React.createElement("label", {className: cx(className)}, 
-      locals.label
-    )
-  );
-}
-
-function getHelpBlock(locals) {
-  if (!locals.help) { return; }
-  return (
-    React.createElement("span", {className: "help-block"}, 
-      locals.help
-    )
-  );
-}
-
-function getErrorBlock(locals) {
-  if (!locals.error || !locals.hasError) { return; }
-  return (
-    React.createElement("span", {className: "help-block error-block"}, 
-      locals.error
-    )
-  );
-}
-
-function getAddon(addon) {
-  if (!addon) { return; }
-  return (
-    React.createElement("span", {className: "input-group-addon"}, 
-      addon
-    )
-  );
+  return getFieldset({
+    legend: locals.label,
+    hasError: locals.hasError,
+    children: items
+  });
 }
 
 module.exports = {
@@ -1571,87 +1538,7 @@ module.exports = {
   struct: struct,
   list: list
 };
-},{"../protocols/theme":8,"./util.jsx":10,"react":"react","react/lib/cx":19,"tcomb-validation":20}],10:[function(require,module,exports){
-'use strict';
-
-var React = require('react');
-var theme = require('../protocols/theme');
-
-function getRadio(locals) {
-  return React.createElement("input", {type: "radio", 
-    name: locals.name, 
-    value: locals.value, 
-    defaultChecked: locals.defaultChecked, 
-    ref: locals.ref});
-}
-
-function getCheckbox(locals) {
-  return React.createElement("input", {
-    type: "checkbox", 
-    name: locals.name, 
-    defaultChecked: locals.defaultValue, 
-    ref: locals.ref});
-}
-
-function getHiddenTextbox(locals) {
-  return React.createElement("input", {
-    type: "hidden", 
-    name: locals.name, 
-    defaultValue: locals.value, 
-    ref: locals.ref});
-}
-
-function getTextbox(locals, className) {
-
-  var type = locals.type;
-
-  var attrs = {
-    name: locals.name,
-    type: (type === 'textarea') ? null : type,
-    placeholder: locals.placeholder,
-    className: className,
-    defaultValue: locals.value,
-    readOnly: locals.readOnly,
-    disabled: locals.disabled,
-    ref: locals.ref
-  };
-
-  return (type === 'textbox') ?
-    React.createElement('textarea', attrs) :
-    React.createElement('input', attrs);
-}
-
-function getOption(option, i) {
-  return theme.Option.is(option) ?
-    React.createElement("option", {value: option.value, key: option.value}, option.text) :
-    React.createElement("optgroup", {label: option.group, key: option.group}, 
-      option.options.map(getOption)
-    )
-}
-
-function getSelect(locals, className) {
-  return (
-    React.createElement("select", {name: locals.name, 
-      className: className, 
-      defaultValue: locals.value, 
-      disabled: locals.disabled, 
-      multiple: locals.multiple, 
-      ref: locals.ref}, 
-      locals.options.map(getOption)
-    )
-  );
-}
-
-module.exports = {
-  getRadio: getRadio,
-  getCheckbox: getCheckbox,
-  getHiddenTextbox: getHiddenTextbox,
-  getTextbox: getTextbox,
-  getOption: getOption,
-  getSelect: getSelect
-};
-
-},{"../protocols/theme":8,"react":"react"}],11:[function(require,module,exports){
+},{"../protocols/theme":8,"tcomb-validation":19,"uvdom-bootstrap/form":21}],10:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1661,7 +1548,7 @@ function either(a, b) {
 }
 
 module.exports = either;
-},{"tcomb-validation":20}],12:[function(require,module,exports){
+},{"tcomb-validation":19}],11:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1672,7 +1559,7 @@ function getError(error, state) {
 }
 
 module.exports = getError;
-},{"tcomb-validation":20}],13:[function(require,module,exports){
+},{"tcomb-validation":19}],12:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -1686,7 +1573,7 @@ function getOptionsOfEnum(type) {
 }
 
 module.exports = getOptionsOfEnum;
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1723,7 +1610,7 @@ function getReport(type) {
 }
 
 module.exports = getReport;
-},{"tcomb-validation":20}],15:[function(require,module,exports){
+},{"tcomb-validation":19}],14:[function(require,module,exports){
 'use strict';
 
 // thanks to https://github.com/epeli/underscore.string
@@ -1741,7 +1628,7 @@ function humanize(s){
 }
 
 module.exports = humanize;
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1752,7 +1639,7 @@ function merge(a, b) {
 }
 
 module.exports = merge;
-},{"tcomb-validation":20}],17:[function(require,module,exports){
+},{"tcomb-validation":19}],16:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -1761,18 +1648,18 @@ function move(arr, fromIndex, toIndex) {
 }
 
 module.exports = move;
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    var r = Math.random()*16|0, v = (c === 'x') ? r : (r&0x3|0x8);
     return v.toString(16);
   });
 }
 
 module.exports = uuid;
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -1811,7 +1698,7 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -2030,7 +1917,7 @@ module.exports = cx;
 
 }));
 
-},{"tcomb":21}],21:[function(require,module,exports){
+},{"tcomb":20}],20:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -2939,4 +2826,625 @@ module.exports = cx;
   };
 }));
 
-},{}]},{},[1]);
+},{}],21:[function(require,module,exports){
+module.exports = {
+  getAddon: require('./lib/getAddon'),
+  getBreakpoints: require('./lib/getBreakpoints'),
+  getButton: require('./lib/getButton'),
+  getButtonGroup: require('./lib/getButtonGroup'),
+  getCheckbox: require('./lib/getCheckbox'),
+  getCol: require('./lib/getCol'),
+  getFieldset: require('./lib/getFieldset'),
+  getFormGroup: require('./lib/getFormGroup'),
+  getHelpBlock: require('./lib/getHelpBlock'),
+  getInputGroup: require('./lib/getInputGroup'),
+  getLabel: require('./lib/getLabel'),
+  getOffsets: require('./lib/getOffsets'),
+  getOptGroup: require('./lib/getOptGroup'),
+  getOption: require('./lib/getOption'),
+  getRadio: require('./lib/getRadio'),
+  getRow: require('./lib/getRow'),
+  getSelect: require('./lib/getSelect'),
+  getTextbox: require('./lib/getTextbox')
+};
+},{"./lib/getAddon":22,"./lib/getBreakpoints":23,"./lib/getButton":24,"./lib/getButtonGroup":25,"./lib/getCheckbox":26,"./lib/getCol":27,"./lib/getFieldset":28,"./lib/getFormGroup":29,"./lib/getHelpBlock":30,"./lib/getInputGroup":31,"./lib/getLabel":32,"./lib/getOffsets":33,"./lib/getOptGroup":34,"./lib/getOption":35,"./lib/getRadio":36,"./lib/getRow":37,"./lib/getSelect":38,"./lib/getTextbox":39}],22:[function(require,module,exports){
+'use strict';
+
+function getAddon(addon) {
+  return {
+    tag: 'span',
+    attrs: {
+      className: {
+        'input-group-addon': true
+      }
+    },
+    children: addon
+  };
+}
+
+module.exports = getAddon;
+},{}],23:[function(require,module,exports){
+'use strict';
+
+function getBreakpoints(breakpoints) {
+  var className = {};
+  for (var size in breakpoints) {
+    if (breakpoints.hasOwnProperty(size)) {
+      className['col-' + size + '-' + breakpoints[size]] = true;
+    }
+  }
+  return className;
+}
+
+module.exports = getBreakpoints;
+},{}],24:[function(require,module,exports){
+'use strict';
+
+/*
+
+  Example:
+
+  {
+    type: 'primary',
+    block: true,
+    active: true,
+    size: 'lg',
+    disabled: true
+  }
+
+*/
+
+function getButton(opts) {
+
+  var type = opts.type || 'default';
+
+  var className = {
+    'btn': true,
+    'btn-block': opts.block,
+    'active': opts.active
+  };
+  className['btn-' + type] = true;
+  if (opts.size) {
+    className['btn-' + opts.size] = true;
+  }
+
+  return {
+    tag: 'button',
+    attrs: {
+      disabled: opts.disabled,
+      className: className
+    },
+    events: {
+      click: opts.click
+    },
+    children: opts.label,
+    key: opts.key
+  }
+}
+
+module.exports = getButton;
+
+},{}],25:[function(require,module,exports){
+'use strict';
+
+function getButtonGroup(buttons) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'btn-group': true
+      }
+    },
+    children: buttons
+  };
+};
+
+module.exports = getButtonGroup;
+
+
+},{}],26:[function(require,module,exports){
+'use strict';
+
+/*
+
+  Example:
+
+  {
+    label: 'Remember me',
+    defaultChecked: true,
+    checked: true,
+    name: 'rememberMe',
+    disabled: false,
+    ref: 'input'
+  }
+
+*/
+
+function getCheckbox(opts) {
+
+  return {
+    tag: 'label',
+    children: [
+      {
+        tag: 'input',
+        attrs: {
+          type: 'checkbox',
+          defaultChecked: opts.defaultChecked,
+          checked: opts.checked,
+          name: opts.name,
+          disabled: opts.disabled,
+          value: 'true'
+        },
+        ref: opts.ref
+      },
+      ' ',
+      opts.label
+    ]
+  };
+}
+
+module.exports = getCheckbox;
+},{}],27:[function(require,module,exports){
+'use strict';
+
+var getBreakpoints = require('./getBreakpoints');
+
+function getCol(opts) {
+
+  var className = null;
+  if (opts.breakpoints) {
+    className = getBreakpoints(opts.breakpoints);
+  }
+
+  return {
+    tag: 'div',
+    attrs: {
+      className: className
+    },
+    children: opts.children
+  };
+}
+
+module.exports = getCol;
+},{"./getBreakpoints":23}],28:[function(require,module,exports){
+'use strict';
+
+function getFieldset(opts) {
+  var children = opts.children.slice();
+  if (opts.legend) {
+    children.unshift({
+      tag: 'legend',
+      children: opts.legend
+    });
+  }
+  return {
+    tag: 'fieldset',
+    attrs: {
+      className: {
+        'has-error': opts.hasError
+      }
+    },
+    children: children
+  };
+};
+
+module.exports = getFieldset;
+
+
+},{}],29:[function(require,module,exports){
+'use strict';
+
+function getFormGroup(opts) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'form-group': true,
+        'has-error': opts.hasError
+      }
+    },
+    children: opts.children
+  };
+}
+
+module.exports = getFormGroup;
+},{}],30:[function(require,module,exports){
+'use strict';
+
+/*
+
+  Example:
+
+  {
+    help: 'my help',
+    hasError: true
+  }
+
+*/
+
+function getHelpBlock(opts) {
+  return {
+    tag: 'span',
+    attrs: {
+      className: {
+        'help-block': true,
+        'error-block': opts.hasError
+      }
+    },
+    children: opts.help
+  };
+}
+
+module.exports = getHelpBlock;
+
+
+},{}],31:[function(require,module,exports){
+'use strict';
+
+function getInputGroup(children) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'input-group': true
+      }
+    },
+    children: children
+  };
+}
+
+module.exports = getInputGroup;
+},{}],32:[function(require,module,exports){
+'use strict';
+
+var mixin = require('./mixin');
+
+/*
+
+  Example:
+
+  {
+    label: 'my label',
+    for: 'inputId',
+    srOnly: false,
+    breakpoints: {
+      lg: 8
+    },
+    align: 'right'
+  }
+
+*/
+
+function getLabel(opts) {
+
+  var className = {
+    'control-label': true,
+    'sr-only': opts.srOnly
+  };
+  if (opts.align) {
+    className['text-' + opts.align] = true;
+  }
+  if (opts.className) {
+    mixin(className, opts.className);
+  }
+
+  return {
+    tag: 'label',
+    attrs: {
+      for: opts.for,
+      className: className
+    },
+    children: opts.label
+  };
+}
+
+module.exports = getLabel;
+
+
+},{"./mixin":40}],33:[function(require,module,exports){
+'use strict';
+
+function getOffsets(breakpoints) {
+  var className = {};
+  for (var size in breakpoints) {
+    if (breakpoints.hasOwnProperty(size)) {
+      className['col-' + size + '-offset-' + (12 - breakpoints[size])] = true;
+    }
+  }
+  return className;
+}
+
+module.exports = getOffsets;
+},{}],34:[function(require,module,exports){
+'use strict';
+
+var getOption = require('./getOption');
+
+/*
+
+  Example:
+
+  {
+    label: 'group1',
+    options: [
+      {value: 'value1', text: 'description1'},
+      {value: 'value3', text: 'description3'}
+    ]
+  }
+
+*/
+
+function getOptGroup(opts) {
+  return {
+    tag: 'optgroup',
+    attrs: {
+      label: opts.label
+    },
+    children: opts.options.map(getOption),
+    key: opts.label
+  };
+};
+
+module.exports = getOptGroup;
+
+
+},{"./getOption":35}],35:[function(require,module,exports){
+'use strict';
+
+/*
+
+  Example:
+
+  {
+    value: '1',
+    text: 'option 1'
+  }
+
+*/
+
+function getOption(opts) {
+  return {
+    tag: 'option',
+    attrs: {
+      value: opts.value
+    },
+    children: opts.text,
+    key: opts.value
+  };
+};
+
+module.exports = getOption;
+
+
+},{}],36:[function(require,module,exports){
+'use strict';
+
+/*
+
+  Example:
+
+  {
+    label: 'Option',
+    defaultChecked: true,
+    checked: true,
+    value: '1',
+    name: 'option',
+    disabled: false,
+    ref: 'input'
+  }
+
+*/
+
+function getRadio(opts) {
+
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'radio': true
+      }
+    },
+    children: {
+      tag: 'label',
+      children: [
+        {
+          tag: 'input',
+          attrs: {
+            type: 'radio',
+            value: opts.value,
+            name: opts.name,
+            defaultChecked: opts.defaultChecked,
+            checked: opts.checked,
+            disabled: opts.disabled
+          },
+          ref: opts.ref
+        },
+        ' ',
+        opts.label
+      ]
+    },
+    key: opts.value
+  };
+}
+
+module.exports = getRadio;
+},{}],37:[function(require,module,exports){
+'use strict';
+
+function getRow(opts) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'row': true
+      }
+    },
+    children: opts.children,
+    key: opts.key
+  };
+}
+
+module.exports = getRow;
+},{}],38:[function(require,module,exports){
+'use strict';
+
+/*
+
+  Example:
+
+  {
+    defaultValue: 'hello',
+    value: 'hello',
+    name: 'myname',
+    disabled: false,
+    ref: 'input'
+  }
+
+*/
+
+function getSelect(opts) {
+
+  return {
+    tag: 'select',
+    attrs: {
+      name: opts.name,
+      defaultValue: opts.defaultValue,
+      value: opts.value,
+      disabled: opts.disabled,
+      className: {
+        'form-control': true
+      }
+    },
+    children: opts.options,
+    ref: opts.ref
+  };
+}
+
+module.exports = getSelect;
+},{}],39:[function(require,module,exports){
+'use strict';
+
+/*
+
+  Example:
+
+  {
+    type: 'password',
+    defaultValue: 'hello',
+    value: 'hello',
+    name: 'myname',
+    disabled: false,
+    placeholder: 'insert your name',
+    readOnly: true,
+    ref: 'input'
+  }
+
+*/
+
+function getTextbox(opts) {
+
+  var type = opts.type || 'text';
+
+  return {
+    tag: type === 'textarea' ? 'textarea' : 'input',
+    attrs: {
+      type: type === 'textarea' ? null : type,
+      name: opts.name,
+      defaultValue: opts.defaultValue,
+      value: opts.value,
+      disabled: opts.disabled,
+      placeholder: opts.placeholder,
+      readOnly: opts.readOnly,
+      className: {
+        'form-control': true
+      }
+    },
+    ref: opts.ref
+  };
+}
+
+module.exports = getTextbox;
+},{}],40:[function(require,module,exports){
+'use strict';
+
+function mixin(a, b) {
+  if (!b) { return a; }
+  for (var k in b) {
+    if (b.hasOwnProperty(k)) {
+      a[k] = b[k];
+    }
+  }
+  return a;
+}
+
+module.exports = mixin;
+},{}],41:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var cx = require('react/lib/cx');
+
+// compile: x -> ReactElement
+function compile(x) {
+
+  // with host elements, compile behaves like the identity
+  if (React.isValidElement(x)) {
+    return x;
+  }
+
+  if (Array.isArray(x)) {
+    return x.map(compile);
+  }
+
+  if (typeof x === 'object' && x !== null) {
+
+    // attrs
+    var attrs = mixin({}, x.attrs);
+    if (attrs.className) {
+      attrs.className = cx(attrs.className) || null; // avoid class=""
+    }
+    if (x.key != null) { attrs.key = x.key; }
+    if (x.ref != null) { attrs.ref = x.ref; }
+
+    // events
+    if (x.events) {
+      for (var name in x.events) {
+        attrs[camelizeEvent(name)] = x.events[name];
+      }
+    }
+
+    // children
+    var children = compile(x.children);
+
+    // build ReactElement
+    return React.createElement.apply(React, [x.tag, attrs].concat(children));
+  }
+
+  return x;
+}
+
+//
+// helpers
+//
+
+// transforms an event name to a React event name
+// click -> onClick
+// blur -> onBlur
+function camelizeEvent(name) {
+  return 'on' + name.charAt(0).toUpperCase() + name.substring(1);
+}
+
+function mixin(x, y) {
+  if (!y) { return x; }
+  for (var k in y) {
+    if (y.hasOwnProperty(k)) {
+      x[k] = y[k];
+    }
+  }
+  return x;
+}
+
+module.exports = {
+  compile: compile
+};
+},{"react":"react","react/lib/cx":18}]},{},[1]);

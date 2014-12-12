@@ -18,6 +18,7 @@ v0.3.0
 - horizontal forms must be handled by the style: no more `breakpoints` option but a single `horizontal` boolean option
 - no more `height` option
 - custom input now must be functions with signature: `(opts, ctx) -> React Class`
+- optgroup has now a `label` property instead of `group`
 
 v0.2.3
 
