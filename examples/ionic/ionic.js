@@ -1,10 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-'use strict';
-
 var React = require('react');
-var t = require('../../.');
+var t = require('../../lib');
 
-var pre = document.getElementById('value');
+// configure ionic plugin
+t.form.config.templates = require('../../lib/templates/ionic');
 
 var Data = t.struct({
   firstName: t.Str,
@@ -13,25 +12,30 @@ var Data = t.struct({
 });
 
 var Form = t.form.create(Data, {
+  auto: 'labels'
 });
 
 var App = React.createClass({displayName: 'App',
 
   onClick: function(evt) {
     evt.preventDefault();
-    var values = this.refs.form.getValue();
-    if (values) {
-      pre.style.display = 'block';
-      pre.innerHTML = JSON.stringify(values, null, 2);
+    var value = this.refs.form.getValue();
+    if (value) {
+      document.getElementById('value').innerHTML = JSON.stringify(value, null, 2);
     }
   },
 
   render: function() {
     return (
-      React.createElement("form", {onSubmit: this.onClick, className: "grid-form"}, 
-        React.createElement(Form, {ref: "form"}), 
-        React.createElement("div", {className: "form-group"}, 
-          React.createElement("input", {className: "btn btn-primary", type: "submit", value: "Submit"})
+      React.createElement("div", null, 
+        React.createElement("div", {className: "bar bar-header"}, 
+          React.createElement("h1", {className: "title"}, "Sign up")
+        ), 
+        React.createElement("div", {className: "content has-header"}, 
+          React.createElement(Form, {ref: "form"}), 
+          React.createElement("div", {className: "padding"}, 
+            React.createElement("button", {onClick: this.onClick, className: "button button-block button-positive"}, "Create Account")
+          )
         )
       )
     );
@@ -39,15 +43,7 @@ var App = React.createClass({displayName: 'App',
 });
 
 React.render(React.createElement(App, null), document.getElementById('app'));
-
-},{"../../.":2,"react":"react"}],2:[function(require,module,exports){
-var t = require('./lib');
-
-// plug bootstrap style
-t.form.config.templates = require('./lib/templates/bootstrap');
-
-module.exports = t;
-},{"./lib":6,"./lib/templates/bootstrap":9}],3:[function(require,module,exports){
+},{"../../lib":5,"../../lib/templates/ionic":8,"react":"react"}],2:[function(require,module,exports){
 'use strict';
 
 var api = require('./protocols/api');
@@ -63,7 +59,7 @@ var i18n = new api.I18n({
 module.exports = {
   i18n: i18n
 };
-},{"./protocols/api":7}],4:[function(require,module,exports){
+},{"./protocols/api":6}],3:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -108,7 +104,7 @@ function create(type, opts) {
 }
 
 module.exports = create;
-},{"./config":3,"./factories":5,"./protocols/api":7,"./util/getReport":13,"react":"react"}],5:[function(require,module,exports){
+},{"./config":2,"./factories":4,"./protocols/api":6,"./util/getReport":12,"react":"react"}],4:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -769,7 +765,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":43}],6:[function(require,module,exports){
+},{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/either":9,"./util/getError":10,"./util/getOptionsOfEnum":11,"./util/getReport":12,"./util/humanize":13,"./util/merge":14,"./util/move":15,"./util/uuid":16,"react":"react","tcomb-validation":18,"uvdom/react":20}],5:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -781,7 +777,7 @@ t.form = t.util.mixin({
 }, factories);
 
 module.exports = t;
-},{"./config":3,"./create":4,"./factories":5,"tcomb-validation":19}],7:[function(require,module,exports){
+},{"./config":2,"./create":3,"./factories":4,"tcomb-validation":18}],6:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1007,7 +1003,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":19}],8:[function(require,module,exports){
+},{"react":"react","tcomb-validation":18}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1147,433 +1143,84 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":19}],9:[function(require,module,exports){
+},{"react":"react","tcomb-validation":18}],8:[function(require,module,exports){
 'use strict';
 
-var t = require('tcomb-validation');
-var theme = require('../protocols/theme');
-var Label = theme.Label;
-var uform = require('uvdom-bootstrap/form');
-var maybe = t.maybe;
-var getHelpBlock = uform.getHelpBlock;
-var getFieldset = uform.getFieldset;
-var getFormGroup = uform.getFormGroup;
-var getAddon = uform.getAddon;
-var getButton = uform.getButton;
-var getCol = uform.getCol;
-var getAlert = uform.getAlert;
-var getBreakpoints = uform.getBreakpoints;
+//==================
+// WORK IN PROGRESS
+//==================
 
-var Positive = t.subtype(t.Num, function (n) {
-  return n % 1 === 0 && n >= 0;
-}, 'Positive');
-
-var Cols = t.subtype(t.tuple([Positive, Positive]), function (cols) {
-  return cols[0] + cols[1] === 12;
-}, 'Cols');
-
-var Breakpoints = t.struct({
-  xs: maybe(Cols),
-  sm: maybe(Cols),
-  md: maybe(Cols),
-  lg: maybe(Cols)
-}, 'Breakpoints');
-
-Breakpoints.prototype.getBreakpoints = function (index) {
-  var breakpoints = {};
-  for (var size in this) {
-    if (this.hasOwnProperty(size) && !t.Nil.is(this[size])) {
-      breakpoints[size] = this[size][index];
-    }
-  }
-  return breakpoints;
-};
-
-Breakpoints.prototype.getLabelClassName = function () {
-  return getBreakpoints(this.getBreakpoints(0));
-};
-
-Breakpoints.prototype.getInputClassName = function () {
-  return getBreakpoints(this.getBreakpoints(1));
-};
-
-Breakpoints.prototype.getOffsetClassName = function () {
-  return t.util.mixin(uform.getOffsets(this.getBreakpoints(1)), getBreakpoints(this.getBreakpoints(1)));
-};
-
-Breakpoints.prototype.getFieldsetClassName = function () {
+function getLabel(label) {
+  if (!label) { return; }
   return {
-    'col-xs-12': true
-  };
-};
-
-var TextboxConfig = t.struct({
-  addonBefore: maybe(Label),
-  addonAfter: maybe(Label),
-  horizontal: maybe(Breakpoints)
-}, 'TextboxConfig');
-
-var CheckboxConfig = t.struct({
-  horizontal: maybe(Breakpoints)
-}, 'CheckboxConfig');
-
-var SelectConfig = t.struct({
-  addonBefore: maybe(Label),
-  addonAfter: maybe(Label),
-  horizontal: maybe(Breakpoints)
-}, 'SelectConfig');
-
-var RadioConfig = t.struct({
-  horizontal: maybe(Breakpoints)
-}, 'RadioConfig');
-
-var StructConfig = t.struct({
-  horizontal: maybe(Breakpoints)
-}, 'StructConfig');
-
-var ListConfig = t.struct({
-  horizontal: maybe(Breakpoints)
-}, 'ListConfig');
-
-function getLabel(locals, breakpoints) {
-  if (!locals.label) { return; }
-
-  var align = null;
-  var className = null;
-
-  if (breakpoints) {
-    align = 'right';
-    className = breakpoints.getLabelClassName();
-  }
-
-  return uform.getLabel({
-    label: locals.label,
-    align: align,
-    className: className
-  });
-}
-
-function getHelp(locals) {
-  if (!locals.help) { return; }
-  return getHelpBlock({
-    help: locals.help
-  });
-}
-
-function getError(locals) {
-  if (!locals.error) { return; }
-  return getHelpBlock({
-    help: locals.error,
-    hasError: locals.hasError
-  });
-}
-
-function getHiddenTextbox(locals) {
-  return {
-    tag: 'input',
+    tag: 'span',
     attrs: {
-      type: 'hidden',
-      defaultValue: locals.value,
-      name: locals.name,
-      ref: locals.ref
-    }
+      className: {
+        'input-label': true
+      }
+    },
+    children: label
   };
 }
 
 function textbox(locals) {
 
-  var type = locals.type;
-
-  if (type === 'hidden') {
-    return getHiddenTextbox(locals);
-  }
-
-  var config = new TextboxConfig(locals.config || {});
-
-  var control;
-  var staticControl;
-
-  if (type === 'static') {
-    control = getHiddenTextbox(locals);
-    staticControl = uform.getStatic(locals.value);
-  } else {
-    control = uform.getTextbox({
-      type: type,
-      defaultValue: locals.value,
-      disabled: locals.disabled,
-      placeholder: locals.placeholder,
-      name: locals.name,
-      readOnly: locals.readOnly,
-      ref: locals.ref
-    });
-
-    if (config.addonBefore || config.addonAfter) {
-      control = uform.getInputGroup([
-        config.addonBefore ? getAddon(config.addonBefore) : null,
-        control,
-        config.addonAfter ? getAddon(config.addonAfter) : null
-      ]);
-    }
-  }
-
-  var horizontal = config.horizontal;
-  var label = getLabel(locals, horizontal);
-  var error = getError(locals);
-  var help = getHelp(locals);
-
-  var children = [
-    label,
-    staticControl,
-    control,
-    error,
-    help
-  ];
-
-  if (horizontal) {
-    children = [
-      label,
-      {
-        tag: 'div',
-        attrs: {
-          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
-        },
-        children: [
-          staticControl,
-          control,
-          error,
-          help
-        ]
+  return {
+    tag: 'label',
+    attrs: {
+      className: {
+        'item': true,
+        'item-input': true,
+        'item-stacked-label': !!locals.label,
+        'has-error': locals.hasError
       }
-    ];
-  }
+    },
+    children: [
+      getLabel(locals.label),
+      {
+        tag: 'input',
+        attrs: {
+          type: locals.type,
+          placeholder: locals.placeholder
+        },
+        ref: locals.ref
+      }
+    ]
+  };
 
-  return getFormGroup({
-    hasError: locals.hasError,
-    children: children
-  });
 }
 
-function checkbox(locals) {
-
-  var control = uform.getCheckbox({
-    defaultChecked: locals.value,
-    disabled: locals.disabled,
-    label: locals.label,
-    name: locals.name,
-    ref: locals.ref
-  });
-
-  var config = new CheckboxConfig(locals.config || {});
-
-  var error = getError(locals);
-  var help = getHelp(locals);
-  var children = [
-    control,
-    error,
-    help
-  ];
-
-  if (config.horizontal) {
-    children = {
-      tag: 'div',
-      attrs: {
-        className: config.horizontal.getOffsetClassName()
-      },
-      children: children
-    };
-  }
-
-  return getFormGroup({
-    hasError: locals.hasError,
-    children: children
-  });
+function checkbox() {
+  throw new Error('checkboxes are not implemented (yet)');
 }
 
 function select(locals) {
-
-  var options = locals.options.map(function (x) {
-    return theme.Option.is(x) ? uform.getOption(x) : uform.getOptGroup(x);
-  });
-
-  var control = uform.getSelect({
-    defaultValue: locals.value,
-    disabled: locals.disabled,
-    name: locals.name,
-    options: options,
-    ref: locals.ref
-  });
-
-  var config = new SelectConfig(locals.config || {});
-
-  var horizontal = config.horizontal;
-  var label = getLabel(locals, horizontal);
-  var error = getError(locals);
-  var help = getHelp(locals);
-  var children = [
-    label,
-    control,
-    error,
-    help
-  ];
-
-  if (horizontal) {
-    children = [
-      label,
-      {
-        tag: 'div',
-        attrs: {
-          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
-        },
-        children: [
-          control,
-          error,
-          help
-        ]
-      }
-    ];
-  }
-
-  return getFormGroup({
-    hasError: locals.hasError,
-    children: children
-  });
+  throw new Error('selects are not implemented (yet)');
 }
 
-function radio(locals) {
-
-  var control = locals.options.map(function (option, i) {
-    return uform.getRadio({
-      defaultChecked: (option.value === locals.value),
-      disabled: option.disabled || locals.disabled,
-      label: option.text,
-      name: locals.name,
-      ref: locals.ref + i,
-      value: option.value
-    });
-  });
-
-  var config = new RadioConfig(locals.config || {});
-
-  var horizontal = config.horizontal;
-  var label = getLabel(locals, horizontal);
-  var error = getError(locals);
-  var help = getHelp(locals);
-  var children = [
-    label,
-    control,
-    error,
-    help
-  ];
-
-  if (horizontal) {
-    children = [
-      label,
-      {
-        tag: 'div',
-        attrs: {
-          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
-        },
-        children: [
-          control,
-          error,
-          help
-        ]
-      }
-    ];
-  }
-
-  return getFormGroup({
-    hasError: locals.hasError,
-    children: children
-  });
+function radio() {
+  throw new Error('radios are not implemented (yet)');
 }
 
 function struct(locals) {
 
-  var config = new StructConfig(locals.config || {});
-
-  var rows = [];
-
-  if (locals.help) {
-    rows.push(getAlert({
-      children: locals.help
-    }));
-  }
-
-  rows = rows.concat(locals.order.map(function (name) {
+  var rows = locals.order.map(function (name) {
     return locals.inputs.hasOwnProperty(name) ? locals.inputs[name] : name;
-  }));
-
-  if (locals.error && locals.hasError) {
-    rows.push(getAlert({
-      type: 'danger',
-      children: locals.error
-    }));
-  }
-
-  return getFormGroup({
-    children: getFieldset({
-      className: config.horizontal && config.horizontal.getFieldsetClassName(),
-      disabled: locals.disabled,
-      legend: locals.label,
-      children: rows
-    })
   });
+
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'list': true
+      }
+    },
+    children: rows
+  };
 }
 
-function list(locals) {
-
-  var config = new ListConfig(locals.config || {});
-
-  var rows = [];
-
-  if (locals.help) {
-    rows.push(getAlert({
-      children: locals.help
-    }));
-  }
-
-  rows = rows.concat(locals.items.map(function (item) {
-    return uform.getRow({
-      key: item.key,
-      children: [
-        getCol({
-          breakpoints: {sm: 8, xs: 6},
-          children: item.input
-        }),
-        getCol({
-          breakpoints: {sm: 4, xs: 6},
-          children: uform.getButtonGroup(item.buttons.map(function (button, i) {
-            return getButton({
-              click: button.click,
-              key: i,
-              label: button.label
-            });
-          }))
-        })
-      ]
-    });
-  }));
-
-  if (locals.error && locals.hasError) {
-    rows.push(getAlert({
-      type: 'danger',
-      children: locals.error
-    }));
-  }
-
-  if (locals.add) {
-    rows.push(getButton(locals.add));
-  }
-
-  return getFormGroup({
-    children: getFieldset({
-      className: config.horizontal && config.horizontal.getFieldsetClassName(),
-      disabled: locals.disabled,
-      legend: locals.label,
-      children: rows
-    })
-  });
+function list() {
+  throw new Error('lists are not implemented (yet)');
 }
 
 module.exports = {
@@ -1584,7 +1231,8 @@ module.exports = {
   struct: struct,
   list: list
 };
-},{"../protocols/theme":8,"tcomb-validation":19,"uvdom-bootstrap/form":21}],10:[function(require,module,exports){
+
+},{}],9:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1594,7 +1242,7 @@ function either(a, b) {
 }
 
 module.exports = either;
-},{"tcomb-validation":19}],11:[function(require,module,exports){
+},{"tcomb-validation":18}],10:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1605,7 +1253,7 @@ function getError(error, state) {
 }
 
 module.exports = getError;
-},{"tcomb-validation":19}],12:[function(require,module,exports){
+},{"tcomb-validation":18}],11:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -1619,7 +1267,7 @@ function getOptionsOfEnum(type) {
 }
 
 module.exports = getOptionsOfEnum;
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1656,7 +1304,7 @@ function getReport(type) {
 }
 
 module.exports = getReport;
-},{"tcomb-validation":19}],14:[function(require,module,exports){
+},{"tcomb-validation":18}],13:[function(require,module,exports){
 'use strict';
 
 // thanks to https://github.com/epeli/underscore.string
@@ -1674,7 +1322,7 @@ function humanize(s){
 }
 
 module.exports = humanize;
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1685,7 +1333,7 @@ function merge(a, b) {
 }
 
 module.exports = merge;
-},{"tcomb-validation":19}],16:[function(require,module,exports){
+},{"tcomb-validation":18}],15:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -1694,7 +1342,7 @@ function move(arr, fromIndex, toIndex) {
 }
 
 module.exports = move;
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 function uuid() {
@@ -1705,7 +1353,7 @@ function uuid() {
 }
 
 module.exports = uuid;
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -1744,7 +1392,7 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -1963,7 +1611,7 @@ module.exports = cx;
 
 }));
 
-},{"tcomb":20}],20:[function(require,module,exports){
+},{"tcomb":19}],19:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -2872,603 +2520,7 @@ module.exports = cx;
   };
 }));
 
-},{}],21:[function(require,module,exports){
-module.exports = {
-  getAddon: require('./lib/getAddon'),
-  getAlert: require('./lib/getAlert'),
-  getBreakpoints: require('./lib/getBreakpoints'),
-  getButton: require('./lib/getButton'),
-  getButtonGroup: require('./lib/getButtonGroup'),
-  getCheckbox: require('./lib/getCheckbox'),
-  getCol: require('./lib/getCol'),
-  getFieldset: require('./lib/getFieldset'),
-  getFormGroup: require('./lib/getFormGroup'),
-  getHelpBlock: require('./lib/getHelpBlock'),
-  getInputGroup: require('./lib/getInputGroup'),
-  getLabel: require('./lib/getLabel'),
-  getOffsets: require('./lib/getOffsets'),
-  getOptGroup: require('./lib/getOptGroup'),
-  getOption: require('./lib/getOption'),
-  getRadio: require('./lib/getRadio'),
-  getRow: require('./lib/getRow'),
-  getSelect: require('./lib/getSelect'),
-  getStatic: require('./lib/getStatic'),
-  getTextbox: require('./lib/getTextbox')
-};
-},{"./lib/getAddon":22,"./lib/getAlert":23,"./lib/getBreakpoints":24,"./lib/getButton":25,"./lib/getButtonGroup":26,"./lib/getCheckbox":27,"./lib/getCol":28,"./lib/getFieldset":29,"./lib/getFormGroup":30,"./lib/getHelpBlock":31,"./lib/getInputGroup":32,"./lib/getLabel":33,"./lib/getOffsets":34,"./lib/getOptGroup":35,"./lib/getOption":36,"./lib/getRadio":37,"./lib/getRow":38,"./lib/getSelect":39,"./lib/getStatic":40,"./lib/getTextbox":41}],22:[function(require,module,exports){
-'use strict';
-
-function getAddon(addon) {
-  return {
-    tag: 'span',
-    attrs: {
-      className: {
-        'input-group-addon': true
-      }
-    },
-    children: addon
-  };
-}
-
-module.exports = getAddon;
-},{}],23:[function(require,module,exports){
-'use strict';
-
-function getAlert(opts) {
-
-  var type = opts.type || 'info';
-  var className = {
-    'alert': true
-  };
-  className['alert-' + type] = true;
-
-  return {
-    tag: 'div',
-    attrs: {
-      className: className
-    },
-    children: opts.children
-  };
-}
-
-module.exports = getAlert;
-},{}],24:[function(require,module,exports){
-'use strict';
-
-function getBreakpoints(breakpoints) {
-  var className = {};
-  for (var size in breakpoints) {
-    if (breakpoints.hasOwnProperty(size)) {
-      className['col-' + size + '-' + breakpoints[size]] = true;
-    }
-  }
-  return className;
-}
-
-module.exports = getBreakpoints;
-},{}],25:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    type: 'primary',
-    block: true,
-    active: true,
-    size: 'lg',
-    disabled: true
-  }
-
-*/
-
-function getButton(opts) {
-
-  var type = opts.type || 'default';
-
-  var className = {
-    'btn': true,
-    'btn-block': opts.block,
-    'active': opts.active
-  };
-  className['btn-' + type] = true;
-  if (opts.size) {
-    className['btn-' + opts.size] = true;
-  }
-
-  return {
-    tag: 'button',
-    attrs: {
-      disabled: opts.disabled,
-      className: className
-    },
-    events: {
-      click: opts.click
-    },
-    children: opts.label,
-    key: opts.key
-  }
-}
-
-module.exports = getButton;
-
-},{}],26:[function(require,module,exports){
-'use strict';
-
-function getButtonGroup(buttons) {
-  return {
-    tag: 'div',
-    attrs: {
-      className: {
-        'btn-group': true
-      }
-    },
-    children: buttons
-  };
-};
-
-module.exports = getButtonGroup;
-
-
-},{}],27:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    label: 'Remember me',
-    defaultChecked: true,
-    checked: true,
-    name: 'rememberMe',
-    disabled: false,
-    ref: 'input'
-  }
-
-*/
-
-function getCheckbox(opts) {
-
-  return {
-    tag: 'div',
-    attrs: {
-      className: {
-        'checkbox': true,
-        'disabled': opts.disabled
-      }
-    },
-    children: {
-      tag: 'label',
-      children: [
-        {
-          tag: 'input',
-          attrs: {
-            type: 'checkbox',
-            checked: opts.checked,
-            disabled: opts.disabled,
-            defaultChecked: opts.defaultChecked,
-            name: opts.name,
-            value: 'true'
-          },
-          ref: opts.ref
-        },
-        ' ',
-        opts.label
-      ]
-    }
-  }
-}
-
-module.exports = getCheckbox;
-},{}],28:[function(require,module,exports){
-'use strict';
-
-var getBreakpoints = require('./getBreakpoints');
-
-function getCol(opts) {
-
-  var className = opts.breakpoints ? getBreakpoints(opts.breakpoints) : null;
-
-  return {
-    tag: 'div',
-    attrs: {
-      className: className
-    },
-    children: opts.children
-  };
-}
-
-module.exports = getCol;
-},{"./getBreakpoints":24}],29:[function(require,module,exports){
-'use strict';
-
-function getFieldset(opts) {
-
-  var children = opts.children.slice();
-
-  if (opts.legend) {
-    children.unshift({
-      tag: 'legend',
-      children: opts.legend
-    });
-  }
-
-  return {
-    tag: 'fieldset',
-    attrs: {
-      className: opts.className,
-      disabled: opts.disabled
-    },
-    children: children
-  };
-};
-
-module.exports = getFieldset;
-
-
-},{}],30:[function(require,module,exports){
-'use strict';
-
-function getFormGroup(opts) {
-  return {
-    tag: 'div',
-    attrs: {
-      className: {
-        'form-group': true,
-        'has-error': opts.hasError
-      }
-    },
-    children: opts.children
-  };
-}
-
-module.exports = getFormGroup;
-},{}],31:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    help: 'my help',
-    hasError: true
-  }
-
-*/
-
-function getHelpBlock(opts) {
-  return {
-    tag: 'span',
-    attrs: {
-      className: {
-        'help-block': true,
-        'error-block': opts.hasError
-      }
-    },
-    children: opts.help
-  };
-}
-
-module.exports = getHelpBlock;
-
-
-},{}],32:[function(require,module,exports){
-'use strict';
-
-function getInputGroup(children) {
-  return {
-    tag: 'div',
-    attrs: {
-      className: {
-        'input-group': true
-      }
-    },
-    children: children
-  };
-}
-
-module.exports = getInputGroup;
-},{}],33:[function(require,module,exports){
-'use strict';
-
-var mixin = require('./mixin');
-
-/*
-
-  Example:
-
-  {
-    label: 'my label',
-    htmlFor: 'inputId',
-    align: 'right',
-    className: {}
-  }
-
-*/
-
-function getLabel(opts) {
-
-  var className = mixin({
-    'control-label': true
-  }, opts.className);
-
-  if (opts.align) {
-    className['text-' + opts.align] = true;
-  }
-
-  return {
-    tag: 'label',
-    attrs: {
-      htmlFor: opts.htmlFor,
-      className: className
-    },
-    children: opts.label
-  };
-}
-
-module.exports = getLabel;
-
-
-},{"./mixin":42}],34:[function(require,module,exports){
-'use strict';
-
-function getOffsets(breakpoints) {
-  var className = {};
-  for (var size in breakpoints) {
-    if (breakpoints.hasOwnProperty(size)) {
-      className['col-' + size + '-offset-' + (12 - breakpoints[size])] = true;
-    }
-  }
-  return className;
-}
-
-module.exports = getOffsets;
-},{}],35:[function(require,module,exports){
-'use strict';
-
-var getOption = require('./getOption');
-
-/*
-
-  Example:
-
-  {
-    label: 'group1',
-    options: [
-      {value: 'value1', text: 'description1'},
-      {value: 'value3', text: 'description3'}
-    ]
-  }
-
-*/
-
-function getOptGroup(opts) {
-  return {
-    tag: 'optgroup',
-    attrs: {
-      disabled: opts.disabled,
-      label: opts.label
-    },
-    children: opts.options.map(getOption),
-    key: opts.label
-  };
-}
-
-module.exports = getOptGroup;
-
-
-},{"./getOption":36}],36:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    value: '1',
-    text: 'option 1'
-  }
-
-*/
-
-function getOption(opts) {
-  return {
-    tag: 'option',
-    attrs: {
-      disabled: opts.disabled,
-      value: opts.value
-    },
-    children: opts.text,
-    key: opts.value
-  };
-}
-
-module.exports = getOption;
-
-
-},{}],37:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    label: 'Option',
-    defaultChecked: true,
-    checked: true,
-    value: '1',
-    name: 'option',
-    disabled: false,
-    ref: 'input'
-  }
-
-*/
-
-function getRadio(opts) {
-
-  return {
-    tag: 'div',
-    attrs: {
-      className: {
-        'radio': true,
-        'disabled': opts.disabled
-      }
-    },
-    children: {
-      tag: 'label',
-      children: [
-        {
-          tag: 'input',
-          attrs: {
-            type: 'radio',
-            checked: opts.checked,
-            defaultChecked: opts.defaultChecked,
-            disabled: opts.disabled,
-            name: opts.name,
-            value: opts.value
-          },
-          ref: opts.ref
-        },
-        ' ',
-        opts.label
-      ]
-    },
-    key: opts.value
-  };
-}
-
-module.exports = getRadio;
-},{}],38:[function(require,module,exports){
-'use strict';
-
-function getRow(opts) {
-  return {
-    tag: 'div',
-    attrs: {
-      className: {
-        'row': true
-      }
-    },
-    children: opts.children,
-    key: opts.key
-  };
-}
-
-module.exports = getRow;
-},{}],39:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    defaultValue: 'hello',
-    value: 'hello',
-    name: 'myname',
-    disabled: false,
-    ref: 'input'
-  }
-
-*/
-
-function getSelect(opts) {
-
-  return {
-    tag: 'select',
-    attrs: {
-      name: opts.name,
-      defaultValue: opts.defaultValue,
-      value: opts.value,
-      disabled: opts.disabled,
-      className: {
-        'form-control': true
-      }
-    },
-    children: opts.options,
-    ref: opts.ref
-  };
-}
-
-module.exports = getSelect;
-},{}],40:[function(require,module,exports){
-'use strict';
-
-function getStatic(value) {
-  return {
-    tag: 'p',
-    attrs: {
-      className: {
-        'form-control-static': true
-      }
-    },
-    children: value
-  };
-}
-
-module.exports = getStatic;
-},{}],41:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    type: 'password',
-    defaultValue: 'hello',
-    value: 'hello',
-    name: 'myname',
-    disabled: false,
-    placeholder: 'insert your name',
-    readOnly: true,
-    ref: 'input'
-  }
-
-*/
-
-function getTextbox(opts) {
-
-  var type = opts.type || 'text';
-
-  return {
-    tag: type === 'textarea' ? 'textarea' : 'input',
-    attrs: {
-      type: type === 'textarea' ? null : type,
-      name: opts.name,
-      defaultValue: opts.defaultValue,
-      value: opts.value,
-      disabled: opts.disabled,
-      placeholder: opts.placeholder,
-      readOnly: opts.readOnly,
-      className: {
-        'form-control': true
-      }
-    },
-    ref: opts.ref
-  };
-}
-
-module.exports = getTextbox;
-},{}],42:[function(require,module,exports){
-'use strict';
-
-function mixin(a, b) {
-  if (!b) { return a; }
-  for (var k in b) {
-    if (b.hasOwnProperty(k)) {
-      a[k] = b[k];
-    }
-  }
-  return a;
-}
-
-module.exports = mixin;
-},{}],43:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -3537,4 +2589,4 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"react":"react","react/lib/cx":18}]},{},[1]);
+},{"react":"react","react/lib/cx":17}]},{},[1]);

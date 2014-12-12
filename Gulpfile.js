@@ -14,6 +14,23 @@ gulp.task('default', ['examples']);
 // ------------------------------------
 gulp.task('examples', function (){
 
+  // bootstrap
+  browserify('./examples/bootstrap/bootstrap.jsx', {
+    transform: [reactify],
+    detectGlobals: true
+  })
+  .external('react')
+  .bundle()
+  .on('error', function (err) {
+    gutil.beep();
+    console.log(String(err));
+    this.end();
+  })
+  .pipe(source('./examples/bootstrap/bootstrap.jsx'))
+  .pipe(rename('bootstrap.js'))
+  .pipe(gulp.dest('./examples/bootstrap'));
+
+  // gridforms
   browserify('./examples/gridforms/gridforms.jsx', {
     transform: [reactify],
     detectGlobals: true
@@ -29,7 +46,8 @@ gulp.task('examples', function (){
   .pipe(rename('gridforms.js'))
   .pipe(gulp.dest('./examples/gridforms'));
 
-  browserify('./examples/bootstrap/bootstrap.jsx', {
+  // ionic
+  browserify('./examples/ionic/ionic.jsx', {
     transform: [reactify],
     detectGlobals: true
   })
@@ -40,9 +58,10 @@ gulp.task('examples', function (){
     console.log(String(err));
     this.end();
   })
-  .pipe(source('./examples/bootstrap/bootstrap.jsx'))
-  .pipe(rename('bootstrap.js'))
-  .pipe(gulp.dest('./examples/bootstrap'));
+  .pipe(source('./examples/ionic/ionic.jsx'))
+  .pipe(rename('ionic.js'))
+  .pipe(gulp.dest('./examples/ionic'));
+
 
 });
 

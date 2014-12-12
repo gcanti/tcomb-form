@@ -6,14 +6,14 @@ var t = require('../../.');
 var pre = document.getElementById('value');
 
 var Data = t.struct({
-  name: t.Str
+  firstName: t.Str,
+  lastName: t.Str,
+  email: t.maybe(t.Str)
 });
 
-// React form component
 var Form = t.form.create(Data, {
 });
 
-// rendering
 var App = React.createClass({
 
   onClick: function(evt) {
@@ -30,7 +30,7 @@ var App = React.createClass({
       <form onSubmit={this.onClick} className="grid-form">
         <Form ref="form" />
         <div className="form-group">
-          <input className="btn btn-primary" type="submit" value="Save" />
+          <input className="btn btn-primary" type="submit" value="Submit" />
         </div>
       </form>
     );

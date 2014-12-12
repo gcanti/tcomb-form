@@ -4,7 +4,6 @@ var t = require('../../lib');
 // configure gridforms plugin
 t.form.config.templates = require('../../lib/templates/gridforms');
 
-// model
 var Vendor = t.enums.of([
   'ted'
 , 'Magna Phasellus Dolor Incorporated'
@@ -80,7 +79,6 @@ var Data = t.struct({
   retailPrice: t.Num
 });
 
-// React form component
 var Form = t.form.create(Data, {
   label: 'Add to inventory',
   auto: 'labels',           // automatically create labels from field names
@@ -104,7 +102,6 @@ var Form = t.form.create(Data, {
   }
 });
 
-// rendering
 var App = React.createClass({
 
   onClick: function(evt) {
@@ -119,7 +116,7 @@ var App = React.createClass({
     return (
       <form onSubmit={this.onClick} className="grid-form">
         <Form ref="form" />
-        <input type="submit" value="Save" />
+        <input type="submit" value="Submit" />
       </form>
     );
   }
