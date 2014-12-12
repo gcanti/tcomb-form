@@ -1209,6 +1209,14 @@ var RadioConfig = t.struct({
   horizontal: t.maybe(Breakpoints)
 }, 'RadioConfig');
 
+var StructConfig = t.struct({
+  horizontal: t.maybe(Breakpoints)
+}, 'StructConfig');
+
+var ListConfig = t.struct({
+  horizontal: t.maybe(Breakpoints)
+}, 'ListConfig');
+
 function getLabel(locals, horizontal) {
   if (!locals.label) { return; }
 
@@ -1465,46 +1473,45 @@ function radio(locals) {
 
 function struct(locals) {
 
-  var rows = locals.order.map(function (name) {
+  var config = new StructConfig(locals.config || {});
+
+  // FIXME handle help and error
+
+  var groups = locals.order.map(function (name) {
     // handle verbatims
     return locals.inputs.hasOwnProperty(name) ?
       locals.inputs[name] :
       name;
   });
 
-  return getFieldset({
-    label: locals.label,
-    children: [
-      rows,
-      getError(locals),
-      getHelp(locals)
-    ]
+  return getFormGroup({
+    hasError: locals.hasError,
+    children: getFieldset({
+      className: {
+        'col-xs-12': !!config.horizontal
+      },
+      legend: locals.label,
+      children: groups
+    })
   });
 }
 
 function list(locals) {
 
-  var items = locals.items.map(function (item) {
+  var config = new ListConfig(locals.config || {});
 
-    if (!item.buttons.length) {
-      return getRow({
-        key: item.key,
-        children: getCol({
-          breakpoints: {md: 12},
-          children: item.input
-        })
-      });
-    }
+  // FIXME handle help and error
 
+  var rows = locals.items.map(function (item) {
     return getRow({
       key: item.key,
       children: [
         getCol({
-          breakpoints: {md: 6},
+          breakpoints: {xs: 6},
           children: item.input
         }),
         getCol({
-          breakpoints: {md: 6},
+          breakpoints: {xs: 6},
           children: uform.getButtonGroup(item.buttons.map(function (button, i) {
             return getButton({
               click: button.click,
@@ -1518,15 +1525,18 @@ function list(locals) {
   });
 
   if (locals.add) {
-    items.push(getFormGroup({
-      children: getButton(locals.add)
-    }));
+    rows.push(getButton(locals.add));
   }
 
-  return getFieldset({
-    legend: locals.label,
+  return getFormGroup({
     hasError: locals.hasError,
-    children: items
+    children: getFieldset({
+      className: {
+        'col-xs-12': !!config.horizontal
+      },
+      legend: locals.label,
+      children: rows
+    })
   });
 }
 
@@ -3010,19 +3020,20 @@ module.exports = getCol;
 'use strict';
 
 function getFieldset(opts) {
+
   var children = opts.children.slice();
+
   if (opts.legend) {
     children.unshift({
       tag: 'legend',
       children: opts.legend
     });
   }
+
   return {
     tag: 'fieldset',
     attrs: {
-      className: {
-        'has-error': opts.hasError
-      }
+      className: opts.className
     },
     children: children
   };

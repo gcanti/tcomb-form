@@ -301,7 +301,7 @@ function struct(locals) {
 
 function list(locals) {
 
-  var items = locals.items.map(function (item) {
+  var items = locals.items.map(function (item, i) {
     if (!item.buttons.length) {
       return (
         <div className="row" key={item.key}>
