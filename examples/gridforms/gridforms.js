@@ -3,7 +3,7 @@ var React = require('react');
 var t = require('../../lib');
 
 // configure gridforms plugin
-t.form.config.templates = require('../../lib/templates/gridforms.jsx');
+t.form.config.templates = require('../../lib/templates/gridforms');
 
 // model
 var Vendor = t.enums.of([
@@ -97,6 +97,11 @@ var Form = t.form.create(Data, {
     costPrice: 700,
     wholesalePrice: null,
     retailPrice: 1000
+  },
+  fields: {
+    initialStockLevel: {
+      help: 'Insert a number'
+    }
   }
 });
 
@@ -176,7 +181,7 @@ function structTemplate(locals) {
 
 
 
-},{"../../lib":5,"../../lib/templates/gridforms.jsx":8,"react":"react"}],2:[function(require,module,exports){
+},{"../../lib":5,"../../lib/templates/gridforms":8,"react":"react"}],2:[function(require,module,exports){
 'use strict';
 
 var api = require('./protocols/api');
@@ -237,7 +242,7 @@ function create(type, opts) {
 }
 
 module.exports = create;
-},{"./config":2,"./factories":4,"./protocols/api":6,"./util/getReport":13,"react":"react"}],4:[function(require,module,exports){
+},{"./config":2,"./factories":4,"./protocols/api":6,"./util/getReport":12,"react":"react"}],4:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -352,18 +357,18 @@ function textbox(opts, ctx) {
       }
 
       return compile(template(new theme.Textbox({
-        ref: REF,
-        type: opts.type || 'text',
+        config: merge(ctx.config, opts.config),
+        disabled: opts.disabled,
+        error: getError(opts.error, this.state),
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
         name: name,
         placeholder: placeholder,
-        label: label,
-        help: opts.help,
         readOnly: opts.readOnly,
-        disabled: opts.disabled,
-        hasError: this.state.hasError,
-        value: value,
-        error: getError(opts.error, this.state),
-        config: merge(ctx.config, opts.config)
+        ref: REF,
+        type: opts.type || 'text',
+        value: value
       })));
     }
   });
@@ -412,15 +417,15 @@ function checkbox(opts, ctx) {
 
     render: function () {
       return compile(template(new theme.Checkbox({
-        ref: REF,
-        name: name,
-        label: label,
-        help: opts.help,
+        config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
-        hasError: this.state.hasError,
-        value: this.state.value,
         error: getError(opts.error, this.state),
-        config: merge(ctx.config, opts.config)
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
+        name: name,
+        ref: REF,
+        value: this.state.value
       })));
     }
   });
@@ -505,17 +510,17 @@ function select(opts, ctx) {
 
     render: function () {
       return compile(template(new theme.Select({
-        ref: REF,
-        name: name,
-        label: label,
-        help: opts.help,
-        options: options,
+        config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
-        hasError: this.state.hasError,
-        value: this.state.value,
         error: getError(opts.error, this.state),
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
+        name: name,
         multiple: multiple,
-        config: merge(ctx.config, opts.config)
+        options: options,
+        ref: REF,
+        value: this.state.value
       })));
     }
   });
@@ -525,9 +530,8 @@ function radio(opts, ctx) {
 
   opts = new api.Radio(opts || {});
 
-  // radios must always have a label
   var label = opts.label;
-  if (!label) {
+  if (!label && ctx.auto === 'labels') {
     label = ctx.getDefaultLabel();
   }
 
@@ -582,15 +586,16 @@ function radio(opts, ctx) {
 
     render: function () {
       return compile(template(new theme.Radio({
-        ref: REF,
-        name: name,
-        label: label,
-        help: opts.help,
-        options: options,
-        hasError: this.state.hasError,
-        value: this.state.value,
+        config: merge(ctx.config, opts.config),
+        disabled: opts.disabled,
         error: getError(opts.error, this.state),
-        config: merge(ctx.config, opts.config)
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
+        name: name,
+        ref: REF,
+        options: options,
+        value: this.state.value
       })));
     }
   });
@@ -690,14 +695,15 @@ function struct(opts, ctx) {
       }
 
       return compile(templates.struct(new theme.Struct({
-        label: label,
-        help: opts.help,
-        order: order,
-        inputs: inputs,
-        value: value,
-        hasError: this.state.hasError,
+        config: config,
+        disabled: opts.disabled,
         error: getError(opts.error, this.state),
-        config: config
+        hasError: this.state.hasError,
+        help: opts.help,
+        inputs: inputs,
+        label: label,
+        order: order,
+        value: value
       })));
     }
   });
@@ -834,17 +840,18 @@ function list(opts, ctx) {
       }.bind(this));
 
       return compile(templates.list(new theme.List({
-        label: label,
-        help: opts.help,
         add: opts.disableAdd ? null : {
           label: i18n.add,
           click: this.addItem
         },
-        items: items,
-        value: value,
-        hasError: this.state.hasError,
+        config: config,
+        disabled: opts.disabled,
         error: getError(opts.error, this.state),
-        config: config
+        hasError: this.state.hasError,
+        help: opts.help,
+        items: items,
+        label: label,
+        value: value
       })));
     }
   });
@@ -896,7 +903,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":21}],5:[function(require,module,exports){
+},{"./config":2,"./protocols/api":6,"./protocols/theme":7,"./util/either":9,"./util/getError":10,"./util/getOptionsOfEnum":11,"./util/getReport":12,"./util/humanize":13,"./util/merge":14,"./util/move":15,"./util/uuid":16,"react":"react","tcomb-validation":18,"uvdom/react":20}],5:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -908,7 +915,7 @@ t.form = t.util.mixin({
 }, factories);
 
 module.exports = t;
-},{"./config":2,"./create":3,"./factories":4,"tcomb-validation":19}],6:[function(require,module,exports){
+},{"./config":2,"./create":3,"./factories":4,"tcomb-validation":18}],6:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -986,11 +993,13 @@ var Label = union([Str, ReactElement], 'Label');
 var ErrorMessage = union([Label, Func], 'Error');
 
 var Option = t.struct({
-  value: Str,
-  text: Str
+  disabled: maybe(Bool),
+  text: Str,
+  value: Str
 }, 'Option');
 
 var OptGroup = t.struct({
+  disabled: maybe(Bool),
   label: Str,
   options: list(Option)
 }, 'OptGroup');
@@ -998,11 +1007,11 @@ var OptGroup = t.struct({
 var SelectOption = union([Option, OptGroup], 'SelectOption');
 
 SelectOption.dispatch = function (x) {
-  if (x.hasOwnProperty('group')) { return OptGroup; }
+  if (x.hasOwnProperty('label')) { return OptGroup; }
   return Option;
 };
 
-var TypeAttr = t.enums.of('hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
+var TypeAttr = t.enums.of('static hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 var Transformer = struct({
   format: Func,
@@ -1010,31 +1019,31 @@ var Transformer = struct({
 }, 'Transformer');
 
 var Textbox = struct({
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   error: maybe(ErrorMessage),
-  type: maybe(TypeAttr),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: maybe(Label),
   name: maybe(t.Str),
   placeholder: maybe(Str),
-  value: Any,
   readOnly: maybe(Bool),
-  disabled: maybe(Bool),
-  transformer: maybe(Transformer),
   template: maybe(Func),
-  config: maybe(Obj)
+  transformer: maybe(Transformer),
+  type: maybe(TypeAttr),
+  value: Any
 }, 'Textbox');
 
 var Checkbox = struct({
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
-  error: maybe(ErrorMessage),
-  name: maybe(t.Str),
-  value: maybe(Bool),
+  config: maybe(Obj),
   disabled: maybe(Bool),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
+  name: maybe(t.Str),
   template: maybe(Func),
-  config: maybe(Obj)
+  value: maybe(Bool)
 }, 'Checkbox');
 
 function asc(a, b) {
@@ -1053,61 +1062,64 @@ Order.getComparator = function (order) {
 };
 
 var Select = struct({
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
-  error: maybe(ErrorMessage),
-  name: maybe(t.Str),
-  value: maybe(Str),
-  order: maybe(Order),
-  options: maybe(list(SelectOption)),
-  nullOption: maybe(Option),
+  config: maybe(Obj),
   disabled: maybe(Bool),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
+  name: maybe(t.Str),
+  nullOption: maybe(Option),
+  options: maybe(list(SelectOption)),
+  order: maybe(Order),
   template: maybe(Func),
-  config: maybe(Obj)
+  value: maybe(Str)
 }, 'Select');
 
 var Radio = struct({
-  label: maybe(Label),
-  help: maybe(Label),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   hasError: maybe(Bool),
+  help: maybe(Label),
   error: maybe(ErrorMessage),
+  label: maybe(Label),
   name: maybe(t.Str),
-  value: maybe(Str),
-  order: maybe(Order),
   options: maybe(list(SelectOption)),
+  order: maybe(Order),
   template: maybe(Func),
-  config: maybe(Obj)
+  value: maybe(Str)
 }, 'Select');
 
 var Struct = struct({
-  i18n: maybe(I18n),
-  value: maybe(Obj),
   auto: maybe(Auto),
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
-  error: maybe(ErrorMessage),
-  order: maybe(list(Label)),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   fields: maybe(Obj),
+  i18n: maybe(I18n),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
+  order: maybe(list(Label)),
   templates: maybe(Templates),
-  config: maybe(Obj)
+  value: maybe(Obj)
 }, 'Struct');
 
 var List = struct({
-  i18n: maybe(I18n),
-  value: maybe(t.Arr),
   auto: maybe(Auto),
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
-  error: maybe(ErrorMessage),
-  item: maybe(Obj),
+  config: maybe(Obj),
   disableAdd: maybe(Bool),
   disableRemove: maybe(Bool),
   disableOrder: maybe(Bool),
+  disabled: maybe(Bool),
+  i18n: maybe(I18n),
+  item: maybe(Obj),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
   templates: maybe(Templates),
-  config: maybe(Obj)
+  value: maybe(t.Arr)
 }, 'List');
 
 module.exports = {
@@ -1129,7 +1141,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":19}],7:[function(require,module,exports){
+},{"react":"react","tcomb-validation":18}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1148,12 +1160,14 @@ var ReactElement = t.irriducible('ReactElement', React.isValidElement);
 
 var Label = union([Str, ReactElement], 'Label');
 
-var Option = struct({
-  value: Str,
-  text: Str
+var Option = t.struct({
+  disabled: maybe(Bool),
+  text: Str,
+  value: Str
 }, 'Option');
 
-var OptGroup = struct({
+var OptGroup = t.struct({
+  disabled: maybe(Bool),
   label: Str,
   options: list(Option)
 }, 'OptGroup');
@@ -1161,96 +1175,99 @@ var OptGroup = struct({
 var SelectOption = union([Option, OptGroup], 'SelectOption');
 
 SelectOption.dispatch = function (x) {
-  if (x.hasOwnProperty('group')) { return OptGroup; }
+  if (x.hasOwnProperty('label')) { return OptGroup; }
   return Option;
 };
 
-var TypeAttr = t.enums.of('hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
+var TypeAttr = t.enums.of('static hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 var Textbox = struct({
-  ref: Str,
-  type: TypeAttr,
+  config: maybe(Obj),
+  disabled: maybe(Bool),
+  error: maybe(Label),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: maybe(Label),
   name: Str,
   placeholder: maybe(Str),
-  label: maybe(Label),
-  help: maybe(Label),
   readOnly: maybe(Bool),
-  disabled: maybe(Bool),
-  value: Any,
-  hasError: maybe(Bool),
-  error: maybe(Label),
-  config: maybe(Obj)
+  ref: Str,
+  type: TypeAttr,
+  value: Any
 }, 'Textbox');
 
 var Checkbox = struct({
-  ref: Str,
-  name: Str,
-  label: Label, // checkboxes must always have a label
-  help: maybe(Label),
+  config: maybe(Obj),
   disabled: maybe(Bool),
-  value: Bool,
-  hasError: maybe(Bool),
   error: maybe(Label),
-  config: maybe(Obj)
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: Label, // checkboxes must always have a label
+  name: Str,
+  ref: Str,
+  value: Bool
 }, 'Checkbox');
 
 var Select = struct({
-  ref: Str,
-  name: Str,
-  label: maybe(Label),
-  help: maybe(Label),
-  options: list(SelectOption),
-  disabled: maybe(Bool),
-  multiple: maybe(Bool),
-  value: maybe(union([Str, list(Str)])), // handle multiple
-  hasError: maybe(Bool),
+  config: maybe(Obj),
   error: maybe(Label),
-  config: maybe(Obj)
+  disabled: maybe(Bool),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: maybe(Label),
+  multiple: maybe(Bool),
+  name: Str,
+  options: list(SelectOption),
+  ref: Str,
+  value: maybe(union([Str, list(Str)])) // handle multiple
 }, 'Select');
 
 var Radio = struct({
-  ref: Str,
-  name: Str,
-  label: maybe(Label),
-  help: maybe(Label),
-  options: list(Option),
-  value: maybe(Str),
-  hasError: maybe(Bool),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   error: maybe(Label),
-  config: maybe(Obj)
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: maybe(Label),
+  name: Str,
+  options: list(Option),
+  ref: Str,
+  value: maybe(Str)
 }, 'Radio');
 
 var Struct = struct({
-  label: maybe(Label),
-  help: maybe(Label),
-  order: list(Label),
-  inputs: t.dict(Str, ReactElement),
-  value: Any,
-  hasError: maybe(Bool),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   error: maybe(Label),
-  config: maybe(Obj)
+  help: maybe(Label),
+  hasError: maybe(Bool),
+  inputs: t.dict(Str, ReactElement),
+  label: maybe(Label),
+  order: list(Label),
+  value: Any
 }, 'Struct');
 
 var Button = struct({
-  label: Str,
-  click: Func
+  click: Func,
+  label: Str
 }, 'Button');
 
 var ListItem = struct({
+  buttons: list(Button),
   input: ReactElement,
-  key: Str,
-  buttons: list(Button)
+  key: Str
 }, 'ListItem');
 
 var List = struct({
-  label: maybe(Label),
-  help: maybe(Label),
   add: maybe(Button),
-  items: list(ListItem),
-  value: Any,
-  hasError: maybe(Bool),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   error: maybe(Label),
-  config: maybe(Obj)
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  items: list(ListItem),
+  label: maybe(Label),
+  value: Any
 }, 'List');
 
 module.exports = {
@@ -1264,60 +1281,139 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":19}],8:[function(require,module,exports){
+},{"react":"react","tcomb-validation":18}],8:[function(require,module,exports){
 'use strict';
 
-//==================
-// WORK IN PROGRESS
-//==================
+var theme = require('../protocols/theme');
 
-var React = require('react');
-var cx = require('react/lib/cx');
-var util = require('./util.jsx');
+function getHiddenTextbox(locals) {
+  return {
+    tag: 'input',
+    attrs: {
+      type: 'hidden',
+      defaultValue: locals.value,
+      name: locals.name,
+      ref: locals.ref
+    }
+  };
+}
+
+function getLabel(label) {
+  if (!label) { return; }
+  return {
+    tag: 'label',
+    children: label
+  };
+}
+
+function getFormGroup(opts) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'has-error': opts.hasError
+      }
+    },
+    children: opts.children
+  };
+}
+
+function getOption(opts) {
+  return {
+    tag: 'option',
+    attrs: {
+      disabled: opts.disabled,
+      value: opts.value
+    },
+    children: opts.text,
+    key: opts.value
+  };
+}
+
+function getOptGroup(opts) {
+  return {
+    tag: 'optgroup',
+    attrs: {
+      disabled: opts.disabled,
+      label: opts.label
+    },
+    children: opts.options.map(getOption),
+    key: opts.label
+  };
+}
 
 function textbox(locals) {
 
   var type = locals.type;
 
   if (locals.type === 'hidden') {
-    return util.getHiddenTextbox(locals);
+    return getHiddenTextbox(locals);
   }
 
-  var textbox = util.getTextbox(locals);
+  var attrs = {
+    name: locals.name,
+    type: (type === 'textarea') ? null : type,
+    placeholder: locals.placeholder,
+    defaultValue: locals.value,
+    readOnly: locals.readOnly,
+    disabled: locals.disabled,
+    ref: locals.ref
+  };
 
-  return (
-    React.createElement("div", {className: cx({'has-error': locals.hasError})}, 
-      React.createElement("label", null, locals.label), 
-      textbox
-    )
-  );
+  var control = {
+    tag: (type === 'textarea') ? 'textarea' : 'input',
+    attrs: attrs
+  };
+
+  return getFormGroup({
+    hasError: locals.hasError,
+    children: [
+      getLabel(locals.label),
+      control
+    ]
+  });
 }
 
-function checkbox(locals) {
+function checkbox() {
   throw new Error('checkboxes are not implemented (yet)');
 }
 
 function select(locals) {
 
-  var select = util.getSelect(locals);
+  var options = locals.options.map(function (x) {
+    return theme.Option.is(x) ? getOption(x) : getOptGroup(x);
+  });
 
-  return (
-    React.createElement("div", {className: cx({'has-error': locals.hasError})}, 
-      React.createElement("label", null, locals.label), 
-      select
-    )
-  );
+  var control = {
+    tag: 'select',
+    attrs: {
+      name: locals.name,
+      defaultValue: locals.defaultValue,
+      value: locals.value,
+      disabled: locals.disabled
+    },
+    children: options,
+    ref: locals.ref
+  };
+
+  return getFormGroup({
+    hasError: locals.hasError,
+    children: [
+      getLabel(locals.label),
+      control
+    ]
+  });
 }
 
-function radio(locals) {
+function radio() {
   throw new Error('radios are not implemented (yet)');
 }
 
-function struct(locals) {
+function struct() {
   throw new Error('In grid forms you must write a custom template for structs');
 }
 
-function list(locals) {
+function list() {
   throw new Error('lists are not implemented (yet)');
 }
 
@@ -1330,88 +1426,7 @@ module.exports = {
   list: list
 };
 
-
-},{"./util.jsx":9,"react":"react","react/lib/cx":18}],9:[function(require,module,exports){
-'use strict';
-
-var React = require('react');
-var theme = require('../protocols/theme');
-
-function getRadio(locals) {
-  return React.createElement("input", {type: "radio", 
-    name: locals.name, 
-    value: locals.value, 
-    defaultChecked: locals.defaultChecked, 
-    ref: locals.ref});
-}
-
-function getCheckbox(locals) {
-  return React.createElement("input", {
-    type: "checkbox", 
-    name: locals.name, 
-    defaultChecked: locals.value, 
-    ref: locals.ref});
-}
-
-function getHiddenTextbox(locals) {
-  return React.createElement("input", {
-    type: "hidden", 
-    name: locals.name, 
-    defaultValue: locals.value, 
-    ref: locals.ref});
-}
-
-function getTextbox(locals, className) {
-
-  var type = locals.type;
-
-  var attrs = {
-    name: locals.name,
-    type: (type === 'textarea') ? null : type,
-    placeholder: locals.placeholder,
-    className: className,
-    defaultValue: locals.value,
-    readOnly: locals.readOnly,
-    disabled: locals.disabled,
-    ref: locals.ref
-  };
-
-  return (type === 'textbox') ?
-    React.createElement('textarea', attrs) :
-    React.createElement('input', attrs);
-}
-
-function getOption(option, i) {
-  return theme.Option.is(option) ?
-    React.createElement("option", {value: option.value, key: option.value}, option.text) :
-    React.createElement("optgroup", {label: option.label, key: option.label}, 
-      option.options.map(getOption)
-    )
-}
-
-function getSelect(locals, className) {
-  return (
-    React.createElement("select", {name: locals.name, 
-      className: className, 
-      defaultValue: locals.value, 
-      disabled: locals.disabled, 
-      multiple: locals.multiple, 
-      ref: locals.ref}, 
-      locals.options.map(getOption)
-    )
-  );
-}
-
-module.exports = {
-  getRadio: getRadio,
-  getCheckbox: getCheckbox,
-  getHiddenTextbox: getHiddenTextbox,
-  getTextbox: getTextbox,
-  getOption: getOption,
-  getSelect: getSelect
-};
-
-},{"../protocols/theme":7,"react":"react"}],10:[function(require,module,exports){
+},{"../protocols/theme":7}],9:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1421,7 +1436,7 @@ function either(a, b) {
 }
 
 module.exports = either;
-},{"tcomb-validation":19}],11:[function(require,module,exports){
+},{"tcomb-validation":18}],10:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1432,7 +1447,7 @@ function getError(error, state) {
 }
 
 module.exports = getError;
-},{"tcomb-validation":19}],12:[function(require,module,exports){
+},{"tcomb-validation":18}],11:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -1446,7 +1461,7 @@ function getOptionsOfEnum(type) {
 }
 
 module.exports = getOptionsOfEnum;
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1483,7 +1498,7 @@ function getReport(type) {
 }
 
 module.exports = getReport;
-},{"tcomb-validation":19}],14:[function(require,module,exports){
+},{"tcomb-validation":18}],13:[function(require,module,exports){
 'use strict';
 
 // thanks to https://github.com/epeli/underscore.string
@@ -1501,7 +1516,7 @@ function humanize(s){
 }
 
 module.exports = humanize;
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1512,7 +1527,7 @@ function merge(a, b) {
 }
 
 module.exports = merge;
-},{"tcomb-validation":19}],16:[function(require,module,exports){
+},{"tcomb-validation":18}],15:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -1521,7 +1536,7 @@ function move(arr, fromIndex, toIndex) {
 }
 
 module.exports = move;
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 function uuid() {
@@ -1532,7 +1547,7 @@ function uuid() {
 }
 
 module.exports = uuid;
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -1571,7 +1586,7 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -1790,7 +1805,7 @@ module.exports = cx;
 
 }));
 
-},{"tcomb":20}],20:[function(require,module,exports){
+},{"tcomb":19}],19:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -2699,7 +2714,7 @@ module.exports = cx;
   };
 }));
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -2768,4 +2783,4 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"react":"react","react/lib/cx":18}]},{},[1]);
+},{"react":"react","react/lib/cx":17}]},{},[1]);

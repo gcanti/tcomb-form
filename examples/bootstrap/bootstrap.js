@@ -223,18 +223,18 @@ function textbox(opts, ctx) {
       }
 
       return compile(template(new theme.Textbox({
-        ref: REF,
-        type: opts.type || 'text',
+        config: merge(ctx.config, opts.config),
+        disabled: opts.disabled,
+        error: getError(opts.error, this.state),
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
         name: name,
         placeholder: placeholder,
-        label: label,
-        help: opts.help,
         readOnly: opts.readOnly,
-        disabled: opts.disabled,
-        hasError: this.state.hasError,
-        value: value,
-        error: getError(opts.error, this.state),
-        config: merge(ctx.config, opts.config)
+        ref: REF,
+        type: opts.type || 'text',
+        value: value
       })));
     }
   });
@@ -283,15 +283,15 @@ function checkbox(opts, ctx) {
 
     render: function () {
       return compile(template(new theme.Checkbox({
-        ref: REF,
-        name: name,
-        label: label,
-        help: opts.help,
+        config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
-        hasError: this.state.hasError,
-        value: this.state.value,
         error: getError(opts.error, this.state),
-        config: merge(ctx.config, opts.config)
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
+        name: name,
+        ref: REF,
+        value: this.state.value
       })));
     }
   });
@@ -376,17 +376,17 @@ function select(opts, ctx) {
 
     render: function () {
       return compile(template(new theme.Select({
-        ref: REF,
-        name: name,
-        label: label,
-        help: opts.help,
-        options: options,
+        config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
-        hasError: this.state.hasError,
-        value: this.state.value,
         error: getError(opts.error, this.state),
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
+        name: name,
         multiple: multiple,
-        config: merge(ctx.config, opts.config)
+        options: options,
+        ref: REF,
+        value: this.state.value
       })));
     }
   });
@@ -396,9 +396,8 @@ function radio(opts, ctx) {
 
   opts = new api.Radio(opts || {});
 
-  // radios must always have a label
   var label = opts.label;
-  if (!label) {
+  if (!label && ctx.auto === 'labels') {
     label = ctx.getDefaultLabel();
   }
 
@@ -453,15 +452,16 @@ function radio(opts, ctx) {
 
     render: function () {
       return compile(template(new theme.Radio({
-        ref: REF,
-        name: name,
-        label: label,
-        help: opts.help,
-        options: options,
-        hasError: this.state.hasError,
-        value: this.state.value,
+        config: merge(ctx.config, opts.config),
+        disabled: opts.disabled,
         error: getError(opts.error, this.state),
-        config: merge(ctx.config, opts.config)
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
+        name: name,
+        ref: REF,
+        options: options,
+        value: this.state.value
       })));
     }
   });
@@ -561,14 +561,15 @@ function struct(opts, ctx) {
       }
 
       return compile(templates.struct(new theme.Struct({
-        label: label,
-        help: opts.help,
-        order: order,
-        inputs: inputs,
-        value: value,
-        hasError: this.state.hasError,
+        config: config,
+        disabled: opts.disabled,
         error: getError(opts.error, this.state),
-        config: config
+        hasError: this.state.hasError,
+        help: opts.help,
+        inputs: inputs,
+        label: label,
+        order: order,
+        value: value
       })));
     }
   });
@@ -705,17 +706,18 @@ function list(opts, ctx) {
       }.bind(this));
 
       return compile(templates.list(new theme.List({
-        label: label,
-        help: opts.help,
         add: opts.disableAdd ? null : {
           label: i18n.add,
           click: this.addItem
         },
-        items: items,
-        value: value,
-        hasError: this.state.hasError,
+        config: config,
+        disabled: opts.disabled,
         error: getError(opts.error, this.state),
-        config: config
+        hasError: this.state.hasError,
+        help: opts.help,
+        items: items,
+        label: label,
+        value: value
       })));
     }
   });
@@ -767,7 +769,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":41}],6:[function(require,module,exports){
+},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/either":10,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":43}],6:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -857,11 +859,13 @@ var Label = union([Str, ReactElement], 'Label');
 var ErrorMessage = union([Label, Func], 'Error');
 
 var Option = t.struct({
-  value: Str,
-  text: Str
+  disabled: maybe(Bool),
+  text: Str,
+  value: Str
 }, 'Option');
 
 var OptGroup = t.struct({
+  disabled: maybe(Bool),
   label: Str,
   options: list(Option)
 }, 'OptGroup');
@@ -869,11 +873,11 @@ var OptGroup = t.struct({
 var SelectOption = union([Option, OptGroup], 'SelectOption');
 
 SelectOption.dispatch = function (x) {
-  if (x.hasOwnProperty('group')) { return OptGroup; }
+  if (x.hasOwnProperty('label')) { return OptGroup; }
   return Option;
 };
 
-var TypeAttr = t.enums.of('hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
+var TypeAttr = t.enums.of('static hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 var Transformer = struct({
   format: Func,
@@ -881,31 +885,31 @@ var Transformer = struct({
 }, 'Transformer');
 
 var Textbox = struct({
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   error: maybe(ErrorMessage),
-  type: maybe(TypeAttr),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: maybe(Label),
   name: maybe(t.Str),
   placeholder: maybe(Str),
-  value: Any,
   readOnly: maybe(Bool),
-  disabled: maybe(Bool),
-  transformer: maybe(Transformer),
   template: maybe(Func),
-  config: maybe(Obj)
+  transformer: maybe(Transformer),
+  type: maybe(TypeAttr),
+  value: Any
 }, 'Textbox');
 
 var Checkbox = struct({
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
-  error: maybe(ErrorMessage),
-  name: maybe(t.Str),
-  value: maybe(Bool),
+  config: maybe(Obj),
   disabled: maybe(Bool),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
+  name: maybe(t.Str),
   template: maybe(Func),
-  config: maybe(Obj)
+  value: maybe(Bool)
 }, 'Checkbox');
 
 function asc(a, b) {
@@ -924,61 +928,64 @@ Order.getComparator = function (order) {
 };
 
 var Select = struct({
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
-  error: maybe(ErrorMessage),
-  name: maybe(t.Str),
-  value: maybe(Str),
-  order: maybe(Order),
-  options: maybe(list(SelectOption)),
-  nullOption: maybe(Option),
+  config: maybe(Obj),
   disabled: maybe(Bool),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
+  name: maybe(t.Str),
+  nullOption: maybe(Option),
+  options: maybe(list(SelectOption)),
+  order: maybe(Order),
   template: maybe(Func),
-  config: maybe(Obj)
+  value: maybe(Str)
 }, 'Select');
 
 var Radio = struct({
-  label: maybe(Label),
-  help: maybe(Label),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   hasError: maybe(Bool),
+  help: maybe(Label),
   error: maybe(ErrorMessage),
+  label: maybe(Label),
   name: maybe(t.Str),
-  value: maybe(Str),
-  order: maybe(Order),
   options: maybe(list(SelectOption)),
+  order: maybe(Order),
   template: maybe(Func),
-  config: maybe(Obj)
+  value: maybe(Str)
 }, 'Select');
 
 var Struct = struct({
-  i18n: maybe(I18n),
-  value: maybe(Obj),
   auto: maybe(Auto),
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
-  error: maybe(ErrorMessage),
-  order: maybe(list(Label)),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   fields: maybe(Obj),
+  i18n: maybe(I18n),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
+  order: maybe(list(Label)),
   templates: maybe(Templates),
-  config: maybe(Obj)
+  value: maybe(Obj)
 }, 'Struct');
 
 var List = struct({
-  i18n: maybe(I18n),
-  value: maybe(t.Arr),
   auto: maybe(Auto),
-  label: maybe(Label),
-  help: maybe(Label),
-  hasError: maybe(Bool),
-  error: maybe(ErrorMessage),
-  item: maybe(Obj),
+  config: maybe(Obj),
   disableAdd: maybe(Bool),
   disableRemove: maybe(Bool),
   disableOrder: maybe(Bool),
+  disabled: maybe(Bool),
+  i18n: maybe(I18n),
+  item: maybe(Obj),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
   templates: maybe(Templates),
-  config: maybe(Obj)
+  value: maybe(t.Arr)
 }, 'List');
 
 module.exports = {
@@ -1019,12 +1026,14 @@ var ReactElement = t.irriducible('ReactElement', React.isValidElement);
 
 var Label = union([Str, ReactElement], 'Label');
 
-var Option = struct({
-  value: Str,
-  text: Str
+var Option = t.struct({
+  disabled: maybe(Bool),
+  text: Str,
+  value: Str
 }, 'Option');
 
-var OptGroup = struct({
+var OptGroup = t.struct({
+  disabled: maybe(Bool),
   label: Str,
   options: list(Option)
 }, 'OptGroup');
@@ -1032,96 +1041,99 @@ var OptGroup = struct({
 var SelectOption = union([Option, OptGroup], 'SelectOption');
 
 SelectOption.dispatch = function (x) {
-  if (x.hasOwnProperty('group')) { return OptGroup; }
+  if (x.hasOwnProperty('label')) { return OptGroup; }
   return Option;
 };
 
-var TypeAttr = t.enums.of('hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
+var TypeAttr = t.enums.of('static hidden text textarea password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 var Textbox = struct({
-  ref: Str,
-  type: TypeAttr,
+  config: maybe(Obj),
+  disabled: maybe(Bool),
+  error: maybe(Label),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: maybe(Label),
   name: Str,
   placeholder: maybe(Str),
-  label: maybe(Label),
-  help: maybe(Label),
   readOnly: maybe(Bool),
-  disabled: maybe(Bool),
-  value: Any,
-  hasError: maybe(Bool),
-  error: maybe(Label),
-  config: maybe(Obj)
+  ref: Str,
+  type: TypeAttr,
+  value: Any
 }, 'Textbox');
 
 var Checkbox = struct({
-  ref: Str,
-  name: Str,
-  label: Label, // checkboxes must always have a label
-  help: maybe(Label),
+  config: maybe(Obj),
   disabled: maybe(Bool),
-  value: Bool,
-  hasError: maybe(Bool),
   error: maybe(Label),
-  config: maybe(Obj)
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: Label, // checkboxes must always have a label
+  name: Str,
+  ref: Str,
+  value: Bool
 }, 'Checkbox');
 
 var Select = struct({
-  ref: Str,
-  name: Str,
-  label: maybe(Label),
-  help: maybe(Label),
-  options: list(SelectOption),
-  disabled: maybe(Bool),
-  multiple: maybe(Bool),
-  value: maybe(union([Str, list(Str)])), // handle multiple
-  hasError: maybe(Bool),
+  config: maybe(Obj),
   error: maybe(Label),
-  config: maybe(Obj)
+  disabled: maybe(Bool),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: maybe(Label),
+  multiple: maybe(Bool),
+  name: Str,
+  options: list(SelectOption),
+  ref: Str,
+  value: maybe(union([Str, list(Str)])) // handle multiple
 }, 'Select');
 
 var Radio = struct({
-  ref: Str,
-  name: Str,
-  label: maybe(Label),
-  help: maybe(Label),
-  options: list(Option),
-  value: maybe(Str),
-  hasError: maybe(Bool),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   error: maybe(Label),
-  config: maybe(Obj)
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  label: maybe(Label),
+  name: Str,
+  options: list(Option),
+  ref: Str,
+  value: maybe(Str)
 }, 'Radio');
 
 var Struct = struct({
-  label: maybe(Label),
-  help: maybe(Label),
-  order: list(Label),
-  inputs: t.dict(Str, ReactElement),
-  value: Any,
-  hasError: maybe(Bool),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   error: maybe(Label),
-  config: maybe(Obj)
+  help: maybe(Label),
+  hasError: maybe(Bool),
+  inputs: t.dict(Str, ReactElement),
+  label: maybe(Label),
+  order: list(Label),
+  value: Any
 }, 'Struct');
 
 var Button = struct({
-  label: Str,
-  click: Func
+  click: Func,
+  label: Str
 }, 'Button');
 
 var ListItem = struct({
+  buttons: list(Button),
   input: ReactElement,
-  key: Str,
-  buttons: list(Button)
+  key: Str
 }, 'ListItem');
 
 var List = struct({
-  label: maybe(Label),
-  help: maybe(Label),
   add: maybe(Button),
-  items: list(ListItem),
-  value: Any,
-  hasError: maybe(Bool),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
   error: maybe(Label),
-  config: maybe(Obj)
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  items: list(ListItem),
+  label: maybe(Label),
+  value: Any
 }, 'List');
 
 module.exports = {
@@ -1142,15 +1154,15 @@ var t = require('tcomb-validation');
 var theme = require('../protocols/theme');
 var Label = theme.Label;
 var uform = require('uvdom-bootstrap/form');
+var maybe = t.maybe;
 var getHelpBlock = uform.getHelpBlock;
 var getFieldset = uform.getFieldset;
 var getFormGroup = uform.getFormGroup;
 var getAddon = uform.getAddon;
-var getRow = uform.getRow;
-var getCol = uform.getCol;
 var getButton = uform.getButton;
+var getCol = uform.getCol;
+var getAlert = uform.getAlert;
 var getBreakpoints = uform.getBreakpoints;
-var getOffsets = uform.getOffsets;
 
 var Positive = t.subtype(t.Num, function (n) {
   return n % 1 === 0 && n >= 0;
@@ -1161,10 +1173,10 @@ var Cols = t.subtype(t.tuple([Positive, Positive]), function (cols) {
 }, 'Cols');
 
 var Breakpoints = t.struct({
-  xs: t.maybe(Cols),
-  sm: t.maybe(Cols),
-  md: t.maybe(Cols),
-  lg: t.maybe(Cols)
+  xs: maybe(Cols),
+  sm: maybe(Cols),
+  md: maybe(Cols),
+  lg: maybe(Cols)
 }, 'Breakpoints');
 
 Breakpoints.prototype.getBreakpoints = function (index) {
@@ -1186,46 +1198,52 @@ Breakpoints.prototype.getInputClassName = function () {
 };
 
 Breakpoints.prototype.getOffsetClassName = function () {
-  return t.util.mixin(getOffsets(this.getBreakpoints(1)), getBreakpoints(this.getBreakpoints(1)));
+  return t.util.mixin(uform.getOffsets(this.getBreakpoints(1)), getBreakpoints(this.getBreakpoints(1)));
+};
+
+Breakpoints.prototype.getFieldsetClassName = function () {
+  return {
+    'col-xs-12': true
+  };
 };
 
 var TextboxConfig = t.struct({
-  addonBefore: t.maybe(Label),
-  addonAfter: t.maybe(Label),
-  horizontal: t.maybe(Breakpoints)
+  addonBefore: maybe(Label),
+  addonAfter: maybe(Label),
+  horizontal: maybe(Breakpoints)
 }, 'TextboxConfig');
 
 var CheckboxConfig = t.struct({
-  horizontal: t.maybe(Breakpoints)
+  horizontal: maybe(Breakpoints)
 }, 'CheckboxConfig');
 
 var SelectConfig = t.struct({
-  addonBefore: t.maybe(Label),
-  addonAfter: t.maybe(Label),
-  horizontal: t.maybe(Breakpoints)
+  addonBefore: maybe(Label),
+  addonAfter: maybe(Label),
+  horizontal: maybe(Breakpoints)
 }, 'SelectConfig');
 
 var RadioConfig = t.struct({
-  horizontal: t.maybe(Breakpoints)
+  horizontal: maybe(Breakpoints)
 }, 'RadioConfig');
 
 var StructConfig = t.struct({
-  horizontal: t.maybe(Breakpoints)
+  horizontal: maybe(Breakpoints)
 }, 'StructConfig');
 
 var ListConfig = t.struct({
-  horizontal: t.maybe(Breakpoints)
+  horizontal: maybe(Breakpoints)
 }, 'ListConfig');
 
-function getLabel(locals, horizontal) {
+function getLabel(locals, breakpoints) {
   if (!locals.label) { return; }
 
   var align = null;
   var className = null;
 
-  if (horizontal) {
+  if (breakpoints) {
     align = 'right';
-    className = horizontal.getLabelClassName();
+    className = breakpoints.getLabelClassName();
   }
 
   return uform.getLabel({
@@ -1237,7 +1255,6 @@ function getLabel(locals, horizontal) {
 
 function getHelp(locals) {
   if (!locals.help) { return; }
-
   return getHelpBlock({
     help: locals.help
   });
@@ -1245,53 +1262,72 @@ function getHelp(locals) {
 
 function getError(locals) {
   if (!locals.error) { return; }
-
   return getHelpBlock({
     help: locals.error,
     hasError: locals.hasError
   });
 }
 
+function getHiddenTextbox(locals) {
+  return {
+    tag: 'input',
+    attrs: {
+      type: 'hidden',
+      defaultValue: locals.value,
+      name: locals.name,
+      ref: locals.ref
+    }
+  };
+}
+
 function textbox(locals) {
 
-  if (locals.type === 'hidden') {
-    return {
-      tag: 'input',
-      attrs: {
-        type: 'hidden',
-        name: locals.name,
-        defaultValue: locals.value,
-        ref: locals.ref
-      }
-    };
-  }
+  var type = locals.type;
 
-  var control = uform.getTextbox({
-    type: locals.type,
-    defaultValue: locals.value,
-    name: locals.name,
-    disabled: locals.disabled,
-    readOnly: locals.readOnly,
-    placeholder: locals.placeholder,
-    ref: locals.ref
-  });
+  if (type === 'hidden') {
+    return getHiddenTextbox(locals);
+  }
 
   var config = new TextboxConfig(locals.config || {});
 
-  // handle addonBefore / addonAfter
-  if (config.addonBefore || config.addonAfter) {
-    control = uform.getInputGroup([
-      config.addonBefore ? getAddon(config.addonBefore) : null,
-      control,
-      config.addonAfter ? getAddon(config.addonAfter) : null
-    ]);
+  var control;
+  var staticControl;
+
+  if (type === 'static') {
+    control = getHiddenTextbox(locals);
+    staticControl = uform.getStatic(locals.value);
+  } else {
+    control = uform.getTextbox({
+      type: type,
+      defaultValue: locals.value,
+      disabled: locals.disabled,
+      placeholder: locals.placeholder,
+      name: locals.name,
+      readOnly: locals.readOnly,
+      ref: locals.ref
+    });
+
+    if (config.addonBefore || config.addonAfter) {
+      control = uform.getInputGroup([
+        config.addonBefore ? getAddon(config.addonBefore) : null,
+        control,
+        config.addonAfter ? getAddon(config.addonAfter) : null
+      ]);
+    }
   }
 
   var horizontal = config.horizontal;
   var label = getLabel(locals, horizontal);
   var error = getError(locals);
   var help = getHelp(locals);
-  var children;
+
+  var children = [
+    label,
+    staticControl,
+    control,
+    error,
+    help
+  ];
 
   if (horizontal) {
     children = [
@@ -1302,18 +1338,12 @@ function textbox(locals) {
           className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
         },
         children: [
+          staticControl,
           control,
           error,
           help
         ]
       }
-    ];
-  } else {
-    children = [
-      label,
-      control,
-      error,
-      help
     ];
   }
 
@@ -1325,37 +1355,29 @@ function textbox(locals) {
 
 function checkbox(locals) {
 
-  var config = new CheckboxConfig(locals.config || {});
-
   var control = uform.getCheckbox({
-    name: locals.name,
     defaultChecked: locals.value,
-    ref: locals.ref,
-    label: locals.label
+    disabled: locals.disabled,
+    label: locals.label,
+    name: locals.name,
+    ref: locals.ref
   });
+
+  var config = new CheckboxConfig(locals.config || {});
 
   var error = getError(locals);
   var help = getHelp(locals);
-  var children = {
-    tag: 'div',
-    attrs: {
-      className: {
-        'checkbox': true
-      }
-    },
-    children: [
-      control,
-      error,
-      help
-    ]
-  };
+  var children = [
+    control,
+    error,
+    help
+  ];
 
-  var horizontal = config.horizontal;
-  if (horizontal) {
+  if (config.horizontal) {
     children = {
       tag: 'div',
       attrs: {
-        className: horizontal.getOffsetClassName()
+        className: config.horizontal.getOffsetClassName()
       },
       children: children
     };
@@ -1365,29 +1387,34 @@ function checkbox(locals) {
     hasError: locals.hasError,
     children: children
   });
-
 }
 
 function select(locals) {
-
-  var config = new SelectConfig(locals.config || {});
 
   var options = locals.options.map(function (x) {
     return theme.Option.is(x) ? uform.getOption(x) : uform.getOptGroup(x);
   });
 
   var control = uform.getSelect({
-    name: locals.name,
     defaultValue: locals.value,
     disabled: locals.disabled,
-    ref: locals.ref,
-    options: options
+    name: locals.name,
+    options: options,
+    ref: locals.ref
   });
+
+  var config = new SelectConfig(locals.config || {});
+
   var horizontal = config.horizontal;
   var label = getLabel(locals, horizontal);
   var error = getError(locals);
   var help = getHelp(locals);
-  var children;
+  var children = [
+    label,
+    control,
+    error,
+    help
+  ];
 
   if (horizontal) {
     children = [
@@ -1404,41 +1431,39 @@ function select(locals) {
         ]
       }
     ];
-  } else {
-    children = [
-      label,
-      control,
-      error,
-      help
-    ];
   }
 
   return getFormGroup({
     hasError: locals.hasError,
     children: children
   });
-
 }
 
 function radio(locals) {
 
-  var config = new RadioConfig(locals.config || {});
-
   var control = locals.options.map(function (option, i) {
     return uform.getRadio({
-      name: locals.name,
-      value: option.value,
-      label: option.text,
       defaultChecked: (option.value === locals.value),
-      ref: locals.ref + i
+      disabled: option.disabled || locals.disabled,
+      label: option.text,
+      name: locals.name,
+      ref: locals.ref + i,
+      value: option.value
     });
   });
+
+  var config = new RadioConfig(locals.config || {});
 
   var horizontal = config.horizontal;
   var label = getLabel(locals, horizontal);
   var error = getError(locals);
   var help = getHelp(locals);
-  var children;
+  var children = [
+    label,
+    control,
+    error,
+    help
+  ];
 
   if (horizontal) {
     children = [
@@ -1455,43 +1480,45 @@ function radio(locals) {
         ]
       }
     ];
-  } else {
-    children = [
-      label,
-      control,
-      error,
-      help
-    ];
   }
 
   return getFormGroup({
     hasError: locals.hasError,
     children: children
   });
-
 }
 
 function struct(locals) {
 
   var config = new StructConfig(locals.config || {});
 
-  // FIXME handle help and error
+  var rows = [];
 
-  var groups = locals.order.map(function (name) {
-    // handle verbatims
+  if (locals.help) {
+    rows.push(getAlert({
+      children: locals.help
+    }));
+  }
+
+  rows = rows.concat(locals.order.map(function (name) {
     return locals.inputs.hasOwnProperty(name) ?
       locals.inputs[name] :
-      name;
-  });
+      name; // handle verbatims
+  }));
+
+  if (locals.error && locals.hasError) {
+    rows.push(getAlert({
+      type: 'danger',
+      children: locals.error
+    }));
+  }
 
   return getFormGroup({
-    hasError: locals.hasError,
     children: getFieldset({
-      className: {
-        'col-xs-12': !!config.horizontal
-      },
+      className: config.horizontal && config.horizontal.getFieldsetClassName(),
+      disabled: locals.disabled,
       legend: locals.label,
-      children: groups
+      children: rows
     })
   });
 }
@@ -1500,18 +1527,24 @@ function list(locals) {
 
   var config = new ListConfig(locals.config || {});
 
-  // FIXME handle help and error
+  var rows = [];
 
-  var rows = locals.items.map(function (item) {
-    return getRow({
+  if (locals.help) {
+    rows.push(getAlert({
+      children: locals.help
+    }));
+  }
+
+  rows = rows.concat(locals.items.map(function (item) {
+    return uform.getRow({
       key: item.key,
       children: [
         getCol({
-          breakpoints: {xs: 6},
+          breakpoints: {sm: 8, xs: 6},
           children: item.input
         }),
         getCol({
-          breakpoints: {xs: 6},
+          breakpoints: {sm: 4, xs: 6},
           children: uform.getButtonGroup(item.buttons.map(function (button, i) {
             return getButton({
               click: button.click,
@@ -1522,18 +1555,23 @@ function list(locals) {
         })
       ]
     });
-  });
+  }));
+
+  if (locals.error && locals.hasError) {
+    rows.push(getAlert({
+      type: 'danger',
+      children: locals.error
+    }));
+  }
 
   if (locals.add) {
     rows.push(getButton(locals.add));
   }
 
   return getFormGroup({
-    hasError: locals.hasError,
     children: getFieldset({
-      className: {
-        'col-xs-12': !!config.horizontal
-      },
+      className: config.horizontal && config.horizontal.getFieldsetClassName(),
+      disabled: locals.disabled,
       legend: locals.label,
       children: rows
     })
@@ -2839,6 +2877,7 @@ module.exports = cx;
 },{}],21:[function(require,module,exports){
 module.exports = {
   getAddon: require('./lib/getAddon'),
+  getAlert: require('./lib/getAlert'),
   getBreakpoints: require('./lib/getBreakpoints'),
   getButton: require('./lib/getButton'),
   getButtonGroup: require('./lib/getButtonGroup'),
@@ -2855,9 +2894,10 @@ module.exports = {
   getRadio: require('./lib/getRadio'),
   getRow: require('./lib/getRow'),
   getSelect: require('./lib/getSelect'),
+  getStatic: require('./lib/getStatic'),
   getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":22,"./lib/getBreakpoints":23,"./lib/getButton":24,"./lib/getButtonGroup":25,"./lib/getCheckbox":26,"./lib/getCol":27,"./lib/getFieldset":28,"./lib/getFormGroup":29,"./lib/getHelpBlock":30,"./lib/getInputGroup":31,"./lib/getLabel":32,"./lib/getOffsets":33,"./lib/getOptGroup":34,"./lib/getOption":35,"./lib/getRadio":36,"./lib/getRow":37,"./lib/getSelect":38,"./lib/getTextbox":39}],22:[function(require,module,exports){
+},{"./lib/getAddon":22,"./lib/getAlert":23,"./lib/getBreakpoints":24,"./lib/getButton":25,"./lib/getButtonGroup":26,"./lib/getCheckbox":27,"./lib/getCol":28,"./lib/getFieldset":29,"./lib/getFormGroup":30,"./lib/getHelpBlock":31,"./lib/getInputGroup":32,"./lib/getLabel":33,"./lib/getOffsets":34,"./lib/getOptGroup":35,"./lib/getOption":36,"./lib/getRadio":37,"./lib/getRow":38,"./lib/getSelect":39,"./lib/getStatic":40,"./lib/getTextbox":41}],22:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -2876,6 +2916,27 @@ module.exports = getAddon;
 },{}],23:[function(require,module,exports){
 'use strict';
 
+function getAlert(opts) {
+
+  var type = opts.type || 'info';
+  var className = {
+    'alert': true
+  };
+  className['alert-' + type] = true;
+
+  return {
+    tag: 'div',
+    attrs: {
+      className: className
+    },
+    children: opts.children
+  };
+}
+
+module.exports = getAlert;
+},{}],24:[function(require,module,exports){
+'use strict';
+
 function getBreakpoints(breakpoints) {
   var className = {};
   for (var size in breakpoints) {
@@ -2887,7 +2948,7 @@ function getBreakpoints(breakpoints) {
 }
 
 module.exports = getBreakpoints;
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2934,7 +2995,7 @@ function getButton(opts) {
 
 module.exports = getButton;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 function getButtonGroup(buttons) {
@@ -2952,7 +3013,7 @@ function getButtonGroup(buttons) {
 module.exports = getButtonGroup;
 
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2973,38 +3034,44 @@ module.exports = getButtonGroup;
 function getCheckbox(opts) {
 
   return {
-    tag: 'label',
-    children: [
-      {
-        tag: 'input',
-        attrs: {
-          type: 'checkbox',
-          defaultChecked: opts.defaultChecked,
-          checked: opts.checked,
-          name: opts.name,
-          disabled: opts.disabled,
-          value: 'true'
+    tag: 'div',
+    attrs: {
+      className: {
+        'checkbox': true,
+        'disabled': opts.disabled
+      }
+    },
+    children: {
+      tag: 'label',
+      children: [
+        {
+          tag: 'input',
+          attrs: {
+            type: 'checkbox',
+            checked: opts.checked,
+            disabled: opts.disabled,
+            defaultChecked: opts.defaultChecked,
+            name: opts.name,
+            value: 'true'
+          },
+          ref: opts.ref
         },
-        ref: opts.ref
-      },
-      ' ',
-      opts.label
-    ]
-  };
+        ' ',
+        opts.label
+      ]
+    }
+  }
 }
 
 module.exports = getCheckbox;
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var getBreakpoints = require('./getBreakpoints');
 
 function getCol(opts) {
 
-  var className = null;
-  if (opts.breakpoints) {
-    className = getBreakpoints(opts.breakpoints);
-  }
+  var className = opts.breakpoints ? getBreakpoints(opts.breakpoints) : null;
 
   return {
     tag: 'div',
@@ -3016,7 +3083,7 @@ function getCol(opts) {
 }
 
 module.exports = getCol;
-},{"./getBreakpoints":23}],28:[function(require,module,exports){
+},{"./getBreakpoints":24}],29:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -3033,7 +3100,8 @@ function getFieldset(opts) {
   return {
     tag: 'fieldset',
     attrs: {
-      className: opts.className
+      className: opts.className,
+      disabled: opts.disabled
     },
     children: children
   };
@@ -3042,7 +3110,7 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
@@ -3059,7 +3127,7 @@ function getFormGroup(opts) {
 }
 
 module.exports = getFormGroup;
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3089,7 +3157,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -3105,7 +3173,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -3116,33 +3184,27 @@ var mixin = require('./mixin');
 
   {
     label: 'my label',
-    for: 'inputId',
-    srOnly: false,
-    breakpoints: {
-      lg: 8
-    },
-    align: 'right'
+    htmlFor: 'inputId',
+    align: 'right',
+    className: {}
   }
 
 */
 
 function getLabel(opts) {
 
-  var className = {
-    'control-label': true,
-    'sr-only': opts.srOnly
-  };
+  var className = mixin({
+    'control-label': true
+  }, opts.className);
+
   if (opts.align) {
     className['text-' + opts.align] = true;
-  }
-  if (opts.className) {
-    mixin(className, opts.className);
   }
 
   return {
     tag: 'label',
     attrs: {
-      for: opts.for,
+      htmlFor: opts.htmlFor,
       className: className
     },
     children: opts.label
@@ -3152,7 +3214,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":40}],33:[function(require,module,exports){
+},{"./mixin":42}],34:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -3166,7 +3228,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -3189,17 +3251,18 @@ function getOptGroup(opts) {
   return {
     tag: 'optgroup',
     attrs: {
+      disabled: opts.disabled,
       label: opts.label
     },
     children: opts.options.map(getOption),
     key: opts.label
   };
-};
+}
 
 module.exports = getOptGroup;
 
 
-},{"./getOption":35}],35:[function(require,module,exports){
+},{"./getOption":36}],36:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3217,17 +3280,18 @@ function getOption(opts) {
   return {
     tag: 'option',
     attrs: {
+      disabled: opts.disabled,
       value: opts.value
     },
     children: opts.text,
     key: opts.value
   };
-};
+}
 
 module.exports = getOption;
 
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3252,7 +3316,8 @@ function getRadio(opts) {
     tag: 'div',
     attrs: {
       className: {
-        'radio': true
+        'radio': true,
+        'disabled': opts.disabled
       }
     },
     children: {
@@ -3262,11 +3327,11 @@ function getRadio(opts) {
           tag: 'input',
           attrs: {
             type: 'radio',
-            value: opts.value,
-            name: opts.name,
-            defaultChecked: opts.defaultChecked,
             checked: opts.checked,
-            disabled: opts.disabled
+            defaultChecked: opts.defaultChecked,
+            disabled: opts.disabled,
+            name: opts.name,
+            value: opts.value
           },
           ref: opts.ref
         },
@@ -3279,7 +3344,7 @@ function getRadio(opts) {
 }
 
 module.exports = getRadio;
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -3296,7 +3361,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3332,7 +3397,23 @@ function getSelect(opts) {
 }
 
 module.exports = getSelect;
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
+'use strict';
+
+function getStatic(value) {
+  return {
+    tag: 'p',
+    attrs: {
+      className: {
+        'form-control-static': true
+      }
+    },
+    children: value
+  };
+}
+
+module.exports = getStatic;
+},{}],41:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3375,7 +3456,7 @@ function getTextbox(opts) {
 }
 
 module.exports = getTextbox;
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 function mixin(a, b) {
@@ -3389,7 +3470,7 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 var React = require('react');

@@ -2,7 +2,7 @@ var React = require('react');
 var t = require('../../lib');
 
 // configure gridforms plugin
-t.form.config.templates = require('../../lib/templates/gridforms.jsx');
+t.form.config.templates = require('../../lib/templates/gridforms');
 
 // model
 var Vendor = t.enums.of([
@@ -96,6 +96,11 @@ var Form = t.form.create(Data, {
     costPrice: 700,
     wholesalePrice: null,
     retailPrice: 1000
+  },
+  fields: {
+    initialStockLevel: {
+      help: 'Insert a number'
+    }
   }
 });
 
