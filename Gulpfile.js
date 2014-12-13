@@ -15,19 +15,53 @@ gulp.task('default', ['examples']);
 gulp.task('examples', function (){
 
   // bootstrap
-  getBundle('./examples/bootstrap/bootstrap.jsx')
-    .pipe(rename('bootstrap.js'))
-    .pipe(gulp.dest('./examples/bootstrap'));
+  browserify('./examples/bootstrap/bootstrap.jsx', {
+    transform: [reactify],
+    detectGlobals: false
+  })
+  .external('react')
+  .bundle()
+  .on('error', function (err) {
+    gutil.beep();
+    console.log(String(err));
+    this.end();
+  })
+  .pipe(source('./examples/bootstrap/bootstrap.jsx'))
+  .pipe(rename('bootstrap.js'))
+  .pipe(gulp.dest('./examples/bootstrap'));
 
   // gridforms
-  getBundle('./examples/gridforms/gridforms.jsx')
-    .pipe(rename('gridforms.js'))
-    .pipe(gulp.dest('./examples/gridforms'));
+  browserify('./examples/gridforms/gridforms.jsx', {
+    transform: [reactify],
+    detectGlobals: false
+  })
+  .external('react')
+  .bundle()
+  .on('error', function (err) {
+    gutil.beep();
+    console.log(String(err));
+    this.end();
+  })
+  .pipe(source('./examples/gridforms/gridforms.jsx'))
+  .pipe(rename('gridforms.js'))
+  .pipe(gulp.dest('./examples/gridforms'));
 
   // ionic
-  getBundle('./examples/ionic/ionic.jsx')
-    .pipe(rename('ionic.js'))
-    .pipe(gulp.dest('./examples/ionic'));
+  browserify('./examples/ionic/ionic.jsx', {
+    transform: [reactify],
+    detectGlobals: false
+  })
+  .external('react')
+  .bundle()
+  .on('error', function (err) {
+    gutil.beep();
+    console.log(String(err));
+    this.end();
+  })
+  .pipe(source('./examples/ionic/ionic.jsx'))
+  .pipe(rename('ionic.js'))
+  .pipe(gulp.dest('./examples/ionic'));
+
 
 });
 
@@ -57,16 +91,7 @@ gulp.task('lint', function() {
 // development
 // ------------------------------------
 gulp.task('dev', function (){
-  return getBundle('./dev/dev.jsx')
-    .pipe(rename('dev.js'))
-    .pipe(gulp.dest('./dev'));
-});
-
-// ------------------------------------
-// helpers
-// ------------------------------------
-function getBundle(file) {
-  return browserify(file, {
+  browserify('./dev/dev.jsx', {
     transform: [reactify],
     detectGlobals: false
   })
@@ -77,5 +102,8 @@ function getBundle(file) {
     console.log(String(err));
     this.end();
   })
-  .pipe(source(file));
-}
+  .pipe(source('dev/dev.jsx'))
+  .pipe(rename('dev.js'))
+  .pipe(gulp.dest('dev'));
+});
+

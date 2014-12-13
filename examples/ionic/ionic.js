@@ -248,7 +248,7 @@ function checkbox(opts, ctx) {
 
   var name = opts.name || ctx.getDefaultName();
 
-  var value = !!either(opts.value, ctx.value === true);
+  var value = t.Bool.is(opts.value) ? opts.value : t.Bool.is(ctx.value) ? ctx.value : false;
 
   var template = opts.template || ctx.templates.checkbox;
 
@@ -515,7 +515,8 @@ function struct(opts, ctx) {
 
     getInitialState: function () {
       return {
-        hasError: !!opts.hasError
+        hasError: !!opts.hasError,
+        value: value
       };
     },
 
@@ -534,16 +535,15 @@ function struct(opts, ctx) {
       }
 
       if (errors.length === 0) {
-        value = value = new report.innerType(value);
+        value = new report.innerType(value);
         // handle subtype
         if (report.subtype && errors.length === 0) {
-          this.setState({hasError: false});
           result = t.validate(value, report.type);
           errors = errors.concat(result.errors);
-          this.setState({hasError: errors.length > 0});
         }
       }
 
+      this.setState({hasError: errors.length > 0, value: value});
       return new ValidationResult({errors: errors, value: value});
     },
 
@@ -625,7 +625,8 @@ function list(opts, ctx) {
 
     getInitialState: function () {
       return {
-        hasError: !!opts.hasError
+        hasError: !!opts.hasError,
+        value: value
       };
     },
 
@@ -645,12 +646,11 @@ function list(opts, ctx) {
 
       // handle subtype
       if (report.subtype && errors.length === 0) {
-        this.setState({hasError: false});
         result = t.validate(value, report.type);
         errors = errors.concat(result.errors);
-        this.setState({hasError: errors.length > 0});
       }
 
+      this.setState({hasError: errors.length > 0, value: value});
       return new ValidationResult({errors: errors, value: value});
     },
 
@@ -811,10 +811,8 @@ var Report = struct({
   innerType: maybe(t.Type)
 }, 'Report');
 
-var Templates = t.dict(Str, Func, 'Templates');
-
 var Context = struct({
-  templates: Templates,
+  templates: Obj,
   i18n: I18n,
   report: Report,
   path: list(union([Str, t.Num])),
@@ -963,7 +961,7 @@ var Struct = struct({
   error: maybe(ErrorMessage),
   label: maybe(Label),
   order: maybe(list(Label)),
-  templates: maybe(Templates),
+  templates: maybe(Obj),
   value: maybe(Obj)
 }, 'Struct');
 
@@ -980,13 +978,12 @@ var List = struct({
   help: maybe(Label),
   error: maybe(ErrorMessage),
   label: maybe(Label),
-  templates: maybe(Templates),
+  templates: maybe(Obj),
   value: maybe(t.Arr)
 }, 'List');
 
 module.exports = {
   I18n: I18n,
-  Templates: Templates,
   Context: Context,
   ReactElement: ReactElement,
   Label: Label,
@@ -1224,6 +1221,7 @@ function list() {
 }
 
 module.exports = {
+  name: 'ionic',
   textbox: textbox,
   checkbox: checkbox,
   select: select,

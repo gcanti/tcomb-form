@@ -1,3 +1,8 @@
-require('node-jsx').install();
 require('./util');
-require('./factories');
+require('./getFactory');
+require('./textbox');
+require('./checkbox');
+require('./select');
+require('./radio');
+require('./struct');
+require('./list');

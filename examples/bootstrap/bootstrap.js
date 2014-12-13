@@ -252,7 +252,7 @@ function checkbox(opts, ctx) {
 
   var name = opts.name || ctx.getDefaultName();
 
-  var value = !!either(opts.value, ctx.value === true);
+  var value = t.Bool.is(opts.value) ? opts.value : t.Bool.is(ctx.value) ? ctx.value : false;
 
   var template = opts.template || ctx.templates.checkbox;
 
@@ -519,7 +519,8 @@ function struct(opts, ctx) {
 
     getInitialState: function () {
       return {
-        hasError: !!opts.hasError
+        hasError: !!opts.hasError,
+        value: value
       };
     },
 
@@ -538,16 +539,15 @@ function struct(opts, ctx) {
       }
 
       if (errors.length === 0) {
-        value = value = new report.innerType(value);
+        value = new report.innerType(value);
         // handle subtype
         if (report.subtype && errors.length === 0) {
-          this.setState({hasError: false});
           result = t.validate(value, report.type);
           errors = errors.concat(result.errors);
-          this.setState({hasError: errors.length > 0});
         }
       }
 
+      this.setState({hasError: errors.length > 0, value: value});
       return new ValidationResult({errors: errors, value: value});
     },
 
@@ -629,7 +629,8 @@ function list(opts, ctx) {
 
     getInitialState: function () {
       return {
-        hasError: !!opts.hasError
+        hasError: !!opts.hasError,
+        value: value
       };
     },
 
@@ -649,12 +650,11 @@ function list(opts, ctx) {
 
       // handle subtype
       if (report.subtype && errors.length === 0) {
-        this.setState({hasError: false});
         result = t.validate(value, report.type);
         errors = errors.concat(result.errors);
-        this.setState({hasError: errors.length > 0});
       }
 
+      this.setState({hasError: errors.length > 0, value: value});
       return new ValidationResult({errors: errors, value: value});
     },
 
@@ -815,10 +815,8 @@ var Report = struct({
   innerType: maybe(t.Type)
 }, 'Report');
 
-var Templates = t.dict(Str, Func, 'Templates');
-
 var Context = struct({
-  templates: Templates,
+  templates: Obj,
   i18n: I18n,
   report: Report,
   path: list(union([Str, t.Num])),
@@ -967,7 +965,7 @@ var Struct = struct({
   error: maybe(ErrorMessage),
   label: maybe(Label),
   order: maybe(list(Label)),
-  templates: maybe(Templates),
+  templates: maybe(Obj),
   value: maybe(Obj)
 }, 'Struct');
 
@@ -984,13 +982,12 @@ var List = struct({
   help: maybe(Label),
   error: maybe(ErrorMessage),
   label: maybe(Label),
-  templates: maybe(Templates),
+  templates: maybe(Obj),
   value: maybe(t.Arr)
 }, 'List');
 
 module.exports = {
   I18n: I18n,
-  Templates: Templates,
   Context: Context,
   ReactElement: ReactElement,
   Label: Label,
@@ -1207,10 +1204,13 @@ Breakpoints.prototype.getFieldsetClassName = function () {
   };
 };
 
+var Size = t.enums.of('xs sm md lg', 'Size');
+
 var TextboxConfig = t.struct({
   addonBefore: maybe(Label),
   addonAfter: maybe(Label),
-  horizontal: maybe(Breakpoints)
+  horizontal: maybe(Breakpoints),
+  size: maybe(Size)
 }, 'TextboxConfig');
 
 var CheckboxConfig = t.struct({
@@ -1220,7 +1220,8 @@ var CheckboxConfig = t.struct({
 var SelectConfig = t.struct({
   addonBefore: maybe(Label),
   addonAfter: maybe(Label),
-  horizontal: maybe(Breakpoints)
+  horizontal: maybe(Breakpoints),
+  size: maybe(Size)
 }, 'SelectConfig');
 
 var RadioConfig = t.struct({
@@ -1282,13 +1283,13 @@ function getHiddenTextbox(locals) {
 
 function textbox(locals) {
 
+  var config = new TextboxConfig(locals.config || {});
+
   var type = locals.type;
 
   if (type === 'hidden') {
     return getHiddenTextbox(locals);
   }
-
-  var config = new TextboxConfig(locals.config || {});
 
   var control;
   var staticControl;
@@ -1304,7 +1305,8 @@ function textbox(locals) {
       placeholder: locals.placeholder,
       name: locals.name,
       readOnly: locals.readOnly,
-      ref: locals.ref
+      ref: locals.ref,
+      size: config.size
     });
 
     if (config.addonBefore || config.addonAfter) {
@@ -1355,6 +1357,8 @@ function textbox(locals) {
 
 function checkbox(locals) {
 
+  var config = new CheckboxConfig(locals.config || {});
+
   var control = uform.getCheckbox({
     defaultChecked: locals.value,
     disabled: locals.disabled,
@@ -1362,8 +1366,6 @@ function checkbox(locals) {
     name: locals.name,
     ref: locals.ref
   });
-
-  var config = new CheckboxConfig(locals.config || {});
 
   var error = getError(locals);
   var help = getHelp(locals);
@@ -1391,6 +1393,8 @@ function checkbox(locals) {
 
 function select(locals) {
 
+  var config = new SelectConfig(locals.config || {});
+
   var options = locals.options.map(function (x) {
     return theme.Option.is(x) ? uform.getOption(x) : uform.getOptGroup(x);
   });
@@ -1400,10 +1404,9 @@ function select(locals) {
     disabled: locals.disabled,
     name: locals.name,
     options: options,
-    ref: locals.ref
+    ref: locals.ref,
+    size: config.size
   });
-
-  var config = new SelectConfig(locals.config || {});
 
   var horizontal = config.horizontal;
   var label = getLabel(locals, horizontal);
@@ -1441,6 +1444,8 @@ function select(locals) {
 
 function radio(locals) {
 
+  var config = new RadioConfig(locals.config || {});
+
   var control = locals.options.map(function (option, i) {
     return uform.getRadio({
       defaultChecked: (option.value === locals.value),
@@ -1451,8 +1456,6 @@ function radio(locals) {
       value: option.value
     });
   });
-
-  var config = new RadioConfig(locals.config || {});
 
   var horizontal = config.horizontal;
   var label = getLabel(locals, horizontal);
@@ -1577,6 +1580,7 @@ function list(locals) {
 }
 
 module.exports = {
+  name: 'bootstrap',
   textbox: textbox,
   checkbox: checkbox,
   select: select,
@@ -3371,12 +3375,20 @@ module.exports = getRow;
     value: 'hello',
     name: 'myname',
     disabled: false,
+    size: 'lg',
     ref: 'input'
   }
 
 */
 
 function getSelect(opts) {
+
+  var className = {
+    'form-control': true
+  };
+  if (opts.size) {
+    className['input-' + opts.size] = true;
+  }
 
   return {
     tag: 'select',
@@ -3385,9 +3397,7 @@ function getSelect(opts) {
       defaultValue: opts.defaultValue,
       value: opts.value,
       disabled: opts.disabled,
-      className: {
-        'form-control': true
-      }
+      className: className
     },
     children: opts.options,
     ref: opts.ref
@@ -3426,6 +3436,7 @@ module.exports = getStatic;
     disabled: false,
     placeholder: 'insert your name',
     readOnly: true,
+    size: 'lg',
     ref: 'input'
   }
 
@@ -3434,6 +3445,12 @@ module.exports = getStatic;
 function getTextbox(opts) {
 
   var type = opts.type || 'text';
+  var className = {
+    'form-control': true
+  };
+  if (opts.size) {
+    className['input-' + opts.size] = true;
+  }
 
   return {
     tag: type === 'textarea' ? 'textarea' : 'input',
@@ -3445,9 +3462,7 @@ function getTextbox(opts) {
       disabled: opts.disabled,
       placeholder: opts.placeholder,
       readOnly: opts.readOnly,
-      className: {
-        'form-control': true
-      }
+      className: className
     },
     ref: opts.ref
   };

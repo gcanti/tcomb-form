@@ -4,7 +4,7 @@
   "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
   "main": "index.js",
   "scripts": {
-    "test": "node test/index",
+    "test": "node test/index | tap-spec",
     "test-browser": "browserify test/index | testling -u"
   },
   "repository": {
@@ -34,9 +34,9 @@
     "gulp-util": "^3.0.1",
     "js-beautify": "^1.5.4",
     "jshint-stylish": "^1.0.0",
-    "node-jsx": "^0.12.4",
     "react-vdom": "^0.2.1",
     "reactify": "^0.17.0",
+    "tap-spec": "^2.1.1",
     "tape": "^3.0.3",
     "testling": "^1.7.1",
     "vinyl-source-stream": "^1.0.0"
