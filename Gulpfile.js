@@ -15,61 +15,27 @@ gulp.task('default', ['examples']);
 gulp.task('examples', function (){
 
   // bootstrap
-  browserify('./examples/bootstrap/bootstrap.jsx', {
-    transform: [reactify],
-    detectGlobals: true
-  })
-  .external('react')
-  .bundle()
-  .on('error', function (err) {
-    gutil.beep();
-    console.log(String(err));
-    this.end();
-  })
-  .pipe(source('./examples/bootstrap/bootstrap.jsx'))
-  .pipe(rename('bootstrap.js'))
-  .pipe(gulp.dest('./examples/bootstrap'));
+  getBundle('./examples/bootstrap/bootstrap.jsx')
+    .pipe(rename('bootstrap.js'))
+    .pipe(gulp.dest('./examples/bootstrap'));
 
   // gridforms
-  browserify('./examples/gridforms/gridforms.jsx', {
-    transform: [reactify],
-    detectGlobals: true
-  })
-  .external('react')
-  .bundle()
-  .on('error', function (err) {
-    gutil.beep();
-    console.log(String(err));
-    this.end();
-  })
-  .pipe(source('./examples/gridforms/gridforms.jsx'))
-  .pipe(rename('gridforms.js'))
-  .pipe(gulp.dest('./examples/gridforms'));
+  getBundle('./examples/gridforms/gridforms.jsx')
+    .pipe(rename('gridforms.js'))
+    .pipe(gulp.dest('./examples/gridforms'));
 
   // ionic
-  browserify('./examples/ionic/ionic.jsx', {
-    transform: [reactify],
-    detectGlobals: true
-  })
-  .external('react')
-  .bundle()
-  .on('error', function (err) {
-    gutil.beep();
-    console.log(String(err));
-    this.end();
-  })
-  .pipe(source('./examples/ionic/ionic.jsx'))
-  .pipe(rename('ionic.js'))
-  .pipe(gulp.dest('./examples/ionic'));
-
+  getBundle('./examples/ionic/ionic.jsx')
+    .pipe(rename('ionic.js'))
+    .pipe(gulp.dest('./examples/ionic'));
 
 });
 
 // ------------------------------------
 // watch
 // ------------------------------------
-var src = ['lib/**/*.js', 'lib/**/*.jsx'];
-var dev = src.concat('dev/**/*.js');
+var src = ['lib/**/*.js'];
+var dev = src.concat('dev/**/*.jsx');
 var examples = src.concat('examples/**/*.jsx');
 
 gulp.task('watch', ['dev', 'examples'], function () {
@@ -91,9 +57,18 @@ gulp.task('lint', function() {
 // development
 // ------------------------------------
 gulp.task('dev', function (){
-  browserify('./dev/index.js', {
+  return getBundle('./dev/dev.jsx')
+    .pipe(rename('dev.js'))
+    .pipe(gulp.dest('./dev'));
+});
+
+// ------------------------------------
+// helpers
+// ------------------------------------
+function getBundle(file) {
+  return browserify(file, {
     transform: [reactify],
-    detectGlobals: true
+    detectGlobals: false
   })
   .external('react')
   .bundle()
@@ -102,9 +77,5 @@ gulp.task('dev', function (){
     console.log(String(err));
     this.end();
   })
-  .pipe(source('dev/index.js'))
-  .pipe(rename('bundle.js'))
-  .pipe(gulp.dest('dev'));
-});
-
-
+  .pipe(source(file));
+}
