@@ -9,6 +9,7 @@ var config = require('../lib/config');
 var getReport = require('../lib/util/getReport');
 var Select = require('../lib/protocols/theme').Select;
 var select = require('../lib/factories').select;
+var bootstrap = require('../lib/templates/bootstrap');
 
 //
 // helpers
@@ -28,14 +29,28 @@ function getContext(ctx) {
   return new Context(ctx);
 }
 
-function assertLocals(factory, ctx, opts) {
-  var Component = factory(opts, getContext(ctx));
+function getLocals(ctx, opts) {
+  var Component = select(opts, getContext(ctx));
   vdom(React.createElement(Component)); // force render()
 }
 
-//
-// node tests
-//
+function getResult(ctx, opts, onResult, onRender) {
+  var rendered = false;
+  opts.template = function (locals) {
+    if (rendered && onRender) {
+      onRender(locals);
+    }
+    return bootstrap.select(locals);
+  };
+  ctx = getContext(ctx);
+  var Component = React.createFactory(select(opts, ctx));
+  var node = document.createElement('div');
+  document.body.appendChild(node);
+  var component = React.render(Component(), node);
+  rendered = true;
+  var result = component.getValue();
+  onResult(result);
+}
 
 var Country = t.enums({
   IT: 'Italy',
@@ -43,17 +58,21 @@ var Country = t.enums({
   FR: 'France'
 }, 'Country');
 
+//
+// node tests
+//
+
 test('select() factory', function (tape) {
 
   tape.test('disabled', function (tape) {
     tape.plan(3);
 
-    assertLocals(select, {type: Country}, {template: function (locals) {
+    getLocals({type: Country}, {template: function (locals) {
       tape.ok(locals instanceof Select);
       tape.deepEqual(locals.disabled, null);
     }});
 
-    assertLocals(select, {type: Country}, {disabled: true, template: function (locals) {
+    getLocals({type: Country}, {disabled: true, template: function (locals) {
       tape.deepEqual(locals.disabled, true);
     }});
   });
@@ -62,22 +81,22 @@ test('select() factory', function (tape) {
     tape.plan(4);
 
     // labels as strings
-    assertLocals(select, {type: Country}, {label: 'mylabel', template: function (locals) {
+    getLocals({type: Country}, {label: 'mylabel', template: function (locals) {
       tape.deepEqual(locals.label, 'mylabel');
     }});
 
     // labels as JSX
-    assertLocals(select, {type: Country}, {label: React.DOM.i(null, 'JSX label'), template: function (locals) {
+    getLocals({type: Country}, {label: React.DOM.i(null, 'JSX label'), template: function (locals) {
       tape.deepEqual(vdom(locals.label), {tag: 'i', attrs: {}, children: 'JSX label'});
     }});
 
     // should have a default label if ctx.auto = `labels`
-    assertLocals(select, {type: Country, auto: 'labels'}, {template: function (locals) {
+    getLocals({type: Country, auto: 'labels'}, {template: function (locals) {
       tape.deepEqual(locals.label, 'default label');
     }});
 
     // should handle optional
-    assertLocals(select, {type: t.maybe(Country), auto: 'labels'}, {template: function (locals) {
+    getLocals({type: t.maybe(Country), auto: 'labels'}, {template: function (locals) {
       tape.deepEqual(locals.label, 'default label (optional)');
     }});
   });
@@ -86,12 +105,12 @@ test('select() factory', function (tape) {
     tape.plan(2);
 
     // helps as strings
-    assertLocals(select, {type: Country}, {help: 'my help', template: function (locals) {
+    getLocals({type: Country}, {help: 'my help', template: function (locals) {
       tape.deepEqual(locals.help, 'my help');
     }});
 
     // helps as JSX
-    assertLocals(select, {type: Country}, {help: React.DOM.i(null, 'JSX help'), template: function (locals) {
+    getLocals({type: Country}, {help: React.DOM.i(null, 'JSX help'), template: function (locals) {
       tape.deepEqual(vdom(locals.help), {tag: 'i', attrs: {}, children: 'JSX help'});
     }});
   });
@@ -100,12 +119,12 @@ test('select() factory', function (tape) {
     tape.plan(2);
 
     // should have a default name
-    assertLocals(select, {type: Country}, {template: function (locals) {
+    getLocals({type: Country}, {template: function (locals) {
       tape.deepEqual(locals.name, 'leaf');
     }});
 
     // should handle a custom name
-    assertLocals(select, {type: Country}, {name: 'myname', template: function (locals) {
+    getLocals({type: Country}, {name: 'myname', template: function (locals) {
       tape.deepEqual(locals.name, 'myname');
     }});
   });
@@ -114,7 +133,7 @@ test('select() factory', function (tape) {
     tape.plan(2);
 
     // should have default options
-    assertLocals(select, {type: t.maybe(Country)}, {template: function (locals) {
+    getLocals({type: t.maybe(Country)}, {template: function (locals) {
       tape.deepEqual(locals.options, [
         {value: '', text: '-', disabled: null},
         {value: 'IT', text: 'Italy', disabled: null},
@@ -124,7 +143,7 @@ test('select() factory', function (tape) {
     }});
 
     // should handle custom options
-    assertLocals(select, {type: Country}, {options: [
+    getLocals({type: Country}, {options: [
         {value: 'IT', text: 'Italia'},
         {value: 'US', text: 'Stati Uniti'}
       ], template: function (locals) {
@@ -140,7 +159,7 @@ test('select() factory', function (tape) {
     tape.plan(2);
 
     // should order the options asc
-    assertLocals(select, {type: Country}, {order: 'asc', template: function (locals) {
+    getLocals({type: Country}, {order: 'asc', template: function (locals) {
       tape.deepEqual(locals.options, [
         {value: '', text: '-', disabled: null},
         {value: 'FR', text: 'France', disabled: null},
@@ -150,7 +169,7 @@ test('select() factory', function (tape) {
     }});
 
     // should order the options desc
-    assertLocals(select, {type: Country}, {order: 'desc', template: function (locals) {
+    getLocals({type: Country}, {order: 'desc', template: function (locals) {
       tape.deepEqual(locals.options, [
         {value: '', text: '-', disabled: null},
         {value: 'US', text: 'United States', disabled: null},
@@ -165,7 +184,7 @@ test('select() factory', function (tape) {
     tape.plan(1);
 
     // should add the nullOption in first position
-    assertLocals(select, {type: Country}, {nullOption: {value: '-1', text: 'my text'}, template: function (locals) {
+    getLocals({type: Country}, {nullOption: {value: '-1', text: 'my text'}, template: function (locals) {
       tape.deepEqual(locals.options, [
         {value: '-1', text: 'my text', disabled: null},
         {value: 'IT', text: 'Italy', disabled: null},
@@ -180,7 +199,7 @@ test('select() factory', function (tape) {
     tape.plan(1);
 
     // should be multiple if type is a list of enums
-    assertLocals(select, {type: t.list(Country)}, {template: function (locals) {
+    getLocals({type: t.list(Country)}, {template: function (locals) {
       tape.deepEqual(locals.multiple, true);
     }});
 
@@ -190,12 +209,12 @@ test('select() factory', function (tape) {
     tape.plan(2);
 
     // should receive a value from the context
-    assertLocals(select, {type: Country, value: 'IT'}, {template: function (locals) {
+    getLocals({type: Country, value: 'IT'}, {template: function (locals) {
       tape.deepEqual(locals.value, 'IT');
     }});
 
     // a value specified in opts should override the context one
-    assertLocals(select, {type: Country, value: 'IT'}, {value: 'US', template: function (locals) {
+    getLocals({type: Country, value: 'IT'}, {value: 'US', template: function (locals) {
       tape.deepEqual(locals.value, 'US');
     }});
   });
@@ -203,10 +222,10 @@ test('select() factory', function (tape) {
   tape.test('hasError', function (tape) {
     tape.plan(2);
 
-    assertLocals(select, {type: Country}, {template: function (locals) {
+    getLocals({type: Country}, {template: function (locals) {
       tape.deepEqual(locals.hasError, false);
     }});
-    assertLocals(select, {type: Country}, {hasError: true, template: function (locals) {
+    getLocals({type: Country}, {hasError: true, template: function (locals) {
       tape.deepEqual(locals.hasError, true);
     }});
 
@@ -215,24 +234,24 @@ test('select() factory', function (tape) {
   tape.test('error', function (tape) {
     tape.plan(10);
 
-    assertLocals(select, {type: Country}, {template: function (locals) {
+    getLocals({type: Country}, {template: function (locals) {
       tape.deepEqual(locals.hasError, false);
       tape.deepEqual(locals.error, null);
     }});
 
-    assertLocals(select, {type: Country}, {error: 'my error', template: function (locals) {
+    getLocals({type: Country}, {error: 'my error', template: function (locals) {
       tape.deepEqual(locals.hasError, false);
       tape.deepEqual(locals.error, null);
     }});
 
     // error as a string
-    assertLocals(select, {type: Country}, {error: 'my error', hasError: true, template: function (locals) {
+    getLocals({type: Country}, {error: 'my error', hasError: true, template: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(locals.error, 'my error');
     }});
 
     // error as a JSX
-    assertLocals(select, {type: Country}, {error: React.DOM.i(null, 'JSX error'), hasError: true, template: function (locals) {
+    getLocals({type: Country}, {error: React.DOM.i(null, 'JSX error'), hasError: true, template: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(vdom(locals.error), {tag: 'i', attrs: {}, children: 'JSX error'});
     }});
@@ -241,7 +260,7 @@ test('select() factory', function (tape) {
     var getError = function (value) {
       return 'error: ' + value;
     };
-    assertLocals(select, {type: Country}, {error: getError, hasError: true, value: 'IT', template: function (locals) {
+    getLocals({type: Country}, {error: getError, hasError: true, value: 'IT', template: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(locals.error, 'error: IT');
     }});
@@ -252,10 +271,55 @@ test('select() factory', function (tape) {
     tape.plan(1);
 
     // should receive a default template form the context
-    assertLocals(select, {type: Country, templates: {select: function (locals) {
+    getLocals({type: Country, templates: {select: function (locals) {
       tape.ok(true);
     }}});
 
   });
 
 });
+
+//
+// browser tests
+//
+
+if (typeof window !== 'undefined') {
+
+  test('select getValue()', function (tape) {
+    tape.plan(16);
+
+    getResult({type: Country}, {}, function (result) {
+      tape.deepEqual(result.isValid(), false);
+      tape.deepEqual(result.value, null);
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, true);
+      tape.deepEqual(locals.value, null);
+    });
+
+    getResult({type: Country}, {value: 'IT'}, function (result) {
+      tape.deepEqual(result.isValid(), true);
+      tape.deepEqual(result.value, 'IT');
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, false);
+      tape.deepEqual(locals.value, 'IT');
+    });
+
+    getResult({type: t.maybe(Country)}, {}, function (result) {
+      tape.deepEqual(result.isValid(), true);
+      tape.deepEqual(result.value, null);
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, false);
+      tape.deepEqual(locals.value, null);
+    });
+
+    getResult({type: t.maybe(Country)}, {value: 'IT'}, function (result) {
+      tape.deepEqual(result.isValid(), true);
+      tape.deepEqual(result.value, 'IT');
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, false);
+      tape.deepEqual(locals.value, 'IT');
+    });
+
+  });
+
+}

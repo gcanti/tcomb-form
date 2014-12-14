@@ -9,6 +9,7 @@ var config = require('../lib/config');
 var getReport = require('../lib/util/getReport');
 var Struct = require('../lib/protocols/theme').Struct;
 var struct = require('../lib/factories').struct;
+var bootstrap = require('../lib/templates/bootstrap');
 
 //
 // helpers
@@ -28,14 +29,30 @@ function getContext(ctx) {
   return new Context(ctx);
 }
 
-function assertLocals(factory, ctx, opts) {
-  var Component = factory(opts, getContext(ctx));
+function getLocals(ctx, opts) {
+  var Component = struct(opts, getContext(ctx));
   vdom(React.createElement(Component)); // force render()
 }
 
-//
-// node tests
-//
+function getResult(ctx, opts, onResult, onRender) {
+  var rendered = false;
+  opts.templates = {
+    struct: function (locals) {
+      if (rendered && onRender) {
+        onRender(locals);
+      }
+      return bootstrap.struct(locals);
+    }
+  };
+  ctx = getContext(ctx);
+  var Component = React.createFactory(struct(opts, ctx));
+  var node = document.createElement('div');
+  document.body.appendChild(node);
+  var component = React.render(Component(), node);
+  rendered = true;
+  var result = component.getValue();
+  onResult(result);
+}
 
 var Country = t.enums({
   IT: 'Italy',
@@ -54,12 +71,16 @@ var Person = t.struct({
   gender: Gender
 });
 
+//
+// node tests
+//
+
 test('struct() factory', function (tape) {
 
   tape.test('fields', function (tape) {
     tape.plan(7);
 
-    assertLocals(struct, {type: Person}, {templates: {struct: function (locals) {
+    getLocals({type: Person}, {templates: {struct: function (locals) {
       tape.ok(locals instanceof Struct);
       tape.deepEqual(locals.order, ['name', 'rememberMe', 'country', 'gender']);
       tape.deepEqual(Object.keys(locals.inputs).length, 4);
@@ -75,13 +96,13 @@ test('struct() factory', function (tape) {
     tape.plan(5);
 
     // should order and filter the inputs
-    assertLocals(struct, {type: Person}, {order: ['name'], templates: {struct: function (locals) {
+    getLocals({type: Person}, {order: ['name'], templates: {struct: function (locals) {
       tape.deepEqual(locals.order, ['name']);
       tape.ok(locals.inputs.name);
     }}});
 
     // should handle verbatims
-    assertLocals(struct, {type: Person}, {order: ['name', React.DOM.i(null, 'JSX field')], templates: {struct: function (locals) {
+    getLocals({type: Person}, {order: ['name', React.DOM.i(null, 'JSX field')], templates: {struct: function (locals) {
       tape.deepEqual(Object.keys(locals.inputs).length, 1);
       tape.deepEqual(vdom(locals.order), ['name', {tag: 'i', attrs: {}, children: 'JSX field'}]);
       tape.ok(locals.inputs.name);
@@ -92,11 +113,11 @@ test('struct() factory', function (tape) {
   tape.test('disabled', function (tape) {
     tape.plan(2);
 
-    assertLocals(struct, {type: Person}, {templates: {struct: function (locals) {
+    getLocals({type: Person}, {templates: {struct: function (locals) {
       tape.deepEqual(locals.disabled, null);
     }}});
 
-    assertLocals(struct, {type: Person}, {disabled: true, templates: {struct: function (locals) {
+    getLocals({type: Person}, {disabled: true, templates: {struct: function (locals) {
       tape.deepEqual(locals.disabled, true);
     }}});
   });
@@ -105,17 +126,17 @@ test('struct() factory', function (tape) {
     tape.plan(3);
 
     // labels as strings
-    assertLocals(struct, {type: Person}, {label: 'mylabel', templates: {struct: function (locals) {
+    getLocals({type: Person}, {label: 'mylabel', templates: {struct: function (locals) {
       tape.deepEqual(locals.label, 'mylabel');
     }}});
 
     // labels as JSX
-    assertLocals(struct, {type: Person}, {label: React.DOM.i(null, 'JSX label'), templates: {struct: function (locals) {
+    getLocals({type: Person}, {label: React.DOM.i(null, 'JSX label'), templates: {struct: function (locals) {
       tape.deepEqual(vdom(locals.label), {tag: 'i', attrs: {}, children: 'JSX label'});
     }}});
 
     // should have a default label if ctx.auto = `labels`
-    assertLocals(struct, {type: Person}, {auto: 'labels', templates: {struct: function (locals) {
+    getLocals({type: Person}, {auto: 'labels', templates: {struct: function (locals) {
       tape.deepEqual(locals.label, 'default label');
     }}});
   });
@@ -124,12 +145,12 @@ test('struct() factory', function (tape) {
     tape.plan(2);
 
     // helps as strings
-    assertLocals(struct, {type: Person}, {help: 'my help', templates: {struct: function (locals) {
+    getLocals({type: Person}, {help: 'my help', templates: {struct: function (locals) {
       tape.deepEqual(locals.help, 'my help');
     }}});
 
     // helps as JSX
-    assertLocals(struct, {type: Person}, {help: React.DOM.i(null, 'JSX help'), templates: {struct: function (locals) {
+    getLocals({type: Person}, {help: React.DOM.i(null, 'JSX help'), templates: {struct: function (locals) {
       tape.deepEqual(vdom(locals.help), {tag: 'i', attrs: {}, children: 'JSX help'});
     }}});
   });
@@ -137,10 +158,10 @@ test('struct() factory', function (tape) {
   tape.test('hasError', function (tape) {
     tape.plan(2);
 
-    assertLocals(struct, {type: Person}, {templates: {struct: function (locals) {
+    getLocals({type: Person}, {templates: {struct: function (locals) {
       tape.deepEqual(locals.hasError, false);
     }}});
-    assertLocals(struct, {type: Person}, {hasError: true, templates: {struct: function (locals) {
+    getLocals({type: Person}, {hasError: true, templates: {struct: function (locals) {
       tape.deepEqual(locals.hasError, true);
     }}});
 
@@ -149,24 +170,24 @@ test('struct() factory', function (tape) {
   tape.test('error', function (tape) {
     tape.plan(10);
 
-    assertLocals(struct, {type: Person}, {templates: {struct: function (locals) {
+    getLocals({type: Person}, {templates: {struct: function (locals) {
       tape.deepEqual(locals.hasError, false);
       tape.deepEqual(locals.error, null);
     }}});
 
-    assertLocals(struct, {type: Person}, {error: 'my error', templates: {struct: function (locals) {
+    getLocals({type: Person}, {error: 'my error', templates: {struct: function (locals) {
       tape.deepEqual(locals.hasError, false);
       tape.deepEqual(locals.error, null);
     }}});
 
     // error as a string
-    assertLocals(struct, {type: Person}, {error: 'my error', hasError: true, templates: {struct: function (locals) {
+    getLocals({type: Person}, {error: 'my error', hasError: true, templates: {struct: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(locals.error, 'my error');
     }}});
 
     // error as a JSX
-    assertLocals(struct, {type: Person}, {error: React.DOM.i(null, 'JSX error'), hasError: true, templates: {struct: function (locals) {
+    getLocals({type: Person}, {error: React.DOM.i(null, 'JSX error'), hasError: true, templates: {struct: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(vdom(locals.error), {tag: 'i', attrs: {}, children: 'JSX error'});
     }}});
@@ -175,7 +196,7 @@ test('struct() factory', function (tape) {
     var getError = function (value) {
       return 'error: ' + JSON.stringify(value);
     };
-    assertLocals(struct, {type: Person}, {error: getError, hasError: true, value: {}, templates: {struct: function (locals) {
+    getLocals({type: Person}, {error: getError, hasError: true, value: {}, templates: {struct: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(locals.error, 'error: {}');
     }}});
@@ -186,17 +207,17 @@ test('struct() factory', function (tape) {
     tape.plan(7);
 
     // should receive a value from the context
-    assertLocals(struct, {type: Person, value: {name: 'Giulio'}}, {templates: {struct: function (locals) {
+    getLocals({type: Person, value: {name: 'Giulio'}}, {templates: {struct: function (locals) {
       tape.deepEqual(locals.value, {name: 'Giulio'});
     }}});
 
     // a value specified in opts should override the context one
-    assertLocals(struct, {type: Person, value: {name: 'Giulio'}}, {value: {name: 'Canti'}, templates: {struct: function (locals) {
+    getLocals({type: Person, value: {name: 'Giulio'}}, {value: {name: 'Canti'}, templates: {struct: function (locals) {
       tape.deepEqual(locals.value, {name: 'Canti'});
     }}});
 
     // values should propagate to inputs
-    assertLocals(struct, {type: Person}, {
+    getLocals({type: Person}, {
       value: {
         name: 'Giulio',
         rememberMe: true,
@@ -237,3 +258,85 @@ test('struct() factory', function (tape) {
   });
 
 });
+
+//
+// browser tests
+//
+
+if (typeof window !== 'undefined') {
+
+  test('struct getValue()', function (tape) {
+    tape.plan(12);
+
+    getResult({type: Person}, {}, function (result) {
+      tape.deepEqual(result.isValid(), false);
+      tape.deepEqual(result.value, {
+        name: null,
+        rememberMe: false,
+        country: null,
+        gender: null
+      });
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, false);
+      tape.deepEqual(locals.value, {
+        name: null,
+        rememberMe: false,
+        country: null,
+        gender: null
+      });
+    });
+
+    getResult({type: Person}, {value: {
+      name: 'Giulio',
+      rememberMe: true,
+      country: 'IT',
+      gender: 'M'
+    }}, function (result) {
+      tape.deepEqual(result.isValid(), true);
+      tape.deepEqual(result.value, {
+        name: 'Giulio',
+        rememberMe: true,
+        country: 'IT',
+        gender: 'M'
+      });
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, false);
+      tape.deepEqual(locals.value, {
+        name: 'Giulio',
+        rememberMe: true,
+        country: 'IT',
+        gender: 'M'
+      });
+    });
+
+    var Subtype = t.subtype(Person, function (obj) {
+      return obj.rememberMe === true && obj.country === 'IT';
+    })
+
+    getResult({type: Subtype}, {value: {
+      name: 'Giulio',
+      rememberMe: true,
+      country: 'US',
+      gender: 'M'
+    }}, function (result) {
+      tape.deepEqual(result.isValid(), false);
+      tape.deepEqual(result.value, {
+        name: 'Giulio',
+        rememberMe: true,
+        country: 'US',
+        gender: 'M'
+      });
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, true);
+      tape.deepEqual(locals.value, {
+        name: 'Giulio',
+        rememberMe: true,
+        country: 'US',
+        gender: 'M'
+      });
+    });
+
+  });
+
+}
+
