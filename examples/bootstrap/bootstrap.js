@@ -208,17 +208,20 @@ function create(type, opts) {
     render: function () {
 
       var ctx = new Context({
-        templates: config.templates,
-        i18n: config.i18n,
-        report: getReport(type),
-        path: [],
         auto: 'placeholders',
+        i18n: config.i18n,
         label: null,
+        path: [],
+        report: getReport(type),
+        templates: config.templates,
         value: this.props.value
       });
       var Component = factory(opts, ctx);
 
-      return React.createElement(Component, {ref: 'input'});
+      return React.createElement(Component, {
+        onChange: this.props.onChange,
+        ref: 'input'
+      });
     }
   });
 
@@ -246,6 +249,8 @@ var uuid = require('./util/uuid');
 
 var assert = t.assert;
 var Nil = t.Nil;
+var Func = t.Func;
+var mixin = t.util.mixin;
 var ValidationResult = t.ValidationResult;
 var getKind = t.util.getKind;
 var getName = t.util.getName;
@@ -275,8 +280,6 @@ function getFactory(type, opts) {
 // factories
 //
 
-var REF = 'input';
-
 function textbox(opts, ctx) {
 
   opts = new api.Textbox(opts || {});
@@ -293,7 +296,7 @@ function textbox(opts, ctx) {
 
   var name = opts.name || ctx.getDefaultName();
 
-  var value = !Nil.is(opts.value) ? opts.value : ctx.value;
+  var value = !Nil.is(opts.value) ? opts.value : !Nil.is(ctx.value) ? ctx.value : null;
 
   var transformer = opts.transformer || config.transformers[getName(ctx.report.innerType)];
 
@@ -310,17 +313,17 @@ function textbox(opts, ctx) {
       };
     },
 
-    getRawValue: function () {
-      assert(!Nil.is(this.refs[REF]), 'missing `ref` for input `%s`, check out its template', name);
-      var value = this.refs[REF].getDOMNode().value.trim() || null;
+    onChange: function (evt) {
+      var value = evt.target.value || null;
       if (transformer) {
         value = transformer.parse(value);
       }
-      return value;
+      this.props.onChange && this.props.onChange(value);
+      this.setState({value: value});
     },
 
     getValue: function () {
-      var result = t.validate(this.getRawValue(), ctx.report.type);
+      var result = t.validate(this.state.value, ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -343,8 +346,8 @@ function textbox(opts, ctx) {
         help: opts.help,
         label: label,
         name: name,
+        onChange: this.onChange,
         placeholder: placeholder,
-        ref: REF,
         type: opts.type || 'text',
         value: value
       })));
@@ -376,13 +379,14 @@ function checkbox(opts, ctx) {
       };
     },
 
-    getRawValue: function () {
-      assert(!Nil.is(this.refs[REF]), 'missing `ref` for input `%s`, check out its template', name);
-      return this.refs[REF].getDOMNode().checked;
+    onChange: function (evt) {
+      var value = evt.target.checked;
+      this.props.onChange && this.props.onChange(value);
+      this.setState({value: value});
     },
 
     getValue: function () {
-      var result = t.validate(this.getRawValue(), ctx.report.type);
+      var result = t.validate(this.state.value, ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -399,7 +403,7 @@ function checkbox(opts, ctx) {
         help: opts.help,
         label: label,
         name: name,
-        ref: REF,
+        onChange: this.onChange,
         value: this.state.value
       })));
     }
@@ -425,7 +429,7 @@ function select(opts, ctx) {
 
   var name = opts.name || ctx.getDefaultName();
 
-  var value = !Nil.is(opts.value) ? opts.value : ctx.value;
+  var value = !Nil.is(opts.value) ? opts.value : !Nil.is(ctx.value) ? ctx.value : null;
 
   var options = opts.options ? opts.options.slice() : getOptionsOfEnum(Enum);
 
@@ -453,28 +457,17 @@ function select(opts, ctx) {
       };
     },
 
-    getRawValue: function () {
-
-      assert(!Nil.is(this.refs[REF]), 'missing `ref` for input `%s`, check out its template', name);
-
-      var select = this.refs[REF].getDOMNode();
-      var value = select.value;
-
-      if (multiple) {
-        value = [];
-        for (var i = 0, len = select.options.length ; i < len ; i++ ) {
-            var option = select.options[i];
-            if (option.selected) {
-              value.push(option.value);
-            }
-        }
+    onChange: function (evt) {
+      var value = evt.target.value;
+      if (value === nullOption.value) {
+        value = null;
       }
-
-      return (value === nullOption.value) ? null : value;
+      this.props.onChange && this.props.onChange(value);
+      this.setState({value: value});
     },
 
     getValue: function () {
-      var result = t.validate(this.getRawValue(), ctx.report.type);
+      var result = t.validate(this.state.value, ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -492,8 +485,8 @@ function select(opts, ctx) {
         label: label,
         name: name,
         multiple: multiple,
+        onChange: this.onChange,
         options: options,
-        ref: REF,
         value: this.state.value
       })));
     }
@@ -510,7 +503,7 @@ function radio(opts, ctx) {
 
   var name = opts.name || ctx.getDefaultName();
 
-  var value = !Nil.is(opts.value) ? opts.value : ctx.value;
+  var value = !Nil.is(opts.value) ? opts.value : !Nil.is(ctx.value) ? ctx.value : null;
 
   var options = opts.options ? opts.options.slice() : getOptionsOfEnum(ctx.report.innerType);
 
@@ -532,24 +525,13 @@ function radio(opts, ctx) {
       };
     },
 
-    getRawValue: function () {
-
-      var value = null;
-
-      for (var i = 0, len = options.length ; i < len ; i++ ) {
-        assert(!Nil.is(this.refs[REF + i]), 'missing `ref` for input `%s`, check out its template', name);
-        var node = this.refs[REF + i].getDOMNode();
-        if (node.checked) {
-          value = node.value;
-          break;
-        }
-      }
-
-      return value;
+    onChange: function (value) {
+      this.props.onChange && this.props.onChange(value);
+      this.setState({value: value});
     },
 
     getValue: function () {
-      var result = t.validate(this.getRawValue(), ctx.report.type);
+      var result = t.validate(this.state.value, ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -566,7 +548,7 @@ function radio(opts, ctx) {
         help: opts.help,
         label: label,
         name: name,
-        ref: REF,
+        onChange: this.onChange,
         options: options,
         value: this.state.value
       })));
@@ -604,14 +586,14 @@ function struct(opts, ctx) {
       var propOpts = fields[prop] || {};
       var factory = getFactory(propType, propOpts);
       var Component = factory(propOpts, new Context({
-        templates:  templates,
-        i18n:       i18n,
-        report:     new getReport(propType),
-        path:       ctx.path.concat(prop),
         auto:       auto,
+        config:     config,
+        i18n:       i18n,
         label:      humanize(prop),
-        value:      value[prop],
-        config:     config
+        path:       ctx.path.concat(prop),
+        report:     new getReport(propType),
+        templates:  templates,
+        value:      value[prop]
       }));
 
       components[prop] = Component;
@@ -628,6 +610,17 @@ function struct(opts, ctx) {
         hasError: !!opts.hasError,
         value: value
       };
+    },
+
+    onFieldChange: function (fieldName, fieldValue) {
+      var value = mixin({}, this.state.value);
+      value[fieldName] = fieldValue;
+      this.onChange(value);
+    },
+
+    onChange: function (value) {
+      this.props.onChange && this.props.onChange(value);
+      this.setState({value: value});
     },
 
     getValue: function () {
@@ -664,7 +657,11 @@ function struct(opts, ctx) {
       var inputs = {};
       for (var name in components) {
         if (components.hasOwnProperty(name)) {
-          inputs[name] = React.createElement(components[name], {ref: name, key: name}); // exploit the `name` uniqueness for keys
+          inputs[name] = React.createElement(components[name], {
+            key: name,
+            onChange: this.onFieldChange.bind(this, name),
+            ref: name // exploit the `name` uniqueness for keys
+          });
         }
       }
 
@@ -741,6 +738,17 @@ function list(opts, ctx) {
       };
     },
 
+    onItemChange: function (itemIndex, itemValue) {
+      var value = this.state.value.slice();
+      value[itemIndex] = itemValue;
+      this.onChange(value);
+    },
+
+    onChange: function (value) {
+      this.props.onChange && this.props.onChange(value);
+      this.setState({value: value});
+    },
+
     getValue: function () {
 
       var value = [];
@@ -773,20 +781,24 @@ function list(opts, ctx) {
         Component: getComponent(null, components.length - 1),
         key: uuid()
       });
-      this.forceUpdate();
+      var value = this.state.value.slice();
+      value.push(null);
+      this.onChange(value);
     },
 
     removeItem: function (i, evt) {
       evt.preventDefault();
       components.splice(i, 1);
-      this.forceUpdate();
+      var value = this.state.value.slice();
+      value.splice(i, 1);
+      this.onChange(newValue);
     },
 
     moveUpItem: function (i, evt) {
       evt.preventDefault();
       if (i > 0) {
         move(components, i, i - 1);
-        this.forceUpdate();
+        this.onChange(move(this.state.value.slice(), i, i - 1));
       }
     },
 
@@ -794,7 +806,7 @@ function list(opts, ctx) {
       evt.preventDefault();
       if (i < components.length - 1) {
         move(components, i, i + 1);
-        this.forceUpdate();
+        this.onChange(move(this.state.value.slice(), i, i + 1));
       }
     },
 
@@ -808,7 +820,11 @@ function list(opts, ctx) {
         if (!opts.disableOrder)   { buttons.push({ label: i18n.down, click: this.moveDownItem.bind(this, i) }); }
 
         return {
-          input: React.createElement(item.Component, {ref: i, key: item.key}),
+          input: React.createElement(item.Component, {
+            key: item.key,
+            onChange: this.onItemChange.bind(this, i),
+            ref: i
+          }),
           key: item.key,
           buttons: buttons
         };
@@ -910,29 +926,29 @@ var Auto = t.enums.of('placeholders labels none', 'Auto');
 
 // internationalization (labels)
 var I18n = struct({
-  optional: Str,  // suffix added to optional fields
   add: Str,       // add button for lists
+  down: Str,      // move down button for lists
+  optional: Str,  // suffix added to optional fields
   remove: Str,    // remove button for lists
-  up: Str,        // move up button for lists
-  down: Str       // move down button for lists
+  up: Str         // move up button for lists
 }, 'I18n');
 
 var Report = struct({
-  type: t.Type,
+  innerType: maybe(t.Type),
   maybe: maybe(Bool),
   subtype: maybe(Bool),
-  innerType: maybe(t.Type)
+  type: t.Type
 }, 'Report');
 
 var Context = struct({
-  templates: Obj,
-  i18n: I18n,
-  report: Report,
-  path: list(union([Str, t.Num])),
   auto: Auto,
+  config: maybe(Obj),
+  i18n: I18n,
   label: maybe(Str),
-  value: Any,
-  config: maybe(Obj)
+  path: list(union([Str, t.Num])),
+  report: Report,
+  templates: Obj,
+  value: Any
 }, 'Context');
 
 /*
@@ -1157,8 +1173,8 @@ var Textbox = struct({
   help: maybe(Label),
   label: maybe(Label),
   name: Str,
+  onChange: Func,
   placeholder: maybe(Str),
-  ref: Str,
   type: TypeAttr,
   value: Any
 }, 'Textbox');
@@ -1171,7 +1187,7 @@ var Checkbox = struct({
   help: maybe(Label),
   label: Label, // checkboxes must always have a label
   name: Str,
-  ref: Str,
+  onChange: Func,
   value: Bool
 }, 'Checkbox');
 
@@ -1184,8 +1200,8 @@ var Select = struct({
   label: maybe(Label),
   multiple: maybe(Bool),
   name: Str,
+  onChange: Func,
   options: list(SelectOption),
-  ref: Str,
   value: maybe(union([Str, list(Str)])) // handle multiple
 }, 'Select');
 
@@ -1197,8 +1213,8 @@ var Radio = struct({
   help: maybe(Label),
   label: maybe(Label),
   name: Str,
+  onChange: Func,
   options: list(Option),
-  ref: Str,
   value: maybe(Str)
 }, 'Radio');
 
@@ -1378,9 +1394,12 @@ function getHiddenTextbox(locals) {
     tag: 'input',
     attrs: {
       type: 'hidden',
-      defaultValue: locals.value,
+      value: locals.value,
       name: locals.name,
       ref: locals.ref
+    },
+    events: {
+      change: locals.onChange
     }
   };
 }
@@ -1395,8 +1414,9 @@ function textbox(locals) {
 
   var control = uform.getTextbox({
     type: locals.type,
-    defaultValue: locals.value,
+    value: locals.value,
     disabled: locals.disabled,
+    onChange: locals.onChange,
     placeholder: locals.placeholder,
     name: locals.name,
     ref: locals.ref,
@@ -1451,11 +1471,11 @@ function checkbox(locals) {
   var config = new CheckboxConfig(locals.config || {});
 
   var control = uform.getCheckbox({
-    defaultChecked: locals.value,
+    checked: locals.value,
     disabled: locals.disabled,
     label: locals.label,
     name: locals.name,
-    ref: locals.ref
+    onChange: locals.onChange
   });
 
   var error = getError(locals);
@@ -1491,11 +1511,11 @@ function select(locals) {
   });
 
   var control = uform.getSelect({
-    defaultValue: locals.value,
+    value: locals.value,
     disabled: locals.disabled,
     name: locals.name,
+    onChange: locals.onChange,
     options: options,
-    ref: locals.ref,
     size: config.size
   });
 
@@ -1539,11 +1559,13 @@ function radio(locals) {
 
   var control = locals.options.map(function (option, i) {
     return uform.getRadio({
-      defaultChecked: (option.value === locals.value),
+      checked: (option.value === locals.value),
       disabled: option.disabled || locals.disabled,
       label: option.text,
       name: locals.name,
-      ref: locals.ref + i,
+      onChange: function (evt) {
+        locals.onChange(option.value);
+      },
       value: option.value
     });
   });
@@ -1776,6 +1798,7 @@ module.exports = merge;
 function move(arr, fromIndex, toIndex) {
   var element = arr.splice(fromIndex, 1)[0];
   arr.splice(toIndex, 0, element);
+  return arr;
 }
 
 module.exports = move;
@@ -3143,7 +3166,9 @@ function getCheckbox(opts) {
             name: opts.name,
             value: 'true'
           },
-          ref: opts.ref
+          events: {
+            change: opts.onChange
+          }
         },
         ' ',
         opts.label
@@ -3422,7 +3447,9 @@ function getRadio(opts) {
             name: opts.name,
             value: opts.value
           },
-          ref: opts.ref
+          events: {
+            change: opts.onChange
+          }
         },
         ' ',
         opts.label
@@ -3487,7 +3514,9 @@ function getSelect(opts) {
       className: className
     },
     children: opts.options,
-    ref: opts.ref
+    events: {
+      change: opts.onChange
+    }
   };
 }
 
@@ -3551,7 +3580,9 @@ function getTextbox(opts) {
       readOnly: opts.readOnly,
       className: className
     },
-    ref: opts.ref
+    events: {
+      change: opts.onChange
+    }
   };
 }
 
