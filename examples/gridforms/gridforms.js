@@ -226,7 +226,7 @@ function create(type, opts) {
         report: getReport(type),
         path: [],
         auto: 'placeholders',
-        label: '',
+        label: null,
         value: this.props.value
       });
       var Component = factory(opts, ctx);
@@ -263,12 +263,6 @@ var ValidationResult = t.ValidationResult;
 var getKind = t.util.getKind;
 var getName = t.util.getName;
 var Context = api.Context;
-
-// (type, opts)
-
-//
-// main function
-//
 
 function getFactory(type, opts) {
 
@@ -683,7 +677,7 @@ function struct(opts, ctx) {
       var inputs = {};
       for (var name in components) {
         if (components.hasOwnProperty(name)) {
-          inputs[name] = React.createElement(components[name], {ref: name, key: name}); // // exploit the `name` uniqueness for keys
+          inputs[name] = React.createElement(components[name], {ref: name, key: name}); // exploit the `name` uniqueness for keys
         }
       }
 
@@ -729,9 +723,9 @@ function list(opts, ctx) {
       templates: templates,
       i18n: i18n,
       report: getReport(itemType),
-      path: ctx.path.concat(i),
+      path: ctx.path,
       auto: auto,
-      label: '#' + (i + 1),
+      label: null,
       value: value,
       config: config
     }));
@@ -949,7 +943,7 @@ var Context = struct({
   report: Report,
   path: list(union([Str, t.Num])),
   auto: Auto,
-  label: Str,
+  label: maybe(Str),
   value: Any,
   config: maybe(Obj)
 }, 'Context');
@@ -971,6 +965,7 @@ Context.prototype.getDefaultName = function () {
 };
 
 Context.prototype.getDefaultLabel = function () {
+  if (!this.label) { return null; }
   return this.label + (this.report.maybe ? this.i18n.optional : '');
 };
 
@@ -1363,7 +1358,7 @@ function textbox(locals) {
 }
 
 function checkbox() {
-  throw new Error('checkboxes are not implemented (yet)');
+  throw new Error('checkboxes are not (yet) supported');
 }
 
 function select(locals) {
@@ -1394,7 +1389,7 @@ function select(locals) {
 }
 
 function radio() {
-  throw new Error('radios are not implemented (yet)');
+  throw new Error('radios are not (yet) supported');
 }
 
 function struct() {
@@ -1402,7 +1397,7 @@ function struct() {
 }
 
 function list() {
-  throw new Error('lists are not implemented (yet)');
+  throw new Error('lists are not (yet) supported');
 }
 
 module.exports = {
@@ -2308,8 +2303,10 @@ module.exports = cx;
       // mouse over the `value`, `name` and `len` variables to see what's wrong
       assert(Arr.is(value) && value.length === len, 'Invalid `%s` supplied to `%s`, expected an `Arr` of length `%s`', value, name, len);
 
+      var frozen = (mut !== true);
+
       // makes Tuple idempotent
-      if (Tuple.isTuple(value)) {
+      if (Tuple.isTuple(value) && Object.isFrozen(value) === frozen) {
         return value;
       }
 
@@ -2322,7 +2319,7 @@ module.exports = cx;
         arr.push(expected(actual, mut));
       }
 
-      if (mut !== true) {
+      if (frozen) {
         Object.freeze(arr);
       }
       return arr;
@@ -2426,8 +2423,10 @@ module.exports = cx;
       // mouse over the `value` and `name` variables to see what's wrong
       assert(Arr.is(value), 'Invalid `%s` supplied to `%s`, expected an `Arr`', value, name);
 
+      var frozen = (mut !== true);
+
       // makes List idempotent
-      if (List.isList(value)) {
+      if (List.isList(value) && Object.isFrozen(value) === frozen) {
         return value;
       }
 
@@ -2439,7 +2438,7 @@ module.exports = cx;
         arr.push(type(actual, mut));
       }
 
-      if (mut !== true) {
+      if (frozen) {
         Object.freeze(arr);
       }
       return arr;
@@ -2489,8 +2488,10 @@ module.exports = cx;
       // mouse over the `value` and `name` variables to see what's wrong
       assert(Obj.is(value), 'Invalid `%s` supplied to `%s`, expected an `Obj`', value, name);
 
+      var frozen = (mut !== true);
+
       // makes Dict idempotent
-      if (Dict.isDict(value)) {
+      if (Dict.isDict(value) && Object.isFrozen(value) === frozen) {
         return value;
       }
 
@@ -2507,7 +2508,7 @@ module.exports = cx;
         }
       }
 
-      if (mut !== true) {
+      if (frozen) {
         Object.freeze(obj);
       }
       return obj;

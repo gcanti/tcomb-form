@@ -1,171 +1,11 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-'use strict';
-
-var React = require('react');
-var t = require('../../.');
-
-var Data1 = t.struct({
-  firstName: t.Str,
-  lastName: t.Str,
-  email: t.maybe(t.Str)
-});
-
-var Form1 = t.form.create(Data1, {
-});
-
-var Example1 = React.createClass({displayName: 'Example1',
-
-  onClick: function(evt) {
-    evt.preventDefault();
-    var values = this.refs.form.getValue();
-    if (values) {
-      document.getElementById('value1').style.display = 'block';
-      document.getElementById('value1').innerHTML = JSON.stringify(values, null, 2);
-    }
-  },
-
-  render: function() {
-    return (
-      React.createElement("form", {onSubmit: this.onClick, className: "grid-form"}, 
-        React.createElement(Form1, {ref: "form"}), 
-        React.createElement("div", {className: "form-group"}, 
-          React.createElement("input", {className: "btn btn-primary", type: "submit", value: "Submit"})
-        )
-      )
-    );
-  }
-});
-
-React.render(React.createElement(Example1, null), document.getElementById('example1'));
-
-// ==================================
-
-var Booking = t.enums.of('Hotel B&B');
-var Location = t.enums.of('London Milan');
-var Currency = t.enums({
-  USD: '$ USD',
-  EUR: '€ EUR'
-});
-
-var Data2 = t.struct({
-  booking: Booking,
-  arrivalDate: t.Str,
-  departureDate: t.Str,
-  flexible: t.Bool,
-  location: Location,
-  currency: Currency,
-  budget: t.Num,
-  adults: t.Num,
-  children: t.maybe(t.Num),
-  toddlers: t.maybe(t.Num),
-  babies: t.maybe(t.Num),
-  message: t.maybe(t.Str)
-});
-
-var Form2 = t.form.create(Data2, {
-  auto: 'labels',
-  label: React.createElement("h2", null, "How can we help?"),
-  fields: {
-    booking: {
-      label: '',
-      nullOption: {value: '', text: 'I\'m interested in booking'}
-    },
-    flexible: { label: 'My dates are flexible' },
-    location: { label: 'One fine stay location' },
-    currency: { label: '' },
-    budget: { label: '', placeholder: '' },
-    children: { help: 'Age 4-12' },
-    toddlers: { help: 'Age 1-3' },
-    babies: { help: 'Under 1' },
-    message: { type: 'textarea' }
-  },
-  templates: {
-    struct: function (locals) {
-      return (
-        React.createElement("div", null, 
-          React.createElement("div", {className: "col-xs-12"}, 
-            locals.label
-          ), 
-          React.createElement("div", {className: "col-xs-12"}, 
-            locals.inputs.booking
-          ), 
-          React.createElement("div", {className: "col-xs-6"}, 
-            locals.inputs.arrivalDate
-          ), 
-          React.createElement("div", {className: "col-xs-6"}, 
-            locals.inputs.departureDate
-          ), 
-          React.createElement("div", {className: "col-xs-12"}, 
-            locals.inputs.flexible
-          ), 
-          React.createElement("div", {className: "col-sm-6"}, 
-            locals.inputs.location
-          ), 
-          React.createElement("div", {className: "col-sm-6"}, 
-            React.createElement("label", null, "Approximate budget (per night)"), 
-            React.createElement("div", {className: "row"}, 
-              React.createElement("div", {className: "col-xs-6 col-sm-3"}, 
-                locals.inputs.currency
-              ), 
-              React.createElement("div", {className: "col-xs-6 col-sm-9"}, 
-                locals.inputs.budget
-              )
-            )
-          ), 
-          React.createElement("div", {className: "col-xs-3"}, 
-            locals.inputs.adults
-          ), 
-          React.createElement("div", {className: "col-xs-3"}, 
-            locals.inputs.children
-          ), 
-          React.createElement("div", {className: "col-xs-3"}, 
-            locals.inputs.toddlers
-          ), 
-          React.createElement("div", {className: "col-xs-3"}, 
-            locals.inputs.babies
-          ), 
-          React.createElement("div", {className: "col-xs-12"}, 
-            locals.inputs.message
-          )
-        )
-      )
-    }
-  }
-});
-
-var Example2 = React.createClass({displayName: 'Example2',
-
-  onClick: function(evt) {
-    evt.preventDefault();
-    var values = this.refs.form.getValue();
-    if (values) {
-      document.getElementById('value2').style.display = 'block';
-      document.getElementById('value2').innerHTML = JSON.stringify(values, null, 2);
-    }
-  },
-
-  render: function() {
-    return (
-      React.createElement("form", {onSubmit: this.onClick, className: "grid-form"}, 
-        React.createElement(Form2, {ref: "form"}), 
-        React.createElement("div", {className: "col-xs-12"}, 
-          React.createElement("input", {className: "btn btn-primary", type: "submit", value: "Submit"})
-        )
-      )
-    );
-  }
-});
-
-React.render(React.createElement(Example2, null), document.getElementById('example2'));
-
-},{"../../.":2,"react":"react"}],2:[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({".":[function(require,module,exports){
 var t = require('./lib');
 
 // plug bootstrap style
 t.form.config.templates = require('./lib/templates/bootstrap');
 
 module.exports = t;
-},{"./lib":6,"./lib/templates/bootstrap":9}],3:[function(require,module,exports){
+},{"./lib":4,"./lib/templates/bootstrap":7}],1:[function(require,module,exports){
 'use strict';
 
 var api = require('./protocols/api');
@@ -181,7 +21,7 @@ var i18n = new api.I18n({
 module.exports = {
   i18n: i18n
 };
-},{"./protocols/api":7}],4:[function(require,module,exports){
+},{"./protocols/api":5}],2:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -194,7 +34,7 @@ function create(type, opts) {
 
   var factory = getFactory(type, opts);
 
-  var Form = React.createClass({displayName: 'Form',
+  var Form = React.createClass({
 
     // the public api returns `null` if validation failed
     // unless the optional boolean argument `raw` is set to `true`
@@ -226,7 +66,7 @@ function create(type, opts) {
 }
 
 module.exports = create;
-},{"./config":3,"./factories":5,"./protocols/api":7,"./util/getReport":12,"react":"react"}],5:[function(require,module,exports){
+},{"./config":1,"./factories":3,"./protocols/api":5,"./util/getReport":10,"react":"react"}],3:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -250,6 +90,10 @@ var ValidationResult = t.ValidationResult;
 var getKind = t.util.getKind;
 var getName = t.util.getName;
 var Context = api.Context;
+
+//
+// main function
+//
 
 function getFactory(type, opts) {
 
@@ -664,7 +508,7 @@ function struct(opts, ctx) {
       var inputs = {};
       for (var name in components) {
         if (components.hasOwnProperty(name)) {
-          inputs[name] = React.createElement(components[name], {ref: name, key: name}); // exploit the `name` uniqueness for keys
+          inputs[name] = React.createElement(components[name], {ref: name, key: name}); // // exploit the `name` uniqueness for keys
         }
       }
 
@@ -878,7 +722,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/getError":10,"./util/getOptionsOfEnum":11,"./util/getReport":12,"./util/humanize":13,"./util/merge":14,"./util/move":15,"./util/uuid":16,"react":"react","tcomb-validation":18,"uvdom/react":42}],6:[function(require,module,exports){
+},{"./config":1,"./protocols/api":5,"./protocols/theme":6,"./util/getError":8,"./util/getOptionsOfEnum":9,"./util/getReport":10,"./util/humanize":11,"./util/merge":12,"./util/move":13,"./util/uuid":14,"react":"react","tcomb-validation":16,"uvdom/react":40}],4:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -890,7 +734,7 @@ t.form = t.util.mixin({
 }, factories);
 
 module.exports = t;
-},{"./config":3,"./create":4,"./factories":5,"tcomb-validation":18}],7:[function(require,module,exports){
+},{"./config":1,"./create":2,"./factories":3,"tcomb-validation":16}],5:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1109,7 +953,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":18}],8:[function(require,module,exports){
+},{"react":"react","tcomb-validation":16}],6:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1248,7 +1092,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":18}],9:[function(require,module,exports){
+},{"react":"react","tcomb-validation":16}],7:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1679,7 +1523,7 @@ module.exports = {
   struct: struct,
   list: list
 };
-},{"../protocols/theme":8,"tcomb-validation":18,"uvdom-bootstrap/form":20}],10:[function(require,module,exports){
+},{"../protocols/theme":6,"tcomb-validation":16,"uvdom-bootstrap/form":18}],8:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1690,7 +1534,7 @@ function getError(error, state) {
 }
 
 module.exports = getError;
-},{"tcomb-validation":18}],11:[function(require,module,exports){
+},{"tcomb-validation":16}],9:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -1704,7 +1548,7 @@ function getOptionsOfEnum(type) {
 }
 
 module.exports = getOptionsOfEnum;
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1741,7 +1585,7 @@ function getReport(type) {
 }
 
 module.exports = getReport;
-},{"tcomb-validation":18}],13:[function(require,module,exports){
+},{"tcomb-validation":16}],11:[function(require,module,exports){
 'use strict';
 
 // thanks to https://github.com/epeli/underscore.string
@@ -1759,7 +1603,7 @@ function humanize(s){
 }
 
 module.exports = humanize;
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1770,7 +1614,7 @@ function merge(a, b) {
 }
 
 module.exports = merge;
-},{"tcomb-validation":18}],15:[function(require,module,exports){
+},{"tcomb-validation":16}],13:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -1779,7 +1623,7 @@ function move(arr, fromIndex, toIndex) {
 }
 
 module.exports = move;
-},{}],16:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 function uuid() {
@@ -1790,7 +1634,7 @@ function uuid() {
 }
 
 module.exports = uuid;
-},{}],17:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -1829,7 +1673,7 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{}],18:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -2048,7 +1892,7 @@ module.exports = cx;
 
 }));
 
-},{"tcomb":19}],19:[function(require,module,exports){
+},{"tcomb":17}],17:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -2572,10 +2416,8 @@ module.exports = cx;
       // mouse over the `value`, `name` and `len` variables to see what's wrong
       assert(Arr.is(value) && value.length === len, 'Invalid `%s` supplied to `%s`, expected an `Arr` of length `%s`', value, name, len);
 
-      var frozen = (mut !== true);
-
       // makes Tuple idempotent
-      if (Tuple.isTuple(value) && Object.isFrozen(value) === frozen) {
+      if (Tuple.isTuple(value)) {
         return value;
       }
 
@@ -2588,7 +2430,7 @@ module.exports = cx;
         arr.push(expected(actual, mut));
       }
 
-      if (frozen) {
+      if (mut !== true) {
         Object.freeze(arr);
       }
       return arr;
@@ -2692,10 +2534,8 @@ module.exports = cx;
       // mouse over the `value` and `name` variables to see what's wrong
       assert(Arr.is(value), 'Invalid `%s` supplied to `%s`, expected an `Arr`', value, name);
 
-      var frozen = (mut !== true);
-
       // makes List idempotent
-      if (List.isList(value) && Object.isFrozen(value) === frozen) {
+      if (List.isList(value)) {
         return value;
       }
 
@@ -2707,7 +2547,7 @@ module.exports = cx;
         arr.push(type(actual, mut));
       }
 
-      if (frozen) {
+      if (mut !== true) {
         Object.freeze(arr);
       }
       return arr;
@@ -2757,10 +2597,8 @@ module.exports = cx;
       // mouse over the `value` and `name` variables to see what's wrong
       assert(Obj.is(value), 'Invalid `%s` supplied to `%s`, expected an `Obj`', value, name);
 
-      var frozen = (mut !== true);
-
       // makes Dict idempotent
-      if (Dict.isDict(value) && Object.isFrozen(value) === frozen) {
+      if (Dict.isDict(value)) {
         return value;
       }
 
@@ -2777,7 +2615,7 @@ module.exports = cx;
         }
       }
 
-      if (frozen) {
+      if (mut !== true) {
         Object.freeze(obj);
       }
       return obj;
@@ -2963,7 +2801,7 @@ module.exports = cx;
   };
 }));
 
-},{}],20:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = {
   getAddon: require('./lib/getAddon'),
   getAlert: require('./lib/getAlert'),
@@ -2986,7 +2824,7 @@ module.exports = {
   getStatic: require('./lib/getStatic'),
   getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":21,"./lib/getAlert":22,"./lib/getBreakpoints":23,"./lib/getButton":24,"./lib/getButtonGroup":25,"./lib/getCheckbox":26,"./lib/getCol":27,"./lib/getFieldset":28,"./lib/getFormGroup":29,"./lib/getHelpBlock":30,"./lib/getInputGroup":31,"./lib/getLabel":32,"./lib/getOffsets":33,"./lib/getOptGroup":34,"./lib/getOption":35,"./lib/getRadio":36,"./lib/getRow":37,"./lib/getSelect":38,"./lib/getStatic":39,"./lib/getTextbox":40}],21:[function(require,module,exports){
+},{"./lib/getAddon":19,"./lib/getAlert":20,"./lib/getBreakpoints":21,"./lib/getButton":22,"./lib/getButtonGroup":23,"./lib/getCheckbox":24,"./lib/getCol":25,"./lib/getFieldset":26,"./lib/getFormGroup":27,"./lib/getHelpBlock":28,"./lib/getInputGroup":29,"./lib/getLabel":30,"./lib/getOffsets":31,"./lib/getOptGroup":32,"./lib/getOption":33,"./lib/getRadio":34,"./lib/getRow":35,"./lib/getSelect":36,"./lib/getStatic":37,"./lib/getTextbox":38}],19:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -3002,7 +2840,7 @@ function getAddon(addon) {
 }
 
 module.exports = getAddon;
-},{}],22:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 function getAlert(opts) {
@@ -3023,7 +2861,7 @@ function getAlert(opts) {
 }
 
 module.exports = getAlert;
-},{}],23:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 function getBreakpoints(breakpoints) {
@@ -3037,7 +2875,7 @@ function getBreakpoints(breakpoints) {
 }
 
 module.exports = getBreakpoints;
-},{}],24:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3084,7 +2922,7 @@ function getButton(opts) {
 
 module.exports = getButton;
 
-},{}],25:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 function getButtonGroup(buttons) {
@@ -3102,7 +2940,7 @@ function getButtonGroup(buttons) {
 module.exports = getButtonGroup;
 
 
-},{}],26:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3153,7 +2991,7 @@ function getCheckbox(opts) {
 }
 
 module.exports = getCheckbox;
-},{}],27:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var getBreakpoints = require('./getBreakpoints');
@@ -3172,7 +3010,7 @@ function getCol(opts) {
 }
 
 module.exports = getCol;
-},{"./getBreakpoints":23}],28:[function(require,module,exports){
+},{"./getBreakpoints":21}],26:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -3199,7 +3037,7 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],29:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
@@ -3216,7 +3054,7 @@ function getFormGroup(opts) {
 }
 
 module.exports = getFormGroup;
-},{}],30:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3246,7 +3084,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],31:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -3262,7 +3100,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],32:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -3303,7 +3141,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":41}],33:[function(require,module,exports){
+},{"./mixin":39}],31:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -3317,7 +3155,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],34:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -3351,7 +3189,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":35}],35:[function(require,module,exports){
+},{"./getOption":33}],33:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3380,7 +3218,7 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],36:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3433,7 +3271,7 @@ function getRadio(opts) {
 }
 
 module.exports = getRadio;
-},{}],37:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -3450,7 +3288,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],38:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3492,7 +3330,7 @@ function getSelect(opts) {
 }
 
 module.exports = getSelect;
-},{}],39:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 function getStatic(value) {
@@ -3508,7 +3346,7 @@ function getStatic(value) {
 }
 
 module.exports = getStatic;
-},{}],40:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3556,7 +3394,7 @@ function getTextbox(opts) {
 }
 
 module.exports = getTextbox;
-},{}],41:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 function mixin(a, b) {
@@ -3570,7 +3408,7 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
-},{}],42:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -3639,4 +3477,4 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"react":"react","react/lib/cx":17}]},{},[1]);
+},{"react":"react","react/lib/cx":15}]},{},[]);

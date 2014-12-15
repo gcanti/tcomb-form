@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The tcomb &lt;form/&gt; Guide</title>
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.css"/>
+    <link type="text/css" rel="stylesheet" href="css/github.css"/>
+    <style>
+    body {
+      color: #444;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    code {
+      background-color: #f0f0f0;
+      color: #000;
+    }
+    pre {
+      padding: 2em;
+      background-color: transparent;
+      margin: 2em 0;
+    }
+    pre code.hljs {
+      padding: 0;
+      background-color: transparent;
+    }
+    pre.value {
+      background-color: #dff0d8;
+      display: none;
+    }
+    p {
+      margin: 1.5em 0;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Get started with tcomb-form v0.3</h1>
+      <p>Installing tcomb-form:</p>
+      <pre><code>
+npm install tcomb-form
+      </code></pre>
+
+      <h2>Hello form</h2>
+      <p>Writing a basic form is easy, follow three steps:</p>
+      <ol>
+        <li>create a model with <a href="https://github.com/gcanti/tcomb">tcomb</a> syntax (*)</li>
+        <li>call the <code>create()</code> method</li>
+        <li>embed the form in your app</li>
+      </ol>
+      <p><strong>All the examples are live, you can find the source here <a href="js/guide.js">guide.js</a></strong></p>
+      <p>(*) <em>tcomb is a library for Node.js and the browser which allows you to check the types of JavaScript values at runtime with a simple syntax. It's great for Domain Driven Design, for testing and for adding safety to your internal code.</em></p>
+      <pre><code>
+var t = require('tcomb-form');
+
+// 1. create a model (two string properties)
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str
+});
+
+// 2. create the form
+var Form = t.form.create(Person);
+
+// 3. embed the form in your app
+var App = React.createClass({
+  getValue: function () {
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+    }
+  },
+  render: function () {
+    return (
+      &lt;Form ref="form"/&gt;
+    );
+  }
+});
+      </code></pre>
+
+      <div class="preview">
+        <div id="p1" class="form"></div>
+        <pre id="v1" class="value"></pre>
+      </div>
+
+      <h2>Optional field</h2>
+      <p>To create an optional field wrap the field type with <code>t.maybe</code>:</p>
+      <pre><code>
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str,
+  email: t.maybe(t.Str) // an optional string
+});
+      </code></pre>
+
+      <div class="preview">
+        <div id="p2" class="form"></div>
+        <pre id="v2" class="value"></pre>
+      </div>
+
+      <h2>Numeric field</h2>
+      <p>To create a numeric field use <code>t.Num</code>:</p>
+      <pre><code>
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str,
+  email: t.maybe(t.Str),
+  age: t.Num // a numeric field
+});
+      </code></pre>
+      <div class="preview">
+        <div id="p3" class="form"></div>
+        <pre id="v3" class="value"></pre>
+      </div>
+
+      <h2>Boolean field</h2>
+      <p>To create a boolean field use <code>t.Bool</code>:</p>
+      <pre><code>
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str,
+  email: t.maybe(t.Str),
+  age: t.Num,
+  rememberMe: t.Bool // a boolean field
+});
+      </code></pre>
+      <div class="preview">
+        <div id="p4" class="form"></div>
+        <pre id="v4" class="value"></pre>
+      </div>
+
+      <h2>Enum field</h2>
+      <p>To create an enum field use <code>t.enums</code>:</p>
+      <pre><code>
+var Gender = t.enums({
+  M: 'Male',
+  F: 'Female'
+});
+
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str,
+  email: t.maybe(t.Str),
+  age: t.Num,
+  rememberMe: t.Bool,
+  gender: Gender
+});
+      </code></pre>
+      <div class="preview">
+        <div id="p5" class="form"></div>
+        <pre id="v5" class="value"></pre>
+      </div>
+
+      <h2>Subtypes</h2>
+      <p>A <em>predicate</em> is a function with the following signature:</p>
+      <pre><code>predicate(x) -> Bool</code></pre>
+      <p>You can refine a type with <code>t.subtype(type, predicate)</code>:</p>
+      <pre><code>
+// positive numbers
+var Positive = t.subtype(t.Num, function (n) {
+  return n >= 0;
+});
+
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str,
+  email: t.maybe(t.Str),
+  age: Positive, // refinement
+  rememberMe: t.Bool,
+  gender: Gender
+});
+      </code></pre>
+      <div class="preview">
+        <div id="p6" class="form"></div>
+        <pre id="v6" class="value"></pre>
+      </div>
+
+      <h2>Lists</h2>
+      <p>You can handle a list with <code>t.list</code>:</p>
+      <pre><code>
+var Tags = t.list(t.Str);
+      </code></pre>
+      <div class="preview">
+        <div id="p7" class="form"></div>
+        <pre id="v7" class="value"></pre>
+      </div>
+
+      <h2>Nested structures</h2>
+      <p>You can nest lists and structs at an arbitrary level:</p>
+      <pre><code>
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str
+});
+
+var Persons = t.list(Person);
+      </code></pre>
+      <div class="preview">
+        <div id="p8" class="form"></div>
+        <pre id="v8" class="value"></pre>
+      </div>
+
+      <h1>Options</h1>
+      <p>To customize the form, pass a <code>options</code> object as second argument:</p>
+      <pre><code>
+var Form = create(type, options);
+      </code></pre>
+
+      <h2>Automatically generate labels</h2>
+      <p>Pass the option <code>auto: 'labels'</code> to automatically generate default labels:</p>
+      <pre><code>
+var Form = t.form.create(Person, {
+  auto: 'labels'
+});
+      </code></pre>
+      <div class="preview">
+        <div id="p9" class="form"></div>
+        <pre id="v9" class="value"></pre>
+      </div>
+
+      <p>Or <code>auto: 'none'</code> if you don't want neither labels nor placeholders:</p>
+      <pre><code>
+var Form = t.form.create(Person, {
+  auto: 'none'
+});
+      </code></pre>
+
+      <h2>Fields order</h2>
+      <p>You can order the fields with the <code>order</code> option:</p>
+      <pre><code>
+var Form = t.form.create(Person, {
+  order: ['name', 'surname', 'rememberMe', 'gender', 'age', 'email']
+});
+      </code></pre>
+      <div class="preview">
+        <div id="p10" class="form"></div>
+        <pre id="v10" class="value"></pre>
+      </div>
+
+      <h2>Default values</h2>
+      <p>You can set the default values with the <code>value</code> option or passing a <code>value</code> prop to the form component:</p>
+      <pre><code>
+var value = {
+  name: 'Giulio',
+  surname: 'Canti',
+  age: 41,
+  gender: 'M'
+};
+
+var Form = t.form.create(Person, {
+  value: value
+});
+
+// or
+var App = React.createClass({
+  render: function () {
+    return (
+      &lt;Form ref="form" value={value}/&gt;
+    );
+  }
+});
+
+
+      </code></pre>
+      <div class="preview">
+        <div id="p11" class="form"></div>
+        <pre id="v11" class="value"></pre>
+      </div>
+
+      <h2>HTML5 types</h2>
+      <p>Any HTML5 type is allowed for textboxes:</p>
+      <pre><code>
+var Palette = t.struct({
+  paletteName: t.Str,
+  colors: t.list(t.Str)
+});
+
+var Form = t.form.create(Color, {
+  item: {
+    type: 'color'
+  }
+});
+      </code></pre>
+      <div class="preview">
+        <div id="p100" class="form"></div>
+        <pre id="v100" class="value"></pre>
+      </div>
+
+    </div>
+    <script type="text/javascript" src="js/react.js"></script>
+    <script type="text/javascript" src="js/dist.js"></script>
+    <script type="text/javascript" src="js/guide.js"></script>
+    <script type="text/javascript" src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
+

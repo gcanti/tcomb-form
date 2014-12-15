@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tcomb &lt;form/&gt;</title>
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.css"/>
+    <style>
+    body {
+      color: #444;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    code {
+      background-color: #f0f0f0;
+      color: #000;
+    }
+    header {
+      background: #296ad4;
+      background: -moz-linear-gradient(left, #296ad4 0%, #4e8ef7 100%);
+      background: -webkit-gradient(linear, left top, right top, color-stop(0%, #296ad4), color-stop(100%, #4e8ef7));
+      background: -webkit-linear-gradient(left, #296ad4 0%, #4e8ef7 100%);
+      background: -o-linear-gradient(left, #296ad4 0%, #4e8ef7 100%);
+      background: -ms-linear-gradient(left, #296ad4 0%, #4e8ef7 100%);
+      background: linear-gradient(to right, #296ad4 0%, #4e8ef7 100%);
+      color: #A8C7FF;
+      padding: 6em 0;
+      position: relative;
+      text-align: center;
+    }
+    header h1 {
+      font-weight: 300;
+      color: #fff;
+      padding: 1em 0 0.3em 0;
+    }
+    h2 {
+      margin-top: 2em;
+      margin-bottom: 1em;
+    }
+    .follow {
+      background: #2155aa;
+      background: -moz-linear-gradient(left, #2155aa 0%, #3e72c6 100%);
+      background: -webkit-gradient(linear, left top, right top, color-stop(0%, #2155aa), color-stop(100%, #3e72c6));
+      background: -webkit-linear-gradient(left, #2155aa 0%, #3e72c6 100%);
+      background: -o-linear-gradient(left, #2155aa 0%, #3e72c6 100%);
+      background: -ms-linear-gradient(left, #2155aa 0%, #3e72c6 100%);
+      background: linear-gradient(to right, #2155aa 0%, #3e72c6 100%);
+      padding: 20px 0;
+      text-align: center;
+    }
+    .follow a {
+      color: #A8C7FF;
+    }
+    footer {
+      border-top: 2px solid #ddd;
+      margin-top: 100px;
+      padding: 20px 0 100px 0;
+      color: #999;
+    }
+    img {
+      padding-top: 2em;
+      display: block;
+      width: 340px;
+      margin: auto;
+    }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <p class="lead">tcomb &lt;form/&gt; v0.3</p>
+        <h1>React.js powered UI library for <br/> developing forms writing less code.</h1>
+        <p class="lead">"Simplicity is the ultimate sophistication"<br/>(Leonardo da Vinci)</p>
+      </div>
+    </header>
+    <div class="follow lead">
+      <div class="container">
+        <div class="col-xs-3">
+          <a href="https://twitter.com/GiulioCanti">Twitter</a>
+        </div>
+        <div class="col-xs-3">
+          <a href="https://github.com/gcanti/tcomb-form">Github</a>
+        </div>
+        <div class="col-xs-3">
+          <a href="demo.html">Demo</a>
+        </div>
+        <div class="col-xs-3">
+          <a href="guide.html">Docs</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="col-md-4">
+        <h2 class="text-center">Benefits</h2>
+        <p>With tcomb-form you simply call</p>
+        <p><code>var Form = t.form.create(model);</code></p>
+        <p>to generate a form based on that domain model. What does this get you?</p>
+        <ul>
+          <li>Write a lot less HTML</li>
+          <li>Usability and accessibility for free (automatic labels, inline validation, etc)</li>
+          <li>No need to update forms when domain model changes</li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h2 class="text-center">Flexibility</h2>
+        <p>tcomb-form lets you override automatic features or add additional information to forms.</p>
+        <p>You often don't want to use your domain model directly for a form.</p>
+        <p>You can easily create a form specific model with <a href="https://github.com/gcanti/tcomb">tcomb</a> that captures the details of a particular feature, and then define a function that uses that model to process the main domain model.</p>
+      </div>
+      <div class="col-md-4">
+        <h2 class="text-center">Domain Driven Forms</h2>
+        <p>The <a href="https://github.com/gcanti/tcomb">tcomb</a> library provides a concise but expressive way to define domain models in JavaScript.</p>
+        <p>The <a href="https://github.com/gcanti/tcomb-validation">tcomb-validation</a> library builds on tcomb, providing validation functions for tcomb domain models.</p>
+        <p>This library builds on those two and <strong>realizes an old dream of mine</strong>.</p>
+        <img src="schema.png"/>
+      </div>
+    </div>
+    <div class="container">
+      <footer>
+        <div class="col-xs-6">
+          <a href="https://twitter.com/GiulioCanti">Twitter</a>
+          <a href="https://github.com/gcanti/tcomb-form">Github</a>
+          <a href="demo.html">Demo</a>
+          <a href="guide.html">Docs</a>
+        </div>
+        <div class="col-xs-6 text-right">
+          Open source (MIT). Made by Giulio Canti
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
+

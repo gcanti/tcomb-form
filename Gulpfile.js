@@ -107,3 +107,26 @@ gulp.task('dev', function (){
   .pipe(gulp.dest('dev'));
 });
 
+gulp.task('react', function () {
+
+  browserify({
+    require: ['react']
+  })
+  .bundle()
+  .pipe(source('react.js'))
+  .pipe(gulp.dest('./docs'));
+
+});
+
+gulp.task('guide', function () {
+
+  browserify({
+    require: ['.']
+  })
+  .external('react')
+  .bundle()
+  .pipe(source('dist.js'))
+  .pipe(gulp.dest('./docs/js'));
+
+});
+
