@@ -320,6 +320,8 @@ if (typeof window !== 'undefined') {
       tape.deepEqual(locals.value, 'IT');
     });
 
+    // FIXME test multiple
+
   });
 
 }

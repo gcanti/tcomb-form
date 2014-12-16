@@ -168,6 +168,8 @@ test('list() factory', function (tape) {
 
   });
 
+  // FIXME buttons tests
+
 });
 
 //

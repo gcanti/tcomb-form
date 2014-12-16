@@ -89,7 +89,6 @@ var uuid = require('./util/uuid');
 
 var assert = t.assert;
 var Nil = t.Nil;
-var Func = t.Func;
 var mixin = t.util.mixin;
 var ValidationResult = t.ValidationResult;
 var getKind = t.util.getKind;
@@ -158,7 +157,9 @@ function textbox(opts, ctx) {
       if (transformer) {
         value = transformer.parse(value);
       }
-      this.props.onChange && this.props.onChange(value);
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
       this.setState({value: value});
     },
 
@@ -221,7 +222,9 @@ function checkbox(opts, ctx) {
 
     onChange: function (evt) {
       var value = evt.target.checked;
-      this.props.onChange && this.props.onChange(value);
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
       this.setState({value: value});
     },
 
@@ -269,7 +272,9 @@ function select(opts, ctx) {
 
   var name = opts.name || ctx.getDefaultName();
 
-  var value = !Nil.is(opts.value) ? opts.value : !Nil.is(ctx.value) ? ctx.value : null;
+  var value = !Nil.is(opts.value) ? opts.value :
+    !Nil.is(ctx.value) ? ctx.value :
+    multiple ? [] : null;
 
   var options = opts.options ? opts.options.slice() : getOptionsOfEnum(Enum);
 
@@ -298,11 +303,27 @@ function select(opts, ctx) {
     },
 
     onChange: function (evt) {
-      var value = evt.target.value;
-      if (value === nullOption.value) {
-        value = null;
+
+      var value;
+
+      if (multiple) {
+        value = [];
+        var options = evt.target.options;
+        for (var i = 0, len = options.length; i < len ; i++ ) {
+          if (options[i].selected) {
+            value.push(options[i].value);
+          }
+        }
+      } else {
+        value = evt.target.value;
+        if (value === nullOption.value) {
+          value = null;
+        }
       }
-      this.props.onChange && this.props.onChange(value);
+
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
       this.setState({value: value});
     },
 
@@ -366,7 +387,9 @@ function radio(opts, ctx) {
     },
 
     onChange: function (value) {
-      this.props.onChange && this.props.onChange(value);
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
       this.setState({value: value});
     },
 
@@ -459,7 +482,9 @@ function struct(opts, ctx) {
     },
 
     onChange: function (value) {
-      this.props.onChange && this.props.onChange(value);
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
       this.setState({value: value});
     },
 
@@ -585,7 +610,9 @@ function list(opts, ctx) {
     },
 
     onChange: function (value) {
-      this.props.onChange && this.props.onChange(value);
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
       this.setState({value: value});
     },
 
@@ -618,7 +645,7 @@ function list(opts, ctx) {
     addItem: function (evt) {
       evt.preventDefault();
       components.push({
-        Component: getComponent(null, components.length - 1),
+        Component: getComponent(null, components.length),
         key: uuid()
       });
       var value = this.state.value.slice();
@@ -631,7 +658,7 @@ function list(opts, ctx) {
       components.splice(i, 1);
       var value = this.state.value.slice();
       value.splice(i, 1);
-      this.onChange(newValue);
+      this.onChange(value);
     },
 
     moveUpItem: function (i, evt) {
@@ -764,7 +791,7 @@ var union = t.union;
 
 var Auto = t.enums.of('placeholders labels none', 'Auto');
 
-// internationalization (labels)
+// internationalization
 var I18n = struct({
   add: Str,       // add button for lists
   down: Str,      // move down button for lists
@@ -1356,7 +1383,8 @@ function select(locals) {
     name: locals.name,
     onChange: locals.onChange,
     options: options,
-    size: config.size
+    size: config.size,
+    multiple: locals.multiple
   });
 
   var horizontal = config.horizontal;
@@ -1397,13 +1425,13 @@ function radio(locals) {
 
   var config = new RadioConfig(locals.config || {});
 
-  var control = locals.options.map(function (option, i) {
+  var control = locals.options.map(function (option) {
     return uform.getRadio({
       checked: (option.value === locals.value),
       disabled: option.disabled || locals.disabled,
       label: option.text,
       name: locals.name,
-      onChange: function (evt) {
+      onChange: function () {
         locals.onChange(option.value);
       },
       value: option.value
@@ -3351,7 +3379,8 @@ function getSelect(opts) {
       defaultValue: opts.defaultValue,
       value: opts.value,
       disabled: opts.disabled,
-      className: className
+      className: className,
+      multiple: opts.multiple
     },
     children: opts.options,
     events: {

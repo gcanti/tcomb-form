@@ -7,8 +7,6 @@ var gutil = require('gulp-util');
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 
-gulp.task('default', ['examples']);
-
 // ------------------------------------
 // builds the examples
 // ------------------------------------
@@ -107,6 +105,11 @@ gulp.task('dev', function (){
   .pipe(gulp.dest('dev'));
 });
 
+// ------------------------------------
+// builds the docs
+// ------------------------------------
+gulp.task('docs', ['react', 'dist', 'ionic']);
+
 gulp.task('react', function () {
 
   browserify({
@@ -118,14 +121,24 @@ gulp.task('react', function () {
 
 });
 
-gulp.task('guide', function () {
+gulp.task('dist', function () {
 
-  browserify({
-    require: ['.']
-  })
+  browserify()
+  .require('.')
   .external('react')
   .bundle()
   .pipe(source('dist.js'))
+  .pipe(gulp.dest('./docs/js'));
+
+});
+
+gulp.task('ionic', function () {
+
+  browserify()
+  .require('./lib/templates/ionic')
+  .external('react')
+  .bundle()
+  .pipe(source('ionic.js'))
   .pipe(gulp.dest('./docs/js'));
 
 });

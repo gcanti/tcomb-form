@@ -4,296 +4,823 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The tcomb &lt;form/&gt; Guide</title>
-    <link type="text/css" rel="stylesheet" href="css/bootstrap.css"/>
+    <title>The tcomb-form Guide</title>
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.css" id="theme"/>
     <link type="text/css" rel="stylesheet" href="css/github.css"/>
-    <style>
-    body {
-      color: #444;
-      font-size: 16px;
-      line-height: 1.5;
-    }
-    code {
-      background-color: #f0f0f0;
-      color: #000;
-    }
-    pre {
-      padding: 2em;
-      background-color: transparent;
-      margin: 2em 0;
-    }
-    pre code.hljs {
-      padding: 0;
-      background-color: transparent;
-    }
-    pre.value {
-      background-color: #dff0d8;
-      display: none;
-    }
-    p {
-      margin: 1.5em 0;
-    }
-    </style>
+    <link type="text/css" rel="stylesheet" href="css/style.css"/>
   </head>
   <body>
     <div class="container">
-      <h1>Get started with tcomb-form v0.3</h1>
-      <p>Installing tcomb-form:</p>
-      <pre><code>
-npm install tcomb-form
-      </code></pre>
+      <header>
+        <div class="row">
+          <div class="col-xs-6">
+            <a href="index.html">tcomb-form v0.3</a>
+          </div>
+          <div class="col-xs-6 text-right">
+            Open source (MIT). Made by Giulio Canti
+          </div>
+        </div>
+      </header>
+      <div class="row">
+        <div class="col-sm-4">
+          <h1>Index</h1>
+          <ul class="list-unstyled">
+            <li>Get started</li>
+              <ul>
+                  <li><a href="#hello-form">Hello form</a></li>
+                  <li><a href="#look-and-feel">Pluggable look and feel</a></li>
+              </ul>
+            <li>Types
+              <ul>
+                  <li><a href="#optional-field">Optional field</a></li>
+                  <li><a href="#numeric-field">Numeric field</a></li>
+                  <li><a href="#boolean-field">Boolean field</a></li>
+                  <li><a href="#enum-field">Enum field</a></li>
+                  <li><a href="#subtypes">Subtypes</a></li>
+                  <li><a href="#lists">Lists</a></li>
+                  <li><a href="#nested-structures">Nested structures</a></li>
+              </ul>
+            </li>
+            <li>Options
+              <ul>
+                <li>Fieldsets
+                  <ul>
+                    <li><a href="#fieldset-auto">Generated labels</a></li>
+                    <li><a href="#fieldset-order">Fields order</a></li>
+                    <li><a href="#fieldset-value">Default values</a></li>
+                    <li><a href="#fieldset-label">Legend</a></li>
+                    <li><a href="#fieldset-help">Help</a></li>
+                    <li><a href="#fieldset-error">Error message</a></li>
+                    <li><a href="#fieldset-disabled">Disabled fieldset</a></li>
+                    <li><a href="#fieldset-fields">Fields configuration</a></li>
+                  </ul>
+                </li>
+                <li>Lists
+                  <ul>
+                    <li><a href="#list-item">Items</a></li>
+                    <li><a href="#list-i18n">I18n</a></li>
+                    <li><a href="#list-buttons">Buttons configuration</a></li>
+                  </ul>
+                </li>
+                <li>Textbox
+                  <ul>
+                    <li><a href="#textbox-type">Type attribute</a></li>
+                    <li><a href="#textbox-placeholder">Placeholder</a></li>
+                    <li><a href="#textbox-label">Label</a></li>
+                    <li><a href="#textbox-help">Help</a></li>
+                    <li><a href="#textbox-disabled">Disabled</a></li>
+                    <li><a href="#textbox-error">Error message</a></li>
+                  </ul>
+                </li>
+                <li>Checkbox
+                  <ul>
+                    <li><a href="#checkbox-common">Common options</a></li>
+                  </ul>
+                </li>
+                <li>Select
+                  <ul>
+                    <li><a href="#select-common">Common options</a></li>
+                    <li><a href="#select-null-option">Null option</a></li>
+                    <li><a href="#select-order">Options order</a></li>
+                    <li><a href="#select-options">Custom options</a></li>
+                    <li><a href="#select-as-radio">Render as radio</a></li>
+                    <li><a href="#select-multiple">Multiple</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          <ul>
+        </div>
+        <div class="col-sm-8">
 
-      <h2>Hello form</h2>
-      <p>Writing a basic form is easy, follow three steps:</p>
-      <ol>
-        <li>create a model with <a href="https://github.com/gcanti/tcomb">tcomb</a> syntax (*)</li>
-        <li>call the <code>create()</code> method</li>
-        <li>embed the form in your app</li>
-      </ol>
-      <p><strong>All the examples are live, you can find the source here <a href="js/guide.js">guide.js</a></strong></p>
-      <p>(*) <em>tcomb is a library for Node.js and the browser which allows you to check the types of JavaScript values at runtime with a simple syntax. It's great for Domain Driven Design, for testing and for adding safety to your internal code.</em></p>
-      <pre><code>
-var t = require('tcomb-form');
+          <h1>Get started</h1>
+          <p>Installing tcomb-form:</p>
+          <pre><code>
+    npm install tcomb-form
+          </code></pre>
 
-// 1. create a model (two string properties)
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Str
-});
+          <a name="hello-form"><h2>Hello form</h2></a>
+          <p>Writing a basic form is easy:</p>
+          <ol>
+            <li>define a model with <a href="https://github.com/gcanti/tcomb">tcomb</a> (*)</li>
+            <li>call <code>form.create(Model)</code></li>
+          </ol>
+          <p>(*) tcomb <em>is a library for Node.js and the browser which allows you to check the types of JavaScript values at runtime with a simple syntax. It's great for Domain Driven Design, for testing and for adding safety to your internal code.</em></p>
+          <p><b>Note</b>. All the examples are live, you can find the source here: <a href="js/guide.js">guide.js</a></p>
+          <pre><code>
+  var t = require('tcomb-form');
 
-// 2. create the form
-var Form = t.form.create(Person);
+  // define a model
+  var Person = t.struct({
+    name: t.Str, // two string properties
+    surname: t.Str
+  });
 
-// 3. embed the form in your app
-var App = React.createClass({
-  getValue: function () {
-    var value = this.refs.form.getValue();
-    if (value) {
-      console.log(value);
+  // get the form
+  var Form = t.form.create(Person);
+          </code></pre>
+          <p>Done. Now you can embed the form in your app and retrieve the value with the <code>getValue()</code> function:</p>
+          <pre><code>
+  var App = React.createClass({
+    onClick: function () {
+      console.log(this.refs.form.<b>getValue()</b>);
+    },
+    render: function () {
+      return (
+        &lt;div&gt;
+          <b>&lt;Form ref="form"/&gt;</b>
+          &lt;button onClick={this.onClick}&gt;Click me&lt;/button&gt;
+        &lt;/div&gt;
+      );
     }
-  },
-  render: function () {
-    return (
-      &lt;Form ref="form"/&gt;
-    );
-  }
-});
-      </code></pre>
+  });
+          </code></pre>
+          <p><b>Output</b> (placeholders are automatically generated):</p>
+          <div class="preview">
+            <div id="p1" class="form"></div>
+            <pre id="v1" class="value"></pre>
+          </div>
 
-      <div class="preview">
-        <div id="p1" class="form"></div>
-        <pre id="v1" class="value"></pre>
+          <a name="look-and-feel"><h2>Pluggable look and feel</h2></a>
+
+          <p>These examples are styled with Bootstrap 3, you can customize the look and feel changing the Bootstrap flavour:</p>
+          <select class="form-control" id="themeSelector">
+            <option value="css/bootstrap.css">Default</option>
+            <option value="css/flatly.css">Flatly</option>
+            <option value="css/paper.css">Paper</option>
+          </select>
+          <p>or switching to your preferred css framework like Bootstrap, Foundation, Ionic, Pure. You can even customize tcomb-form in all its parts writing a new <em>theme</em>.</p>
+
+          <h1>Types</h1>
+          <a name="optional-field"><h2>Optional field</h2></a>
+          <p>To create an optional field wrap the field type with <code>t.maybe</code>:</p>
+          <pre><code>
+  var Person = t.struct({
+    name: t.Str,
+    surname: t.Str,
+    email: t.maybe(t.Str) // an optional string
+  });
+          </code></pre>
+          <p><b>Output</b> (the postfix `optional` is automatically generated):</p>
+          <div class="preview">
+            <div id="p2" class="form"></div>
+            <pre id="v2" class="value"></pre>
+          </div>
+
+          <a name="numeric-field"><h2>Numeric field</h2></a>
+          <p>To create a numeric field use <code>t.Num</code>:</p>
+          <pre><code>
+  var Person = t.struct({
+    name: t.Str,
+    surname: t.Str,
+    email: t.maybe(t.Str),
+    age: t.Num // a numeric field
+  });
+          </code></pre>
+          <p><b>Output</b> (tcomb-form converts numbers to / from strings):</p>
+          <div class="preview">
+            <div id="p3" class="form"></div>
+            <pre id="v3" class="value"></pre>
+          </div>
+
+          <a name="boolean-field"><h2>Boolean field</h2></a>
+          <p>To create a boolean field use <code>t.Bool</code>:</p>
+          <pre><code>
+  var Person = t.struct({
+    name: t.Str,
+    surname: t.Str,
+    email: t.maybe(t.Str),
+    age: t.Num,
+    rememberMe: t.Bool // a boolean field
+  });
+          </code></pre>
+          <p><b>Output</b> (booleans are displayed as checkboxes):</p>
+          <div class="preview">
+            <div id="p4" class="form"></div>
+            <pre id="v4" class="value"></pre>
+          </div>
+
+          <a name="enum-field"><h2>Enum field</h2></a>
+          <p>To create an enum field use <code>t.enums</code>:</p>
+          <pre><code>
+  var Gender = t.enums({
+    M: 'Male',
+    F: 'Female'
+  });
+
+  var Person = t.struct({
+    name: t.Str,
+    surname: t.Str,
+    email: t.maybe(t.Str),
+    age: t.Num,
+    rememberMe: t.Bool,
+    gender: Gender
+  });
+          </code></pre>
+          <p><b>Output</b> (enums are displayed as selects):</p>
+          <div class="preview">
+            <div id="p5" class="form"></div>
+            <pre id="v5" class="value"></pre>
+          </div>
+
+          <a name="subtypes"><h2>Subtypes</h2></a>
+          <p>A <em>predicate</em> is a function with the following signature:</p>
+          <pre><code>function(x) -> Bool</code></pre>
+          <p>You can refine a type with <code>t.subtype(type, predicate)</code>:</p>
+          <pre><code>
+  // a type representing positive numbers
+  var Positive = t.subtype(t.Num, function (n) {
+    return n >= 0;
+  });
+
+  var Person = t.struct({
+    name: t.Str,
+    surname: t.Str,
+    email: t.maybe(t.Str),
+    age: Positive, // refinement
+    rememberMe: t.Bool,
+    gender: Gender
+  });
+          </code></pre>
+          <p>Subtypes allow you to express any custom validation with a simple predicate.</p>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p6" class="form"></div>
+            <pre id="v6" class="value"></pre>
+          </div>
+
+          <a name="lists"><h2>Lists</h2></a>
+          <p>You can handle a list with <code>t.list</code>:</p>
+          <pre><code>
+  var Tags = t.list(t.Str);
+          </code></pre>
+          <p>Click <code>Add</code> to add an item. Once created, items can be re-arranged with the buttons to the right.</p>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p7" class="form"></div>
+            <pre id="v7" class="value"></pre>
+          </div>
+
+          <a name="nested-structures"><h2>Nested structures</h2></a>
+          <p>You can nest lists and structs at an arbitrary level:</p>
+          <pre><code>
+  var Person = t.struct({
+    name: t.Str,
+    surname: t.Str
+  });
+
+  var Persons = t.list(Person);
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p8" class="form"></div>
+            <pre id="v8" class="value"></pre>
+          </div>
+
+          <h1>Options</h1>
+          <p>To customize the form look and feel, pass an <code>options</code> object as a second argument:</p>
+          <pre><code>
+  var Form = create(type, <b>options</b>);
+          </code></pre>
+
+          <h2>Fieldset options</h2>
+
+          <a name="fieldset-auto"><h3>Automatically generated labels</h3></a>
+          <p>Pass the option <code>auto: 'labels'</code> to generate default labels:</p>
+          <pre><code>
+  var Form = t.form.create(Person, {
+    auto: 'labels'
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p9" class="form"></div>
+            <pre id="v9" class="value"></pre>
+          </div>
+
+          <p>Or <code>auto: 'none'</code> if you don't want neither labels nor placeholders:</p>
+          <pre><code>
+  var Form = t.form.create(Person, {
+    auto: 'none'
+  });
+          </code></pre>
+
+          <a name="fieldset-order"><h3>Fields order</h3></a>
+          <p>You can order the fields with the <code>order</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Person, {
+    order: ['name', 'surname', 'rememberMe', 'gender', 'age', 'email']
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p10" class="form"></div>
+            <pre id="v10" class="value"></pre>
+          </div>
+
+          <a name="fieldset-value"><h3>Default values</h3></a>
+          <p>You can set the default values with the <code>value</code> option or passing a <code>value</code> prop to the form component:</p>
+          <pre><code>
+  var value = {
+    name: 'Giulio',
+    surname: 'Canti',
+    age: 41,
+    gender: 'M'
+  };
+
+  var Form = t.form.create(Person, {
+    value: value
+  });
+
+  // or
+  var App = React.createClass({
+    render: function () {
+      return (
+        &lt;Form ref="form" value={value}/&gt;
+      );
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p11" class="form"></div>
+            <pre id="v11" class="value"></pre>
+          </div>
+
+          <a name="fieldset-label"><h3>Legend</h3></a>
+          <p>You can set the fieldset legend with the <code>label</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Person, {
+    // you can use strings or JSX
+    label: &lt;i&gt;My form legend&lt;/i&gt;
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p12" class="form"></div>
+            <pre id="v12" class="value"></pre>
+          </div>
+
+          <a name="fieldset-help"><h3>Help</h3></a>
+          <p>You can set the fieldset help with the <code>help</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Person, {
+    // you can use strings or JSX
+    help: &lt;i&gt;My form help&lt;/i&gt;
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p13" class="form"></div>
+            <pre id="v13" class="value"></pre>
+          </div>
+
+          <a name="fieldset-error"><h3>Error message</h3></a>
+          <p>You can set a custom error message with the <code>hasError</code> and <code>error</code> options:</p>
+          <pre><code>
+  var Form = t.form.create(Person, {
+    hasError: true,
+    // you can use strings or JSX
+    error: &lt;i&gt;A custom error message&lt;/i&gt;
+  });
+          </code></pre>
+
+          <p><code>error</code> can also be a function with the following signature:</p>
+          <pre><code>
+  function (value) -> error
+          </code></pre>
+          <p>where <code>value</code> is an object containing the current form value.</p>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p14" class="form"></div>
+            <pre id="v14" class="value"></pre>
+          </div>
+
+          <a name="fieldset-disabled"><h3>Disabled fieldset</h3></a>
+          <p>You can disable the whole fieldset with the <code>disabled</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Person, {
+    disabled: true
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p15" class="form"></div>
+            <pre id="v15" class="value"></pre>
+          </div>
+
+          <a name="fieldset-fields"><h3>Fields configuration</h3></a>
+          <p>You can configure each field with the <code>fields</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Person, {
+    fields: {
+      name: {
+        // name field configuration here..
+      },
+      surname: {
+        // surname field configuration here..
+      }
+    }
+  });
+          </code></pre>
+
+          <h2>List options</h2>
+
+          <p>The following list options are similar to the fieldset ones:</p>
+          <ul>
+            <li><code>auto</code></li>
+            <li><code>disabled</code></li>
+            <li><code>help</code></li>
+            <li><code>hasError</code></li>
+            <li><code>error</code></li>
+            <li><code>label</code></li>
+            <li><code>value</code></li>
+          </ul>
+
+          <a name="list-item"><h3>Items</h3></a>
+          <p>To configure all the items in a list set the <code>item</code> option:</p>
+          <pre><code>
+  var Colors = t.list(t.Str);
+
+  var Form = t.form.create(Colors, {
+    item: {
+      type: 'color'
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p16" class="form"></div>
+            <pre id="v16" class="value"></pre>
+          </div>
+
+          <a name="list-i18n"><h3>I18n</h3></a>
+          <p>You can override the default language (english) with the <code>i18n</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Colors, {
+    i18n: {
+      add: 'Nuovo',               // add button
+      down: 'Giù',                // move down button
+      optional: ' (opzionale)',   // suffix added to optional fields
+      remove: 'Elimina',          // remove button
+      up: 'Su'                    // move up button
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p17" class="form"></div>
+            <pre id="v17" class="value"></pre>
+          </div>
+
+          <a name="list-buttons"><h3>Buttons configuration</h3></a>
+          <p>You can prevent operations on lists with the following options:</p>
+          <ul>
+            <li><code>disableAdd</code>: (default <code>false</code>) prevents adding new items</li>
+            <li><code>disableRemove</code>: (default <code>false</code>) prevents removing existing items</li>
+            <li><code>disableOrder</code>: (default <code>false</code>) prevents ordering existing items</li>
+          </ul>
+          <pre><code>
+  var Form = t.form.create(Colors, {
+    disableOrder: true
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p18" class="form"></div>
+            <pre id="v18" class="value"></pre>
+          </div>
+
+          <h2>Textbox options</h2>
+
+          <a name="textbox-type"><h3>Type attribute</h3></a>
+          <p>You can set the <code>type</code> attribute with the <code>type</code> option. The following values are allowed:</p>
+          <ul>
+            <li>'text' (default)</li>
+            <li>'password'</li>
+            <li>'hidden'</li>
+            <li>'textarea' (outputs a textarea instead of a textbox)</li>
+            <li>all the HTML5 <code>type</code> values</li>
+          </ul>
+          <pre><code>
+  var Textbox = t.struct({
+    mytext: t.Str
+  });
+
+  var Form = t.form.create(Textbox, {
+    fields: {
+      mytext: {
+        type: 'password'
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p19" class="form"></div>
+            <pre id="v19" class="value"></pre>
+          </div>
+          <pre><code>
+  var Form = t.form.create(Textbox, {
+    fields: {
+      mytext: {
+        type: 'textarea'
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p20" class="form"></div>
+            <pre id="v20" class="value"></pre>
+          </div>
+
+          <a name="textbox-placeholder"><h3>Placeholder</h3></a>
+          <p>You can set the placeholder with the <code>placeholder</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Textbox, {
+    fields: {
+      mytext: {
+        placeholder: 'Type your text here'
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p21" class="form"></div>
+            <pre id="v21" class="value"></pre>
+          </div>
+
+          <a name="textbox-label"><h3>Label</h3></a>
+          <p>You can set the label with the <code>label</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Textbox, {
+    fields: {
+      mytext: {
+        // you can use strings or JSX
+        label: &lt;i&gt;My label&lt;/i&gt;
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p22" class="form"></div>
+            <pre id="v22" class="value"></pre>
+          </div>
+
+          <a name="textbox-help"><h3>Help</h3></a>
+          <p>You can set a help message with the <code>help</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Textbox, {
+    fields: {
+      mytext: {
+        // you can use strings or JSX
+        help: &lt;i&gt;My help&lt;/i&gt;
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p23" class="form"></div>
+            <pre id="v23" class="value"></pre>
+          </div>
+
+          <a name="textbox-disabled"><h3>Disabled</h3></a>
+          <p>You can disable the textbox / textarea with the <code>disabled</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Textbox, {
+    fields: {
+      mytext: {
+        disabled: true
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p24" class="form"></div>
+            <pre id="v24" class="value"></pre>
+          </div>
+
+          <a name="textbox-error"><h3>Error message</h3></a>
+          <p>Similar to fieldset's error message:</p>
+          <pre><code>
+  var Form = t.form.create(Textbox, {
+    fields: {
+      mytext: {
+        hasError: true,
+        error: &lt;i&gt;A custom error message&lt;/i&gt;
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p25" class="form"></div>
+            <pre id="v25" class="value"></pre>
+          </div>
+
+          <h2>Checkbox options</h2>
+
+          <a name="checkbox-common"><h3>Common options</h3></a>
+          <p>The following options are similar to the textbox ones:</p>
+          <ul>
+            <li><code>label</code></li>
+            <li><code>help</code></li>
+            <li><code>disabled</code></li>
+            <li><code>hasError</code></li>
+            <li><code>error</code></li>
+          </ul>
+          <pre><code>
+  var Checkbox = t.struct({
+    rememberMe: t.Bool
+  });
+
+  var Form = t.form.create(Checkbox, {
+    fields: {
+      rememberMe: {
+        label: &lt;i&gt;My label&lt;/i&gt;
+        help: &lt;i&gt;My help&lt;/i&gt
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p26" class="form"></div>
+            <pre id="v26" class="value"></pre>
+          </div>
+
+          <h2>Select options</h2>
+
+          <a name="select-common"><h3>Common options</h3></a>
+          <p>The following options are similar to the textbox ones:</p>
+          <ul>
+            <li><code>label</code></li>
+            <li><code>help</code></li>
+            <li><code>disabled</code></li>
+            <li><code>hasError</code></li>
+            <li><code>error</code></li>
+          </ul>
+          <pre><code>
+  var Select = t.struct({
+    gender: Gender
+  });
+
+  var Form = t.form.create(Select, {
+    fields: {
+      gender: {
+        label: &lt;i&gt;My label&lt;/i&gt;
+        help: &lt;i&gt;My help&lt;/i&gt
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p27" class="form"></div>
+            <pre id="v27" class="value"></pre>
+          </div>
+
+          <a name="select-null-option"><h3>Null option</h3></a>
+          <p>You can customize the null options with the <code>nullOption</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Select, {
+    fields: {
+      gender: {
+        nullOption: {value: '', text: 'Choose your gender'}
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p28" class="form"></div>
+            <pre id="v28" class="value"></pre>
+          </div>
+
+          <a name="select-order"><h3>Options order</h3></a>
+          <p>You can sort the options with the <code>order</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Select, {
+    fields: {
+      gender: {
+        order: 'asc' // or 'desc'
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p29" class="form"></div>
+            <pre id="v29" class="value"></pre>
+          </div>
+
+          <a name="select-options"><h3>Custom options</h3></a>
+          <p>You can customize the options with the <code>options</code> option:</p>
+          <pre><code>
+  var Form = t.form.create(Select, {
+    fields: {
+      gender: {
+        options: [
+          {value: 'M', text: 'Maschio'},
+           // use `disabled: true` to disable an option
+          {value: 'F', text: 'Femmina', disabled: true}
+        ]
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p30" class="form"></div>
+            <pre id="v30" class="value"></pre>
+          </div>
+          <p>You can also set optgroups:</p>
+          <pre><code>
+  var Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
+
+  var Select = t.struct({
+    car: Car
+  });
+
+  var Form = t.form.create(Select, {
+    fields: {
+      car: {
+        options: [
+          {value: 'Audi', text: 'Audi'}, // an option
+          {label: 'US', options: [ // a group of options
+            {value: 'Chrysler', text: 'Chrysler'},
+            {value: 'Ford', text: 'Ford'}
+          ]},
+          {label: 'France', options: [ // another group of options
+            {value: 'Renault', text: 'Renault'},
+            {value: 'Peugeot', text: 'Peugeot'}
+          ], disabled: true} // use `disabled: true` to disable an optgroup
+        ]
+      }
+    }
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p31" class="form"></div>
+            <pre id="v31" class="value"></pre>
+          </div>
+
+          <a name="select-as-radio"><h3>Render as radio</h3></a>
+          <p>You can render the select as a radio using the <code>factory</code> option to override the default:</p>
+          <pre><code>
+  var Form = t.form.create(Gender, {
+    factory: t.form.radio
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p32" class="form"></div>
+            <pre id="v32" class="value"></pre>
+          </div>
+
+          <a name="select-multiple"><h3>Multiple</h3></a>
+          <p>You can turn the select in a multiple select passing a list as type and using the <code>factory</code> option to override the default:</p>
+          <pre><code>
+  var Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
+
+  var Form = t.form.create(t.list(Car), {
+    factory: t.form.select
+  });
+          </code></pre>
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p33" class="form"></div>
+            <pre id="v33" class="value"></pre>
+          </div>
+
+
+        </div>
       </div>
-
-      <h2>Optional field</h2>
-      <p>To create an optional field wrap the field type with <code>t.maybe</code>:</p>
-      <pre><code>
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str) // an optional string
-});
-      </code></pre>
-
-      <div class="preview">
-        <div id="p2" class="form"></div>
-        <pre id="v2" class="value"></pre>
-      </div>
-
-      <h2>Numeric field</h2>
-      <p>To create a numeric field use <code>t.Num</code>:</p>
-      <pre><code>
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: t.Num // a numeric field
-});
-      </code></pre>
-      <div class="preview">
-        <div id="p3" class="form"></div>
-        <pre id="v3" class="value"></pre>
-      </div>
-
-      <h2>Boolean field</h2>
-      <p>To create a boolean field use <code>t.Bool</code>:</p>
-      <pre><code>
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: t.Num,
-  rememberMe: t.Bool // a boolean field
-});
-      </code></pre>
-      <div class="preview">
-        <div id="p4" class="form"></div>
-        <pre id="v4" class="value"></pre>
-      </div>
-
-      <h2>Enum field</h2>
-      <p>To create an enum field use <code>t.enums</code>:</p>
-      <pre><code>
-var Gender = t.enums({
-  M: 'Male',
-  F: 'Female'
-});
-
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: t.Num,
-  rememberMe: t.Bool,
-  gender: Gender
-});
-      </code></pre>
-      <div class="preview">
-        <div id="p5" class="form"></div>
-        <pre id="v5" class="value"></pre>
-      </div>
-
-      <h2>Subtypes</h2>
-      <p>A <em>predicate</em> is a function with the following signature:</p>
-      <pre><code>predicate(x) -> Bool</code></pre>
-      <p>You can refine a type with <code>t.subtype(type, predicate)</code>:</p>
-      <pre><code>
-// positive numbers
-var Positive = t.subtype(t.Num, function (n) {
-  return n >= 0;
-});
-
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: Positive, // refinement
-  rememberMe: t.Bool,
-  gender: Gender
-});
-      </code></pre>
-      <div class="preview">
-        <div id="p6" class="form"></div>
-        <pre id="v6" class="value"></pre>
-      </div>
-
-      <h2>Lists</h2>
-      <p>You can handle a list with <code>t.list</code>:</p>
-      <pre><code>
-var Tags = t.list(t.Str);
-      </code></pre>
-      <div class="preview">
-        <div id="p7" class="form"></div>
-        <pre id="v7" class="value"></pre>
-      </div>
-
-      <h2>Nested structures</h2>
-      <p>You can nest lists and structs at an arbitrary level:</p>
-      <pre><code>
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Str
-});
-
-var Persons = t.list(Person);
-      </code></pre>
-      <div class="preview">
-        <div id="p8" class="form"></div>
-        <pre id="v8" class="value"></pre>
-      </div>
-
-      <h1>Options</h1>
-      <p>To customize the form, pass a <code>options</code> object as second argument:</p>
-      <pre><code>
-var Form = create(type, options);
-      </code></pre>
-
-      <h2>Automatically generate labels</h2>
-      <p>Pass the option <code>auto: 'labels'</code> to automatically generate default labels:</p>
-      <pre><code>
-var Form = t.form.create(Person, {
-  auto: 'labels'
-});
-      </code></pre>
-      <div class="preview">
-        <div id="p9" class="form"></div>
-        <pre id="v9" class="value"></pre>
-      </div>
-
-      <p>Or <code>auto: 'none'</code> if you don't want neither labels nor placeholders:</p>
-      <pre><code>
-var Form = t.form.create(Person, {
-  auto: 'none'
-});
-      </code></pre>
-
-      <h2>Fields order</h2>
-      <p>You can order the fields with the <code>order</code> option:</p>
-      <pre><code>
-var Form = t.form.create(Person, {
-  order: ['name', 'surname', 'rememberMe', 'gender', 'age', 'email']
-});
-      </code></pre>
-      <div class="preview">
-        <div id="p10" class="form"></div>
-        <pre id="v10" class="value"></pre>
-      </div>
-
-      <h2>Default values</h2>
-      <p>You can set the default values with the <code>value</code> option or passing a <code>value</code> prop to the form component:</p>
-      <pre><code>
-var value = {
-  name: 'Giulio',
-  surname: 'Canti',
-  age: 41,
-  gender: 'M'
-};
-
-var Form = t.form.create(Person, {
-  value: value
-});
-
-// or
-var App = React.createClass({
-  render: function () {
-    return (
-      &lt;Form ref="form" value={value}/&gt;
-    );
-  }
-});
-
-
-      </code></pre>
-      <div class="preview">
-        <div id="p11" class="form"></div>
-        <pre id="v11" class="value"></pre>
-      </div>
-
-      <h2>HTML5 types</h2>
-      <p>Any HTML5 type is allowed for textboxes:</p>
-      <pre><code>
-var Palette = t.struct({
-  paletteName: t.Str,
-  colors: t.list(t.Str)
-});
-
-var Form = t.form.create(Color, {
-  item: {
-    type: 'color'
-  }
-});
-      </code></pre>
-      <div class="preview">
-        <div id="p100" class="form"></div>
-        <pre id="v100" class="value"></pre>
-      </div>
-
     </div>
-    <script type="text/javascript" src="js/react.js"></script>
-    <script type="text/javascript" src="js/dist.js"></script>
-    <script type="text/javascript" src="js/guide.js"></script>
-    <script type="text/javascript" src="js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <div class="container">
+      <footer>
+        <div class="row">
+          <div class="col-xs-6">
+            <a href="https://twitter.com/GiulioCanti">Twitter</a>
+            <a href="https://github.com/gcanti/tcomb-form">Github</a>
+          </div>
+          <div class="col-xs-6 text-right">
+            Open source (MIT). Made by Giulio Canti
+          </div>
+        </div>
+      </footer>
+    </div>
   </body>
+  <script type="text/javascript" src="js/react.js"></script>
+  <script type="text/javascript" src="js/dist.js"></script>
+  <script type="text/javascript" src="js/highlight.pack.js"></script>
+  <script type="text/javascript" src="guide.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 </html>
 
