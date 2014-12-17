@@ -23,7 +23,7 @@ With tcomb-form you simply call `var Form = t.form.create(Model)` to generate a 
 
 # Documentation
 
-[tcomb-form site](gcanti.github.io/tcomb-form) or `docs/guide/index.html`.
+[tcomb-form site](http://gcanti.github.io/tcomb-form/) or `docs/guide/index.html`.
 
 # Contributions
 
