@@ -1,11 +1,60 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({".":[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var t = require('../../../.');
+
+// configure ionic plugin
+t.form.config.templates = require('../../../lib/templates/ionic');
+
+var Account = t.struct({
+  firstName: t.Str,
+  lastName: t.Str,
+  email: t.maybe(t.Str)
+});
+
+var Form = t.form.create(Account, {
+  auto: 'labels'
+});
+
+var App = React.createClass({displayName: 'App',
+
+  onClick: function(evt) {
+    evt.preventDefault();
+    var value = this.refs.form.getValue();
+    if (value) {
+      document.getElementById('value').style.display = 'block';
+      document.getElementById('value').innerHTML = JSON.stringify(value, null, 2);
+    }
+  },
+
+  render: function() {
+    return (
+      React.createElement("div", null,
+        React.createElement("div", {className: "bar bar-header"},
+          React.createElement("h1", {className: "title"}, "Sign up")
+        ),
+        React.createElement("div", {className: "content has-header"},
+          React.createElement(Form, {ref: "form"}),
+          React.createElement("div", {className: "padding"},
+            React.createElement("button", {onClick: this.onClick, className: "button button-block button-positive"}, "Create Account")
+          )
+        )
+      )
+    );
+  }
+});
+
+React.render(React.createElement(App, null), document.getElementById('preview'));
+
+},{"../../../.":2,"../../../lib/templates/ionic":10,"react":"react"}],2:[function(require,module,exports){
 var t = require('./lib');
 
 // plug bootstrap style
 t.form.config.templates = require('./lib/templates/bootstrap');
 
 module.exports = t;
-},{"./lib":4,"./lib/templates/bootstrap":7}],1:[function(require,module,exports){
+},{"./lib":6,"./lib/templates/bootstrap":9}],3:[function(require,module,exports){
 'use strict';
 
 var api = require('./protocols/api');
@@ -21,7 +70,7 @@ var i18n = new api.I18n({
 module.exports = {
   i18n: i18n
 };
-},{"./protocols/api":5}],2:[function(require,module,exports){
+},{"./protocols/api":7}],4:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -34,7 +83,7 @@ function create(type, opts) {
 
   var factory = getFactory(type, opts);
 
-  var Form = React.createClass({
+  var Form = React.createClass({displayName: 'Form',
 
     // the public api returns `null` if validation failed
     // unless the optional boolean argument `raw` is set to `true`
@@ -69,7 +118,7 @@ function create(type, opts) {
 }
 
 module.exports = create;
-},{"./config":1,"./factories":3,"./protocols/api":5,"./util/getReport":10,"react":"react"}],3:[function(require,module,exports){
+},{"./config":3,"./factories":5,"./protocols/api":7,"./util/getReport":13,"react":"react"}],5:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -761,7 +810,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":1,"./protocols/api":5,"./protocols/theme":6,"./util/getError":8,"./util/getOptionsOfEnum":9,"./util/getReport":10,"./util/humanize":11,"./util/merge":12,"./util/move":13,"./util/uuid":14,"react":"react","tcomb-validation":16,"uvdom/react":40}],4:[function(require,module,exports){
+},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":43}],6:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -773,7 +822,7 @@ t.form = t.util.mixin({
 }, factories);
 
 module.exports = t;
-},{"./config":1,"./create":2,"./factories":3,"tcomb-validation":16}],5:[function(require,module,exports){
+},{"./config":3,"./create":4,"./factories":5,"tcomb-validation":19}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -992,7 +1041,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":16}],6:[function(require,module,exports){
+},{"react":"react","tcomb-validation":19}],8:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1131,7 +1180,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":16}],7:[function(require,module,exports){
+},{"react":"react","tcomb-validation":19}],9:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1569,7 +1618,99 @@ module.exports = {
   struct: struct,
   list: list
 };
-},{"../protocols/theme":6,"tcomb-validation":16,"uvdom-bootstrap/form":18}],8:[function(require,module,exports){
+},{"../protocols/theme":8,"tcomb-validation":19,"uvdom-bootstrap/form":21}],10:[function(require,module,exports){
+'use strict';
+
+//==================
+// WORK IN PROGRESS: contributions and PR are welcomed
+//==================
+
+function getLabel(label) {
+  if (!label) { return; }
+  return {
+    tag: 'span',
+    attrs: {
+      className: {
+        'input-label': true
+      }
+    },
+    children: label
+  };
+}
+
+function textbox(locals) {
+
+  return {
+    tag: 'label',
+    attrs: {
+      className: {
+        'item': true,
+        'item-input': true,
+        'item-stacked-label': !!locals.label,
+        'has-error': locals.hasError
+      }
+    },
+    children: [
+      getLabel(locals.label),
+      {
+        tag: 'input',
+        attrs: {
+          type: locals.type,
+          placeholder: locals.placeholder
+        },
+        events: {
+          change: locals.onChange
+        }
+      }
+    ]
+  };
+
+}
+
+function checkbox() {
+  throw new Error('checkboxes are not (yet) supported');
+}
+
+function select() {
+  throw new Error('selects are not (yet) supported');
+}
+
+function radio() {
+  throw new Error('radios are not (yet) supported');
+}
+
+function struct(locals) {
+
+  var rows = locals.order.map(function (name) {
+    return locals.inputs.hasOwnProperty(name) ? locals.inputs[name] : name;
+  });
+
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'list': true
+      }
+    },
+    children: rows
+  };
+}
+
+function list() {
+  throw new Error('lists are not (yet) supported');
+}
+
+module.exports = {
+  name: 'ionic',
+  textbox: textbox,
+  checkbox: checkbox,
+  select: select,
+  radio: radio,
+  struct: struct,
+  list: list
+};
+
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1580,7 +1721,7 @@ function getError(error, state) {
 }
 
 module.exports = getError;
-},{"tcomb-validation":16}],9:[function(require,module,exports){
+},{"tcomb-validation":19}],12:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -1594,7 +1735,7 @@ function getOptionsOfEnum(type) {
 }
 
 module.exports = getOptionsOfEnum;
-},{}],10:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1631,7 +1772,7 @@ function getReport(type) {
 }
 
 module.exports = getReport;
-},{"tcomb-validation":16}],11:[function(require,module,exports){
+},{"tcomb-validation":19}],14:[function(require,module,exports){
 'use strict';
 
 // thanks to https://github.com/epeli/underscore.string
@@ -1649,7 +1790,7 @@ function humanize(s){
 }
 
 module.exports = humanize;
-},{}],12:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1660,7 +1801,7 @@ function merge(a, b) {
 }
 
 module.exports = merge;
-},{"tcomb-validation":16}],13:[function(require,module,exports){
+},{"tcomb-validation":19}],16:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -1670,7 +1811,7 @@ function move(arr, fromIndex, toIndex) {
 }
 
 module.exports = move;
-},{}],14:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 function uuid() {
@@ -1681,7 +1822,7 @@ function uuid() {
 }
 
 module.exports = uuid;
-},{}],15:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -1720,7 +1861,7 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{}],16:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -1939,7 +2080,7 @@ module.exports = cx;
 
 }));
 
-},{"tcomb":17}],17:[function(require,module,exports){
+},{"tcomb":20}],20:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -2854,7 +2995,7 @@ module.exports = cx;
   };
 }));
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = {
   getAddon: require('./lib/getAddon'),
   getAlert: require('./lib/getAlert'),
@@ -2877,7 +3018,7 @@ module.exports = {
   getStatic: require('./lib/getStatic'),
   getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":19,"./lib/getAlert":20,"./lib/getBreakpoints":21,"./lib/getButton":22,"./lib/getButtonGroup":23,"./lib/getCheckbox":24,"./lib/getCol":25,"./lib/getFieldset":26,"./lib/getFormGroup":27,"./lib/getHelpBlock":28,"./lib/getInputGroup":29,"./lib/getLabel":30,"./lib/getOffsets":31,"./lib/getOptGroup":32,"./lib/getOption":33,"./lib/getRadio":34,"./lib/getRow":35,"./lib/getSelect":36,"./lib/getStatic":37,"./lib/getTextbox":38}],19:[function(require,module,exports){
+},{"./lib/getAddon":22,"./lib/getAlert":23,"./lib/getBreakpoints":24,"./lib/getButton":25,"./lib/getButtonGroup":26,"./lib/getCheckbox":27,"./lib/getCol":28,"./lib/getFieldset":29,"./lib/getFormGroup":30,"./lib/getHelpBlock":31,"./lib/getInputGroup":32,"./lib/getLabel":33,"./lib/getOffsets":34,"./lib/getOptGroup":35,"./lib/getOption":36,"./lib/getRadio":37,"./lib/getRow":38,"./lib/getSelect":39,"./lib/getStatic":40,"./lib/getTextbox":41}],22:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -2893,7 +3034,7 @@ function getAddon(addon) {
 }
 
 module.exports = getAddon;
-},{}],20:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 function getAlert(opts) {
@@ -2914,7 +3055,7 @@ function getAlert(opts) {
 }
 
 module.exports = getAlert;
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 function getBreakpoints(breakpoints) {
@@ -2928,7 +3069,7 @@ function getBreakpoints(breakpoints) {
 }
 
 module.exports = getBreakpoints;
-},{}],22:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2975,7 +3116,7 @@ function getButton(opts) {
 
 module.exports = getButton;
 
-},{}],23:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 function getButtonGroup(buttons) {
@@ -2993,7 +3134,7 @@ function getButtonGroup(buttons) {
 module.exports = getButtonGroup;
 
 
-},{}],24:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3046,7 +3187,7 @@ function getCheckbox(opts) {
 }
 
 module.exports = getCheckbox;
-},{}],25:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var getBreakpoints = require('./getBreakpoints');
@@ -3065,7 +3206,7 @@ function getCol(opts) {
 }
 
 module.exports = getCol;
-},{"./getBreakpoints":21}],26:[function(require,module,exports){
+},{"./getBreakpoints":24}],29:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -3092,7 +3233,7 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],27:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
@@ -3109,7 +3250,7 @@ function getFormGroup(opts) {
 }
 
 module.exports = getFormGroup;
-},{}],28:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3139,7 +3280,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],29:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -3155,7 +3296,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],30:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -3196,7 +3337,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":39}],31:[function(require,module,exports){
+},{"./mixin":42}],34:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -3210,7 +3351,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],32:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -3244,7 +3385,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":33}],33:[function(require,module,exports){
+},{"./getOption":36}],36:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3273,7 +3414,7 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],34:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3328,7 +3469,7 @@ function getRadio(opts) {
 }
 
 module.exports = getRadio;
-},{}],35:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -3345,7 +3486,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],36:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3390,7 +3531,7 @@ function getSelect(opts) {
 }
 
 module.exports = getSelect;
-},{}],37:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 function getStatic(value) {
@@ -3406,7 +3547,7 @@ function getStatic(value) {
 }
 
 module.exports = getStatic;
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3456,7 +3597,7 @@ function getTextbox(opts) {
 }
 
 module.exports = getTextbox;
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 function mixin(a, b) {
@@ -3470,7 +3611,7 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
-},{}],40:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -3539,4 +3680,4 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"react":"react","react/lib/cx":15}]},{},[]);
+},{"react":"react","react/lib/cx":18}]},{},[1]);

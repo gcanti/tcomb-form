@@ -1,7 +1,7 @@
 'use strict';
 
 var React = require('react');
-var t = require('.');
+var t = require('../../../.');
 
 // helper function
 function render(i, type, opts) {

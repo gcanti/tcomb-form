@@ -1,8 +1,10 @@
+'use strict';
+
 var React = require('react');
-var t = require('.');
+var t = require('../../../.');
 
 // configure ionic plugin
-t.form.config.templates = require('./lib/templates/gridforms');
+t.form.config.templates = require('../../../lib/templates/gridforms');
 
 // helper function
 function render(i, type, opts) {
@@ -72,7 +74,7 @@ render('1', Product, {
 // custom template for structs
 function mylayout(locals) {
 
-  // hash field -> input
+  // hash field name -> field input
   var inputs = locals.inputs;
 
   return (

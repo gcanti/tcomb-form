@@ -8,71 +8,13 @@ var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 
 // ------------------------------------
-// builds the examples
-// ------------------------------------
-gulp.task('examples', function (){
-
-  // bootstrap
-  browserify('./examples/bootstrap/bootstrap.jsx', {
-    transform: [reactify],
-    detectGlobals: false
-  })
-  .external('react')
-  .bundle()
-  .on('error', function (err) {
-    gutil.beep();
-    console.log(String(err));
-    this.end();
-  })
-  .pipe(source('./examples/bootstrap/bootstrap.jsx'))
-  .pipe(rename('bootstrap.js'))
-  .pipe(gulp.dest('./examples/bootstrap'));
-
-  // gridforms
-  browserify('./examples/gridforms/gridforms.jsx', {
-    transform: [reactify],
-    detectGlobals: false
-  })
-  .external('react')
-  .bundle()
-  .on('error', function (err) {
-    gutil.beep();
-    console.log(String(err));
-    this.end();
-  })
-  .pipe(source('./examples/gridforms/gridforms.jsx'))
-  .pipe(rename('gridforms.js'))
-  .pipe(gulp.dest('./examples/gridforms'));
-
-  // ionic
-  browserify('./examples/ionic/ionic.jsx', {
-    transform: [reactify],
-    detectGlobals: false
-  })
-  .external('react')
-  .bundle()
-  .on('error', function (err) {
-    gutil.beep();
-    console.log(String(err));
-    this.end();
-  })
-  .pipe(source('./examples/ionic/ionic.jsx'))
-  .pipe(rename('ionic.js'))
-  .pipe(gulp.dest('./examples/ionic'));
-
-
-});
-
-// ------------------------------------
 // watch
 // ------------------------------------
 var src = ['lib/**/*.js'];
 var dev = src.concat('dev/**/*.jsx');
-var examples = src.concat('examples/**/*.jsx');
 
 gulp.task('watch', ['dev', 'examples'], function () {
   gulp.watch(dev, ['dev']);
-  gulp.watch(examples, ['examples']);
 });
 
 // ------------------------------------
@@ -108,7 +50,7 @@ gulp.task('dev', function (){
 // ------------------------------------
 // builds the docs
 // ------------------------------------
-gulp.task('docs', ['react', 'dist', 'ionic']);
+gulp.task('default', ['react', 'guide', 'demo:bootstrap', 'demo:gridforms', 'demo:ionic']);
 
 gulp.task('react', function () {
 
@@ -117,29 +59,58 @@ gulp.task('react', function () {
   })
   .bundle()
   .pipe(source('react.js'))
-  .pipe(gulp.dest('./docs'));
-
-});
-
-gulp.task('dist', function () {
-
-  browserify()
-  .require('.')
-  .external('react')
-  .bundle()
-  .pipe(source('dist.js'))
   .pipe(gulp.dest('./docs/js'));
 
 });
 
-gulp.task('ionic', function () {
+gulp.task('guide', function () {
 
-  browserify()
-  .require('./lib/templates/ionic')
+  browserify('./docs/guide/src.js', {
+    transform: [reactify],
+    detectGlobals: false
+  })
   .external('react')
   .bundle()
-  .pipe(source('ionic.js'))
-  .pipe(gulp.dest('./docs/js'));
+  .pipe(source('bundle.js'))
+  .pipe(gulp.dest('./docs/guide'));
 
 });
 
+gulp.task('demo:bootstrap', function () {
+
+  browserify('./docs/demo/bootstrap/src.js', {
+    transform: [reactify],
+    detectGlobals: false
+  })
+  .external('react')
+  .bundle()
+  .pipe(source('bundle.js'))
+  .pipe(gulp.dest('./docs/demo/bootstrap'));
+
+});
+
+gulp.task('demo:gridforms', function () {
+
+  browserify('./docs/demo/gridforms/src.js', {
+    transform: [reactify],
+    detectGlobals: false
+  })
+  .external('react')
+  .bundle()
+  .pipe(source('bundle.js'))
+  .pipe(gulp.dest('./docs/demo/gridforms'));
+
+});
+
+gulp.task('demo:ionic', function () {
+
+  browserify('./docs/demo/ionic/src.js', {
+    transform: [reactify],
+    detectGlobals: false
+  })
+  .external('react')
+  .bundle()
+  .pipe(source('bundle.js'))
+  .pipe(gulp.dest('./docs/demo/ionic'));
+
+});

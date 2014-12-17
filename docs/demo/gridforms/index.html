@@ -7,7 +7,7 @@
     <title>tcomb-form Gridforms demo</title>
     <link type="text/css" rel="stylesheet" href="../../css/bootstrap.css"/>
     <link type="text/css" rel="stylesheet" href="../../css/gridforms.css"/>
-    <link type="text/css" rel="stylesheet" href="../../css/github.css"/>
+    <link type="text/css" rel="stylesheet" href="../../css/highlight.github.css"/>
     <link type="text/css" rel="stylesheet" href="../../css/style.css"/>
     <style>
       .grid-form .has-error label {
@@ -85,6 +85,10 @@ var Form = t.form.create(Product, {
 
           <pre><code>
 function mylayout(locals) {
+
+  // hash field name -> field input
+  var inputs = locals.inputs;
+
   return (
     &lt;fieldset&gt;
       &lt;legend&gt;{locals.label}&lt;/legend&gt;
@@ -135,10 +139,8 @@ function mylayout(locals) {
     </div>
   </body>
   <script type="text/javascript" src="../../js/react.js"></script>
-  <script type="text/javascript" src="../../js/dist.js"></script>
-  <script type="text/javascript" src="../../js/gridforms.js"></script>
-  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
-  <script type="text/javascript" src="gridforms.js"></script>
+  <script type="text/javascript" src="../../js/highlight.js"></script>
+  <script type="text/javascript" src="bundle.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
 </html>
 

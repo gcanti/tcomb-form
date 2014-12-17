@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>tcomb-form Bootstrap demo</title>
     <link type="text/css" rel="stylesheet" href="../../css/bootstrap.css" id="theme"/>
-    <link type="text/css" rel="stylesheet" href="../../css/github.css"/>
+    <link type="text/css" rel="stylesheet" href="../../css/highlight.github.css"/>
     <link type="text/css" rel="stylesheet" href="../../css/style.css"/>
   </head>
   <body>
@@ -129,60 +129,64 @@ var Form = t.form.create(Person, {
 
           <pre><code>
 function mylayout(locals) {
+
+  // hash field name -> field input
+  var inputs = locals.inputs;
+
   return (
     &lt;fieldset&gt;
       &lt;legend&gt;{locals.label}&lt;/legend&gt;
       &lt;div className="row"&gt;
         &lt;div className="col-xs-12"&gt;
-          {locals.inputs.booking}
+          {inputs.booking}
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div className="row"&gt;
         &lt;div className="col-xs-6"&gt;
-          {locals.inputs.arrivalDate}
+          {inputs.arrivalDate}
         &lt;/div&gt;
         &lt;div className="col-xs-6"&gt;
-          {locals.inputs.departureDate}
+          {inputs.departureDate}
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div className="row"&gt;
         &lt;div className="col-xs-12"&gt;
-          {locals.inputs.flexible}
+          {inputs.flexible}
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div className="row"&gt;
         &lt;div className="col-sm-6"&gt;
-          {locals.inputs.location}
+          {inputs.location}
         &lt;/div&gt;
         &lt;div className="col-sm-6"&gt;
           &lt;label&gt;Approximate budget (per night)&lt;/label&gt;
           &lt;div className="row"&gt;
             &lt;div className="col-xs-6 col-sm-3"&gt;
-              {locals.inputs.currency}
+              {inputs.currency}
             &lt;/div&gt;
             &lt;div className="col-xs-6 col-sm-9"&gt;
-              {locals.inputs.budget}
+              {inputs.budget}
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div className="row"&gt;
         &lt;div className="col-xs-3"&gt;
-          {locals.inputs.adults}
+          {inputs.adults}
         &lt;/div&gt;
         &lt;div className="col-xs-3"&gt;
-          {locals.inputs.children}
+          {inputs.children}
         &lt;/div&gt;
         &lt;div className="col-xs-3"&gt;
-          {locals.inputs.toddlers}
+          {inputs.toddlers}
         &lt;/div&gt;
         &lt;div className="col-xs-3"&gt;
-          {locals.inputs.babies}
+          {inputs.babies}
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div className="row"&gt;
         &lt;div className="col-xs-12"&gt;
-          {locals.inputs.message}
+          {inputs.message}
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/fieldset&gt;
@@ -194,9 +198,8 @@ function mylayout(locals) {
     </div>
   </body>
   <script type="text/javascript" src="../../js/react.js"></script>
-  <script type="text/javascript" src="../../js/dist.js"></script>
-  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
-  <script type="text/javascript" src="bootstrap.js"></script>
+  <script type="text/javascript" src="../../js/highlight.js"></script>
+  <script type="text/javascript" src="bundle.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
 </html>
 

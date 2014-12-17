@@ -4,17 +4,17 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The tcomb-form Guide</title>
-    <link type="text/css" rel="stylesheet" href="css/bootstrap.css" id="theme"/>
-    <link type="text/css" rel="stylesheet" href="css/github.css"/>
-    <link type="text/css" rel="stylesheet" href="css/style.css"/>
+    <title>tcomb-form v0.3 Guide</title>
+    <link type="text/css" rel="stylesheet" href="../css/bootstrap.css" id="theme"/>
+    <link type="text/css" rel="stylesheet" href="../css/highlight.github.css"/>
+    <link type="text/css" rel="stylesheet" href="../css/style.css"/>
   </head>
   <body>
     <div class="container">
       <header>
         <div class="row">
           <div class="col-xs-6">
-            <a href="index.html">tcomb-form v0.3</a>
+            <a href="../index.html">tcomb-form v0.3</a>
           </div>
           <div class="col-xs-6 text-right">
             Open source (MIT). Made by Giulio Canti
@@ -106,7 +106,7 @@
             <li>call <code>form.create(Model)</code></li>
           </ol>
           <p>(*) tcomb <em>is a library for Node.js and the browser which allows you to check the types of JavaScript values at runtime with a simple syntax. It's great for Domain Driven Design, for testing and for adding safety to your internal code.</em></p>
-          <p><b>Note</b>. All the examples are live, you can find the source here: <a href="js/guide.js">guide.js</a></p>
+          <p><b>Note</b>. All the examples are live, you can find the source here: <a href="src.js">src.js</a></p>
           <pre><code>
   var t = require('tcomb-form');
 
@@ -145,11 +145,12 @@
 
           <p>These examples are styled with Bootstrap 3, you can customize the look and feel changing the Bootstrap flavour:</p>
           <select class="form-control" id="themeSelector">
-            <option value="css/bootstrap.css">Default</option>
-            <option value="css/flatly.css">Flatly</option>
-            <option value="css/paper.css">Paper</option>
+            <option value="../css/bootstrap.css">Default</option>
+            <option value="../css/flatly.css">Flatly</option>
+            <option value="../css/paper.css">Paper</option>
           </select>
-          <p>or switching to your preferred css framework like Bootstrap, Foundation, Ionic, Pure. You can even customize tcomb-form in all its parts writing a new <em>theme</em>.</p>
+          <p>or switching to your preferred css framework like Bootstrap, Foundation, Ionic, Pure.
+          Bootstrap 3.3 is fully supported. <b>Contributions and PR for other css frameworks are welcomed</b>.</p>
 
           <h1>Types</h1>
           <a name="optional-field"><h2>Optional field</h2></a>
@@ -817,10 +818,9 @@
       </footer>
     </div>
   </body>
-  <script type="text/javascript" src="js/react.js"></script>
-  <script type="text/javascript" src="js/dist.js"></script>
-  <script type="text/javascript" src="js/highlight.pack.js"></script>
-  <script type="text/javascript" src="guide.js"></script>
+  <script type="text/javascript" src="../js/react.js"></script>
+  <script type="text/javascript" src="../js/highlight.js"></script>
+  <script type="text/javascript" src="bundle.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
 </html>
 

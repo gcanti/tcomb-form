@@ -1,8 +1,10 @@
+'use strict';
+
 var React = require('react');
-var t = require('.');
+var t = require('../../../.');
 
 // configure ionic plugin
-t.form.config.templates = require('./lib/templates/ionic');
+t.form.config.templates = require('../../../lib/templates/ionic');
 
 var Account = t.struct({
   firstName: t.Str,
