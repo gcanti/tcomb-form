@@ -31,6 +31,8 @@ Special thanks to [William Lubelski](https://github.com/lubelski) ([@uiwill](htt
 
 Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the excellent `humanize()` function.
 
+Thanks to [Andrey Popp](https://github.com/andreypopp) for writing [react-forms](https://github.com/prometheusresearch/react-forms), great inspiration for list management.
+
 Bootstrap 3.3 is fully supported. **Contributions and PR for other css frameworks are welcomed**.
 
 # License
