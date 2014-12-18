@@ -89,6 +89,21 @@
                 </li>
               </ul>
             </li>
+            <li>Customizations
+              <ul>
+                  <li><a href="#templates">Templates</a></li>
+                  <li><a href="#templates-extra-options">Templates extra options</a></li>
+                  <li><a href="#transformers">Transformers</a></li>
+                  <li><a href="#custom-inputs">Custom inputs</a></li>
+                  <li><a href="#config">General configuration</a></li>
+              </ul>
+            </li>
+            <li>Advanced form management
+              <ul>
+                  <li><a href="#struct-subtypes">Struct subtypes</a></li>
+                  <li><a href="#list-subtypes">List subtypes</a></li>
+              </ul>
+            </li>
           <ul>
         </div>
         <div class="col-sm-8">
@@ -800,6 +815,472 @@
             <pre id="v33" class="value"></pre>
           </div>
 
+          <h1>Customizations</h1>
+
+          <a name="templates"><h2>Templates</h2></a>
+
+          <p>To customize the "skin" of tcomb-form you have to write a <em>template</em>. A template is simply a function with the following signature:</p>
+          <pre><code>function(locals) -> UVDOM | ReactElement</code></pre>
+          <p>where <code>locals</code> is an object contaning the "recipe" for rendering the input and is built by tcomb-form for you. The returned value can be a <a href="https://github.com/gcanti/uvdom">UVDOM</a> or a ReactElement.</p>
+          <p>Let's build a template for a search textbox styled with Bootstrap. tcomb-form will pass to your template the following recipe (you can find all the recipes in <code>lib/protocols/theme.js</code>):</p>
+          <pre><code>
+var Textbox = struct({
+  config: maybe(Obj),       // custom options, see Template addons section
+  disabled: maybe(Bool),    // should be disabled
+  error: maybe(Label),      // should show an error
+  hasError: maybe(Bool),    // if true should show an error state
+  help: maybe(Label),       // should show an help message
+  label: maybe(Label),      // should show a label
+  name: Str,                // should use this as name attribute
+  onChange: Func,           // should call this function with the changed value
+  placeholder: maybe(Str),  // should show a placeholder
+  type: TypeAttr,           // should use this as type attribute
+  value: Any                // should use this as value attribute
+});
+
+var Label = union([Str, ReactElement]);
+
+var TypeAttr = enums.of('textarea hidden text password color date datetime datetime-local email month number range search tel time url week');
+          </code></pre>
+
+          <p>Writing the custom template with JSX:</p>
+
+          <pre><code>
+var cx = require('react/lib/cx');
+
+// the custom template
+function search(locals) {
+
+  var formGroupClasses = {
+    'form-group': true,
+    'has-feedback': true,         // required for the icon
+    'has-error': locals.hasError  // if there is an error
+  };
+
+  return (
+    &lt;div className={cx(formGroupClasses)}&gt;
+
+      {/* add a label if specified */}
+      {locals.label ? &lt;label className="control-label"&gt;{locals.label}&lt;/label&gt; : null}
+
+      &lt;input
+        disabled={locals.disabled}
+        className="form-control"
+        name={locals.name}
+        placeholder={locals.placeholder}
+        onChange={locals.onChange}
+        style={{'borderRadius': '20px'}}
+        type={locals.type}
+        value={locals.value} /&gt;
+
+      {/* add a search icon */}
+      &lt;span className="glyphicon glyphicon-search form-control-feedback"&gt;&lt;/span&gt;
+
+      {/* add an error if specified */}
+      {locals.error ? &lt;span className="help-block error-block"&gt;{locals.error}&lt;/span&gt; : null}
+
+      {/* add a help if specified */}
+      {locals.help ? &lt;span className="help-block"&gt;{locals.help}&lt;/span&gt; : null}
+
+    &lt;/div&gt;
+  );
+}
+
+var Search = t.struct({
+  search: t.Str
+});
+
+var Form = t.form.create(Search, {
+  templates: {
+    textbox: search // overrides the default template for textboxes
+  }
+});
+          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p34" class="form"></div>
+            <pre id="v34" class="value"></pre>
+          </div>
+
+          <a name="templates-extra-options"><h2>Templates extra options</h2></a>
+
+          <p>Sometimes you need extra options besides those provided by tcomb-form. For example you may want to pass additional values to the search textbox defined above, say a background color and a foreground color. That's the job of the <code>config</code> object in the Textbox recipe: tcomb-form assure you to pass the object from the api call to your template:</p>
+
+          <pre><code>
+var Search = t.struct({
+  search: t.Str
+});
+
+var Form = t.form.create(Search, {
+  templates: {
+    textbox: search
+  },
+  fields: {
+    search: {
+      // custom configuration
+      <b>config: {
+        color: '#FFA000',
+        backgroundColor: '#FFECB3'
+      }</b>
+    }
+  }
+});
+          </code></pre>
+
+          <p>Let's modify the <code>search</code> template to handle the new custom configuration:</p>
+
+          <pre><code>
+var cx = require('react/lib/cx');
+
+// the custom template
+function search(locals) {
+
+  var formGroupClasses = {
+    'form-group': true,
+    'has-feedback': true,
+    'has-error': locals.hasError
+  };
+
+  // config contains your new params
+  <b>var config = locals.config || {};
+  var style = {
+    borderRadius: '20px',
+    color: config.color,
+    backgroundColor: config.backgroundColor
+  };</b>
+
+  return (
+    &lt;div className={cx(formGroupClasses)}&gt;
+
+      {/* add a label if specified */}
+      {locals.label ? &lt;label className="control-label"&gt;{locals.label}&lt;/label&gt; : null}
+
+      &lt;input
+        disabled={locals.disabled}
+        className="form-control"
+        name={locals.name}
+        placeholder={locals.placeholder}
+        onChange={locals.onChange}
+        <b>style={style}</b>
+        type={locals.type}
+        value={locals.value} /&gt;
+
+      {/* add a search icon */}
+      &lt;span className="glyphicon glyphicon-search form-control-feedback"&gt;&lt;/span&gt;
+
+      {/* add an error if specified */}
+      {locals.error ? &lt;span className="help-block error-block"&gt;{locals.error}&lt;/span&gt; : null}
+
+      {/* add a help if specified */}
+      {locals.help ? &lt;span className="help-block"&gt;{locals.help}&lt;/span&gt; : null}
+
+    &lt;/div&gt;
+  );
+}
+          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p35" class="form"></div>
+            <pre id="v35" class="value"></pre>
+          </div>
+
+          <a name="transformers"><h2>Transformers</h2></a>
+
+          <p>Say you want modify the search textbox to accepts a list of keywords separated by spaces:</p>
+
+          <pre><code>
+var Search = t.struct({
+  search: <b>t.list(t.Str)</b>
+});
+          </code></pre>
+
+          <p>tcomb-form by default handle lists like this:</p>
+          <div class="preview">
+            <div id="p36" class="form"></div>
+            <pre id="v36" class="value"></pre>
+          </div>
+
+          </code></pre>
+
+          <p>In order to use the custom search textbox you have to override the default behaviour with the <code>factory</code> option:</p>
+
+          <pre><code>
+var Form = t.form.create(Search, {
+  templates: {
+    textbox: search
+  },
+  fields: {
+    search: {
+      <b>factory: t.form.textbox</b>
+    }
+  }
+});
+          </code></pre>
+
+          <p>The problem is that a textbox handle only strings, we need a way to transform a list in a string and a string in a list: a <code>Transformer</code> deals with serialization / deserialization of data and has the following interface:</p>
+
+          <pre><code>
+var Transformer = struct({
+  format: Func, // from value to string
+  parse: Func   // from string to value
+});
+          </code></pre>
+
+          <p>A simple transformer implementation for the search textbox:</p>
+
+          <pre><code>
+var listTransformer = {
+  format: function (value) {
+    return value ? value.join(' ') : null;
+  },
+  parse: function (str) {
+    return str ? str.split(' ') : [];
+  }
+};
+          </code></pre>
+
+          <p>Now you can handle lists using the <code>transformer</code> option:</p>
+
+          <pre><code>
+var Form = t.form.create(Search, {
+  templates: {
+    textbox: search
+  },
+  fields: {
+    search: {
+      factory: t.form.textbox,
+      <b>transformer: listTransformer</b>,
+      help: 'Keywords are separated by spaces'
+    }
+  },
+  value: {
+    <b>search: ['climbing', 'yosemite']</b> // example of initial value
+  }
+});
+          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p37" class="form"></div>
+            <pre id="v37" class="value"></pre>
+          </div>
+
+          <a name="custom-inputs"><h2>Custom inputs</h2></a>
+
+          <p>You can wrap the previous work in a custom input. A custom input is a function with the following signature:</p>
+          <pre><code>
+function (opts, ctx) -> ReactClass
+          </code></pre>
+          <p>where <code>opts</code> is the object defined in the api call, <code>ctx</code> is an object injected by tcomb-form which helps you to implement your custom input and the ReactClass must have a <code>getValue()</code> method returning a <code>ResultValidation</code> instance (see <a href="https://github.com/gcanti/tcomb-validation">tcomb-validation</a> for a reference):</p>
+
+          <pre><code>
+// custom input definition
+function searchFactory(opts, ctx) {
+
+  opts = opts || {};
+
+  // label
+  var label = opts.label;
+  if (!label && ctx.auto === 'labels') {
+    // if labels are auto generated, get the default label
+    label = ctx.getDefaultLabel();
+  }
+
+  // placeholder
+  var placeholder = null;
+
+  if (!label && ctx.auto !== 'none') {
+    // labels have higher priority
+    placeholder = !t.Nil.is(opts.placeholder) ?
+      opts.placeholder :
+      ctx.getDefaultLabel();
+  }
+
+  // name attribute
+  var name = opts.name || ctx.getDefaultName();
+
+  // value
+  var value = !t.Nil.is(opts.value) ?
+    opts.value : !t.Nil.is(ctx.value) ? // the value could come from the context
+    ctx.value : null;
+
+  //
+  // return a ReactClass
+  //
+
+  return React.createClass({
+
+    getInitialState: function () {
+      return {
+        hasError: !!opts.hasError,
+        value: value
+      };
+    },
+
+    onChange: function (evt) {
+      var value = evt.target.value || null;
+
+      // transformation
+      value = listTransformer.parse(value);
+
+      // notify the parent components that there is a change
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
+
+      // re-render
+      this.setState({value: value});
+    },
+
+    getValue: function () {
+
+      // ctx.report.type contains the type specified in the api call
+      var result = t.validate(this.state.value, ctx.report.type);
+      this.setState({
+        hasError: !result.isValid(),
+        value: result.value
+      });
+
+      // return a ResultValidation instance
+      return result;
+    },
+
+    render: function () {
+
+      // transformation
+      var value = listTransformer.format(this.state.value);
+
+      // error
+      var error = opts.error;
+      if (this.state.hasError) {
+        // show the error message only if there is an error
+        // error can be a function
+        error = t.Func.is(error) ? error(this.state.value) : error
+      }
+
+      // using the custom template defined above
+      return search({
+        config: opts.config,
+        disabled: opts.disabled,
+        error: error,
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
+        name: name,
+        onChange: this.onChange,
+        placeholder: placeholder,
+        type: 'search',
+        value: value
+      });
+
+    }
+  });
+
+}
+          </code></pre>
+
+          <p>Now you can call your new custom input using only the <code>factory</code> option:</p>
+
+          <pre><code>
+var Form = t.form.create(Search, {
+  fields: {
+    search: {
+      <b>factory: searchFactory</b>
+    }
+  },
+  value: {
+    search: ['climbing', 'yosemite']
+  }
+});
+          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p38" class="form"></div>
+            <pre id="v38" class="value"></pre>
+          </div>
+
+          <a name="config"><h2>General configuration</h2></a>
+
+          <p>tcomb-form uses the following default settings:</p>
+          <ul>
+            <li>english as language</li>
+            <li>Bootstrap as theme</li>
+            <li>a default transformer to handle numbers</li>
+          </ul>
+
+          <h3>Change default language</h3>
+          <p>You can change the default language with the <code>config.i18n</code> setting:</p>
+          <pre><code>
+var api = require('tcomb-form/lib/protocols/api');
+
+t.form.config.i18n = new api.I18n({
+  optional: ' (opzionale)',
+  add: 'Nuovo',
+  remove: 'Elimina',
+  up: 'Su',
+  down: 'Giù'
+});
+          </code></pre>
+
+          <h3>Change default theme</h3>
+          <p>You can change the default language with the <code>config.templates</code> setting:</p>
+          <pre><code>
+var t = require('tcomb-form/lib'); // tcomb-form without templates!
+var ionic = require('tcomb-form/lib/templates/ionic');
+
+t.form.config.templates = ionic;
+          </code></pre>
+
+          <h1>Advanced form management</h1>
+
+          <a name="struct-subtypes"><h2>Struct subtypes</h2></a>
+          <p>You can use subtypes also with structs:</p>
+          <pre><code>
+// if notifyMe === true then email is required
+var predicate = function (person) {
+  return person.notifyMe === false || (!t.Nil.is(person.email));
+};
+
+var Person = t.struct({
+  name: t.Str,
+  notifyMe: t.Bool,
+  email: t.maybe(t.Str)
+});
+
+var Form = t.form.create(Person, {
+  error: 'Insert your email if you want to be notified'
+});
+          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p39" class="form"></div>
+            <pre id="v39" class="value"></pre>
+          </div>
+
+          <a name="list-subtypes"><h2>List subtypes</h2></a>
+          <p>You can use subtypes also with lists:</p>
+          <pre><code>
+// at least two tags
+var predicate = function (tags) {
+  return tags.length >= 2;
+};
+
+var Tags = t.subtype(t.list(t.Str), predicate);
+
+var Form = t.form.create(Tags, {
+  error: 'Insert at least two tags'
+});
+          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p40" class="form"></div>
+            <pre id="v40" class="value"></pre>
+          </div>
 
         </div>
       </div>

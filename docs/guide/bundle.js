@@ -401,6 +401,255 @@ render('33', t.list(Car), {
 
 // ===============================================
 
+var cx = require('react/lib/cx');
+
+function search(locals) {
+
+  var formGroupClasses = {
+    'form-group': true,
+    'has-feedback': true, // required for the icon
+    'has-error': locals.hasError // add 'has-error' class if tcomb-form says there is an error
+  };
+
+  var config = locals.config || {};
+  var style = {
+    borderRadius: '20px',
+    color: config.color,
+    backgroundColor: config.backgroundColor
+  };
+
+  return (
+    React.createElement("div", {className: cx(formGroupClasses)}, 
+
+      /* add a label if specified */
+      locals.label ? React.createElement("label", {className: "control-label"}, locals.label) : null, 
+
+      React.createElement("input", {
+        disabled: locals.disabled, 
+        className: "form-control", 
+        name: locals.name, 
+        placeholder: locals.placeholder, 
+        onChange: locals.onChange, 
+        style: style, 
+        type: locals.type, 
+        value: locals.value}), 
+      /* add a search icon */
+      React.createElement("span", {className: "glyphicon glyphicon-search form-control-feedback"}), 
+
+      /* add an error if specified */
+      locals.error ? React.createElement("span", {className: "help-block error-block"}, locals.error) : null, 
+
+      /* add an help if specified */
+      locals.help ? React.createElement("span", {className: "help-block"}, locals.help) : null
+
+    )
+  );
+}
+
+var Search = t.struct({
+  search: t.Str
+});
+
+render('34', Search, {
+  templates: {
+    textbox: search
+  }
+});
+
+// ===============================================
+
+render('35', Search, {
+  templates: {
+    textbox: search
+  },
+  fields: {
+    search: {
+      // custom configuration
+      config: {
+        color: '#FFA000',
+        backgroundColor: '#FFECB3'
+      }
+    }
+  }
+});
+
+// ===============================================
+
+var Search2 = t.struct({
+  search: t.list(t.Str)
+});
+
+render('36', Search2, {
+});
+
+// ===============================================
+
+var listTransformer = {
+  format: function (value) {
+    return value ? value.join(' ') : null;
+  },
+  parse: function (value) {
+    return value ? value.split(' ') : [];
+  }
+};
+
+render('37', Search2, {
+  templates: {
+    textbox: search
+  },
+  fields: {
+    search: {
+      factory: t.form.textbox,
+      transformer: listTransformer,
+      help: 'Keywords are separated by spaces'
+    }
+  },
+  value: {
+    search: ['climbing', 'yosemite']
+  }
+});
+
+// ===============================================
+
+function searchFactory(opts, ctx) {
+
+  opts = opts || {};
+
+  // handling label
+  var label = opts.label;
+  if (!label && ctx.auto === 'labels') {
+    // if labels are auto generated, get the default label
+    label = ctx.getDefaultLabel();
+  }
+
+  // handling placeholder
+  var placeholder = null;
+  // labels have higher priority
+  if (!label && ctx.auto !== 'none') {
+    placeholder = !t.Nil.is(opts.placeholder) ? opts.placeholder : ctx.getDefaultLabel();
+  }
+
+  // handling name attribute
+  var name = opts.name || ctx.getDefaultName();
+
+  // handling value
+  var value = !t.Nil.is(opts.value) ? opts.value : !t.Nil.is(ctx.value) ? ctx.value : null;
+
+  //
+  // return a ReactClass
+  //
+
+  return React.createClass({
+
+    getInitialState: function () {
+      return {
+        hasError: !!opts.hasError,
+        value: value
+      };
+    },
+
+    onChange: function (evt) {
+      var value = evt.target.value || null;
+
+      // handling transformation
+      value = listTransformer.parse(value);
+
+      // notify the parent components that there is a change
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
+
+      // re-render
+      this.setState({value: value});
+    },
+
+    getValue: function () {
+
+      // ctx.report.type contains the type specified in the api call
+      var result = t.validate(this.state.value, ctx.report.type);
+      this.setState({
+        hasError: !result.isValid(),
+        value: result.value
+      });
+
+      // return a ResultValidation instance
+      return result;
+    },
+
+    render: function () {
+
+      // handling transformation
+      var value = listTransformer.format(this.state.value);
+
+      // handling errors
+      var error = opts.error;
+      if (this.state.hasError) {
+        // show the error message only if there is an error
+        error = t.Func.is(error) ? error(this.state.value) : error
+      }
+
+      return search({
+        config: opts.config,
+        disabled: opts.disabled,
+        error: error,
+        hasError: this.state.hasError,
+        help: opts.help,
+        label: label,
+        name: name,
+        onChange: this.onChange,
+        placeholder: placeholder,
+        type: 'search',
+        value: value
+      });
+
+    }
+  });
+
+}
+
+render('38', Search2, {
+  fields: {
+    search: {
+      factory: searchFactory
+    }
+  },
+  value: {
+    search: ['climbing', 'yosemite']
+  }
+});
+
+// ===============================================
+
+// if notifyMe === true then email is required
+var structPredicate = function (person) {
+  return person.notifyMe === false || (!t.Nil.is(person.email));
+};
+
+var Person7 = t.subtype(t.struct({
+  name: t.Str,
+  notifyMe: t.Bool,
+  email: t.maybe(t.Str)
+}), structPredicate);
+
+render('39', Person7, {
+  error: 'Insert your email if you want to be notified'
+});
+
+// ===============================================
+
+// at least two tags
+var listPredicate = function (tags) {
+  return tags.length >= 2;
+};
+
+var Tags2 = t.subtype(t.list(t.Str), listPredicate);
+
+render('40', Tags2, {
+  error: 'Insert at least two tags'
+});
+
+// ===============================================
+
 var themeSelector = document.getElementById('themeSelector');
 var theme = document.getElementById('theme');
 themeSelector.onchange = function () {
@@ -410,7 +659,7 @@ themeSelector.onchange = function () {
 
 
 
-},{"../../.":2,"react":"react"}],2:[function(require,module,exports){
+},{"../../.":2,"react":"react","react/lib/cx":17}],2:[function(require,module,exports){
 var t = require('./lib');
 
 // plug bootstrap style
@@ -1279,8 +1528,8 @@ SelectOption.dispatch = function (x) {
 var TypeAttr = t.enums.of('textarea hidden text password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 var Transformer = struct({
-  format: Func,
-  parse: Func
+  format: Func, // from value to string
+  parse: Func   // from string to value
 }, 'Transformer');
 
 var Textbox = struct({
@@ -1446,16 +1695,16 @@ var TypeAttr = t.enums.of('textarea hidden text password color date datetime dat
 
 var Textbox = struct({
   config: maybe(Obj),
-  disabled: maybe(Bool),
-  error: maybe(Label),
-  hasError: maybe(Bool),
-  help: maybe(Label),
-  label: maybe(Label),
-  name: Str,
-  onChange: Func,
-  placeholder: maybe(Str),
-  type: TypeAttr,
-  value: Any
+  disabled: maybe(Bool),    // should be disabled
+  error: maybe(Label),      // should show an error
+  hasError: maybe(Bool),    // if true should show an error state
+  help: maybe(Label),       // should show an help message
+  label: maybe(Label),      // should show a label
+  name: Str,                // should use this as name attribute
+  onChange: Func,           // should call this function with the changed value
+  placeholder: maybe(Str),  // should show a placeholder
+  type: TypeAttr,           // should use this as type attribute
+  value: Any                // should use this as value attribute
 }, 'Textbox');
 
 var Checkbox = struct({

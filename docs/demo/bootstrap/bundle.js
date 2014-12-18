@@ -1051,8 +1051,8 @@ SelectOption.dispatch = function (x) {
 var TypeAttr = t.enums.of('textarea hidden text password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 var Transformer = struct({
-  format: Func,
-  parse: Func
+  format: Func, // from value to string
+  parse: Func   // from string to value
 }, 'Transformer');
 
 var Textbox = struct({
@@ -1218,16 +1218,16 @@ var TypeAttr = t.enums.of('textarea hidden text password color date datetime dat
 
 var Textbox = struct({
   config: maybe(Obj),
-  disabled: maybe(Bool),
-  error: maybe(Label),
-  hasError: maybe(Bool),
-  help: maybe(Label),
-  label: maybe(Label),
-  name: Str,
-  onChange: Func,
-  placeholder: maybe(Str),
-  type: TypeAttr,
-  value: Any
+  disabled: maybe(Bool),    // should be disabled
+  error: maybe(Label),      // should show an error
+  hasError: maybe(Bool),    // if true should show an error state
+  help: maybe(Label),       // should show an help message
+  label: maybe(Label),      // should show a label
+  name: Str,                // should use this as name attribute
+  onChange: Func,           // should call this function with the changed value
+  placeholder: maybe(Str),  // should show a placeholder
+  type: TypeAttr,           // should use this as type attribute
+  value: Any                // should use this as value attribute
 }, 'Textbox');
 
 var Checkbox = struct({

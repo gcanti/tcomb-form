@@ -11,10 +11,11 @@ var stylish = require('jshint-stylish');
 // watch
 // ------------------------------------
 var src = ['lib/**/*.js'];
-var dev = src.concat('dev/**/*.jsx');
+var docs = ['docs/**/src.js'];
+var dev = src.concat(docs).concat('dev/**/*.jsx');
 
-gulp.task('watch', ['dev', 'examples'], function () {
-  gulp.watch(dev, ['dev']);
+gulp.task('watch', ['dev', 'docs'], function () {
+  gulp.watch(dev, ['dev', 'docs']);
 });
 
 // ------------------------------------
@@ -50,7 +51,9 @@ gulp.task('dev', function (){
 // ------------------------------------
 // builds the docs
 // ------------------------------------
-gulp.task('default', ['react', 'guide', 'demo:bootstrap', 'demo:gridforms', 'demo:ionic']);
+gulp.task('default', ['react', 'docs']);
+
+gulp.task('docs', ['guide', 'demo:bootstrap', 'demo:gridforms', 'demo:ionic']);
 
 gulp.task('react', function () {
 
