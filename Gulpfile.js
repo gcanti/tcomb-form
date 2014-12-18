@@ -53,7 +53,7 @@ gulp.task('dev', function (){
 // ------------------------------------
 gulp.task('default', ['react', 'docs']);
 
-gulp.task('docs', ['guide', 'demo:bootstrap', 'demo:gridforms', 'demo:ionic']);
+gulp.task('docs', ['guide', 'demo:bootstrap', 'demo:gridforms', 'demo:ionic', 'playground']);
 
 gulp.task('react', function () {
 
@@ -117,3 +117,32 @@ gulp.task('demo:ionic', function () {
   .pipe(gulp.dest('./docs/demo/ionic'));
 
 });
+
+gulp.task('playground', function () {
+
+  browserify('./docs/playground/src.js', {
+    transform: [reactify],
+    detectGlobals: false
+  })
+  .external('react')
+  .bundle()
+  .pipe(source('bundle.js'))
+  .pipe(gulp.dest('./docs/playground'));
+
+});
+
+// ------------------------------------
+// uglify (to see the dimensions)
+// ------------------------------------
+var streamify = require('gulp-streamify');
+var uglify = require('gulp-uglify');
+gulp.task('dist', function() {
+
+  var b = browserify('.', {
+  })
+  .external('react')
+  .bundle()
+  .pipe(source('dist.js'))
+  .pipe(streamify(uglify()))
+  .pipe(gulp.dest('./dist'));
+})

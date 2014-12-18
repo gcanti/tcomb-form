@@ -494,7 +494,7 @@
           <ul>
             <li><code>disableAdd</code>: (default <code>false</code>) prevents adding new items</li>
             <li><code>disableRemove</code>: (default <code>false</code>) prevents removing existing items</li>
-            <li><code>disableOrder</code>: (default <code>false</code>) prevents ordering existing items</li>
+            <li><code>disableOrder</code>: (default <code>false</code>) prevents sorting existing items</li>
           </ul>
           <pre><code>
   var Form = t.form.create(Colors, {
@@ -1244,11 +1244,11 @@ var predicate = function (person) {
   return person.notifyMe === false || (!t.Nil.is(person.email));
 };
 
-var Person = t.struct({
+var Person = t.subtype(t.struct({
   name: t.Str,
   notifyMe: t.Bool,
   email: t.maybe(t.Str)
-});
+}), predicate);
 
 var Form = t.form.create(Person, {
   error: 'Insert your email if you want to be notified'
