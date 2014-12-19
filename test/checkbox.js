@@ -28,8 +28,8 @@ function getContext(ctx) {
   return new Context(ctx);
 }
 
-function assertLocals(factory, ctx, opts) {
-  var Component = factory(opts, getContext(ctx));
+function getLocals(ctx, opts) {
+  var Component = checkbox(opts, getContext(ctx));
   vdom(React.createElement(Component)); // force render()
 }
 
@@ -42,12 +42,12 @@ test('checkbox() factory', function (tape) {
   tape.test('disabled', function (tape) {
     tape.plan(3);
 
-    assertLocals(checkbox, {type: t.Bool}, {template: function (locals) {
+    getLocals({type: t.Bool}, {template: function (locals) {
       tape.ok(locals instanceof Checkbox);
       tape.deepEqual(locals.disabled, null);
     }});
 
-    assertLocals(checkbox, {type: t.Bool}, {disabled: true, template: function (locals) {
+    getLocals({type: t.Bool}, {disabled: true, template: function (locals) {
       tape.deepEqual(locals.disabled, true);
     }});
   });
@@ -56,17 +56,17 @@ test('checkbox() factory', function (tape) {
     tape.plan(3);
 
     // labels as strings
-    assertLocals(checkbox, {type: t.Bool}, {label: 'mylabel', template: function (locals) {
+    getLocals({type: t.Bool}, {label: 'mylabel', template: function (locals) {
       tape.deepEqual(locals.label, 'mylabel');
     }});
 
     // labels as JSX
-    assertLocals(checkbox, {type: t.Bool}, {label: React.DOM.i(null, 'JSX label'), template: function (locals) {
+    getLocals({type: t.Bool}, {label: React.DOM.i(null, 'JSX label'), template: function (locals) {
       tape.deepEqual(vdom(locals.label), {tag: 'i', attrs: {}, children: 'JSX label'});
     }});
 
     // should have a default label if ctx.auto = `labels`
-    assertLocals(checkbox, {type: t.Bool, auto: 'labels'}, {template: function (locals) {
+    getLocals({type: t.Bool, auto: 'labels'}, {template: function (locals) {
       tape.deepEqual(locals.label, 'default label');
     }});
   });
@@ -75,12 +75,12 @@ test('checkbox() factory', function (tape) {
     tape.plan(2);
 
     // helps as strings
-    assertLocals(checkbox, {type: t.Bool}, {help: 'my help', template: function (locals) {
+    getLocals({type: t.Bool}, {help: 'my help', template: function (locals) {
       tape.deepEqual(locals.help, 'my help');
     }});
 
     // helps as JSX
-    assertLocals(checkbox, {type: t.Bool}, {help: React.DOM.i(null, 'JSX help'), template: function (locals) {
+    getLocals({type: t.Bool}, {help: React.DOM.i(null, 'JSX help'), template: function (locals) {
       tape.deepEqual(vdom(locals.help), {tag: 'i', attrs: {}, children: 'JSX help'});
     }});
   });
@@ -89,12 +89,12 @@ test('checkbox() factory', function (tape) {
     tape.plan(2);
 
     // should have a default name
-    assertLocals(checkbox, {type: t.Bool}, {template: function (locals) {
+    getLocals({type: t.Bool}, {template: function (locals) {
       tape.deepEqual(locals.name, 'leaf');
     }});
 
     // should handle a custom name
-    assertLocals(checkbox, {type: t.Bool}, {name: 'myname', template: function (locals) {
+    getLocals({type: t.Bool}, {name: 'myname', template: function (locals) {
       tape.deepEqual(locals.name, 'myname');
     }});
   });
@@ -103,18 +103,18 @@ test('checkbox() factory', function (tape) {
     tape.plan(4);
 
     // should receive a value from the context
-    assertLocals(checkbox, {type: t.Bool, value: true}, {template: function (locals) {
+    getLocals({type: t.Bool, value: true}, {template: function (locals) {
       tape.deepEqual(locals.value, true);
     }});
-    assertLocals(checkbox, {type: t.Bool, value: false}, {template: function (locals) {
+    getLocals({type: t.Bool, value: false}, {template: function (locals) {
       tape.deepEqual(locals.value, false);
     }});
-    assertLocals(checkbox, {type: t.Bool, value: {}}, {template: function (locals) {
+    getLocals({type: t.Bool, value: {}}, {template: function (locals) {
       tape.deepEqual(locals.value, false);
     }});
 
     // a value specified in opts should override the context one
-    assertLocals(checkbox, {type: t.Bool, value: false}, {value: true, template: function (locals) {
+    getLocals({type: t.Bool, value: false}, {value: true, template: function (locals) {
       tape.deepEqual(locals.value, true);
     }});
   });
@@ -122,10 +122,10 @@ test('checkbox() factory', function (tape) {
   tape.test('hasError', function (tape) {
     tape.plan(2);
 
-    assertLocals(checkbox, {type: t.Bool}, {template: function (locals) {
+    getLocals({type: t.Bool}, {template: function (locals) {
       tape.deepEqual(locals.hasError, false);
     }});
-    assertLocals(checkbox, {type: t.Bool}, {hasError: true, template: function (locals) {
+    getLocals({type: t.Bool}, {hasError: true, template: function (locals) {
       tape.deepEqual(locals.hasError, true);
     }});
 
@@ -134,24 +134,24 @@ test('checkbox() factory', function (tape) {
   tape.test('error', function (tape) {
     tape.plan(10);
 
-    assertLocals(checkbox, {type: t.Bool}, {template: function (locals) {
+    getLocals({type: t.Bool}, {template: function (locals) {
       tape.deepEqual(locals.hasError, false);
       tape.deepEqual(locals.error, null);
     }});
 
-    assertLocals(checkbox, {type: t.Bool}, {error: 'my error', template: function (locals) {
+    getLocals({type: t.Bool}, {error: 'my error', template: function (locals) {
       tape.deepEqual(locals.hasError, false);
       tape.deepEqual(locals.error, null);
     }});
 
     // error as a string
-    assertLocals(checkbox, {type: t.Bool}, {error: 'my error', hasError: true, template: function (locals) {
+    getLocals({type: t.Bool}, {error: 'my error', hasError: true, template: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(locals.error, 'my error');
     }});
 
     // error as a JSX
-    assertLocals(checkbox, {type: t.Bool}, {error: React.DOM.i(null, 'JSX error'), hasError: true, template: function (locals) {
+    getLocals({type: t.Bool}, {error: React.DOM.i(null, 'JSX error'), hasError: true, template: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(vdom(locals.error), {tag: 'i', attrs: {}, children: 'JSX error'});
     }});
@@ -160,7 +160,7 @@ test('checkbox() factory', function (tape) {
     var getError = function (value) {
       return 'error: ' + value;
     };
-    assertLocals(checkbox, {type: t.Bool}, {error: getError, hasError: true, value: true, template: function (locals) {
+    getLocals({type: t.Bool}, {error: getError, hasError: true, value: true, template: function (locals) {
       tape.deepEqual(locals.hasError, true);
       tape.deepEqual(locals.error, 'error: true');
     }});
@@ -171,9 +171,23 @@ test('checkbox() factory', function (tape) {
     tape.plan(1);
 
     // should receive a default template form the context
-    assertLocals(checkbox, {type: t.Bool, templates: {checkbox: function (locals) {
+    getLocals({type: t.Bool, templates: {checkbox: function (locals) {
       tape.ok(true);
     }}});
+
+  });
+
+  tape.test('id', function (tape) {
+    tape.plan(2);
+
+    getLocals({type: t.Bool}, {id: 'myid', template: function (locals) {
+      tape.deepEqual(locals.id, 'myid');
+    }});
+
+    // should fallback on this._rootNodeID
+    getLocals({type: t.Bool}, {template: function (locals) {
+      tape.deepEqual(locals.id && t.Str.is(locals.id) && locals.id.length > 0, true);
+    }});
 
   });
 

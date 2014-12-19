@@ -140,7 +140,7 @@ var streamify = require('gulp-streamify');
 var uglify = require('gulp-uglify');
 gulp.task('dist', function() {
 
-  var b = browserify('.', {
+  var b = browserify('./lib', {
   })
   .external('react')
   .bundle()

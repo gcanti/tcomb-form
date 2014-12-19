@@ -258,6 +258,20 @@ test('textbox() factory', function (tape) {
 
   });
 
+  tape.test('id', function (tape) {
+    tape.plan(2);
+
+    getLocals({type: t.Str}, {id: 'myid', template: function (locals) {
+      tape.deepEqual(locals.id, 'myid');
+    }});
+
+    // should fallback on this._rootNodeID
+    getLocals({type: t.Str}, {template: function (locals) {
+      tape.deepEqual(locals.id && t.Str.is(locals.id) && locals.id.length > 0, true);
+    }});
+
+  });
+
 });
 
 //

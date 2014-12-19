@@ -368,12 +368,15 @@ function textbox(opts, ctx) {
         value = transformer.format(value);
       }
 
+      var id = opts.id || this._rootNodeID || uuid();
+
       return compile(template(new theme.Textbox({
         config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
         error: getError(opts.error, this.state),
         hasError: this.state.hasError,
         help: opts.help,
+        id: id,
         label: label,
         name: name,
         onChange: this.onChange,
@@ -427,12 +430,16 @@ function checkbox(opts, ctx) {
     },
 
     render: function () {
+
+      var id = opts.id || this._rootNodeID || uuid();
+
       return compile(template(new theme.Checkbox({
         config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
         error: getError(opts.error, this.state),
         hasError: this.state.hasError,
         help: opts.help,
+        id: id,
         label: label,
         name: name,
         onChange: this.onChange,
@@ -526,12 +533,16 @@ function select(opts, ctx) {
     },
 
     render: function () {
+
+      var id = opts.id || this._rootNodeID || uuid();
+
       return compile(template(new theme.Select({
         config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
         error: getError(opts.error, this.state),
         hasError: this.state.hasError,
         help: opts.help,
+        id: id,
         label: label,
         name: name,
         multiple: multiple,
@@ -592,12 +603,16 @@ function radio(opts, ctx) {
     },
 
     render: function () {
+
+      var id = opts.id || this._rootNodeID || uuid();
+
       return compile(template(new theme.Radio({
         config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
         error: getError(opts.error, this.state),
         hasError: this.state.hasError,
         help: opts.help,
+        id: id,
         label: label,
         name: name,
         onChange: this.onChange,
@@ -1066,6 +1081,7 @@ var Textbox = struct({
   error: maybe(ErrorMessage),
   hasError: maybe(Bool),
   help: maybe(Label),
+  id: maybe(Str),
   label: maybe(Label),
   name: maybe(t.Str),
   placeholder: maybe(Str),
@@ -1080,6 +1096,7 @@ var Checkbox = struct({
   disabled: maybe(Bool),
   hasError: maybe(Bool),
   help: maybe(Label),
+  id: maybe(Str),
   error: maybe(ErrorMessage),
   label: maybe(Label),
   name: maybe(t.Str),
@@ -1107,6 +1124,7 @@ var Select = struct({
   disabled: maybe(Bool),
   hasError: maybe(Bool),
   help: maybe(Label),
+  id: maybe(Str),
   error: maybe(ErrorMessage),
   label: maybe(Label),
   name: maybe(t.Str),
@@ -1122,6 +1140,7 @@ var Radio = struct({
   disabled: maybe(Bool),
   hasError: maybe(Bool),
   help: maybe(Label),
+  id: maybe(Str),
   error: maybe(ErrorMessage),
   label: maybe(Label),
   name: maybe(t.Str),
@@ -1227,6 +1246,7 @@ var Textbox = struct({
   error: maybe(Label),      // should show an error
   hasError: maybe(Bool),    // if true should show an error state
   help: maybe(Label),       // should show an help message
+  id: Str,                  // should use this as id attribute and as htmlFor label attribute
   label: maybe(Label),      // should show a label
   name: Str,                // should use this as name attribute
   onChange: Func,           // should call this function with the changed value
@@ -1241,7 +1261,8 @@ var Checkbox = struct({
   error: maybe(Label),
   hasError: maybe(Bool),
   help: maybe(Label),
-  label: Label, // checkboxes must always have a label
+  id: Str,                  // should use this as id attribute and as htmlFor label attribute
+  label: Label,             // checkboxes must always have a label
   name: Str,
   onChange: Func,
   value: Bool
@@ -1253,6 +1274,7 @@ var Select = struct({
   disabled: maybe(Bool),
   hasError: maybe(Bool),
   help: maybe(Label),
+  id: Str,                  // should use this as id attribute and as htmlFor label attribute
   label: maybe(Label),
   multiple: maybe(Bool),
   name: Str,
@@ -1267,6 +1289,7 @@ var Radio = struct({
   error: maybe(Label),
   hasError: maybe(Bool),
   help: maybe(Label),
+  id: Str,
   label: maybe(Label),
   name: Str,
   onChange: Func,
@@ -1412,7 +1435,7 @@ var ListConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
 
-function getLabel(locals, breakpoints) {
+function getLabel(locals, breakpoints, isRadio) {
   if (!locals.label) { return; }
 
   var align = null;
@@ -1424,16 +1447,19 @@ function getLabel(locals, breakpoints) {
   }
 
   return uform.getLabel({
-    label: locals.label,
     align: align,
-    className: className
+    className: className,
+    htmlFor: isRadio ? null : locals.id,
+    id: isRadio ? locals.id : null,
+    label: locals.label
   });
 }
 
 function getHelp(locals) {
   if (!locals.help) { return; }
   return getHelpBlock({
-    help: locals.help
+    help: locals.help,
+    id: locals.id + '-tip'
   });
 }
 
@@ -1451,8 +1477,7 @@ function getHiddenTextbox(locals) {
     attrs: {
       type: 'hidden',
       value: locals.value,
-      name: locals.name,
-      ref: locals.ref
+      name: locals.name
     },
     events: {
       change: locals.onChange
@@ -1472,10 +1497,11 @@ function textbox(locals) {
     type: locals.type,
     value: locals.value,
     disabled: locals.disabled,
+    'aria-describedby': locals.help ? locals.id + '-tip' : null,
+    id: locals.id,
     onChange: locals.onChange,
     placeholder: locals.placeholder,
     name: locals.name,
-    ref: locals.ref,
     size: config.size
   });
 
@@ -1529,6 +1555,7 @@ function checkbox(locals) {
   var control = uform.getCheckbox({
     checked: locals.value,
     disabled: locals.disabled,
+    id: locals.id,
     label: locals.label,
     name: locals.name,
     onChange: locals.onChange
@@ -1569,6 +1596,7 @@ function select(locals) {
   var control = uform.getSelect({
     value: locals.value,
     disabled: locals.disabled,
+    id: locals.id,
     name: locals.name,
     onChange: locals.onChange,
     options: options,
@@ -1616,6 +1644,8 @@ function radio(locals) {
 
   var control = locals.options.map(function (option) {
     return uform.getRadio({
+      'aria-describedby': locals.label ? locals.id : null,
+      id: locals.id + '-' + option.value,
       checked: (option.value === locals.value),
       disabled: option.disabled || locals.disabled,
       label: option.text,
@@ -1628,7 +1658,7 @@ function radio(locals) {
   });
 
   var horizontal = config.horizontal;
-  var label = getLabel(locals, horizontal);
+  var label = getLabel(locals, horizontal, true);
   var error = getError(locals);
   var help = getHelp(locals);
   var children = [
@@ -3096,7 +3126,10 @@ function getAlert(opts) {
   return {
     tag: 'div',
     attrs: {
-      className: className
+      className: className,
+      // aria support
+      role: 'alert',
+      'aria-live': 'assertive'
     },
     children: opts.children
   };
@@ -3195,7 +3228,7 @@ module.exports = getButtonGroup;
     checked: true,
     name: 'rememberMe',
     disabled: false,
-    ref: 'input'
+    onChange: function () {}
   }
 
 */
@@ -3212,15 +3245,18 @@ function getCheckbox(opts) {
     },
     children: {
       tag: 'label',
+      attrs: {
+        htmlFor: opts.id
+      },
       children: [
         {
           tag: 'input',
           attrs: {
-            type: 'checkbox',
             checked: opts.checked,
             disabled: opts.disabled,
-            defaultChecked: opts.defaultChecked,
+            id: opts.id,
             name: opts.name,
+            type: 'checkbox',
             value: 'true'
           },
           events: {
@@ -3307,7 +3343,8 @@ module.exports = getFormGroup;
 
   {
     help: 'my help',
-    hasError: true
+    hasError: true,
+    id: 'password-tip'
   }
 
 */
@@ -3319,7 +3356,10 @@ function getHelpBlock(opts) {
       className: {
         'help-block': true,
         'error-block': opts.hasError
-      }
+      },
+      // aria support
+      id: opts.id,
+      role: 'tooltip'
     },
     children: opts.help
   };
@@ -3356,6 +3396,7 @@ var mixin = require('./mixin');
   {
     label: 'my label',
     htmlFor: 'inputId',
+    id: 'myid',
     align: 'right',
     className: {}
   }
@@ -3376,6 +3417,7 @@ function getLabel(opts) {
     tag: 'label',
     attrs: {
       htmlFor: opts.htmlFor,
+      id: opts.id,
       className: className
     },
     children: opts.label
@@ -3476,7 +3518,7 @@ module.exports = getOption;
     value: '1',
     name: 'option',
     disabled: false,
-    ref: 'input'
+    onChange: function () {}
   }
 
 */
@@ -3493,6 +3535,9 @@ function getRadio(opts) {
     },
     children: {
       tag: 'label',
+      attrs: {
+        htmlFor: opts.id,
+      },
       children: [
         {
           tag: 'input',
@@ -3502,7 +3547,10 @@ function getRadio(opts) {
             defaultChecked: opts.defaultChecked,
             disabled: opts.disabled,
             name: opts.name,
-            value: opts.value
+            value: opts.value,
+            id: opts.id,
+            // aria support
+            'aria-describedby': opts['aria-describedby']
           },
           events: {
             change: opts.onChange
@@ -3547,7 +3595,8 @@ module.exports = getRow;
     name: 'myname',
     disabled: false,
     size: 'lg',
-    ref: 'input'
+    onChange: function () {},
+    'aria-describedby': 'password-tip'
   }
 
 */
@@ -3569,7 +3618,10 @@ function getSelect(opts) {
       value: opts.value,
       disabled: opts.disabled,
       className: className,
-      multiple: opts.multiple
+      multiple: opts.multiple,
+      id: opts.id,
+      // aria support
+      'aria-describedby': opts['aria-describedby']
     },
     children: opts.options,
     events: {
@@ -3611,7 +3663,8 @@ module.exports = getStatic;
     placeholder: 'insert your name',
     readOnly: true,
     size: 'lg',
-    ref: 'input'
+    onChange: function () {},
+    'aria-describedby': 'password-tip'
   }
 
 */
@@ -3636,7 +3689,10 @@ function getTextbox(opts) {
       disabled: opts.disabled,
       placeholder: opts.placeholder,
       readOnly: opts.readOnly,
-      className: className
+      className: className,
+      id: opts.id,
+      // aria support
+      'aria-describedby': opts['aria-describedby']
     },
     events: {
       change: opts.onChange
