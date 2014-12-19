@@ -174,6 +174,7 @@ test('textbox() factory', function (tape) {
     getLocals({type: t.Str, value: 'a'}, {value: 'b', template: function (locals) {
       tape.deepEqual(locals.value, 'b');
     }});
+
   });
 
   tape.test('transformer', function (tape) {
@@ -266,7 +267,7 @@ test('textbox() factory', function (tape) {
 if (typeof window !== 'undefined') {
 
   test('textbox getValue()', function (tape) {
-    tape.plan(32);
+    tape.plan(36);
 
     var Password = t.subtype(t.Str, function (s) {
       return s.length >= 3;
@@ -334,6 +335,15 @@ if (typeof window !== 'undefined') {
     }, function (locals) {
       tape.deepEqual(locals.hasError, false);
       tape.deepEqual(locals.value, 'aaa');
+    });
+
+    // should handle spaces
+    getResult({type: t.Str}, {value: ' '}, function (result) {
+      tape.deepEqual(result.isValid(), false);
+      tape.deepEqual(result.value, null);
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, true);
+      tape.deepEqual(locals.value, null);
     });
 
   });

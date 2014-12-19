@@ -202,7 +202,7 @@ function textbox(opts, ctx) {
     },
 
     onChange: function (evt) {
-      var value = evt.target.value || null;
+      var value = evt.target.value;
       if (transformer) {
         value = transformer.parse(value);
       }
@@ -213,7 +213,12 @@ function textbox(opts, ctx) {
     },
 
     getValue: function () {
-      var result = t.validate(this.state.value, ctx.report.type);
+      var value = this.state.value;
+      // handle white spaces
+      if (t.Str.is(value)) {
+        value = value.trim() || null;
+      }
+      var result = t.validate(value, ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value
@@ -616,7 +621,7 @@ function list(opts, ctx) {
   var itemType = report.innerType.meta.type;
   var itemOpts = opts.item || {};
   var itemFactory = getFactory(itemType, itemOpts);
-  var getComponent = function (value, i) {
+  var getComponent = function (value) {
     return itemFactory(itemOpts, new Context({
       templates: templates,
       i18n: i18n,

@@ -10,12 +10,14 @@ var stylish = require('jshint-stylish');
 // ------------------------------------
 // watch
 // ------------------------------------
-var src = ['lib/**/*.js'];
+var lib = ['lib/**/*.js'];
 var docs = ['docs/**/src.js'];
-var dev = src.concat(docs).concat('dev/**/*.jsx');
+var dev = ['dev/**/*.jsx'];
 
 gulp.task('watch', ['dev', 'docs'], function () {
-  gulp.watch(dev, ['dev', 'docs']);
+  gulp.watch(dev, ['dev']);
+  gulp.watch(docs, ['docs']);
+  gulp.watch(lib, ['dev', 'docs']);
 });
 
 // ------------------------------------

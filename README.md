@@ -35,6 +35,17 @@ Thanks to [Andrey Popp](https://github.com/andreypopp) for writing [react-forms]
 
 Bootstrap 3.3 is fully supported. **Contributions and PR for other css frameworks are welcomed**.
 
+# Development and tests
+
+```
+>>> npm install
+>>> gulp
+```
+
+```
+>>> npm run test-browser // uses testling to capture browsers
+```
+
 # License
 
 MIT
