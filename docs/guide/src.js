@@ -649,6 +649,46 @@ render('40', Tags2, {
 
 // ===============================================
 
+render('41', Textbox, {
+  fields: {
+    mytext: {
+      config: {
+        // you can use strings or JSX
+        addonBefore: React.DOM.i(null, 'before'),
+        addonAfter: React.DOM.i(null, 'after'),
+      }
+    }
+  }
+});
+
+// ===============================================
+
+render('42', Textbox, {
+  fields: {
+    mytext: {
+      config: {
+        size: 'lg'
+      }
+    }
+  }
+});
+
+// ===============================================
+
+render('43', Person7, {
+  auto: 'labels',
+  config: {
+    horizontal: {
+      md: [3, 9],
+      sm: [6, 6]
+    }
+  }
+});
+
+// ===============================================
+
+// ===============================================
+
 var themeSelector = document.getElementById('themeSelector');
 var theme = document.getElementById('theme');
 themeSelector.onchange = function () {

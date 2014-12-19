@@ -650,6 +650,46 @@ render('40', Tags2, {
 
 // ===============================================
 
+render('41', Textbox, {
+  fields: {
+    mytext: {
+      config: {
+        // you can use strings or JSX
+        addonBefore: React.DOM.i(null, 'before'),
+        addonAfter: React.DOM.i(null, 'after'),
+      }
+    }
+  }
+});
+
+// ===============================================
+
+render('42', Textbox, {
+  fields: {
+    mytext: {
+      config: {
+        size: 'lg'
+      }
+    }
+  }
+});
+
+// ===============================================
+
+render('43', Person7, {
+  auto: 'labels',
+  config: {
+    horizontal: {
+      md: [3, 9],
+      sm: [6, 6]
+    }
+  }
+});
+
+// ===============================================
+
+// ===============================================
+
 var themeSelector = document.getElementById('themeSelector');
 var theme = document.getElementById('theme');
 themeSelector.onchange = function () {
@@ -814,7 +854,7 @@ function textbox(opts, ctx) {
     },
 
     onChange: function (evt) {
-      var value = evt.target.value || null;
+      var value = evt.target.value;
       if (transformer) {
         value = transformer.parse(value);
       }
@@ -825,7 +865,12 @@ function textbox(opts, ctx) {
     },
 
     getValue: function () {
-      var result = t.validate(this.state.value, ctx.report.type);
+      var value = this.state.value;
+      // handle white spaces
+      if (t.Str.is(value)) {
+        value = value.trim() || null;
+      }
+      var result = t.validate(value, ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
         value: result.value

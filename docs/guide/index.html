@@ -104,6 +104,13 @@
                   <li><a href="#list-subtypes">List subtypes</a></li>
               </ul>
             </li>
+            <li>Bootstrap extras
+              <ul>
+                  <li><a href="#bootstrap-textbox">Textbox</a></li>
+                  <li><a href="#bootstrap-select">Select</a></li>
+                  <li><a href="#bootstrap-fieldset">Fieldset</a></li>
+              </ul>
+            </li>
           <ul>
         </div>
         <div class="col-sm-8">
@@ -509,6 +516,8 @@
 
           <h2>Textbox options</h2>
 
+          <p><b>Tech note.</b> Values containing only white spaces are converted to <code>null</code>.</p>
+
           <a name="textbox-type"><h3>Type attribute</h3></a>
           <p>You can set the <code>type</code> attribute with the <code>type</code> option. The following values are allowed:</p>
           <ul>
@@ -717,6 +726,8 @@
             <div id="p28" class="form"></div>
             <pre id="v28" class="value"></pre>
           </div>
+
+          <p><b>Tech note.</b> A value equal to <code>nullOption.value</code> (default <code>''</code>) is converted to <code>null</code>.</p>
 
           <a name="select-order"><h3>Options order</h3></a>
           <p>You can sort the options with the <code>order</code> option:</p>
@@ -1281,6 +1292,90 @@ var Form = t.form.create(Tags, {
             <div id="p40" class="form"></div>
             <pre id="v40" class="value"></pre>
           </div>
+
+          <h1>Bootstrap extras</h1>
+
+          <a name="bootstrap-textbox"><h2>Textbox</h2></a>
+
+          <h3>Addons</h3>
+          <p>You can set an addon before or an addon after with the <code>config.addonBefore</code> and <code>config.addonAfter</code> options:</p>
+          <pre><code>
+var Textbox = t.struct({
+  mytext: t.Str
+});
+
+var Form = t.form.create(Textbox, {
+  fields: {
+    mytext: {
+      config: {
+        // you can use strings or JSX
+        addonBefore: &lt;i&gt;before&lt;i&gt;,
+        addonAfter: &lt;i&gt;after&lt;/i&gt;
+      }
+    }
+  }
+});          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p41" class="form"></div>
+            <pre id="v41" class="value"></pre>
+          </div>
+
+          <h3>Size</h3>
+          <p>You can set the textbox size with the <code>config.size</code> option:</p>
+          <pre><code>
+var Textbox = t.struct({
+  mytext: t.Str
+});
+
+var Form = t.form.create(Textbox, {
+  fields: {
+    mytext: {
+      config: {
+        size: 'lg' // xs sm md lg are allowed
+      }
+    }
+  }
+});          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p42" class="form"></div>
+            <pre id="v42" class="value"></pre>
+          </div>
+
+          <a name="bootstrap-select"><h2>Select</h2></a>
+          <p>Same as Textbox extras.</p>
+
+          <a name="bootstrap-fieldset"><h2>Fieldset</h2></a>
+          <p>You can render the form horizontal with the <code>horizontal</code> option:</p>
+          <pre><code>
+var Person = t.struct({
+  name: t.Str,
+  notifyMe: t.Bool,
+  email: t.maybe(t.Str)
+});
+
+var Form = t.form.create(Person, {
+  auto: 'labels',
+  config: {
+    // for each of lg md sm xs you can specify the columns width
+    horizontal: {
+      md: [3, 9],
+      sm: [6, 6]
+    }
+  }
+});
+          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p43" class="form"></div>
+            <pre id="v43" class="value"></pre>
+          </div>
+
+          <p><b>Note</b>. Remember to add the class <code>form-horizontal</code> to the <code>form</code> tag.</p>
 
         </div>
       </div>
