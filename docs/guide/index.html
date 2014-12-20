@@ -117,6 +117,11 @@
                   <li><a href="#bootstrap-fieldset">Fieldset</a></li>
               </ul>
             </li>
+            <li>API
+              <ul>
+                  <li><a href="#api-create"><code>t.form.create</code></a></li>
+              </ul>
+            </li>
           <ul>
         </div>
         <div class="col-sm-8">
@@ -150,17 +155,24 @@
           <p>Done. Now you can embed the form in your app and retrieve the value with the <code>getValue()</code> function:</p>
           <pre><code>
   var App = React.createClass({
+
     onClick: function () {
-      console.log(this.refs.form.<b>getValue()</b>);
+      var value = this.refs.form.<b>getValue()</b>;
+      // getValue returns null if validation failed
+      if (value) {
+        console.log(value);
+      }
     },
+
     render: function () {
       return (
         &lt;div&gt;
-          <b>&lt;Form ref="form"/&gt;</b>
+          <b>&lt;Form ref="form" /&gt;</b>
           &lt;button onClick={this.onClick}&gt;Click me&lt;/button&gt;
         &lt;/div&gt;
       );
     }
+
   });
           </code></pre>
           <p><b>Output</b> (placeholders are automatically generated):</p>
@@ -1383,6 +1395,48 @@ var Form = t.form.create(Person, {
           </div>
 
           <p><b>Note</b>. Remember to add the class <code>form-horizontal</code> to the <code>form</code> tag.</p>
+
+          <h1>API</h1>
+
+          <a name="api-create"><h2>t.form.create</h2></a>
+          <p>Main API</p>
+          <pre><code>
+t.form.create(type, [opts]) -> ReactClass
+          </code></pre>
+          <p>Returns a ReactClass with a getValue() method:</p>
+          <pre><code>
+getValue(raw: maybe(Bool)) -> Nil | Obj
+          </code></pre>
+          <p><code>getValue</code> returns <code>null</code> if the validation failed, an object containing the form values if validation succeded.</p>
+          <p>If the optional parameter <code>raw</code> is set to <code>true</code> then <code>getValue</code> returns a <code>ValidationResult</code> (<a href="https://github.com/gcanti/tcomb-validation">tcomb-validation</a> for a reference)</p>
+          <p>The returned ReactClass accepts two props:</p>
+          <ul>
+            <li><code>value</code>: alternative way to set the form default value</li>
+            <li><code>onChange</code>: a function with signature <code>function(value) -> Any</code> called whenever a form value is changed. <b>Note</b>. the value passed to <code>onChange</code> <b>could</b> be invalid since is a raw value (call <code>getValue</code> to retrieving a valid value).</li>
+          </ul>
+          <pre><code>
+var App = React.createClass({
+
+  <b>onChange: function (rawValue) {
+    console.log(rawValue);
+  }</b>,
+
+  render: function () {
+    return (
+      &lt;div&gt;
+        &lt;Form ref="form" <b>onChange={this.onChange}</b> /&gt;
+      &lt;/div&gt;
+    );
+  }
+
+});
+            </code></pre>
+
+          <p><b>Output</b> (raw values will be displayed while typing):</p>
+          <div class="preview">
+            <div id="p44" class="form"></div>
+            <pre id="v44" class="value"></pre>
+          </div>
 
         </div>
       </div>

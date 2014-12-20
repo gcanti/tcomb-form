@@ -4,7 +4,7 @@ var React = require('react');
 var t = require('../../.');
 
 // helper function
-function render(i, type, opts) {
+function render(i, type, opts, onChange) {
 
   var formPreview = document.getElementById('p' + i);
   var Form = t.form.create(type, opts);
@@ -20,11 +20,17 @@ function render(i, type, opts) {
       }
     },
 
+    onChange: function (rawValue) {
+      var valuePreview = document.getElementById('v' + i)
+      valuePreview.style.display = 'block';
+      valuePreview.innerHTML += JSON.stringify(rawValue, null, 2) + '\n';
+    },
+
     render: function () {
       return (
         React.DOM.div(null,
-          React.createFactory(Form)({ref: 'form'}),
-          React.DOM.button({
+          React.createFactory(Form)({ref: 'form', onChange: onChange ? this.onChange : null}),
+          onChange ? null : React.DOM.button({
             onClick: this.onClick,
             className: 'btn btn-primary'
           }, 'Click me')
@@ -686,6 +692,8 @@ render('43', Person7, {
 });
 
 // ===============================================
+
+render('44', Person7, {}, true);
 
 // ===============================================
 
