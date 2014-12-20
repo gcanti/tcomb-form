@@ -3,13 +3,13 @@
 var React = require('react');
 var test = require('tape');
 var vdom = require('react-vdom');
-var t = require('../.');
-var Context = require('../lib/protocols/api').Context;
-var config = require('../lib/config');
-var getReport = require('../lib/util/getReport');
-var Radio = require('../lib/protocols/theme').Radio;
-var radio = require('../lib/factories').radio;
-var bootstrap = require('../lib/templates/bootstrap');
+var t = require('../../.');
+var Context = require('../../lib/protocols/api').Context;
+var config = require('../../lib/config');
+var getReport = require('../../lib/util/getReport');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Radio = require('../../lib/protocols/theme').Radio;
+var radio = require('../../lib/factories').radio;
 
 //
 // helpers
@@ -59,7 +59,7 @@ var Country = t.enums({
 }, 'Country');
 
 //
-// node tests
+// rendering tests
 //
 
 test('radio() factory', function (tape) {
@@ -265,7 +265,7 @@ test('radio() factory', function (tape) {
 });
 
 //
-// browser tests
+// getValue() tests (browser required)
 //
 
 if (typeof window !== 'undefined') {

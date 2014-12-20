@@ -3,13 +3,13 @@
 var React = require('react');
 var test = require('tape');
 var vdom = require('react-vdom');
-var t = require('../.');
-var Context = require('../lib/protocols/api').Context;
-var config = require('../lib/config');
-var getReport = require('../lib/util/getReport');
-var Struct = require('../lib/protocols/theme').Struct;
-var struct = require('../lib/factories').struct;
-var bootstrap = require('../lib/templates/bootstrap');
+var t = require('../../.');
+var Context = require('../../lib/protocols/api').Context;
+var config = require('../../lib/config');
+var getReport = require('../../lib/util/getReport');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Struct = require('../../lib/protocols/theme').Struct;
+var struct = require('../../lib/factories').struct;
 
 //
 // helpers
@@ -72,7 +72,7 @@ var Person = t.struct({
 });
 
 //
-// node tests
+// rendering tests
 //
 
 test('struct() factory', function (tape) {
@@ -260,7 +260,7 @@ test('struct() factory', function (tape) {
 });
 
 //
-// browser tests
+// getValue() tests (browser required)
 //
 
 if (typeof window !== 'undefined') {

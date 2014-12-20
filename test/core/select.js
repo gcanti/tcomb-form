@@ -3,13 +3,13 @@
 var React = require('react');
 var test = require('tape');
 var vdom = require('react-vdom');
-var t = require('../.');
-var Context = require('../lib/protocols/api').Context;
-var config = require('../lib/config');
-var getReport = require('../lib/util/getReport');
-var Select = require('../lib/protocols/theme').Select;
-var select = require('../lib/factories').select;
-var bootstrap = require('../lib/templates/bootstrap');
+var t = require('../../.');
+var Context = require('../../lib/protocols/api').Context;
+var config = require('../../lib/config');
+var getReport = require('../../lib/util/getReport');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Select = require('../../lib/protocols/theme').Select;
+var select = require('../../lib/factories').select;
 
 //
 // helpers
@@ -59,7 +59,7 @@ var Country = t.enums({
 }, 'Country');
 
 //
-// node tests
+// rendering tests
 //
 
 test('select() factory', function (tape) {
@@ -294,7 +294,7 @@ test('select() factory', function (tape) {
 });
 
 //
-// browser tests
+// getValue() tests (browser required)
 //
 
 if (typeof window !== 'undefined') {

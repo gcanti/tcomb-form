@@ -451,7 +451,8 @@ function radio(opts, ctx) {
       };
     },
 
-    onChange: function (value) {
+    onChange: function (evt) {
+      var value = evt.target.value;
       if (this.props.onChange) {
         this.props.onChange(value);
       }
@@ -830,7 +831,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":43}],6:[function(require,module,exports){
+},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":44}],6:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -1216,7 +1217,6 @@ var theme = require('../protocols/theme');
 var Label = theme.Label;
 var uform = require('uvdom-bootstrap/form');
 var maybe = t.maybe;
-var getHelpBlock = uform.getHelpBlock;
 var getFieldset = uform.getFieldset;
 var getFormGroup = uform.getFormGroup;
 var getAddon = uform.getAddon;
@@ -1300,29 +1300,29 @@ var ListConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
 
-function getLabel(locals, breakpoints, isRadio) {
-  if (!locals.label) { return; }
+function getLabel(opts) {
+  if (!opts.label) { return; }
 
   var align = null;
   var className = null;
 
-  if (breakpoints) {
+  if (opts.breakpoints) {
     align = 'right';
-    className = breakpoints.getLabelClassName();
+    className = opts.breakpoints.getLabelClassName();
   }
 
   return uform.getLabel({
     align: align,
     className: className,
-    htmlFor: isRadio ? null : locals.id,
-    id: isRadio ? locals.id : null,
-    label: locals.label
+    htmlFor: opts.htmlFor,
+    id: opts.id,
+    label: opts.label
   });
 }
 
 function getHelp(locals) {
   if (!locals.help) { return; }
-  return getHelpBlock({
+  return uform.getHelpBlock({
     help: locals.help,
     id: locals.id + '-tip'
   });
@@ -1330,8 +1330,8 @@ function getHelp(locals) {
 
 function getError(locals) {
   if (!locals.error) { return; }
-  return getHelpBlock({
-    help: locals.error,
+  return uform.getErrorBlock({
+    error: locals.error,
     hasError: locals.hasError
   });
 }
@@ -1363,7 +1363,7 @@ function textbox(locals) {
     value: locals.value,
     disabled: locals.disabled,
     'aria-describedby': locals.help ? locals.id + '-tip' : null,
-    id: locals.id,
+    id: locals.label ? locals.id : null,
     onChange: locals.onChange,
     placeholder: locals.placeholder,
     name: locals.name,
@@ -1379,7 +1379,11 @@ function textbox(locals) {
   }
 
   var horizontal = config.horizontal;
-  var label = getLabel(locals, horizontal);
+  var label = getLabel({
+    label: locals.label,
+    htmlFor: locals.id,
+    breakpoints: config.horizontal
+  });
   var error = getError(locals);
   var help = getHelp(locals);
 
@@ -1461,7 +1465,8 @@ function select(locals) {
   var control = uform.getSelect({
     value: locals.value,
     disabled: locals.disabled,
-    id: locals.id,
+    'aria-describedby': locals.help ? locals.id + '-tip' : null,
+    id: locals.label ? locals.id : null,
     name: locals.name,
     onChange: locals.onChange,
     options: options,
@@ -1470,7 +1475,11 @@ function select(locals) {
   });
 
   var horizontal = config.horizontal;
-  var label = getLabel(locals, horizontal);
+  var label = getLabel({
+    label: locals.label,
+    htmlFor: locals.id,
+    breakpoints: config.horizontal
+  });
   var error = getError(locals);
   var help = getHelp(locals);
   var children = [
@@ -1515,15 +1524,17 @@ function radio(locals) {
       disabled: option.disabled || locals.disabled,
       label: option.text,
       name: locals.name,
-      onChange: function () {
-        locals.onChange(option.value);
-      },
+      onChange: locals.onChange,
       value: option.value
     });
   });
 
   var horizontal = config.horizontal;
-  var label = getLabel(locals, horizontal, true);
+  var label = getLabel({
+    label: locals.label,
+    id: locals.id,
+    breakpoints: config.horizontal
+  });
   var error = getError(locals);
   var help = getHelp(locals);
   var children = [
@@ -3040,6 +3051,7 @@ module.exports = {
   getButtonGroup: require('./lib/getButtonGroup'),
   getCheckbox: require('./lib/getCheckbox'),
   getCol: require('./lib/getCol'),
+  getErrorBlock: require('./lib/getErrorBlock'),
   getFieldset: require('./lib/getFieldset'),
   getFormGroup: require('./lib/getFormGroup'),
   getHelpBlock: require('./lib/getHelpBlock'),
@@ -3054,7 +3066,7 @@ module.exports = {
   getStatic: require('./lib/getStatic'),
   getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":22,"./lib/getAlert":23,"./lib/getBreakpoints":24,"./lib/getButton":25,"./lib/getButtonGroup":26,"./lib/getCheckbox":27,"./lib/getCol":28,"./lib/getFieldset":29,"./lib/getFormGroup":30,"./lib/getHelpBlock":31,"./lib/getInputGroup":32,"./lib/getLabel":33,"./lib/getOffsets":34,"./lib/getOptGroup":35,"./lib/getOption":36,"./lib/getRadio":37,"./lib/getRow":38,"./lib/getSelect":39,"./lib/getStatic":40,"./lib/getTextbox":41}],22:[function(require,module,exports){
+},{"./lib/getAddon":22,"./lib/getAlert":23,"./lib/getBreakpoints":24,"./lib/getButton":25,"./lib/getButtonGroup":26,"./lib/getCheckbox":27,"./lib/getCol":28,"./lib/getErrorBlock":29,"./lib/getFieldset":30,"./lib/getFormGroup":31,"./lib/getHelpBlock":32,"./lib/getInputGroup":33,"./lib/getLabel":34,"./lib/getOffsets":35,"./lib/getOptGroup":36,"./lib/getOption":37,"./lib/getRadio":38,"./lib/getRow":39,"./lib/getSelect":40,"./lib/getStatic":41,"./lib/getTextbox":42}],22:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -3214,8 +3226,7 @@ function getCheckbox(opts) {
             disabled: opts.disabled,
             id: opts.id,
             name: opts.name,
-            type: 'checkbox',
-            value: 'true'
+            type: 'checkbox'
           },
           events: {
             change: opts.onChange
@@ -3251,6 +3262,25 @@ module.exports = getCol;
 },{"./getBreakpoints":24}],29:[function(require,module,exports){
 'use strict';
 
+function getErrorBlock(opts) {
+  return {
+    tag: 'span',
+    attrs: {
+      className: {
+        'help-block': true,
+        'error-block': opts.hasError
+      }
+    },
+    children: opts.error
+  };
+}
+
+module.exports = getErrorBlock;
+
+
+},{}],30:[function(require,module,exports){
+'use strict';
+
 function getFieldset(opts) {
 
   var children = opts.children.slice();
@@ -3275,7 +3305,7 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
@@ -3292,7 +3322,7 @@ function getFormGroup(opts) {
 }
 
 module.exports = getFormGroup;
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3326,7 +3356,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -3342,7 +3372,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -3385,7 +3415,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":42}],34:[function(require,module,exports){
+},{"./mixin":43}],35:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -3399,7 +3429,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -3433,7 +3463,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":36}],36:[function(require,module,exports){
+},{"./getOption":37}],37:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3462,7 +3492,7 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3523,7 +3553,7 @@ function getRadio(opts) {
 }
 
 module.exports = getRadio;
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -3540,7 +3570,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3589,7 +3619,7 @@ function getSelect(opts) {
 }
 
 module.exports = getSelect;
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 function getStatic(value) {
@@ -3605,7 +3635,7 @@ function getStatic(value) {
 }
 
 module.exports = getStatic;
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3659,7 +3689,7 @@ function getTextbox(opts) {
 }
 
 module.exports = getTextbox;
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 function mixin(a, b) {
@@ -3673,7 +3703,7 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 var React = require('react');

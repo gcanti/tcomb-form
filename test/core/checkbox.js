@@ -3,12 +3,13 @@
 var React = require('react');
 var test = require('tape');
 var vdom = require('react-vdom');
-var t = require('../.');
-var Context = require('../lib/protocols/api').Context;
-var config = require('../lib/config');
-var getReport = require('../lib/util/getReport');
-var Checkbox = require('../lib/protocols/theme').Checkbox;
-var checkbox = require('../lib/factories').checkbox;
+var t = require('../../.');
+var Context = require('../../lib/protocols/api').Context;
+var config = require('../../lib/config');
+var getReport = require('../../lib/util/getReport');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Checkbox = require('../../lib/protocols/theme').Checkbox;
+var checkbox = require('../../lib/factories').checkbox;
 
 //
 // helpers
@@ -33,8 +34,26 @@ function getLocals(ctx, opts) {
   vdom(React.createElement(Component)); // force render()
 }
 
+function getResult(ctx, opts, onResult, onRender) {
+  var rendered = false;
+  opts.template = function (locals) {
+    if (rendered && onRender) {
+      onRender(locals);
+    }
+    return bootstrap.checkbox(locals);
+  };
+  ctx = getContext(ctx);
+  var Component = React.createFactory(checkbox(opts, ctx));
+  var node = document.createElement('div');
+  document.body.appendChild(node);
+  var component = React.render(Component(), node);
+  rendered = true;
+  var result = component.getValue();
+  onResult(result);
+}
+
 //
-// node tests
+// rendering tests
 //
 
 test('checkbox() factory', function (tape) {
@@ -192,3 +211,36 @@ test('checkbox() factory', function (tape) {
   });
 
 });
+
+//
+// getValue() tests (browser required)
+//
+
+if (typeof window !== 'undefined') {
+
+  test('checkbox getValue()', function (tape) {
+    tape.plan(8);
+
+    getResult({type: t.Bool}, {}, function (result) {
+      tape.deepEqual(result.isValid(), true);
+      tape.deepEqual(result.value, false);
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, false);
+      tape.deepEqual(locals.value, false);
+    });
+
+    getResult({type: t.Bool}, {value: true}, function (result) {
+      tape.deepEqual(result.isValid(), true);
+      tape.deepEqual(result.value, true);
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, false);
+      tape.deepEqual(locals.value, true);
+    });
+
+
+  });
+
+}
+
+
+

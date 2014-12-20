@@ -1,8 +1,8 @@
 'use strict';
 
 var test = require('tape');
-var t = require('../.');
-var factories = require('../lib/factories');
+var t = require('../../.');
+var factories = require('../../lib/factories');
 var getFactory = factories.getFactory;
 
 function predicate() {

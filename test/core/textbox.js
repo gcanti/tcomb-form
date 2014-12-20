@@ -3,13 +3,13 @@
 var React = require('react');
 var test = require('tape');
 var vdom = require('react-vdom');
-var t = require('../.');
-var Context = require('../lib/protocols/api').Context;
-var config = require('../lib/config');
-var getReport = require('../lib/util/getReport');
-var Textbox = require('../lib/protocols/theme').Textbox;
-var textbox = require('../lib/factories').textbox;
-var bootstrap = require('../lib/templates/bootstrap');
+var t = require('../../.');
+var Context = require('../../lib/protocols/api').Context;
+var config = require('../../lib/config');
+var getReport = require('../../lib/util/getReport');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Textbox = require('../../lib/protocols/theme').Textbox;
+var textbox = require('../../lib/factories').textbox;
 
 //
 // helpers
@@ -53,7 +53,7 @@ function getResult(ctx, opts, onResult, onRender) {
 }
 
 //
-// node tests
+// rendering tests
 //
 
 test('textbox() factory', function (tape) {
@@ -275,7 +275,7 @@ test('textbox() factory', function (tape) {
 });
 
 //
-// browser tests
+// getValue() tests (browser required)
 //
 
 if (typeof window !== 'undefined') {
