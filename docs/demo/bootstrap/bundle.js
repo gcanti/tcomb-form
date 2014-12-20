@@ -1206,7 +1206,6 @@ module.exports = {
 
 var React = require('react');
 var t = require('tcomb-validation');
-var Any = t.Any;
 var Str = t.Str;
 var Bool = t.Bool;
 var Func = t.Func;
@@ -1217,6 +1216,8 @@ var struct = t.struct;
 var union = t.union;
 
 var ReactElement = t.irriducible('ReactElement', React.isValidElement);
+
+var Value = union([t.Nil, Str, Bool], 'Value');
 
 var Label = union([Str, ReactElement], 'Label');
 
@@ -1253,7 +1254,7 @@ var Textbox = struct({
   onChange: Func,           // should call this function with the changed value
   placeholder: maybe(Str),  // should show a placeholder
   type: TypeAttr,           // should use this as type attribute
-  value: Any                // should use this as value attribute
+  value: maybe(Str)                // should use this as value attribute
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -1269,6 +1270,9 @@ var Checkbox = struct({
   value: Bool
 }, 'Checkbox');
 
+// handle multiple attribute
+var SelectValue = union([Str, list(Str)], 'SelectValue');
+
 var Select = struct({
   config: maybe(Obj),
   error: maybe(Label),
@@ -1281,7 +1285,7 @@ var Select = struct({
   name: Str,
   onChange: Func,
   options: list(SelectOption),
-  value: maybe(union([Str, list(Str)])) // handle multiple
+  value: maybe(SelectValue)
 }, 'Select');
 
 var Radio = struct({
@@ -1298,6 +1302,8 @@ var Radio = struct({
   value: maybe(Str)
 }, 'Radio');
 
+var StructValue = t.dict(Str, Value, 'StructValue');
+
 var Struct = struct({
   config: maybe(Obj),
   disabled: maybe(Bool),
@@ -1307,7 +1313,7 @@ var Struct = struct({
   inputs: t.dict(Str, ReactElement),
   label: maybe(Label),
   order: list(Label),
-  value: Any
+  value: maybe(StructValue)
 }, 'Struct');
 
 var Button = struct({
@@ -1330,7 +1336,7 @@ var List = struct({
   help: maybe(Label),
   items: list(ListItem),
   label: maybe(Label),
-  value: Any
+  value: maybe(list(Value))
 }, 'List');
 
 module.exports = {
@@ -3138,10 +3144,7 @@ function getAlert(opts) {
   return {
     tag: 'div',
     attrs: {
-      className: className,
-      // aria support
-      role: 'alert',
-      'aria-live': 'assertive'
+      className: className
     },
     children: opts.children
   };

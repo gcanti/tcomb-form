@@ -38,8 +38,8 @@ Bootstrap 3.3 is fully supported. **Contributions and PR for other css framework
 # Development
 
 ```
->>> npm install
->>> gulp watch
+npm install
+gulp watch
 ```
 
 ## Linting
@@ -51,7 +51,7 @@ gulp lint
 ## Tests
 
 ```
->>> npm test
+npm test
 ```
 
 (uses testling to capture browsers)
