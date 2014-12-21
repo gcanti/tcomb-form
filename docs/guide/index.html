@@ -104,7 +104,7 @@
                   <li><a href="#config">General configuration</a></li>
               </ul>
             </li>
-            <li>Advanced form management
+            <li>Advanced form validation
               <ul>
                   <li><a href="#struct-subtypes">Struct subtypes</a></li>
                   <li><a href="#list-subtypes">List subtypes</a></li>
@@ -115,6 +115,11 @@
                   <li><a href="#bootstrap-textbox">Textbox</a></li>
                   <li><a href="#bootstrap-select">Select</a></li>
                   <li><a href="#bootstrap-fieldset">Fieldset</a></li>
+              </ul>
+            </li>
+            <li>Isomorphic forms
+              <ul>
+                  <li><a href="#isomorphic-name">name attributes</a></li>
               </ul>
             </li>
             <li>API
@@ -1129,7 +1134,7 @@ function searchFactory(opts, ctx) {
   }
 
   // name attribute
-  var name = opts.name || ctx.getDefaultName();
+  var name = opts.name || ctx.name;
 
   // value
   var value = !t.Nil.is(opts.value) ?
@@ -1264,7 +1269,7 @@ var ionic = require('tcomb-form/lib/templates/ionic');
 t.form.config.templates = ionic;
           </code></pre>
 
-          <h1>Advanced form management</h1>
+          <h1>Advanced form validation</h1>
 
           <a name="struct-subtypes"><h2>Struct subtypes</h2></a>
           <p>You can use subtypes also with structs:</p>
@@ -1395,6 +1400,23 @@ var Form = t.form.create(Person, {
           </div>
 
           <p><b>Note</b>. Remember to add the class <code>form-horizontal</code> to the <code>form</code> tag.</p>
+
+          <h1>Isomorphic forms</h1>
+
+          <a name="isomorphic-name"><h2>name attributes</h2></a>
+          <p>tcomb-form set automatically the <code>name</code> attribute of inputs and they are compatible with the <a href="https://github.com/hapijs/qs">qs</a> module:</p>
+          <pre><code>
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.post('/', function (req, res) {
+  // req.body is a JSON containing the raw value of the form
+  var value = req.body;
+});
+          </code></pre>
 
           <h1>API</h1>
 

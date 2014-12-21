@@ -535,7 +535,7 @@ function searchFactory(opts, ctx) {
   }
 
   // handling name attribute
-  var name = opts.name || ctx.getDefaultName();
+  var name = opts.name || ctx.name;
 
   // handling value
   var value = !t.Nil.is(opts.value) ? opts.value : !t.Nil.is(ctx.value) ? ctx.value : null;
