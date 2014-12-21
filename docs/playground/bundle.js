@@ -186,7 +186,7 @@ function create(type, opts) {
         auto: 'placeholders',
         i18n: config.i18n,
         label: null,
-        path: [],
+        name: '',
         report: getReport(type),
         templates: config.templates,
         value: this.props.value
@@ -268,7 +268,7 @@ function textbox(opts, ctx) {
     placeholder = !Nil.is(opts.placeholder) ? opts.placeholder : ctx.getDefaultLabel();
   }
 
-  var name = opts.name || ctx.getDefaultName();
+  var name = opts.name || ctx.name;
 
   var value = !Nil.is(opts.value) ? opts.value : !Nil.is(ctx.value) ? ctx.value : null;
 
@@ -346,7 +346,7 @@ function checkbox(opts, ctx) {
   // checkboxes must have a label
   var label = opts.label || ctx.getDefaultLabel();
 
-  var name = opts.name || ctx.getDefaultName();
+  var name = opts.name || ctx.name;
 
   var value = t.Bool.is(opts.value) ? opts.value : t.Bool.is(ctx.value) ? ctx.value : false;
 
@@ -417,7 +417,7 @@ function select(opts, ctx) {
     ctx.auto === 'labels' ? ctx.getDefaultLabel() :
     null;
 
-  var name = opts.name || ctx.getDefaultName();
+  var name = opts.name || ctx.name;
 
   var value = !Nil.is(opts.value) ? opts.value :
     !Nil.is(ctx.value) ? ctx.value :
@@ -513,7 +513,7 @@ function radio(opts, ctx) {
     ctx.auto === 'labels' ? ctx.getDefaultLabel() :
     null;
 
-  var name = opts.name || ctx.getDefaultName();
+  var name = opts.name || ctx.name;
 
   var value = !Nil.is(opts.value) ? opts.value : !Nil.is(ctx.value) ? ctx.value : null;
 
@@ -609,7 +609,7 @@ function struct(opts, ctx) {
         config:     config,
         i18n:       i18n,
         label:      humanize(prop),
-        path:       ctx.path.concat(prop),
+        name:       ctx.name ? ctx.name + '[' + prop + ']' : prop,
         report:     new getReport(propType),
         templates:  templates,
         value:      value[prop]
@@ -728,7 +728,7 @@ function list(opts, ctx) {
       templates: templates,
       i18n: i18n,
       report: getReport(itemType),
-      path: ctx.path,
+      name: ctx.name + '[]',
       auto: auto,
       label: null,
       value: value,
@@ -968,27 +968,11 @@ var Context = struct({
   config: maybe(Obj),
   i18n: I18n,
   label: maybe(Str),
-  path: list(union([Str, t.Num])),
+  name: Str,
   report: Report,
   templates: Obj,
   value: Any
 }, 'Context');
-
-/*
-
-  Proposals:
-
-  - RFC 6901
-  JavaScript Object Notation (JSON) Pointer
-  http://tools.ietf.org/html/rfc6901
-
-  - W3C HTML JSON form submission
-  http://www.w3.org/TR/html-json-forms/
-
-*/
-Context.prototype.getDefaultName = function () {
-  return this.path.join('/');
-};
 
 Context.prototype.getDefaultLabel = function () {
   if (!this.label) { return null; }
@@ -1253,7 +1237,7 @@ var Radio = struct({
   value: maybe(Str)
 }, 'Radio');
 
-var StructValue = t.dict(Str, Value, 'StructValue');
+var StructValue = t.dict(Str, t.Any, 'StructValue');
 
 var Struct = struct({
   config: maybe(Obj),
@@ -1287,7 +1271,7 @@ var List = struct({
   help: maybe(Label),
   items: list(ListItem),
   label: maybe(Label),
-  value: maybe(list(Value))
+  value: maybe(list(t.Any))
 }, 'List');
 
 module.exports = {
