@@ -536,7 +536,7 @@ function searchFactory(opts, ctx) {
   }
 
   // handling name attribute
-  var name = opts.name || ctx.getDefaultName();
+  var name = opts.name || ctx.name;
 
   // handling value
   var value = !t.Nil.is(opts.value) ? opts.value : !t.Nil.is(ctx.value) ? ctx.value : null;
@@ -734,7 +734,7 @@ module.exports = {
 'use strict';
 
 var React = require('react');
-var Context = require('./protocols/api').Context;
+var api = require('./protocols/api');
 var config = require('./config');
 var getFactory = require('./factories').getFactory;
 var getReport = require('./util/getReport');
@@ -756,8 +756,8 @@ function create(type, opts) {
 
     render: function () {
 
-      var ctx = new Context({
-        auto: 'placeholders',
+      var ctx = new api.Context({
+        auto: api.Auto.defaultValue,
         i18n: config.i18n,
         label: null,
         name: '',
@@ -1297,12 +1297,12 @@ function list(opts, ctx) {
   var itemType = report.innerType.meta.type;
   var itemOpts = opts.item || {};
   var itemFactory = getFactory(itemType, itemOpts);
-  var getComponent = function (value) {
+  var getComponent = function (value, i) {
     return itemFactory(itemOpts, new Context({
       templates: templates,
       i18n: i18n,
       report: getReport(itemType),
-      name: ctx.name + '[]',
+      name: ctx.name + '[' + i + ']',
       auto: auto,
       label: null,
       value: value,
@@ -1520,6 +1520,7 @@ var struct = t.struct;
 var union = t.union;
 
 var Auto = t.enums.of('placeholders labels none', 'Auto');
+Auto.defaultValue = 'placeholders';
 
 // internationalization
 var I18n = struct({
@@ -1693,6 +1694,7 @@ var List = struct({
 }, 'List');
 
 module.exports = {
+  Auto: Auto,
   I18n: I18n,
   Context: Context,
   ReactElement: ReactElement,

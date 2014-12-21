@@ -21,7 +21,7 @@ function getContext(ctx) {
     templates: config.templates,
     i18n: config.i18n,
     report: getReport(ctx.type),
-    path: ['leaf'],
+    name: 'leaf',
     auto: 'placeholders',
     label: 'default label'
   }, ctx, true);
