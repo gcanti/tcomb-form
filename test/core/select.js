@@ -206,7 +206,7 @@ test('select() factory', function (tape) {
   });
 
   tape.test('value', function (tape) {
-    tape.plan(2);
+    tape.plan(3);
 
     // should receive a value from the context
     getLocals({type: Country, value: 'IT'}, {template: function (locals) {
@@ -217,6 +217,11 @@ test('select() factory', function (tape) {
     getLocals({type: Country, value: 'IT'}, {value: 'US', template: function (locals) {
       tape.deepEqual(locals.value, 'US');
     }});
+
+    getLocals({type: t.list(Country)}, {value: ['a', 'b'], template: function (locals) {
+      tape.deepEqual(locals.value, ['a', 'b']);
+    }});
+
   });
 
   tape.test('hasError', function (tape) {

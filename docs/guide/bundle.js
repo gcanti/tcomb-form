@@ -743,7 +743,9 @@ function create(type, opts) {
 
   var factory = getFactory(type, opts);
 
-  var Form = React.createClass({displayName: 'Form',
+  var Form = React.createClass({
+
+    displayName: 'Form',
 
     // the public api returns `null` if validation failed
     // unless the optional boolean argument `raw` is set to `true`
@@ -778,6 +780,7 @@ function create(type, opts) {
 }
 
 module.exports = create;
+
 },{"./config":3,"./factories":5,"./protocols/api":7,"./util/getReport":12,"react":"react"}],5:[function(require,module,exports){
 'use strict';
 
@@ -1450,10 +1453,10 @@ function list(opts, ctx) {
 //
 
 config.kinds = {
-  irriducible: function (type, opts) {
+  irreducible: function (type, opts) {
     var name = getName(type);
-    if (t.Func.is(config.irriducibles[name])) {
-      return config.irriducibles[name](opts);
+    if (t.Func.is(config.irreducibles[name])) {
+      return config.irreducibles[name](opts);
     }
     return textbox; // fallback on textbox
   },
@@ -1464,7 +1467,7 @@ config.kinds = {
   subtype:  function (type, opts) { return getFactory(type.meta.type, opts); }
 };
 
-config.irriducibles = {
+config.irreducibles = {
   Bool: function () { return checkbox; }
 };
 
@@ -1554,7 +1557,7 @@ Context.prototype.getDefaultLabel = function () {
   return this.label + (this.report.maybe ? this.i18n.optional : '');
 };
 
-var ReactElement = t.irriducible('ReactElement', React.isValidElement);
+var ReactElement = t.irreducible('ReactElement', React.isValidElement);
 
 var Label = union([Str, ReactElement], 'Label');
 
@@ -1629,6 +1632,9 @@ var Order = t.enums({
 Order.getComparator = function (order) {
   return Order.meta.map[order];
 };
+
+// handle multiple attribute
+var SelectValue = union([Str, list(Str)], 'SelectValue');
 
 var Select = struct({
   config: maybe(Obj),
@@ -1726,9 +1732,7 @@ var list = t.list;
 var struct = t.struct;
 var union = t.union;
 
-var ReactElement = t.irriducible('ReactElement', React.isValidElement);
-
-var Value = union([t.Nil, Str, Bool], 'Value');
+var ReactElement = t.irreducible('ReactElement', React.isValidElement);
 
 var Label = union([Str, ReactElement], 'Label');
 
@@ -1765,7 +1769,7 @@ var Textbox = struct({
   onChange: Func,           // should call this function with the changed value
   placeholder: maybe(Str),  // should show a placeholder
   type: TypeAttr,           // should use this as type attribute
-  value: maybe(Str)                // should use this as value attribute
+  value: maybe(Str)         // should use this as value attribute
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -2549,9 +2553,9 @@ module.exports = cx;
 
   var validators = {};
 
-  // irriducibles and enums
-  validators.irriducible =
-  validators.enums = function validateIrriducible(x, type, path) {
+  // irreducibles and enums
+  validators.irreducible =
+  validators.enums = function validateirreducible(x, type, path) {
     return {
       value: x,
       errors: type.is(x) ? [] : [ValidationError.of(x, type, path)]
@@ -2756,7 +2760,7 @@ module.exports = cx;
     for (var k in source) {
       if (source.hasOwnProperty(k)) {
         if (overwrite !== true) {
-          assert(!target.hasOwnProperty(k), 'cannot overwrite property %s', k);
+          assert(!target.hasOwnProperty(k), 'Cannot overwrite property %s', k);
         }
         target[k] = source[k];
       }
@@ -2804,17 +2808,22 @@ module.exports = cx;
   };
 
   function getName(type) {
-    assert(Type.is(type), 'Invalid argument `type` of value `%j` supplied to `getName()`, expected a type.', type);
+    assert(Type.is(type), 'Invalid argument `type` = `%s` supplied to `getName()`', type);
     return type.meta.name;
   }
 
+  function getFunctionName(f) {
+    assert(typeof f === 'function', 'Invalid argument `f` = `%s` supplied to `getFunctionName()`', f);
+    return f.displayName || f.name || format('<function%s>', f.length);
+  }
+
   function getKind(type) {
-    assert(Type.is(type), 'Invalid argument `type` of value `%j` supplied to `geKind()`, expected a type.', type);
+    assert(Type.is(type), 'Invalid argument `type` = `%s` supplied to `geKind()`', type);
     return type.meta.kind;
   }
 
   function blockNew(x, type) {
-    assert(!(x instanceof type), 'Operator `new` is forbidden for `%s`', getName(type));
+    assert(!(x instanceof type), 'Operator `new` is forbidden for type `%s`', getName(type));
   }
 
   function shallowCopy(x) {
@@ -2887,86 +2896,86 @@ module.exports = cx;
   };
 
   //
-  // irriducibles
+  // irreducibles
   //
 
-  function irriducible(name, is) {
+  function irreducible(name, is) {
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a string
-    assert(typeof name === 'string', 'Invalid argument `name` supplied to `irriducible()`');
+    assert(typeof name === 'string', 'Invalid argument `name` = `%s` supplied to `irreducible()`', name);
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a function
-    assert(typeof is === 'function', 'Invalid argument `is` supplied to `irriducible()`');
+    assert(typeof is === 'function', 'Invalid argument `is` = `%s` supplied to `irreducible()`', is);
 
-    function Irriducible(value) {
+    function Irreducible(value) {
 
       // DEBUG HINT: if the debugger stops here, you have used the `new` operator but it's forbidden
-      blockNew(this, Irriducible);
+      blockNew(this, Irreducible);
 
       // DEBUG HINT: if the debugger stops here, the first argument is invalid
       // mouse over the `value` variable to see what's wrong. In `name` there is the name of the type
-      assert(is(value), 'Invalid `%s` supplied to `%s`', value, name);
+      assert(is(value), 'Invalid argument `value` = `%s` supplied to irreducible type `%s`', value, name);
 
       return value;
     }
 
-    Irriducible.meta = {
-      kind: 'irriducible',
+    Irreducible.meta = {
+      kind: 'irreducible',
       name: name
     };
 
-    Irriducible.displayName = name;
+    Irreducible.displayName = name;
 
-    Irriducible.is = is;
+    Irreducible.is = is;
 
-    return Irriducible;
+    return Irreducible;
   }
 
-  var Any = irriducible('Any', function isAny() {
+  var Any = irreducible('Any', function isAny() {
     return true;
   });
 
-  var Nil = irriducible('Nil', function isNil(x) {
+  var Nil = irreducible('Nil', function isNil(x) {
     return x === null || x === void 0;
   });
 
-  var Str = irriducible('Str', function isStr(x) {
+  var Str = irreducible('Str', function isStr(x) {
     return typeof x === 'string';
   });
 
-  var Num = irriducible('Num', function isNum(x) {
+  var Num = irreducible('Num', function isNum(x) {
     return typeof x === 'number' && isFinite(x) && !isNaN(x);
   });
 
-  var Bool = irriducible('Bool', function isBool(x) {
+  var Bool = irreducible('Bool', function isBool(x) {
     return x === true || x === false;
   });
 
-  var Arr = irriducible('Arr', function isArr(x) {
+  var Arr = irreducible('Arr', function isArr(x) {
     return x instanceof Array;
   });
 
-  var Obj = irriducible('Obj', function isObj(x) {
+  var Obj = irreducible('Obj', function isObj(x) {
     return !Nil.is(x) && typeof x === 'object' && !Arr.is(x);
   });
 
-  var Func = irriducible('Func', function isFunc(x) {
+  var Func = irreducible('Func', function isFunc(x) {
     return typeof x === 'function';
   });
 
-  var Err = irriducible('Err', function isErr(x) {
+  var Err = irreducible('Err', function isErr(x) {
     return x instanceof Error;
   });
 
-  var Re = irriducible('Re', function isRe(x) {
+  var Re = irreducible('Re', function isRe(x) {
     return x instanceof RegExp;
   });
 
-  var Dat = irriducible('Dat', function isDat(x) {
+  var Dat = irreducible('Dat', function isDat(x) {
     return x instanceof Date;
   });
 
-  var Type = irriducible('Type', function isType(x) {
+  var Type = irreducible('Type', function isType(x) {
     return Func.is(x) && Obj.is(x.meta);
   });
 
@@ -2974,14 +2983,16 @@ module.exports = cx;
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a dict of types
     // mouse over the `props` variable to see what's wrong
-    assert(dict(Str, Type).is(props), 'Invalid argument `props` supplied to `struct()`');
+    assert(dict(Str, Type).is(props), 'Invalid argument `props` = `%s` supplied to `struct` combinator', props);
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a string
     // mouse over the `name` variable to see what's wrong
-    assert(maybe(Str).is(name), 'Invalid argument `name` supplied to `struct()`');
+    assert(maybe(Str).is(name), 'Invalid argument `name` = `%s` supplied to `struct` combinator', name);
 
     // DEBUG HINT: always give a name to a type, the debug will be easier
-    name = name || 'struct';
+    name = name || format('{%s}', Object.keys(props).map(function (prop) {
+      return format('%s: %s', prop, getName(props[prop]));
+    }).join(', '));
 
     function Struct(value, mut) {
 
@@ -2992,7 +3003,7 @@ module.exports = cx;
 
       // DEBUG HINT: if the debugger stops here, the first argument is invalid
       // mouse over the `value` variable to see what's wrong. In `name` there is the name of the type
-      assert(Obj.is(value), 'Invalid `%s` supplied to `%s`, expected an `Obj`', value, name);
+      assert(Obj.is(value), 'Invalid argument `value` = `%s` supplied to struct type `%s`', value, name);
 
       // makes `new` optional
       if (!(this instanceof Struct)) {
@@ -3042,18 +3053,19 @@ module.exports = cx;
   function union(types, name) {
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a list of types
-    assert(list(Type).is(types), 'Invalid argument `types` supplied to `union()`');
+    assert(list(Type).is(types), 'Invalid argument `types` = `%s` supplied to `union` combinator', types);
 
     var len = types.length;
+    var defaultName = types.map(getName).join(' | ');
 
     // DEBUG HINT: if the debugger stops here, there are too few types (they must be at least two)
-    assert(len >= 2, 'Invalid argument `types` supplied to `union()`');
+    assert(len >= 2, 'Invalid argument `types` = `%s` supplied to `union` combinator, provide at least two types', defaultName);
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a string
     // mouse over the `name` variable to see what's wrong
-    assert(maybe(Str).is(name), 'Invalid argument `name` supplied to `union()`');
+    assert(maybe(Str).is(name), 'Invalid argument `name` = `%s` supplied to `union` combinator', name);
 
-    name = name || format('union([%s])', types.map(getName).join(', '));
+    name = name || defaultName;
 
     function Union(value, mut) {
 
@@ -3061,12 +3073,12 @@ module.exports = cx;
       blockNew(this, Union);
 
       // DEBUG HINT: if the debugger stops here, you must implement the `dispatch` static method for this type
-      assert(Func.is(Union.dispatch), 'unimplemented %s.dispatch()', name);
+      assert(Func.is(Union.dispatch), 'Unimplemented `dispatch()` function for union type `%s`', name);
 
       var type = Union.dispatch(value);
 
       // DEBUG HINT: if the debugger stops here, the `dispatch` static method returns no type
-      assert(Type.is(type), '%s.dispatch() returns no type', name);
+      assert(Type.is(type), 'The `dispatch()` function of union type `%s` returns no type constructor', name);
 
       // DEBUG HINT: if the debugger stops here, `value` can't be converted to `type`
       // mouse over the `value` and `type` variables to see what's wrong
@@ -3102,18 +3114,18 @@ module.exports = cx;
   function maybe(type, name) {
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a type
-    assert(Type.is(type), 'Invalid argument `type` supplied to `maybe()`');
+    assert(Type.is(type), 'Invalid argument `type` = `%s` supplied to `maybe` combinator', type);
 
-    // makes the combinator idempotent
-    if (getKind(type) === 'maybe') {
+    // makes the combinator idempotent and handle Any, Nil
+    if (getKind(type) === 'maybe' || type === Any || type === Nil) {
       return type;
     }
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a string
     // mouse over the `name` variable to see what's wrong
-    assert(Nil.is(name) || Str.is(name), 'Invalid argument `name` supplied to `maybe()`');
+    assert(Nil.is(name) || Str.is(name), 'Invalid argument `name` = `%s` supplied to `maybe` combinator', name);
 
-    name = name || format('maybe(%s)', getName(type));
+    name = name || ('?' + getName(type));
 
     function Maybe(value, mut) {
 
@@ -3144,16 +3156,16 @@ module.exports = cx;
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a hash
     // mouse over the `map` variable to see what's wrong
-    assert(Obj.is(map), 'Invalid argument `map` supplied to `enums()`');
+    assert(Obj.is(map), 'Invalid argument `map` = `%s` supplied to `enums` combinator', map);
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a string
     // mouse over the `name` variable to see what's wrong
-    assert(maybe(Str).is(name), 'Invalid argument `name` supplied to `enums()`');
-
-    name = name || 'enums';
+    assert(maybe(Str).is(name), 'Invalid argument `name` = `%s` supplied to `enums` combinator', name);
 
     // cache enums
     var keys = Object.keys(map);
+
+    name = name || keys.map(function (k) { return JSON.stringify(k); }).join(' | ');
 
     function Enums(value) {
 
@@ -3162,7 +3174,7 @@ module.exports = cx;
 
       // DEBUG HINT: if the debugger stops here, the value is not one of the defined enums
       // mouse over the `value`, `name` and `keys` variables to see what's wrong
-      assert(Enums.is(value), 'Invalid `%s` supplied to `%s`, expected one of %j', value, name, keys);
+      assert(Enums.is(value), 'Invalid argument `value` = `%s` supplied to enums type `%s`, expected one of %j', value, name, keys);
 
       return value;
     }
@@ -3194,21 +3206,21 @@ module.exports = cx;
   function tuple(types, name) {
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a list of types
-    assert(list(Type).is(types), 'Invalid argument `types` supplied to `tuple()`');
+    assert(list(Type).is(types), 'Invalid argument `types` = `%s` supplied to `tuple` combinator', types);
 
     var len = types.length;
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a string
     // mouse over the `name` variable to see what's wrong
-    assert(maybe(Str).is(name), 'Invalid argument `name` supplied to `tuple()`');
+    assert(maybe(Str).is(name), 'Invalid argument `name` = `%s` supplied to `tuple` combinator', name);
 
-    name = name || format('tuple([%s])', types.map(getName).join(', '));
+    name = name || format('[%s]', types.map(getName).join(', '));
 
     function Tuple(value, mut) {
 
       // DEBUG HINT: if the debugger stops here, the value is not one of the defined enums
       // mouse over the `value`, `name` and `len` variables to see what's wrong
-      assert(Arr.is(value) && value.length === len, 'Invalid `%s` supplied to `%s`, expected an `Arr` of length `%s`', value, name, len);
+      assert(Arr.is(value) && value.length === len, 'Invalid argument `value` = `%s` supplied to tuple type `%s`, expected an `Arr` of length `%s`', value, name, len);
 
       var frozen = (mut !== true);
 
@@ -3261,20 +3273,17 @@ module.exports = cx;
   function subtype(type, predicate, name) {
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a type
-    assert(Type.is(type), 'Invalid argument `type` supplied to `subtype()`');
+    assert(Type.is(type), 'Invalid argument `type` = `%s` supplied to `subtype` combinator', type);
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a function
-    assert(Func.is(predicate), 'Invalid argument `predicate` supplied to `subtype()`');
+    assert(Func.is(predicate), 'Invalid argument `predicate` = `%s` supplied to `subtype` combinator', predicate);
 
     // DEBUG HINT: if the debugger stops here, the third argument is not a string
     // mouse over the `name` variable to see what's wrong
-    assert(maybe(Str).is(name), 'Invalid argument `name` supplied to `subtype()`');
+    assert(maybe(Str).is(name), 'Invalid argument `name` = `%s` supplied to `subtype` combinator', name);
 
     // DEBUG HINT: always give a name to a type, the debug will be easier
-    name = name || format('subtype(%s)', getName(type));
-
-    // cache expected value
-    var expected = predicate.__doc__ || format('insert a valid value for %s', predicate.name || 'the subtype');
+    name = name || format('{%s | %s}', getName(type), getFunctionName(predicate));
 
     function Subtype(value, mut) {
 
@@ -3286,7 +3295,7 @@ module.exports = cx;
 
       // DEBUG HINT: if the debugger stops here, the value is converted to the base type
       // but the predicate returns `false`
-      assert(predicate(x), 'Invalid `%s` supplied to `%s`, %s', value, name, expected);
+      assert(predicate(x), 'Invalid argument `value` = `%s` supplied to subtype type `%s`', value, name);
       return x;
     }
 
@@ -3313,14 +3322,14 @@ module.exports = cx;
   function list(type, name) {
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a type
-    assert(Type.is(type), 'Invalid argument `type` supplied to `list()`');
+    assert(Type.is(type), 'Invalid argument `type` = `%s` supplied to `list` combinator', type);
 
     // DEBUG HINT: if the debugger stops here, the third argument is not a string
     // mouse over the `name` variable to see what's wrong
-    assert(maybe(Str).is(name), 'Invalid argument `name` supplied to `list()`');
+    assert(maybe(Str).is(name), 'Invalid argument `name` = `%s` supplied to `list` combinator', name);
 
     // DEBUG HINT: always give a name to a type, the debug will be easier
-    name = name || format('list(%s)', getName(type));
+    name = name || format('Array<%s>', getName(type));
 
     function List(value, mut) {
 
@@ -3328,7 +3337,7 @@ module.exports = cx;
 
       // DEBUG HINT: if the debugger stops here, the value is not one of the defined enums
       // mouse over the `value` and `name` variables to see what's wrong
-      assert(Arr.is(value), 'Invalid `%s` supplied to `%s`, expected an `Arr`', value, name);
+      assert(Arr.is(value), 'Invalid argument `value` = `%s` supplied to list type `%s`', value, name);
 
       var frozen = (mut !== true);
 
@@ -3377,23 +3386,23 @@ module.exports = cx;
   function dict(domain, codomain, name) {
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a type
-    assert(Type.is(domain), 'Invalid argument `domain` supplied to `dict()`');
+    assert(Type.is(domain), 'Invalid argument `domain` = `%s` supplied to `dict` combinator', domain);
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a type
-    assert(Type.is(codomain), 'Invalid argument `codomain` supplied to `dict()`');
+    assert(Type.is(codomain), 'Invalid argument `codomain` = `%s` supplied to `dict` combinator', codomain);
 
     // DEBUG HINT: if the debugger stops here, the third argument is not a string
     // mouse over the `name` variable to see what's wrong
-    assert(maybe(Str).is(name), 'Invalid argument `name` supplied to `dict()`');
+    assert(maybe(Str).is(name), 'Invalid argument `name` = `%s` supplied to `dict` combinator', name);
 
     // DEBUG HINT: always give a name to a type, the debug will be easier
-    name = name || format('dict(%s, %s)', getName(domain), getName(codomain));
+    name = name || format('{[key:%s]: %s}', getName(domain), getName(codomain));
 
     function Dict(value, mut) {
 
       // DEBUG HINT: if the debugger stops here, the value is not an object
       // mouse over the `value` and `name` variables to see what's wrong
-      assert(Obj.is(value), 'Invalid `%s` supplied to `%s`, expected an `Obj`', value, name);
+      assert(Obj.is(value), 'Invalid argument `value` = `%s` supplied to dict type `%s`', value, name);
 
       var frozen = (mut !== true);
 
@@ -3457,13 +3466,17 @@ module.exports = cx;
     domain = Arr.is(domain) ? domain : [domain];
 
     // DEBUG HINT: if the debugger stops here, the first argument is not a list of types
-    assert(list(Type).is(domain), 'Invalid argument `domain` supplied to `func()`');
+    assert(list(Type).is(domain), 'Invalid argument `domain` = `%s` supplied to `func` combinator', domain);
 
     // DEBUG HINT: if the debugger stops here, the second argument is not a type
-    assert(Type.is(codomain), 'Invalid argument `codomain` supplied to `func()`');
+    assert(Type.is(codomain), 'Invalid argument `codomain` = `%s` supplied to `func` combinator', codomain);
+
+    // DEBUG HINT: if the debugger stops here, the third argument is not a string
+    // mouse over the `name` variable to see what's wrong
+    assert(maybe(Str).is(name), 'Invalid argument `name` = `%s` supplied to `func` combinator', name);
 
     // DEBUG HINT: always give a name to a type, the debug will be easier
-    name = name || format('func([%s], %s)', domain.map(getName).join(', '), getName(codomain));
+    name = name || format('(%s) -> %s', domain.map(getName).join(', '), getName(codomain));
 
     // cache the domain length
     var domainLen = domain.length;
@@ -3477,7 +3490,7 @@ module.exports = cx;
 
       // DEBUG HINT: if the debugger stops here, the first argument is invalid
       // mouse over the `value` and `name` variables to see what's wrong
-      assert(Func.is(value), 'Invalid `%s` supplied to `%s`', value, name);
+      assert(Func.is(value), 'Invalid argument `value` = `%s` supplied to func type `%s`', value, name);
 
       return value;
     }
@@ -3565,6 +3578,7 @@ module.exports = cx;
       mixin: mixin,
       format: format,
       getName: getName,
+      getFunctionName: getFunctionName,
       getKind: getKind,
       slice: slice,
       shallowCopy: shallowCopy,
@@ -3588,7 +3602,7 @@ module.exports = cx;
     Dat: Dat,
     Type: Type,
 
-    irriducible: irriducible,
+    irreducible: irreducible,
     struct: struct,
     enums: enums,
     union: union,
