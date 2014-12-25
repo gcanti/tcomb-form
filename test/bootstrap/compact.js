@@ -15,7 +15,7 @@ function compact(x) {
     var y;
     for (var k in x) {
       if (x.hasOwnProperty(k)) {
-        if (!t.Nil.is(x[k])) {
+        if (!t.Nil.is(x[k]) && k !== 'events') {
           y = compact(x[k]);
           if (!t.Nil.is(y)) {
             ret[k] = y;

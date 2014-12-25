@@ -434,7 +434,9 @@ function search(locals) {
         className="form-control"
         name={locals.name}
         placeholder={locals.placeholder}
-        onChange={locals.onChange}
+        onChange={function (evt) {
+          locals.onChange(evt.target.value);
+        }}
         style={style}
         type={locals.type}
         value={locals.value}/>
@@ -553,13 +555,12 @@ function searchFactory(opts, ctx) {
       };
     },
 
-    onChange: function (evt) {
-      var value = evt.target.value || null;
+    onChange: function (value) {
 
-      // handling transformation
+      // parsing
       value = listTransformer.parse(value);
 
-      // notify the parent components that there is a change
+      // notify change to parent
       if (this.props.onChange) {
         this.props.onChange(value);
       }
@@ -583,7 +584,7 @@ function searchFactory(opts, ctx) {
 
     render: function () {
 
-      // handling transformation
+      // formatting
       var value = listTransformer.format(this.state.value);
 
       // handling errors

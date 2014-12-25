@@ -23,6 +23,7 @@ test('bootstrap radio()', function (tape) {
   var equal = function (tape, locals, expected, showDiff) {
     locals = mixin(mixin({}, base), locals, true);
     locals = new theme.Radio(locals);
+    expected = compact(expected);
     var actual = compact(bootstrap.radio(locals));
     if (showDiff) {
       console.dir(diff(actual, expected));

@@ -21,6 +21,7 @@ test('bootstrap checkbox()', function (tape) {
   var equal = function (tape, locals, expected, showDiff) {
     locals = mixin(mixin({}, base), locals, true);
     locals = new theme.Checkbox(locals);
+    expected = compact(expected);
     var actual = compact(bootstrap.checkbox(locals));
     if (showDiff) {
       console.dir(diff(actual, expected));

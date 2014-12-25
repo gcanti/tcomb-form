@@ -18,6 +18,7 @@ test('bootstrap struct()', function (tape) {
   var equal = function (tape, locals, expected, showDiff) {
     locals = mixin(mixin({}, base), locals, true);
     locals = new theme.Struct(locals);
+    expected = compact(expected);
     var actual = compact(bootstrap.struct(locals));
     if (showDiff) {
       console.dir(diff(actual, expected));

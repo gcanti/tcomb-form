@@ -24,6 +24,7 @@ test('bootstrap select()', function (tape) {
   var equal = function (tape, locals, expected, showDiff) {
     locals = mixin(mixin({}, base), locals, true);
     locals = new theme.Select(locals);
+    expected = compact(expected);
     var actual = compact(bootstrap.select(locals));
     if (showDiff) {
       console.dir(diff(actual, expected));

@@ -305,7 +305,7 @@ test('select() factory', function (tape) {
 if (typeof window !== 'undefined') {
 
   test('select getValue()', function (tape) {
-    tape.plan(16);
+    tape.plan(20);
 
     getResult({type: Country}, {}, function (result) {
       tape.deepEqual(result.isValid(), false);
@@ -339,7 +339,13 @@ if (typeof window !== 'undefined') {
       tape.deepEqual(locals.value, 'IT');
     });
 
-    // FIXME test multiple
+    getResult({type: t.list(Country)}, {value: ['IT', 'US']}, function (result) {
+      tape.deepEqual(result.isValid(), true);
+      tape.deepEqual(result.value, ['IT', 'US']);
+    }, function (locals) {
+      tape.deepEqual(locals.hasError, false);
+      tape.deepEqual(locals.value, ['IT', 'US']);
+    });
 
   });
 

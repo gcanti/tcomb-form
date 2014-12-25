@@ -206,7 +206,6 @@ var api = require('./protocols/api');
 var theme = require('./protocols/theme');
 var config = require('./config');
 var compile = require('uvdom/react').compile;
-
 var getError = require('./util/getError');
 var getOptionsOfEnum = require('./util/getOptionsOfEnum');
 var getReport = require('./util/getReport');
@@ -229,7 +228,7 @@ function getFactory(type, opts) {
 
   // [extension point]
   if (opts.factory) {
-    assert(t.Func.is(opts.factory), 'invalid `factory` option, must be a function with signature (opts, [ctx]) -> React Class');
+    assert(t.Func.is(opts.factory), 'invalid `factory` option, must be a function with signature (opts: Obj, ctx: ?Context) -> ReactClass');
     return opts.factory;
   }
 
@@ -280,8 +279,7 @@ function textbox(opts, ctx) {
       };
     },
 
-    onChange: function (evt) {
-      var value = evt.target.value;
+    onChange: function (value) {
       if (transformer) {
         value = transformer.parse(value);
       }
@@ -356,8 +354,7 @@ function checkbox(opts, ctx) {
       };
     },
 
-    onChange: function (evt) {
-      var value = evt.target.checked;
+    onChange: function (value) {
       if (this.props.onChange) {
         this.props.onChange(value);
       }
@@ -442,25 +439,10 @@ function select(opts, ctx) {
       };
     },
 
-    onChange: function (evt) {
-
-      var value;
-
-      if (multiple) {
-        value = [];
-        var options = evt.target.options;
-        for (var i = 0, len = options.length; i < len ; i++ ) {
-          if (options[i].selected) {
-            value.push(options[i].value);
-          }
-        }
-      } else {
-        value = evt.target.value;
-        if (value === nullOption.value) {
-          value = null;
-        }
+    onChange: function (value) {
+      if (value === nullOption.value) {
+        value = null;
       }
-
       if (this.props.onChange) {
         this.props.onChange(value);
       }
@@ -530,8 +512,7 @@ function radio(opts, ctx) {
       };
     },
 
-    onChange: function (evt) {
-      var value = evt.target.value;
+    onChange: function (value) {
       if (this.props.onChange) {
         this.props.onChange(value);
       }
@@ -1065,7 +1046,7 @@ var Select = struct({
   options: maybe(list(SelectOption)),
   order: maybe(Order),
   template: maybe(Func),
-  value: maybe(Str)
+  value: maybe(SelectValue)
 }, 'Select');
 
 var Radio = struct({
@@ -1417,7 +1398,9 @@ function getHiddenTextbox(locals) {
       name: locals.name
     },
     events: {
-      change: locals.onChange
+      change: function (evt) {
+        locals.onChange(evt.target.value)
+      }
     }
   };
 }
@@ -1436,7 +1419,9 @@ function textbox(locals) {
     disabled: locals.disabled,
     'aria-describedby': locals.help ? locals.id + '-tip' : null,
     id: locals.label ? locals.id : null,
-    onChange: locals.onChange,
+    onChange: function (evt) {
+      locals.onChange(evt.target.value)
+    },
     placeholder: locals.placeholder,
     name: locals.name,
     size: config.size
@@ -1499,7 +1484,9 @@ function checkbox(locals) {
     id: locals.id,
     label: locals.label,
     name: locals.name,
-    onChange: locals.onChange
+    onChange: function (evt) {
+      locals.onChange(evt.target.checked);
+    }
   });
 
   var error = getError(locals);
@@ -1534,13 +1521,24 @@ function select(locals) {
     return theme.Option.is(x) ? uform.getOption(x) : uform.getOptGroup(x);
   });
 
+  function onChange(evt) {
+    var value = locals.multiple ?
+      evt.target.options.filter(function (option) {
+        return option.selected;
+      }).map(function (option) {
+        return option.value;
+      }) :
+      evt.target.value;
+    locals.onChange(value);
+  }
+
   var control = uform.getSelect({
     value: locals.value,
     disabled: locals.disabled,
     'aria-describedby': locals.help ? locals.id + '-tip' : null,
     id: locals.label ? locals.id : null,
     name: locals.name,
-    onChange: locals.onChange,
+    onChange: onChange,
     options: options,
     size: config.size,
     multiple: locals.multiple
@@ -1596,7 +1594,9 @@ function radio(locals) {
       disabled: option.disabled || locals.disabled,
       label: option.text,
       name: locals.name,
-      onChange: locals.onChange,
+      onChange: function (evt) {
+        locals.onChange(evt.target.value)
+      },
       value: option.value
     });
   });
@@ -1754,7 +1754,9 @@ function getHiddenTextbox(locals) {
       name: locals.name
     },
     events: {
-      change: locals.onChange
+      change: function (evt) {
+        locals.onChange(evt.target.value)
+      }
     }
   };
 }
@@ -1827,7 +1829,9 @@ function textbox(locals) {
     tag: (type === 'textarea') ? 'textarea' : 'input',
     attrs: attrs,
     events: {
-      change: locals.onChange
+      change: function (evt) {
+        locals.onChange(evt.target.value)
+      }
     }
   };
 
@@ -1850,6 +1854,17 @@ function select(locals) {
     return theme.Option.is(x) ? getOption(x) : getOptGroup(x);
   });
 
+  function onChange(evt) {
+    var value = locals.multiple ?
+      evt.target.options.filter(function (option) {
+        return option.selected;
+      }).map(function (option) {
+        return option.value;
+      }) :
+      evt.target.value;
+    locals.onChange(value);
+  }
+
   var control = {
     tag: 'select',
     attrs: {
@@ -1860,7 +1875,7 @@ function select(locals) {
     },
     children: options,
     events: {
-      change: locals.onChange
+      change: onChange
     }
   };
 

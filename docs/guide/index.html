@@ -903,7 +903,9 @@ function search(locals) {
         className="form-control"
         name={locals.name}
         placeholder={locals.placeholder}
-        onChange={locals.onChange}
+        onChange={function (evt) {
+          locals.onChange(evt.target.value);
+        }}
         style={{'borderRadius': '20px'}}
         type={locals.type}
         value={locals.value} /&gt;
@@ -940,7 +942,7 @@ var Form = t.form.create(Search, {
 
           <a name="templates-extra-options"><h2>Templates extra options</h2></a>
 
-          <p>Sometimes you need extra options besides those provided by tcomb-form. For example you may want to pass additional values to the search textbox defined above, say a background color and a foreground color. That's the job of the <code>config</code> object in the Textbox recipe: tcomb-form assure you to pass the object from the api call to your template:</p>
+          <p>Sometimes you need extra options besides those provided by tcomb-form. You may want to pass additional values to the search textbox defined above, say a background color and a foreground color. That's a duty for the <code>config</code> object in the Textbox recipe: tcomb-form assure you to pass the object from the api call to your template:</p>
 
           <pre><code>
 var Search = t.struct({
@@ -979,8 +981,8 @@ function search(locals) {
 
   // config contains your new params
   <b>var config = locals.config || {};
-  var style = {
-    borderRadius: '20px',
+  var style = {</b>
+    borderRadius: '20px',<b>
     color: config.color,
     backgroundColor: config.backgroundColor
   };</b>
@@ -996,7 +998,9 @@ function search(locals) {
         className="form-control"
         name={locals.name}
         placeholder={locals.placeholder}
-        onChange={locals.onChange}
+        onChange={function (evt) {
+          locals.onChange(evt.target.value);
+        }}
         <b>style={style}</b>
         type={locals.type}
         value={locals.value} /&gt;
@@ -1054,7 +1058,7 @@ var Form = t.form.create(Search, {
 });
           </code></pre>
 
-          <p>The problem is that a textbox handle only strings, we need a way to transform a list in a string and a string in a list: a <code>Transformer</code> deals with serialization / deserialization of data and has the following interface:</p>
+          <p>There is a problem though: a textbox handle only strings so we need a way to transform a list in a string and a string in a list: a <code>Transformer</code> deals with serialization / deserialization of data and has the following interface:</p>
 
           <pre><code>
 var Transformer = struct({
@@ -1117,20 +1121,14 @@ function searchFactory(opts, ctx) {
   opts = opts || {};
 
   // label
-  var label = opts.label;
-  if (!label && ctx.auto === 'labels') {
-    // if labels are auto generated, get the default label
-    label = ctx.getDefaultLabel();
-  }
+  var label = !Nil.is(opts.label) ? opts.label :
+    ctx.auto === 'labels' ? ctx.getDefaultLabel() :
+    null;
 
   // placeholder
   var placeholder = null;
-
   if (!label && ctx.auto !== 'none') {
-    // labels have higher priority
-    placeholder = !t.Nil.is(opts.placeholder) ?
-      opts.placeholder :
-      ctx.getDefaultLabel();
+    placeholder = !Nil.is(opts.placeholder) ? opts.placeholder : ctx.getDefaultLabel();
   }
 
   // name attribute
@@ -1138,7 +1136,7 @@ function searchFactory(opts, ctx) {
 
   // value
   var value = !t.Nil.is(opts.value) ?
-    opts.value : !t.Nil.is(ctx.value) ? // the value could come from the context
+    opts.value : !t.Nil.is(ctx.value) ? // the value could be in the context
     ctx.value : null;
 
   //
@@ -1147,6 +1145,8 @@ function searchFactory(opts, ctx) {
 
   return React.createClass({
 
+    displayName: 'Search',
+
     getInitialState: function () {
       return {
         hasError: !!opts.hasError,
@@ -1154,13 +1154,12 @@ function searchFactory(opts, ctx) {
       };
     },
 
-    onChange: function (evt) {
-      var value = evt.target.value || null;
+    onChange: function (value) {
 
-      // transformation
+      // parsing
       value = listTransformer.parse(value);
 
-      // notify the parent components that there is a change
+      // notify change to parent
       if (this.props.onChange) {
         this.props.onChange(value);
       }
@@ -1171,7 +1170,9 @@ function searchFactory(opts, ctx) {
 
     getValue: function () {
 
-      // ctx.report.type contains the type specified in the api call
+      // ctx.report.type contains the type specified in the api call.
+      // `t.validate` returns an instance of `ValidationResult`
+      // see tcomb-validation documentation for details.
       var result = t.validate(this.state.value, ctx.report.type);
       this.setState({
         hasError: !result.isValid(),
@@ -1184,7 +1185,7 @@ function searchFactory(opts, ctx) {
 
     render: function () {
 
-      // transformation
+      // formatting
       var value = listTransformer.format(this.state.value);
 
       // error

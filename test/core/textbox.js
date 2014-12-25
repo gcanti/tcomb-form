@@ -360,6 +360,8 @@ if (typeof window !== 'undefined') {
       tape.deepEqual(locals.value, null);
     });
 
+    // FIXME test hidden textbox
+
   });
 
 }
