@@ -18,10 +18,10 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
-    "uvdom": "^0.1.0",
-    "uvdom-bootstrap": "^0.1.0",
+    "react": "^0.12.0",
     "tcomb-validation": "^0.3.0",
-    "react": "^0.12.0"
+    "uvdom": "^0.1.0",
+    "uvdom-bootstrap": "^0.1.1"
   },
   "devDependencies": {
     "browserify": "^6.3.2",

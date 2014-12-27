@@ -1476,7 +1476,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/getError":10,"./util/getOptionsOfEnum":11,"./util/getReport":12,"./util/humanize":13,"./util/merge":14,"./util/move":15,"./util/uuid":16,"react":"react","tcomb-validation":18,"uvdom/react":43}],6:[function(require,module,exports){
+},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/getError":10,"./util/getOptionsOfEnum":11,"./util/getReport":12,"./util/humanize":13,"./util/merge":14,"./util/move":15,"./util/uuid":16,"react":"react","tcomb-validation":18,"uvdom/react":44}],6:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -2552,11 +2552,11 @@ module.exports = cx;
     return validators[kind](x, type, path);
   }
 
-  var validators = {};
+  var validators = validate.validators = {};
 
   // irreducibles and enums
   validators.irreducible =
-  validators.enums = function validateirreducible(x, type, path) {
+  validators.enums = function validateIrreducible(x, type, path) {
     return {
       value: x,
       errors: type.is(x) ? [] : [ValidationError.of(x, type, path)]
@@ -3042,10 +3042,14 @@ module.exports = cx;
       return new Struct(update(instance, spec, value));
     };
 
-    Struct.extend = function extendStruct(newProps, name) {
-      var newStruct = struct([props].concat(newProps).reduce(mixin, {}), name);
-      mixin(newStruct.prototype, Struct.prototype); // prototypal inheritance
-      return newStruct;
+    Struct.extend = function extendStruct(arr, name) {
+      arr = [].concat(arr).map(function (x) {
+        return Obj.is(x) ? x : x.meta.props;
+      });
+      arr.unshift(props);
+      var ret = struct(arr.reduce(mixin, {}), name);
+      mixin(ret.prototype, Struct.prototype); // prototypal inheritance
+      return ret;
     };
 
     return Struct;
@@ -3576,11 +3580,11 @@ module.exports = cx;
   return {
 
     util: {
-      mixin: mixin,
       format: format,
-      getName: getName,
-      getFunctionName: getFunctionName,
       getKind: getKind,
+      getFunctionName: getFunctionName,
+      getName: getName,
+      mixin: mixin,
       slice: slice,
       shallowCopy: shallowCopy,
       update: update
@@ -4275,6 +4279,8 @@ function mixin(a, b) {
 
 module.exports = mixin;
 },{}],43:[function(require,module,exports){
+module.exports=require(17)
+},{"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/cx.js":17}],44:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -4343,4 +4349,4 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"react":"react","react/lib/cx":17}]},{},[1]);
+},{"react":"react","react/lib/cx":43}]},{},[1]);

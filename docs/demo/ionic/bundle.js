@@ -815,7 +815,7 @@ module.exports = {
   list:       list
 };
 
-},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":19,"uvdom/react":44}],6:[function(require,module,exports){
+},{"./config":3,"./protocols/api":7,"./protocols/theme":8,"./util/getError":11,"./util/getOptionsOfEnum":12,"./util/getReport":13,"./util/humanize":14,"./util/merge":15,"./util/move":16,"./util/uuid":17,"react":"react","tcomb-validation":18,"uvdom/react":44}],6:[function(require,module,exports){
 var t = require('tcomb-validation');
 var create = require('./create');
 var config = require('./config');
@@ -827,7 +827,7 @@ t.form = t.util.mixin({
 }, factories);
 
 module.exports = t;
-},{"./config":3,"./create":4,"./factories":5,"tcomb-validation":19}],7:[function(require,module,exports){
+},{"./config":3,"./create":4,"./factories":5,"tcomb-validation":18}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1039,7 +1039,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":19}],8:[function(require,module,exports){
+},{"react":"react","tcomb-validation":18}],8:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1186,7 +1186,7 @@ module.exports = {
   Struct: Struct,
   List: List
 };
-},{"react":"react","tcomb-validation":19}],9:[function(require,module,exports){
+},{"react":"react","tcomb-validation":18}],9:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1660,7 +1660,7 @@ module.exports = {
   struct: struct,
   list: list
 };
-},{"../protocols/theme":8,"tcomb-validation":19,"uvdom-bootstrap/form":21}],10:[function(require,module,exports){
+},{"../protocols/theme":8,"tcomb-validation":18,"uvdom-bootstrap/form":20}],10:[function(require,module,exports){
 'use strict';
 
 //==================
@@ -1766,7 +1766,7 @@ function getError(error, state) {
 }
 
 module.exports = getError;
-},{"tcomb-validation":19}],12:[function(require,module,exports){
+},{"tcomb-validation":18}],12:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -1817,7 +1817,7 @@ function getReport(type) {
 }
 
 module.exports = getReport;
-},{"tcomb-validation":19}],14:[function(require,module,exports){
+},{"tcomb-validation":18}],14:[function(require,module,exports){
 'use strict';
 
 // thanks to https://github.com/epeli/underscore.string
@@ -1846,7 +1846,7 @@ function merge(a, b) {
 }
 
 module.exports = merge;
-},{"tcomb-validation":19}],16:[function(require,module,exports){
+},{"tcomb-validation":18}],16:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -1868,45 +1868,6 @@ function uuid() {
 
 module.exports = uuid;
 },{}],18:[function(require,module,exports){
-/**
- * Copyright 2013-2014, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule cx
- */
-
-/**
- * This function is used to mark string literals representing CSS class names
- * so that they can be transformed statically. This allows for modularization
- * and minification of CSS class names.
- *
- * In static_upstream, this function is actually implemented, but it should
- * eventually be replaced with something more descriptive, and the transform
- * that is used in the main stack should be ported for use elsewhere.
- *
- * @param string|object className to modularize, or an object of key/values.
- *                      In the object case, the values are conditions that
- *                      determine if the className keys should be included.
- * @param [string ...]  Variable list of classNames in the string case.
- * @return string       Renderable space-separated CSS className.
- */
-function cx(classNames) {
-  if (typeof classNames == 'object') {
-    return Object.keys(classNames).filter(function(className) {
-      return classNames[className];
-    }).join(' ');
-  } else {
-    return Array.prototype.join.call(arguments, ' ');
-  }
-}
-
-module.exports = cx;
-
-},{}],19:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -1986,11 +1947,11 @@ module.exports = cx;
     return validators[kind](x, type, path);
   }
 
-  var validators = {};
+  var validators = validate.validators = {};
 
   // irreducibles and enums
   validators.irreducible =
-  validators.enums = function validateirreducible(x, type, path) {
+  validators.enums = function validateIrreducible(x, type, path) {
     return {
       value: x,
       errors: type.is(x) ? [] : [ValidationError.of(x, type, path)]
@@ -2125,7 +2086,7 @@ module.exports = cx;
 
 }));
 
-},{"tcomb":20}],20:[function(require,module,exports){
+},{"tcomb":19}],19:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -2476,10 +2437,14 @@ module.exports = cx;
       return new Struct(update(instance, spec, value));
     };
 
-    Struct.extend = function extendStruct(newProps, name) {
-      var newStruct = struct([props].concat(newProps).reduce(mixin, {}), name);
-      mixin(newStruct.prototype, Struct.prototype); // prototypal inheritance
-      return newStruct;
+    Struct.extend = function extendStruct(arr, name) {
+      arr = [].concat(arr).map(function (x) {
+        return Obj.is(x) ? x : x.meta.props;
+      });
+      arr.unshift(props);
+      var ret = struct(arr.reduce(mixin, {}), name);
+      mixin(ret.prototype, Struct.prototype); // prototypal inheritance
+      return ret;
     };
 
     return Struct;
@@ -3010,11 +2975,11 @@ module.exports = cx;
   return {
 
     util: {
-      mixin: mixin,
       format: format,
-      getName: getName,
-      getFunctionName: getFunctionName,
       getKind: getKind,
+      getFunctionName: getFunctionName,
+      getName: getName,
+      mixin: mixin,
       slice: slice,
       shallowCopy: shallowCopy,
       update: update
@@ -3050,7 +3015,7 @@ module.exports = cx;
   };
 }));
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = {
   getAddon: require('./lib/getAddon'),
   getAlert: require('./lib/getAlert'),
@@ -3074,7 +3039,7 @@ module.exports = {
   getStatic: require('./lib/getStatic'),
   getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":22,"./lib/getAlert":23,"./lib/getBreakpoints":24,"./lib/getButton":25,"./lib/getButtonGroup":26,"./lib/getCheckbox":27,"./lib/getCol":28,"./lib/getErrorBlock":29,"./lib/getFieldset":30,"./lib/getFormGroup":31,"./lib/getHelpBlock":32,"./lib/getInputGroup":33,"./lib/getLabel":34,"./lib/getOffsets":35,"./lib/getOptGroup":36,"./lib/getOption":37,"./lib/getRadio":38,"./lib/getRow":39,"./lib/getSelect":40,"./lib/getStatic":41,"./lib/getTextbox":42}],22:[function(require,module,exports){
+},{"./lib/getAddon":21,"./lib/getAlert":22,"./lib/getBreakpoints":23,"./lib/getButton":24,"./lib/getButtonGroup":25,"./lib/getCheckbox":26,"./lib/getCol":27,"./lib/getErrorBlock":28,"./lib/getFieldset":29,"./lib/getFormGroup":30,"./lib/getHelpBlock":31,"./lib/getInputGroup":32,"./lib/getLabel":33,"./lib/getOffsets":34,"./lib/getOptGroup":35,"./lib/getOption":36,"./lib/getRadio":37,"./lib/getRow":38,"./lib/getSelect":39,"./lib/getStatic":40,"./lib/getTextbox":41}],21:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -3090,7 +3055,7 @@ function getAddon(addon) {
 }
 
 module.exports = getAddon;
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 function getAlert(opts) {
@@ -3111,7 +3076,7 @@ function getAlert(opts) {
 }
 
 module.exports = getAlert;
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 function getBreakpoints(breakpoints) {
@@ -3125,7 +3090,7 @@ function getBreakpoints(breakpoints) {
 }
 
 module.exports = getBreakpoints;
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3172,7 +3137,7 @@ function getButton(opts) {
 
 module.exports = getButton;
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 function getButtonGroup(buttons) {
@@ -3190,7 +3155,7 @@ function getButtonGroup(buttons) {
 module.exports = getButtonGroup;
 
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3245,7 +3210,7 @@ function getCheckbox(opts) {
 }
 
 module.exports = getCheckbox;
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 var getBreakpoints = require('./getBreakpoints');
@@ -3264,7 +3229,7 @@ function getCol(opts) {
 }
 
 module.exports = getCol;
-},{"./getBreakpoints":24}],29:[function(require,module,exports){
+},{"./getBreakpoints":23}],28:[function(require,module,exports){
 'use strict';
 
 function getErrorBlock(opts) {
@@ -3283,7 +3248,7 @@ function getErrorBlock(opts) {
 module.exports = getErrorBlock;
 
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -3310,7 +3275,7 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
@@ -3327,7 +3292,7 @@ function getFormGroup(opts) {
 }
 
 module.exports = getFormGroup;
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3361,7 +3326,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -3377,7 +3342,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -3420,7 +3385,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":43}],35:[function(require,module,exports){
+},{"./mixin":42}],34:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -3434,7 +3399,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -3468,7 +3433,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":37}],37:[function(require,module,exports){
+},{"./getOption":36}],36:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3497,7 +3462,7 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3558,7 +3523,7 @@ function getRadio(opts) {
 }
 
 module.exports = getRadio;
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -3575,7 +3540,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3624,7 +3589,7 @@ function getSelect(opts) {
 }
 
 module.exports = getSelect;
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 function getStatic(value) {
@@ -3640,7 +3605,7 @@ function getStatic(value) {
 }
 
 module.exports = getStatic;
-},{}],42:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3694,7 +3659,7 @@ function getTextbox(opts) {
 }
 
 module.exports = getTextbox;
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 function mixin(a, b) {
@@ -3708,6 +3673,45 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
+},{}],43:[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule cx
+ */
+
+/**
+ * This function is used to mark string literals representing CSS class names
+ * so that they can be transformed statically. This allows for modularization
+ * and minification of CSS class names.
+ *
+ * In static_upstream, this function is actually implemented, but it should
+ * eventually be replaced with something more descriptive, and the transform
+ * that is used in the main stack should be ported for use elsewhere.
+ *
+ * @param string|object className to modularize, or an object of key/values.
+ *                      In the object case, the values are conditions that
+ *                      determine if the className keys should be included.
+ * @param [string ...]  Variable list of classNames in the string case.
+ * @return string       Renderable space-separated CSS className.
+ */
+function cx(classNames) {
+  if (typeof classNames == 'object') {
+    return Object.keys(classNames).filter(function(className) {
+      return classNames[className];
+    }).join(' ');
+  } else {
+    return Array.prototype.join.call(arguments, ' ');
+  }
+}
+
+module.exports = cx;
+
 },{}],44:[function(require,module,exports){
 'use strict';
 
@@ -3777,4 +3781,4 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"react":"react","react/lib/cx":18}]},{},[1]);
+},{"react":"react","react/lib/cx":43}]},{},[1]);
