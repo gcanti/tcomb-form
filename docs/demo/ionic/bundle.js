@@ -217,8 +217,8 @@ function textbox(opts, ctx) {
     getValue: function () {
       var value = this.state.value;
       // handle white spaces
-      if (t.Str.is(value)) {
-        value = value.trim() || null;
+      if (t.Str.is(value) && value.trim() === '') {
+        value = null;
       }
       var result = t.validate(value, ctx.report.type);
       this.setState({
