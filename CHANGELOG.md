@@ -1,4 +1,14 @@
-v0.3.0
+v0.3.0-rc2
+
+- fix bug #40
+- add `id` option to textbox and select (used for label's htmlFor attribute) #35
+- textbox value: handle white spaces as `null` #34
+
+**BREAKING**
+
+- changed onChange(evt) to onChange(value)
+
+v0.3.0-rc1
 
 - complete code refactoring, fix #8
 

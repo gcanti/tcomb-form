@@ -283,10 +283,11 @@ function textbox(opts, ctx) {
       if (transformer) {
         value = transformer.parse(value);
       }
+      this.state.value = value;
+      this.forceUpdate();
       if (this.props.onChange) {
         this.props.onChange(value);
       }
-      this.setState({value: value});
     },
 
     getValue: function () {
@@ -355,10 +356,11 @@ function checkbox(opts, ctx) {
     },
 
     onChange: function (value) {
+      this.state.value = value;
+      this.forceUpdate();
       if (this.props.onChange) {
         this.props.onChange(value);
       }
-      this.setState({value: value});
     },
 
     getValue: function () {
@@ -443,10 +445,11 @@ function select(opts, ctx) {
       if (value === nullOption.value) {
         value = null;
       }
+      this.state.value = value;
+      this.forceUpdate();
       if (this.props.onChange) {
         this.props.onChange(value);
       }
-      this.setState({value: value});
     },
 
     getValue: function () {
@@ -513,10 +516,11 @@ function radio(opts, ctx) {
     },
 
     onChange: function (value) {
+      this.state.value = value;
+      this.forceUpdate();
       if (this.props.onChange) {
         this.props.onChange(value);
       }
-      this.setState({value: value});
     },
 
     getValue: function () {
@@ -612,10 +616,11 @@ function struct(opts, ctx) {
     },
 
     onChange: function (value) {
+      this.state.value = value;
+      this.forceUpdate();
       if (this.props.onChange) {
         this.props.onChange(value);
       }
-      this.setState({value: value});
     },
 
     getValue: function () {
@@ -740,10 +745,11 @@ function list(opts, ctx) {
     },
 
     onChange: function (value) {
+      this.state.value = value;
+      this.forceUpdate();
       if (this.props.onChange) {
         this.props.onChange(value);
       }
-      this.setState({value: value});
     },
 
     getValue: function () {
@@ -1399,7 +1405,7 @@ function getHiddenTextbox(locals) {
     },
     events: {
       change: function (evt) {
-        locals.onChange(evt.target.value)
+        locals.onChange(evt.target.value);
       }
     }
   };
@@ -1420,7 +1426,7 @@ function textbox(locals) {
     'aria-describedby': locals.help ? locals.id + '-tip' : null,
     id: locals.label ? locals.id : null,
     onChange: function (evt) {
-      locals.onChange(evt.target.value)
+      locals.onChange(evt.target.value);
     },
     placeholder: locals.placeholder,
     name: locals.name,
@@ -1595,7 +1601,7 @@ function radio(locals) {
       label: option.text,
       name: locals.name,
       onChange: function (evt) {
-        locals.onChange(evt.target.value)
+        locals.onChange(evt.target.value);
       },
       value: option.value
     });
@@ -1755,7 +1761,7 @@ function getHiddenTextbox(locals) {
     },
     events: {
       change: function (evt) {
-        locals.onChange(evt.target.value)
+        locals.onChange(evt.target.value);
       }
     }
   };
@@ -1768,7 +1774,7 @@ function getLabel(locals) {
     attrs: {
       htmlFor: locals.id
     },
-    children: locale.label
+    children: locals.label
   };
 }
 
@@ -1830,7 +1836,7 @@ function textbox(locals) {
     attrs: attrs,
     events: {
       change: function (evt) {
-        locals.onChange(evt.target.value)
+        locals.onChange(evt.target.value);
       }
     }
   };
