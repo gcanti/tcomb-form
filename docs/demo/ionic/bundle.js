@@ -207,11 +207,11 @@ function textbox(opts, ctx) {
       if (transformer) {
         value = transformer.parse(value);
       }
-      this.state.value = value;
-      this.forceUpdate();
-      if (this.props.onChange) {
-        this.props.onChange(value);
-      }
+      this.setState({value: value}, function () {
+        if (this.props.onChange) {
+          this.props.onChange(value);
+        }
+      }.bind(this));
     },
 
     getValue: function () {
@@ -280,11 +280,11 @@ function checkbox(opts, ctx) {
     },
 
     onChange: function (value) {
-      this.state.value = value;
-      this.forceUpdate();
-      if (this.props.onChange) {
-        this.props.onChange(value);
-      }
+      this.setState({value: value}, function () {
+        if (this.props.onChange) {
+          this.props.onChange(value);
+        }
+      }.bind(this));
     },
 
     getValue: function () {
@@ -369,11 +369,11 @@ function select(opts, ctx) {
       if (value === nullOption.value) {
         value = null;
       }
-      this.state.value = value;
-      this.forceUpdate();
-      if (this.props.onChange) {
-        this.props.onChange(value);
-      }
+      this.setState({value: value}, function () {
+        if (this.props.onChange) {
+          this.props.onChange(value);
+        }
+      }.bind(this));
     },
 
     getValue: function () {
@@ -440,11 +440,11 @@ function radio(opts, ctx) {
     },
 
     onChange: function (value) {
-      this.state.value = value;
-      this.forceUpdate();
-      if (this.props.onChange) {
-        this.props.onChange(value);
-      }
+      this.setState({value: value}, function () {
+        if (this.props.onChange) {
+          this.props.onChange(value);
+        }
+      }.bind(this));
     },
 
     getValue: function () {
@@ -540,11 +540,11 @@ function struct(opts, ctx) {
     },
 
     onChange: function (value) {
-      this.state.value = value;
-      this.forceUpdate();
-      if (this.props.onChange) {
-        this.props.onChange(value);
-      }
+      this.setState({value: value}, function () {
+        if (this.props.onChange) {
+          this.props.onChange(value);
+        }
+      }.bind(this));
     },
 
     getValue: function () {
@@ -669,11 +669,11 @@ function list(opts, ctx) {
     },
 
     onChange: function (value) {
-      this.state.value = value;
-      this.forceUpdate();
-      if (this.props.onChange) {
-        this.props.onChange(value);
-      }
+      this.setState({value: value}, function () {
+        if (this.props.onChange) {
+          this.props.onChange(value);
+        }
+      }.bind(this));
     },
 
     getValue: function () {
