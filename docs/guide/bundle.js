@@ -10,7 +10,7 @@ function render(i, type, opts, onChange) {
   var formPreview = document.getElementById('p' + i);
   var Form = t.form.create(type, opts);
 
-  var App  = React.createClass({displayName: 'App',
+  var App  = React.createClass({displayName: "App",
 
     onClick: function () {
       var value = this.refs.form.getValue();
@@ -1757,7 +1757,7 @@ var Textbox = struct({
   onChange: Func,           // should call this function with the changed value
   placeholder: maybe(Str),  // should show a placeholder
   type: TypeAttr,           // should use this as type attribute
-  value: maybe(Str)         // should use this as value attribute
+  value: t.Any              // should use this as value attribute
 }, 'Textbox');
 
 var Checkbox = struct({

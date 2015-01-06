@@ -1182,7 +1182,7 @@ var Textbox = struct({
   onChange: Func,           // should call this function with the changed value
   placeholder: maybe(Str),  // should show a placeholder
   type: TypeAttr,           // should use this as type attribute
-  value: maybe(Str)         // should use this as value attribute
+  value: t.Any              // should use this as value attribute
 }, 'Textbox');
 
 var Checkbox = struct({
