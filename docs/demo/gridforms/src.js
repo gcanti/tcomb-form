@@ -4,7 +4,7 @@ var React = require('react');
 var t = require('../../../.');
 
 // configure ionic plugin
-t.form.config.templates = require('../../../lib/templates/gridforms');
+t.form.config.templates = require('../../../lib/themes/gridforms');
 
 // helper function
 function render(i, type, opts) {

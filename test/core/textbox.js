@@ -7,7 +7,7 @@ var t = require('../../.');
 var Context = require('../../lib/protocols/api').Context;
 var config = require('../../lib/config');
 var getReport = require('../../lib/util/getReport');
-var bootstrap = require('../../lib/templates/bootstrap');
+var bootstrap = require('../../lib/themes/bootstrap');
 var Textbox = require('../../lib/protocols/theme').Textbox;
 var textbox = require('../../lib/factories').textbox;
 

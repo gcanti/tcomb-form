@@ -5,7 +5,7 @@ var React = require('react');
 var t = require('../../../.');
 
 // configure ionic plugin
-t.form.config.templates = require('../../../lib/templates/ionic');
+t.form.config.templates = require('../../../lib/themes/ionic');
 
 var Account = t.struct({
   firstName: t.Str,
@@ -47,14 +47,14 @@ var App = React.createClass({displayName: 'App',
 
 React.render(React.createElement(App, null), document.getElementById('preview'));
 
-},{"../../../.":2,"../../../lib/templates/ionic":10,"react":"react"}],2:[function(require,module,exports){
+},{"../../../.":2,"../../../lib/themes/ionic":10,"react":"react"}],2:[function(require,module,exports){
 var t = require('./lib');
 
 // plug bootstrap style
-t.form.config.templates = require('./lib/templates/bootstrap');
+t.form.config.templates = require('./lib/themes/bootstrap');
 
 module.exports = t;
-},{"./lib":6,"./lib/templates/bootstrap":9}],3:[function(require,module,exports){
+},{"./lib":6,"./lib/themes/bootstrap":9}],3:[function(require,module,exports){
 'use strict';
 
 var api = require('./protocols/api');
@@ -1196,7 +1196,7 @@ module.exports = {
 'use strict';
 
 var t = require('tcomb-validation');
-var theme = require('../protocols/theme');
+var theme = require('../../protocols/theme');
 var Label = theme.Label;
 var uform = require('uvdom-bootstrap/form');
 var maybe = t.maybe;
@@ -1666,7 +1666,7 @@ module.exports = {
   struct: struct,
   list: list
 };
-},{"../protocols/theme":8,"tcomb-validation":18,"uvdom-bootstrap/form":20}],10:[function(require,module,exports){
+},{"../../protocols/theme":8,"tcomb-validation":18,"uvdom-bootstrap/form":20}],10:[function(require,module,exports){
 'use strict';
 
 //==================

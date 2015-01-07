@@ -4,7 +4,7 @@ var React = require('react');
 var t = require('../../../.');
 
 // configure ionic plugin
-t.form.config.templates = require('../../../lib/templates/ionic');
+t.form.config.templates = require('../../../lib/themes/ionic');
 
 var Account = t.struct({
   firstName: t.Str,

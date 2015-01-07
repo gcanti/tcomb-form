@@ -186,10 +186,10 @@ themeSelector.onchange = function () {
 var t = require('./lib');
 
 // plug bootstrap style
-t.form.config.templates = require('./lib/templates/bootstrap');
+t.form.config.templates = require('./lib/themes/bootstrap');
 
 module.exports = t;
-},{"./lib":6,"./lib/templates/bootstrap":9}],3:[function(require,module,exports){
+},{"./lib":6,"./lib/themes/bootstrap":9}],3:[function(require,module,exports){
 'use strict';
 
 var api = require('./protocols/api');
@@ -1331,7 +1331,7 @@ module.exports = {
 'use strict';
 
 var t = require('tcomb-validation');
-var theme = require('../protocols/theme');
+var theme = require('../../protocols/theme');
 var Label = theme.Label;
 var uform = require('uvdom-bootstrap/form');
 var maybe = t.maybe;
@@ -1801,7 +1801,7 @@ module.exports = {
   struct: struct,
   list: list
 };
-},{"../protocols/theme":8,"tcomb-validation":17,"uvdom-bootstrap/form":19}],10:[function(require,module,exports){
+},{"../../protocols/theme":8,"tcomb-validation":17,"uvdom-bootstrap/form":19}],10:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
