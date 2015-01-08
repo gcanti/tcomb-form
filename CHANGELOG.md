@@ -1,5 +1,13 @@
 v0.3.0-rc2
 
+- added autofocus attribute support, fix #47
+
+**BREAKING**
+
+- refactored `templates` folder for better file organisation, fix #45
+
+v0.3.0-rc2
+
 - fix bug #40
 - add `id` option to textbox and select (used for label's htmlFor attribute) #35
 - textbox value: handle white spaces as `null` #34

@@ -373,6 +373,7 @@ function textbox(opts, ctx) {
       var id = opts.id || this._rootNodeID || uuid();
 
       return compile(template(new theme.Textbox({
+        autoFocus: opts.autoFocus,
         config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
         error: getError(opts.error, this.state),
@@ -436,6 +437,7 @@ function checkbox(opts, ctx) {
       var id = opts.id || this._rootNodeID || uuid();
 
       return compile(template(new theme.Checkbox({
+        autoFocus: opts.autoFocus,
         config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
         error: getError(opts.error, this.state),
@@ -525,6 +527,7 @@ function select(opts, ctx) {
       var id = opts.id || this._rootNodeID || uuid();
 
       return compile(template(new theme.Select({
+        autoFocus: opts.autoFocus,
         config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
         error: getError(opts.error, this.state),
@@ -596,6 +599,7 @@ function radio(opts, ctx) {
       var id = opts.id || this._rootNodeID || uuid();
 
       return compile(template(new theme.Radio({
+        autoFocus: opts.autoFocus,
         config: merge(ctx.config, opts.config),
         disabled: opts.disabled,
         error: getError(opts.error, this.state),
@@ -1052,6 +1056,7 @@ var Transformer = struct({
 }, 'Transformer');
 
 var Textbox = struct({
+  autoFocus: maybe(Bool),
   config: maybe(Obj),
   disabled: maybe(Bool),
   error: maybe(ErrorMessage),
@@ -1068,6 +1073,7 @@ var Textbox = struct({
 }, 'Textbox');
 
 var Checkbox = struct({
+  autoFocus: maybe(Bool),
   config: maybe(Obj),
   disabled: maybe(Bool),
   hasError: maybe(Bool),
@@ -1099,6 +1105,7 @@ Order.getComparator = function (order) {
 var SelectValue = union([Str, list(Str)], 'SelectValue');
 
 var Select = struct({
+  autoFocus: maybe(Bool),
   config: maybe(Obj),
   disabled: maybe(Bool),
   hasError: maybe(Bool),
@@ -1115,6 +1122,7 @@ var Select = struct({
 }, 'Select');
 
 var Radio = struct({
+  autoFocus: maybe(Bool),
   config: maybe(Obj),
   disabled: maybe(Bool),
   hasError: maybe(Bool),
@@ -1220,6 +1228,7 @@ SelectOption.dispatch = function (x) {
 var TypeAttr = t.enums.of('textarea hidden text password color date datetime datetime-local email month number range search tel time url week', 'TypeAttr');
 
 var Textbox = struct({
+  autoFocus: maybe(Bool),
   config: maybe(Obj),
   disabled: maybe(Bool),    // should be disabled
   error: maybe(Label),      // should show an error
@@ -1235,6 +1244,7 @@ var Textbox = struct({
 }, 'Textbox');
 
 var Checkbox = struct({
+  autoFocus: maybe(Bool),
   config: maybe(Obj),
   disabled: maybe(Bool),
   error: maybe(Label),
@@ -1251,6 +1261,7 @@ var Checkbox = struct({
 var SelectValue = union([Str, list(Str)], 'SelectValue');
 
 var Select = struct({
+  autoFocus: maybe(Bool),
   config: maybe(Obj),
   error: maybe(Label),
   disabled: maybe(Bool),
@@ -1266,6 +1277,7 @@ var Select = struct({
 }, 'Select');
 
 var Radio = struct({
+  autoFocus: maybe(Bool),
   config: maybe(Obj),
   disabled: maybe(Bool),
   error: maybe(Label),
@@ -1479,6 +1491,7 @@ function textbox(locals) {
   }
 
   var control = uform.getTextbox({
+    autoFocus: locals.autoFocus,
     type: locals.type,
     value: locals.value,
     disabled: locals.disabled,
@@ -1544,6 +1557,7 @@ function checkbox(locals) {
   var config = new CheckboxConfig(locals.config || {});
 
   var control = uform.getCheckbox({
+    autoFocus: locals.autoFocus,
     checked: locals.value,
     disabled: locals.disabled,
     id: locals.id,
@@ -1598,6 +1612,7 @@ function select(locals) {
   }
 
   var control = uform.getSelect({
+    autoFocus: locals.autoFocus,
     value: locals.value,
     disabled: locals.disabled,
     'aria-describedby': locals.help ? locals.id + '-tip' : null,
@@ -1651,8 +1666,9 @@ function radio(locals) {
 
   var config = new RadioConfig(locals.config || {});
 
-  var control = locals.options.map(function (option) {
+  var control = locals.options.map(function (option, i) {
     return uform.getRadio({
+      autoFocus: locals.autoFocus && (i === 0),
       'aria-describedby': locals.label ? locals.id : null,
       id: locals.id + '-' + option.value,
       checked: (option.value === locals.value),
@@ -3148,7 +3164,8 @@ module.exports = getBreakpoints;
     block: true,
     active: true,
     size: 'lg',
-    disabled: true
+    disabled: true,
+    autoFocus: true
   }
 
 */
@@ -3171,7 +3188,8 @@ function getButton(opts) {
     tag: 'button',
     attrs: {
       disabled: opts.disabled,
-      className: className
+      className: className,
+      autoFocus: opts.autoFocus
     },
     events: {
       click: opts.click
@@ -3214,7 +3232,8 @@ module.exports = getButtonGroup;
     checked: true,
     name: 'rememberMe',
     disabled: false,
-    onChange: function () {}
+    onChange: function () {},
+    autoFocus: true
   }
 
 */
@@ -3242,7 +3261,8 @@ function getCheckbox(opts) {
             disabled: opts.disabled,
             id: opts.id,
             name: opts.name,
-            type: 'checkbox'
+            type: 'checkbox',
+            autoFocus: opts.autoFocus
           },
           events: {
             change: opts.onChange
@@ -3522,7 +3542,8 @@ module.exports = getOption;
     value: '1',
     name: 'option',
     disabled: false,
-    onChange: function () {}
+    onChange: function () {},
+    autoFocus: true
   }
 
 */
@@ -3554,7 +3575,8 @@ function getRadio(opts) {
             value: opts.value,
             id: opts.id,
             // aria support
-            'aria-describedby': opts['aria-describedby']
+            'aria-describedby': opts['aria-describedby'],
+            autoFocus: opts.autoFocus
           },
           events: {
             change: opts.onChange
@@ -3600,7 +3622,8 @@ module.exports = getRow;
     disabled: false,
     size: 'lg',
     onChange: function () {},
-    'aria-describedby': 'password-tip'
+    'aria-describedby': 'password-tip',
+    autoFocus: false
   }
 
 */
@@ -3625,7 +3648,8 @@ function getSelect(opts) {
       multiple: opts.multiple,
       id: opts.id,
       // aria support
-      'aria-describedby': opts['aria-describedby']
+      'aria-describedby': opts['aria-describedby'],
+      autoFocus: opts.autoFocus
     },
     children: opts.options,
     events: {
@@ -3668,7 +3692,8 @@ module.exports = getStatic;
     readOnly: true,
     size: 'lg',
     onChange: function () {},
-    'aria-describedby': 'password-tip'
+    'aria-describedby': 'password-tip',
+    autoFocus: true
   }
 
 */
@@ -3695,8 +3720,8 @@ function getTextbox(opts) {
       readOnly: opts.readOnly,
       className: className,
       id: opts.id,
-      // aria support
-      'aria-describedby': opts['aria-describedby']
+      'aria-describedby': opts['aria-describedby'],
+      autoFocus: opts.autoFocus
     },
     events: {
       change: opts.onChange
