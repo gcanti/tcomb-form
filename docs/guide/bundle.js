@@ -838,19 +838,14 @@ function textbox(opts, ctx) {
   var label = !Nil.is(opts.label) ? opts.label :
     ctx.auto === 'labels' ? ctx.getDefaultLabel() :
     null;
-
   // labels have higher priority
   var placeholder = null;
   if (!label && ctx.auto !== 'none') {
     placeholder = !Nil.is(opts.placeholder) ? opts.placeholder : ctx.getDefaultLabel();
   }
-
   var name = opts.name || ctx.name;
-
   var value = !Nil.is(opts.value) ? opts.value : !Nil.is(ctx.value) ? ctx.value : null;
-
   var transformer = opts.transformer || config.transformers[getName(ctx.report.innerType)];
-
   var template = opts.template || ctx.templates.textbox;
 
   return React.createClass({
@@ -923,11 +918,8 @@ function checkbox(opts, ctx) {
 
   // checkboxes must have a label
   var label = opts.label || ctx.getDefaultLabel();
-
   var name = opts.name || ctx.name;
-
   var value = t.Bool.is(opts.value) ? opts.value : t.Bool.is(ctx.value) ? ctx.value : false;
-
   var template = opts.template || ctx.templates.checkbox;
 
   return React.createClass({
@@ -984,37 +976,29 @@ function select(opts, ctx) {
   opts = new api.Select(opts || {});
 
   var Enum = ctx.report.innerType;
-
   // handle `multiple` attribute
   var multiple = false;
   if (getKind(Enum) === 'list') {
     multiple = true;
     Enum = getReport(Enum.meta.type).innerType;
   }
-
   var label = !Nil.is(opts.label) ? opts.label :
     ctx.auto === 'labels' ? ctx.getDefaultLabel() :
     null;
-
   var name = opts.name || ctx.name;
-
   var value = !Nil.is(opts.value) ? opts.value :
     !Nil.is(ctx.value) ? ctx.value :
     multiple ? [] : null;
-
   var options = opts.options ? opts.options.slice() : getOptionsOfEnum(Enum);
-
   // sort opts
   if (opts.order) {
     options.sort(api.Order.getComparator(opts.order));
   }
-
   // add a `null` option in first position
   var nullOption = opts.nullOption || {value: '', text: '-'};
   if (!multiple) {
     options.unshift(nullOption);
   }
-
   var template = opts.template || ctx.templates.select;
 
   return React.createClass({
@@ -1078,18 +1062,13 @@ function radio(opts, ctx) {
   var label = !Nil.is(opts.label) ? opts.label :
     ctx.auto === 'labels' ? ctx.getDefaultLabel() :
     null;
-
   var name = opts.name || ctx.name;
-
   var value = !Nil.is(opts.value) ? opts.value : !Nil.is(ctx.value) ? ctx.value : null;
-
   var options = opts.options ? opts.options.slice() : getOptionsOfEnum(ctx.report.innerType);
-
   // sort opts
   if (opts.order) {
     options.sort(api.Order.getComparator(opts.order));
   }
-
   var template = opts.template || ctx.templates.radio;
 
   return React.createClass({
@@ -1154,15 +1133,11 @@ function struct(opts, ctx) {
   var auto =  opts.auto || ctx.auto;
   var i18n =  opts.i18n || ctx.i18n;
   var value = opts.value || ctx.value || {};
-
   var label = !Nil.is(opts.label) ? opts.label :
-    ctx.auto !== 'none' ? ctx.getDefaultLabel() :
+    auto !== 'none' ? ctx.getDefaultLabel() :
     null;
-
   var config = merge(ctx.config, opts.config);
-
   var templates = merge(ctx.templates, opts.templates);
-
   var components = {};
   var fields = opts.fields || {};
   order.forEach(function (prop) {
@@ -1273,21 +1248,15 @@ function list(opts, ctx) {
 
   opts = new api.List(opts || {});
   var report = ctx.report;
-
   assert(!report.maybe, 'maybe lists are not (yet) supported');
-
   var auto = opts.auto || ctx.auto;
   var i18n = opts.i18n || ctx.i18n;
   var value = opts.value || ctx.value || [];
-
   var label = !Nil.is(opts.label) ? opts.label :
-    ctx.auto !== 'none' ? ctx.getDefaultLabel() :
+    auto !== 'none' ? ctx.getDefaultLabel() :
     null;
-
   var config = merge(ctx.config, opts.config);
-
   var templates = merge(ctx.templates, opts.templates);
-
   var itemType = report.innerType.meta.type;
   var itemOpts = opts.item || {};
   var itemFactory = getFactory(itemType, itemOpts);
@@ -1349,11 +1318,9 @@ function list(opts, ctx) {
       var result;
 
       for (var i = 0, len = components.length ; i < len ; i++ ) {
-        if (this.refs.hasOwnProperty(i)) {
-          result = this.refs[i].getValue();
-          errors = errors.concat(result.errors);
-          value.push(result.value);
-        }
+        result = this.refs[i].getValue();
+        errors = errors.concat(result.errors);
+        value.push(result.value);
       }
 
       // handle subtype
@@ -1440,6 +1407,107 @@ function list(opts, ctx) {
   });
 }
 
+function tuple(opts, ctx) {
+
+  opts = new api.Tuple(opts || {});
+  var report = ctx.report;
+  assert(!report.maybe, 'maybe tuples are not (yet) supported');
+  var auto = opts.auto || ctx.auto;
+  var i18n = opts.i18n || ctx.i18n;
+  var value = opts.value || ctx.value || [];
+  var label = !Nil.is(opts.label) ? opts.label :
+    auto !== 'none' ? ctx.getDefaultLabel() :
+    null;
+  var config = merge(ctx.config, opts.config);
+  var templates = merge(ctx.templates, opts.templates);
+  var types = report.innerType.meta.types;
+  var components = types.map(function (itemType, i) {
+    var itemOpts = opts.items ? opts.items[i] : {};
+    var factory = getFactory(itemType, itemOpts);
+    return factory(itemOpts, new Context({
+      auto:       auto,
+      config:     config,
+      i18n:       i18n,
+      label:      '#' + (i + 1),
+      name:       ctx.name ? ctx.name + '[' + i + ']' : i + '',
+      report:     new getReport(itemType),
+      templates:  templates,
+      value:      value[i]
+    }));
+  });
+
+  return React.createClass({
+
+    displayName: 'Tuple',
+
+    getInitialState: function () {
+      return {
+        hasError: !!opts.hasError,
+        value: value
+      };
+    },
+
+    onItemChange: function (itemIndex, itemValue) {
+      var value = this.state.value.slice();
+      value[itemIndex] = itemValue;
+      this.onChange(value);
+    },
+
+    onChange: function (value) {
+      this.setState({value: value}, function () {
+        if (this.props.onChange) {
+          this.props.onChange(value);
+        }
+      }.bind(this));
+    },
+
+    getValue: function () {
+      var value = [];
+      var errors = [];
+      var hasError = false;
+      var result;
+
+      for (var i = 0, len = components.length ; i < len ; i++ ) {
+        result = this.refs[i].getValue();
+        errors = errors.concat(result.errors);
+        value.push(result.value);
+      }
+
+      // handle subtype
+      if (report.subtype && errors.length === 0) {
+        result = t.validate(value, report.type);
+        hasError = !result.isValid();
+        errors = errors.concat(result.errors);
+      }
+
+      this.setState({hasError: hasError, value: value});
+      return new ValidationResult({errors: errors, value: value});
+    },
+
+    render: function () {
+
+      var items = components.map(function (component, i) {
+        return React.createElement(component, {
+          key: i,
+          onChange: this.onItemChange.bind(this, i),
+          ref: i
+        });
+      }.bind(this));
+
+      return compile(templates.tuple(new theme.Tuple({
+        config: config,
+        disabled: opts.disabled,
+        error: getError(opts.error, this.state),
+        hasError: this.state.hasError,
+        help: opts.help,
+        items: items,
+        label: label,
+        value: this.state.value
+      })));
+    }
+  });
+}
+
 //
 // configuration
 //
@@ -1456,7 +1524,8 @@ config.kinds = {
   struct:   function () { return struct; },
   list:     function () { return list; },
   maybe:    function (type, opts) { return getFactory(type.meta.type, opts); },
-  subtype:  function (type, opts) { return getFactory(type.meta.type, opts); }
+  subtype:  function (type, opts) { return getFactory(type.meta.type, opts); },
+  tuple:    function () { return tuple; }
 };
 
 config.irreducibles = {
@@ -1695,6 +1764,20 @@ var List = struct({
   value: maybe(t.Arr)
 }, 'List');
 
+var Tuple = struct({
+  auto: maybe(Auto),
+  config: maybe(Obj),
+  disabled: maybe(Bool),
+  i18n: maybe(I18n),
+  items: maybe(list(Obj)),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  error: maybe(ErrorMessage),
+  label: maybe(Label),
+  templates: maybe(Obj),
+  value: maybe(t.Arr)
+}, 'Tuple');
+
 module.exports = {
   Auto: Auto,
   I18n: I18n,
@@ -1712,7 +1795,8 @@ module.exports = {
   Select: Select,
   Radio: Radio,
   Struct: Struct,
-  List: List
+  List: List,
+  Tuple: Tuple
 };
 },{"react":"react","tcomb-validation":18}],8:[function(require,module,exports){
 'use strict';
@@ -1854,6 +1938,17 @@ var List = struct({
   value: maybe(list(t.Any))
 }, 'List');
 
+var Tuple = struct({
+  config: maybe(Obj),
+  disabled: maybe(Bool),
+  error: maybe(Label),
+  hasError: maybe(Bool),
+  help: maybe(Label),
+  items: list(ReactElement),
+  label: maybe(Label),
+  value: maybe(list(t.Any))
+}, 'Tuple');
+
 module.exports = {
   Label: Label,
   Textbox: Textbox,
@@ -1863,7 +1958,8 @@ module.exports = {
   Select: Select,
   Radio: Radio,
   Struct: Struct,
-  List: List
+  List: List,
+  Tuple: Tuple
 };
 },{"react":"react","tcomb-validation":18}],9:[function(require,module,exports){
 'use strict';
@@ -1955,6 +2051,9 @@ var StructConfig = t.struct({
 var ListConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
+
+var TupleConfig = t.struct({
+}, 'TupleConfig');
 
 function getLabel(opts) {
   if (!opts.label) { return; }
@@ -2334,6 +2433,37 @@ function list(locals) {
   });
 }
 
+function tuple(locals) {
+
+  var config = new TupleConfig(locals.config || {});
+
+  var rows = [];
+
+  if (locals.help) {
+    rows.push(getAlert({
+      children: locals.help
+    }));
+  }
+
+  rows = rows.concat(locals.items);
+
+  if (locals.error && locals.hasError) {
+    rows.push(getAlert({
+      type: 'danger',
+      children: locals.error
+    }));
+  }
+
+  return getFormGroup({
+    children: getFieldset({
+      className: config.horizontal && config.horizontal.getFieldsetClassName(),
+      disabled: locals.disabled,
+      legend: locals.label,
+      children: rows
+    })
+  });
+}
+
 module.exports = {
   name: 'bootstrap',
   textbox: textbox,
@@ -2341,7 +2471,8 @@ module.exports = {
   select: select,
   radio: radio,
   struct: struct,
-  list: list
+  list: list,
+  tuple: tuple
 };
 },{"../../protocols/theme":8,"tcomb-validation":18,"uvdom-bootstrap/form":20}],10:[function(require,module,exports){
 'use strict';

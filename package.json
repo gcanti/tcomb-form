@@ -1,6 +1,6 @@
 {
   "name": "tcomb-form",
-  "version": "0.3.0-rc2",
+  "version": "0.3.0",
   "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "react": "^0.12.0",
     "tcomb-validation": "^0.3.0",
     "uvdom": "^0.1.0",
-    "uvdom-bootstrap": "^0.1.1"
+    "uvdom-bootstrap": "^0.1.2"
   },
   "devDependencies": {
     "browserify": "^6.3.2",

@@ -25,6 +25,8 @@ With tcomb-form you simply call `var Form = t.form.create(Model)` to generate a 
 
 [tcomb-form site](http://gcanti.github.io/tcomb-form/) or `docs/guide/index.html`.
 
+**Browser compatibility**: same as React.
+
 # Contributions
 
 Special thanks to [William Lubelski](https://github.com/lubelski) ([@uiwill](https://twitter.com/uiwill)), without him this library would be less magic.
