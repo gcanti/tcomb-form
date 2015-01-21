@@ -77,6 +77,7 @@
                     <li><a href="#textbox-help">Help</a></li>
                     <li><a href="#textbox-disabled">Disabled</a></li>
                     <li><a href="#textbox-error">Error message</a></li>
+                    <li><a href="#textbox-autoFocus">Auto focus</a></li>
                   </ul>
                 </li>
                 <li>Checkbox
@@ -673,6 +674,18 @@
             <pre id="v25" class="value"></pre>
           </div>
 
+          <a name="textbox-autoFocus"><h3>Auto focus</h3></a>
+          <p>Set the focus on this field.</p>
+          <pre><code>
+  var Form = t.form.create(Textbox, {
+    fields: {
+      mytext: {
+        autoFocus: true
+      }
+    }
+  });
+          </code></pre>
+
           <h2>Checkbox options</h2>
 
           <a name="checkbox-common"><h3>Common options</h3></a>
@@ -683,6 +696,7 @@
             <li><code>disabled</code></li>
             <li><code>hasError</code></li>
             <li><code>error</code></li>
+            <li><code>autoFocus</code></li>
           </ul>
           <pre><code>
   var Checkbox = t.struct({
@@ -714,6 +728,7 @@
             <li><code>disabled</code></li>
             <li><code>hasError</code></li>
             <li><code>error</code></li>
+            <li><code>autoFocus</code></li>
           </ul>
           <pre><code>
   var Select = t.struct({

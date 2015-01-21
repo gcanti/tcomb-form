@@ -1,7 +1,7 @@
 {
   "name": "tcomb-form",
   "version": "0.3.0",
-  "description": "Domain Driven Forms. Automatically generate form markup from a domain model",
+  "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
     "test": "browserify test/index | testling -u",

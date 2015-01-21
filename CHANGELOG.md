@@ -1,3 +1,7 @@
+v0.3
+
+- added experimental tuple support
+
 v0.3.0-rc2
 
 - added autofocus attribute support, fix #47
