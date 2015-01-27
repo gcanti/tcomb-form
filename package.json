@@ -46,6 +46,7 @@
     "form",
     "validation",
     "generation",
+    "react",
     "react-component"
   ],
   "keywords": [
