@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "peerDependencies": {
-    "react": "^0.12.0"
+    "react": "^0.12.0 || >=0.13.0-beta.1"
   },
   "dependencies": {
     "debug": "^2.1.1",

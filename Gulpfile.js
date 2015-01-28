@@ -21,17 +21,6 @@ gulp.task('lint', function() {
 // ------------------------------------
 gulp.task('docs', ['guide', 'demo:bootstrap', 'demo:gridforms', 'demo:ionic', 'playground']);
 
-gulp.task('react', function () {
-
-  browserify({
-    require: ['react']
-  })
-  .bundle()
-  .pipe(source('react.js'))
-  .pipe(gulp.dest('./docs/js'));
-
-});
-
 gulp.task('guide', function () {
 
   browserify('./docs/guide/src.js', {

@@ -20,14 +20,25 @@ function getContext(ctx) {
 
 function getLocalsFactory(factory) {
   return function getLocals(ctx, options, value, onChange) {
-    var x = new factory.type();
-    x.props = {
-      ctx: getContext(ctx),
-      options: options,
-      value: value,
-      onChange: onChange || noop
-    };
-    x.state = x.getInitialState();
+    console.log(React.version);
+    var x;
+    if (React.version.indexOf('0.13') !== -1) {
+      x = new factory.type({
+        ctx: getContext(ctx),
+        options: options,
+        value: value,
+        onChange: onChange || noop
+      });
+    } else {
+      x = new factory.type();
+      x.props = {
+        ctx: getContext(ctx),
+        options: options,
+        value: value,
+        onChange: onChange || noop
+      };
+      x.state = x.getInitialState();
+    }
     return x.getLocals();
   };
 }

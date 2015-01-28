@@ -372,6 +372,7 @@ var Checkbox = React.createClass({
   displayName: 'Checkbox',
 
   getInitialState: function () {
+    if (!this.props) debugger;
     return {
       hasError: false,
       value: normalize(this.props.value)

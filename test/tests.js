@@ -239,6 +239,7 @@ var Checkbox = React.createClass({
   displayName: 'Checkbox',
 
   getInitialState: function () {
+    if (!this.props) debugger;
     return {
       hasError: false,
       value: normalize(this.props.value)
@@ -979,7 +980,8 @@ module.exports = Textbox;
 'use strict';
 
 module.exports = function (nextProps, nextState) {
-  return nextState.hasError !== this.state.hasError ||
+  return nextState.value !== this.state.value ||
+    nextState.hasError !== this.state.hasError ||
     nextProps.value !== this.props.value ||
     nextProps.options !== this.props.options ||
     nextProps.ctx.report.type !== this.props.ctx.report.type ||
@@ -1056,21 +1058,31 @@ module.exports = getComponent;
 
 },{"./components/List":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/List.js","./components/Select":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Select.js","./components/Struct":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Struct.js","./components/Textbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Textbox.js","./config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/index.js":[function(require,module,exports){
 var t = require('tcomb-validation');
-var Form = require('./components/Form');
 var config = require('./config');
+var Form = require('./components/Form');
+var Textbox = require('./components/Textbox');
+var Select = require('./components/Select');
+var Checkbox = require('./components/Checkbox');
 var Radio = require('./components/Radio');
+var Struct = require('./components/Struct');
+var List = require('./components/List');
 var debug = require('debug');
 
 t.form = {
-  Form: Form,
   config: config,
+  Form: Form,
+  textbox: Textbox,
+  select: Select,
+  checkbox: Checkbox,
   radio: Radio,
+  struct: Struct,
+  list: List,
   debug: debug
 };
 
 module.exports = t;
 
-},{"./components/Form":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Form.js","./components/Radio":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Radio.js","./config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js":[function(require,module,exports){
+},{"./components/Checkbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Checkbox.js","./components/Form":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Form.js","./components/List":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/List.js","./components/Radio":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Radio.js","./components/Select":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Select.js","./components/Struct":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Struct.js","./components/Textbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Textbox.js","./config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js":[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1226,8 +1238,8 @@ module.exports = {
 'use strict';
 
 var t = require('tcomb-validation');
-var theme = require('../../skin');
-var Label = theme.Label;
+var skin = require('../../skin');
+var Label = skin.Label;
 var uform = require('uvdom-bootstrap/form');
 var maybe = t.maybe;
 var getFieldset = uform.getFieldset;
@@ -1483,7 +1495,7 @@ function select(locals) {
   var config = new SelectConfig(locals.config || {});
 
   var options = locals.options.map(function (x) {
-    return theme.Option.is(x) ? uform.getOption(x) : uform.getOptGroup(x);
+    return skin.Option.is(x) ? uform.getOption(x) : uform.getOptGroup(x);
   });
 
   function onChange(evt) {
@@ -13851,14 +13863,25 @@ function getContext(ctx) {
 
 function getLocalsFactory(factory) {
   return function getLocals(ctx, options, value, onChange) {
-    var x = new factory.type();
-    x.props = {
-      ctx: getContext(ctx),
-      options: options,
-      value: value,
-      onChange: onChange || noop
-    };
-    x.state = x.getInitialState();
+    console.log(React.version);
+    var x;
+    if (React.version.indexOf('0.13') !== -1) {
+      x = new factory.type({
+        ctx: getContext(ctx),
+        options: options,
+        value: value,
+        onChange: onChange || noop
+      });
+    } else {
+      x = new factory.type();
+      x.props = {
+        ctx: getContext(ctx),
+        options: options,
+        value: value,
+        onChange: onChange || noop
+      };
+      x.state = x.getInitialState();
+    }
     return x.getLocals();
   };
 }
@@ -13893,10 +13916,12 @@ module.exports = {
 };
 
 },{"../../.":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","../../lib/api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../../lib/config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","../../lib/util/getReport":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getReport.js","react":"react"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/index.js":[function(require,module,exports){
+var React = require('react');
 var debug = require('debug');
 debug.disable('*');
+window.React = React;
 require('./components');
 require('./bootstrap');
 
 
-},{"./bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/index.js","./components":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/index.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js"}]},{},["/Users/giulio/Documents/Projects/github/tcomb-form/test/index.js"]);
+},{"./bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/index.js","./components":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/index.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"react"}]},{},["/Users/giulio/Documents/Projects/github/tcomb-form/test/index.js"]);
