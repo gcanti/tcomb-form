@@ -1,3 +1,7 @@
+- v0.3.1
+
+- Move react to peerDependencies so multiple versions of React not loaded
+
 v0.3
 
 - added experimental tuple support
