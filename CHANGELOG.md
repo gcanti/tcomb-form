@@ -1,4 +1,8 @@
-- v0.3.1
+v0.4
+
+- complete refactoring
+
+v0.3.1
 
 - Move react to peerDependencies so multiple versions of React not loaded
 

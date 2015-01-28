@@ -25,7 +25,7 @@ With tcomb-form you simply call `var Form = t.form.create(Model)` to generate a 
 
 [tcomb-form site](http://gcanti.github.io/tcomb-form/) or `docs/guide/index.html`.
 
-**Browser compatibility**: same as React.
+**Browser compatibility**: same as React ^0.12.0
 
 # Contributions
 
@@ -34,8 +34,6 @@ Special thanks to [William Lubelski](https://github.com/lubelski) ([@uiwill](htt
 Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the excellent `humanize()` function.
 
 Thanks to [Andrey Popp](https://github.com/andreypopp) for writing [react-forms](https://github.com/prometheusresearch/react-forms), great inspiration for list management.
-
-Bootstrap 3.3 is fully supported. **Contributions and PR for other css frameworks are welcomed**.
 
 # Development
 
@@ -55,13 +53,6 @@ gulp lint
 ```
 npm test
 ```
-
-(uses testling to capture browsers)
-
-Tests are splitted in two:
-
-- `core` tests: ensure locals passed to templates are correct and `getValue()` returns a correct value
-- `bootstrap` tests: ensure rendering is correct
 
 # License
 

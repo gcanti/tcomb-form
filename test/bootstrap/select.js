@@ -2,8 +2,8 @@
 
 var test = require('tape');
 var t = require('tcomb-validation');
-var theme = require('../../lib/protocols/theme');
-var bootstrap = require('../../lib/themes/bootstrap');
+var skin = require('../../lib/skin');
+var bootstrap = require('../../lib/skins/bootstrap');
 var diff = require('deep-diff').diff;
 var compact = require('./compact');
 var mixin = t.util.mixin;
@@ -23,7 +23,7 @@ test('bootstrap select()', function (tape) {
 
   var equal = function (tape, locals, expected, showDiff) {
     locals = mixin(mixin({}, base), locals, true);
-    locals = new theme.Select(locals);
+    locals = new skin.Select(locals);
     expected = compact(expected);
     var actual = compact(bootstrap.select(locals));
     if (showDiff) {

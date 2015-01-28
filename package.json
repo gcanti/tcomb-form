@@ -1,11 +1,10 @@
 {
   "name": "tcomb-form",
-  "version": "0.3.1",
+  "version": "0.4.0-beta",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "test": "browserify test/index | testling -u",
-    "test-node": "node test/index | tap-spec"
+    "test": "echo \"Open test/index.html in a browser...\" && watchify -t reactify test/index.js -o test/tests.js -v -x react"
   },
   "repository": {
     "type": "git",
@@ -21,6 +20,7 @@
     "react": "^0.12.0"
   },
   "dependencies": {
+    "debug": "^2.1.1",
     "tcomb-validation": "^0.3.0",
     "uvdom": "^0.1.0",
     "uvdom-bootstrap": "^0.1.2"
@@ -29,20 +29,14 @@
     "browserify": "^6.3.2",
     "deep-diff": "^0.3.0",
     "gulp": "^3.8.10",
-    "gulp-header": "^1.2.2",
     "gulp-jshint": "^1.9.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-streamify": "0.0.5",
-    "gulp-uglify": "^1.0.2",
-    "gulp-util": "^3.0.1",
-    "js-beautify": "^1.5.4",
+    "gulp-util": "^3.0.2",
     "jshint-stylish": "^1.0.0",
     "react-vdom": "^0.2.1",
-    "reactify": "^0.17.0",
-    "tap-spec": "^2.1.1",
+    "reactify": "^1.0.0",
     "tape": "^3.0.3",
-    "testling": "^1.7.1",
-    "vinyl-source-stream": "^1.0.0"
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^2.2.1"
   },
   "tags": [
     "form",
@@ -55,6 +49,7 @@
     "form",
     "validation",
     "generation",
+    "react",
     "react-component"
   ]
 }
