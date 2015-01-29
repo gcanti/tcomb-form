@@ -178,7 +178,7 @@ var Person = t.struct({
 
 var type = t.list(Person);
 </script>
-<script type="text/example" id="auto:labels">var type = t.struct({
+<script type="text/example" id="auto:placeholders">var type = t.struct({
   name: t.Str,
   surname: t.Str,
   email: t.maybe(t.Str),
@@ -186,9 +186,9 @@ var type = t.list(Person);
   rememberMe: t.Bool
 });
 
-// use the option auto: 'labels'
+// use the option auto: 'placeholders'
 var options = {
-  auto: 'labels' // try with `none` if you don't want
+  auto: 'placeholders' // try with `none` if you don't want
                  // neither labels nor placeholders
 };
 </script>

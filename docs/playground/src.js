@@ -52,7 +52,7 @@ var scripts = [
   {id: 'subtype', label: 'Subtypes'},
   {id: 'list', label: 'Lists'},
   {id: 'nested', label: 'Nested structures'},
-  {id: 'auto:labels', label: 'Automatically generated labels'},
+  {id: 'auto:placeholders', label: 'Automatically generated placeholders'},
   {id: 'defaultValue', label: 'Default values'},
   {id: 'label-help', label: 'Fieldset label and help'},
   {id: 'subtype-struct', label: 'Struct subtypes'},

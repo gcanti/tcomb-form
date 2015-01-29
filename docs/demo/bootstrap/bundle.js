@@ -213,7 +213,7 @@ var struct = t.struct;
 var union = t.union;
 
 var Auto = t.enums.of('placeholders labels none', 'Auto');
-Auto.defaultValue = 'placeholders';
+Auto.defaultValue = 'labels';
 
 // internationalization
 var I18n = struct({
@@ -431,7 +431,6 @@ var Checkbox = React.createClass({
   displayName: 'Checkbox',
 
   getInitialState: function () {
-    if (!this.props) debugger;
     return {
       hasError: false,
       value: normalize(this.props.value)
@@ -465,7 +464,10 @@ var Checkbox = React.createClass({
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
     debug('render', name);
+
+    // handle labels
     var label = opts.label || ctx.getDefaultLabel(); // checkboxes must have a label
+
     var value = this.state.value;
     return {
       autoFocus: opts.autoFocus,
@@ -674,9 +676,15 @@ var List = React.createClass({
     var auto = opts.auto || ctx.auto;
     var i18n = opts.i18n || ctx.i18n;
     var value = t.Arr(this.state.value || []);
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      auto !== 'none' ? ctx.getDefaultLabel() :
-      null;
+
+    // handle labels
+    var label = opts.label; // always use the option value if is manually set
+    if (!label && ctx.auto === 'labels') {
+      // add automatically a label only if there is not a label
+      // and the 'labels' auto option is turned on
+      label = ctx.getDefaultLabel();
+    }
+
     var config = merge(ctx.config, opts.config);
     var templates = merge(ctx.templates, opts.templates);
     var itemType = ctx.report.innerType.meta.type;
@@ -789,9 +797,15 @@ var Radio = React.createClass({
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
     debug('render', name);
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      ctx.auto === 'labels' ? ctx.getDefaultLabel() :
-      null;
+
+    // handle labels
+    var label = opts.label; // always use the option value if is manually set
+    if (!label && ctx.auto === 'labels') {
+      // add automatically a label only if there is not a label
+      // and the 'labels' auto option is turned on
+      label = ctx.getDefaultLabel();
+    }
+
     var options = opts.options ? opts.options.slice() : getOptionsOfEnum(ctx.report.innerType);
     // sort opts
     if (opts.order) {
@@ -888,9 +902,15 @@ var Select = React.createClass({
       multiple = true;
       Enum = getReport(Enum.meta.type).innerType;
     }
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      ctx.auto === 'labels' ? ctx.getDefaultLabel() :
-      null;
+
+    // handle labels
+    var label = opts.label; // always use the option value if is manually set
+    if (!label && ctx.auto === 'labels') {
+      // add automatically a label only if there is not a label
+      // and the 'labels' auto option is turned on
+      label = ctx.getDefaultLabel();
+    }
+
     var value = this.state.value;
     var options = opts.options ? opts.options.slice() : getOptionsOfEnum(Enum);
     // sort opts
@@ -1015,9 +1035,15 @@ var Struct = React.createClass({
     debug('render', ctx.name);
     t.assert(!ctx.report.maybe, 'maybe structs are not supported');
     var auto =  opts.auto || ctx.auto;
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      auto !== 'none' ? ctx.getDefaultLabel() :
-      null;
+
+    // handle labels
+    var label = opts.label; // always use the option value if is manually set
+    if (!label && ctx.auto === 'labels') {
+      // add automatically a label only if there is not a label
+      // and the 'labels' auto option is turned on
+      label = ctx.getDefaultLabel();
+    }
+
     var config = merge(ctx.config, opts.config);
     var value = this.state.value;
     var props = ctx.report.innerType.meta.props;
@@ -1129,14 +1155,23 @@ var Textbox = React.createClass({
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
     debug('render', name);
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      ctx.auto === 'labels' ? ctx.getDefaultLabel() :
-      null;
-    var placeholder = null;
-    if (!label && ctx.auto !== 'none') {
-      // labels have higher priority
-      placeholder = !t.Nil.is(opts.placeholder) ? opts.placeholder : ctx.getDefaultLabel();
+
+    // handle labels
+    var label = opts.label; // always use the option value if is manually set
+    if (!label && ctx.auto === 'labels') {
+      // add automatically a label only if there is not a label
+      // and the 'labels' auto option is turned on
+      label = ctx.getDefaultLabel();
     }
+
+    // handle placeholders
+    var placeholder = opts.placeholder; // always use the option value if is manually set
+    if (!label && !placeholder && ctx.auto === 'placeholders') {
+      // add automatically a placeholder only if there is not a label
+      // nor a placeholder manually set and the 'placeholders' auto option is turned on
+      placeholder = ctx.getDefaultLabel();
+    }
+
     var value = this.state.value;
     var transformer = opts.transformer || config.transformers[t.util.getName(ctx.report.innerType)];
     if (transformer) {

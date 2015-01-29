@@ -37,8 +37,38 @@ test('Textbox', function (tape) {
 
   });
 
+  tape.test('label', function (tape) {
+    tape.plan(5);
+
+    tape.strictEqual(
+      getLocals({type: t.Str}).label,
+      null,
+      'should default to null');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, label: 'defaultLabel', auto: 'labels'}).label,
+      'defaultLabel',
+      'should have a default label if ctx.auto === `labels`');
+
+    tape.strictEqual(
+      getLocals({type: t.maybe(t.Str), label: 'defaultLabel', auto: 'labels'}).label,
+      'defaultLabel (optional)',
+      'should handle optional types if ctx.auto === `labels`');
+
+    tape.strictEqual(
+      getLocals({type: t.Str}, {label: 'mylabel'}).label,
+      'mylabel',
+      'should handle label as strings');
+
+    tape.deepEqual(
+      vdom(getLocals({type: t.Str}, {label: React.DOM.i(null, 'JSX label')}).label),
+      {tag: 'i', attrs: {}, children: 'JSX label'},
+      'should handle label as JSX');
+
+  });
+
   tape.test('placeholder', function (tape) {
-    tape.plan(4);
+    tape.plan(9);
 
     tape.strictEqual(
       getLocals({type: t.Str}).placeholder,
@@ -46,19 +76,44 @@ test('Textbox', function (tape) {
       'default placeholder should be null');
 
     tape.strictEqual(
-      getLocals({type: t.Str, label: 'defaultLabel'}).placeholder,
-      'defaultLabel',
-      'should use ontext label');
-
-    tape.strictEqual(
-      getLocals({type: t.maybe(t.Str), label: 'defaultLabel'}).placeholder,
-      'defaultLabel (optional)',
-      'should handle an optional type');
-
-    tape.strictEqual(
       getLocals({type: t.Str}, {placeholder: 'myplaceholder'}).placeholder,
       'myplaceholder',
       'should handle placeholder option');
+
+    tape.strictEqual(
+      getLocals({type: t.Str}, {label: 'mylabel', placeholder: 'myplaceholder'}).placeholder,
+      'myplaceholder',
+      'should handle placeholder option even if a label is specified');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'placeholders'}, {label: 'mylabel'}).placeholder,
+      null,
+      'should be null if a label is specified');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'labels'}, {placeholder: 'myplaceholder'}).placeholder,
+      'myplaceholder',
+      'should handle placeholder option even if auto !== placeholders');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'none'}, {placeholder: 'myplaceholder'}).placeholder,
+      'myplaceholder',
+      'should handle placeholder option even if auto === none');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'placeholders', label: 'mylabel'}).placeholder,
+      'mylabel',
+      'should default to context default label if auto === placeholders');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'labels'}).placeholder,
+      null,
+      'should be null if auto !== placeholders');
+
+    tape.strictEqual(
+      getLocals({type: t.maybe(t.Str), label: 'defaultLabel', auto: 'placeholders'}).placeholder,
+      'defaultLabel (optional)',
+      'the fallback label should handle an optional type');
 
   });
 
@@ -79,41 +134,6 @@ test('Textbox', function (tape) {
       getLocals({type: t.Str}, {disabled: false}).disabled,
       false,
       'should handle disabled = false');
-  });
-
-  tape.test('label', function (tape) {
-    tape.plan(6);
-
-    tape.strictEqual(
-      getLocals({type: t.Str, label: 'defaultLabel'}).label,
-      null,
-      'should default to null');
-
-    tape.strictEqual(
-      getLocals({type: t.Str, label: 'defaultLabel', auto: 'labels'}).label,
-      'defaultLabel',
-      'should have a default label if ctx.auto = `labels`');
-
-    tape.strictEqual(
-      getLocals({type: t.maybe(t.Str), label: 'defaultLabel', auto: 'labels'}).label,
-      'defaultLabel (optional)',
-      'should handle optional types if ctx.auto = `labels`');
-
-    tape.deepEqual(
-      getLocals({type: t.Str, label: 'defaultLabel'}, {label: 'mylabel'}).placeholder,
-      null,
-      'should override the placeholder');
-
-    tape.strictEqual(
-      getLocals({type: t.Str, label: 'defaultLabel'}, {label: 'mylabel'}).label,
-      'mylabel',
-      'should handle label as strings');
-
-    tape.deepEqual(
-      vdom(getLocals({type: t.Str}, {label: React.DOM.i(null, 'JSX label')}).label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label as JSX');
-
   });
 
   tape.test('help', function (tape) {

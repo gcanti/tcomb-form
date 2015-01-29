@@ -10,7 +10,7 @@ This library builds on those two and **realizes an old dream of mine**.
 
 # Benefits
 
-With tcomb-form you simply call `var Form = t.form.create(Model)` to generate a form based on that domain model. What does this get you?
+With tcomb-form you simply call `<Form type={Model} />` to generate a form based on that domain model. What does this get you?
 
 1. Write a lot less HTML
 2. Usability and accessibility for free (automatic labels, inline validation, etc)

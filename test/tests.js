@@ -22,7 +22,7 @@ var struct = t.struct;
 var union = t.union;
 
 var Auto = t.enums.of('placeholders labels none', 'Auto');
-Auto.defaultValue = 'placeholders';
+Auto.defaultValue = 'labels';
 
 // internationalization
 var I18n = struct({
@@ -239,7 +239,6 @@ var Checkbox = React.createClass({
   displayName: 'Checkbox',
 
   getInitialState: function () {
-    if (!this.props) debugger;
     return {
       hasError: false,
       value: normalize(this.props.value)
@@ -273,7 +272,10 @@ var Checkbox = React.createClass({
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
     debug('render', name);
+
+    // handle labels
     var label = opts.label || ctx.getDefaultLabel(); // checkboxes must have a label
+
     var value = this.state.value;
     return {
       autoFocus: opts.autoFocus,
@@ -594,9 +596,15 @@ var Radio = React.createClass({
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
     debug('render', name);
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      ctx.auto === 'labels' ? ctx.getDefaultLabel() :
-      null;
+
+    // handle labels
+    var label = opts.label; // always use the option value if is manually set
+    if (!label && ctx.auto === 'labels') {
+      // add automatically a label only if there is not a label
+      // and the 'labels' auto option is turned on
+      label = ctx.getDefaultLabel();
+    }
+
     var options = opts.options ? opts.options.slice() : getOptionsOfEnum(ctx.report.innerType);
     // sort opts
     if (opts.order) {
@@ -692,9 +700,15 @@ var Select = React.createClass({
       multiple = true;
       Enum = getReport(Enum.meta.type).innerType;
     }
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      ctx.auto === 'labels' ? ctx.getDefaultLabel() :
-      null;
+
+    // handle labels
+    var label = opts.label; // always use the option value if is manually set
+    if (!label && ctx.auto === 'labels') {
+      // add automatically a label only if there is not a label
+      // and the 'labels' auto option is turned on
+      label = ctx.getDefaultLabel();
+    }
+
     var value = this.state.value;
     var options = opts.options ? opts.options.slice() : getOptionsOfEnum(Enum);
     // sort opts
@@ -931,14 +945,23 @@ var Textbox = React.createClass({
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
     debug('render', name);
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      ctx.auto === 'labels' ? ctx.getDefaultLabel() :
-      null;
-    var placeholder = null;
-    if (!label && ctx.auto !== 'none') {
-      // labels have higher priority
-      placeholder = !t.Nil.is(opts.placeholder) ? opts.placeholder : ctx.getDefaultLabel();
+
+    // handle labels
+    var label = opts.label; // always use the option value if is manually set
+    if (!label && ctx.auto === 'labels') {
+      // add automatically a label only if there is not a label
+      // and the 'labels' auto option is turned on
+      label = ctx.getDefaultLabel();
     }
+
+    // handle placeholders
+    var placeholder = opts.placeholder; // always use the option value if is manually set
+    if (!label && !placeholder && ctx.auto === 'placeholders') {
+      // add automatically a placeholder only if there is not a label
+      // nor a placeholder manually set and the 'placeholders' auto option is turned on
+      placeholder = ctx.getDefaultLabel();
+    }
+
     var value = this.state.value;
     var transformer = opts.transformer || config.transformers[t.util.getName(ctx.report.innerType)];
     if (transformer) {
@@ -12724,22 +12747,22 @@ test('Radio', function (tape) {
     tape.plan(5);
 
     tape.strictEqual(
-      getLocals({type: Country, label: 'defaultLabel'}).label,
+      getLocals({type: Country}).label,
       null,
       'should default to null');
 
     tape.strictEqual(
       getLocals({type: Country, label: 'defaultLabel', auto: 'labels'}).label,
       'defaultLabel',
-      'should have a default label if ctx.auto = `labels`');
+      'should have a default label if ctx.auto === `labels`');
 
     tape.strictEqual(
       getLocals({type: t.maybe(Country), label: 'defaultLabel', auto: 'labels'}).label,
       'defaultLabel (optional)',
-      'should handle optional types if ctx.auto = `labels`');
+      'should handle optional types if ctx.auto === `labels`');
 
     tape.strictEqual(
-      getLocals({type: Country, label: 'defaultLabel'}, {label: 'mylabel'}).label,
+      getLocals({type: Country}, {label: 'mylabel'}).label,
       'mylabel',
       'should handle label as strings');
 
@@ -13023,22 +13046,22 @@ test('Select', function (tape) {
     tape.plan(5);
 
     tape.strictEqual(
-      getLocals({type: Country, label: 'defaultLabel'}).label,
+      getLocals({type: Country}).label,
       null,
       'should default to null');
 
     tape.strictEqual(
       getLocals({type: Country, label: 'defaultLabel', auto: 'labels'}).label,
       'defaultLabel',
-      'should have a default label if ctx.auto = `labels`');
+      'should have a default label if ctx.auto === `labels`');
 
     tape.strictEqual(
       getLocals({type: t.maybe(Country), label: 'defaultLabel', auto: 'labels'}).label,
       'defaultLabel (optional)',
-      'should handle optional types if ctx.auto = `labels`');
+      'should handle optional types if ctx.auto === `labels`');
 
     tape.strictEqual(
-      getLocals({type: Country, label: 'defaultLabel'}, {label: 'mylabel'}).label,
+      getLocals({type: Country}, {label: 'mylabel'}).label,
       'mylabel',
       'should handle label as strings');
 
@@ -13539,8 +13562,38 @@ test('Textbox', function (tape) {
 
   });
 
+  tape.test('label', function (tape) {
+    tape.plan(5);
+
+    tape.strictEqual(
+      getLocals({type: t.Str}).label,
+      null,
+      'should default to null');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, label: 'defaultLabel', auto: 'labels'}).label,
+      'defaultLabel',
+      'should have a default label if ctx.auto === `labels`');
+
+    tape.strictEqual(
+      getLocals({type: t.maybe(t.Str), label: 'defaultLabel', auto: 'labels'}).label,
+      'defaultLabel (optional)',
+      'should handle optional types if ctx.auto === `labels`');
+
+    tape.strictEqual(
+      getLocals({type: t.Str}, {label: 'mylabel'}).label,
+      'mylabel',
+      'should handle label as strings');
+
+    tape.deepEqual(
+      vdom(getLocals({type: t.Str}, {label: React.DOM.i(null, 'JSX label')}).label),
+      {tag: 'i', attrs: {}, children: 'JSX label'},
+      'should handle label as JSX');
+
+  });
+
   tape.test('placeholder', function (tape) {
-    tape.plan(4);
+    tape.plan(9);
 
     tape.strictEqual(
       getLocals({type: t.Str}).placeholder,
@@ -13548,19 +13601,44 @@ test('Textbox', function (tape) {
       'default placeholder should be null');
 
     tape.strictEqual(
-      getLocals({type: t.Str, label: 'defaultLabel'}).placeholder,
-      'defaultLabel',
-      'should use ontext label');
-
-    tape.strictEqual(
-      getLocals({type: t.maybe(t.Str), label: 'defaultLabel'}).placeholder,
-      'defaultLabel (optional)',
-      'should handle an optional type');
-
-    tape.strictEqual(
       getLocals({type: t.Str}, {placeholder: 'myplaceholder'}).placeholder,
       'myplaceholder',
       'should handle placeholder option');
+
+    tape.strictEqual(
+      getLocals({type: t.Str}, {label: 'mylabel', placeholder: 'myplaceholder'}).placeholder,
+      'myplaceholder',
+      'should handle placeholder option even if a label is specified');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'placeholders'}, {label: 'mylabel'}).placeholder,
+      null,
+      'should be null if a label is specified');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'labels'}, {placeholder: 'myplaceholder'}).placeholder,
+      'myplaceholder',
+      'should handle placeholder option even if auto !== placeholders');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'none'}, {placeholder: 'myplaceholder'}).placeholder,
+      'myplaceholder',
+      'should handle placeholder option even if auto === none');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'placeholders', label: 'mylabel'}).placeholder,
+      'mylabel',
+      'should default to context default label if auto === placeholders');
+
+    tape.strictEqual(
+      getLocals({type: t.Str, auto: 'labels'}).placeholder,
+      null,
+      'should be null if auto !== placeholders');
+
+    tape.strictEqual(
+      getLocals({type: t.maybe(t.Str), label: 'defaultLabel', auto: 'placeholders'}).placeholder,
+      'defaultLabel (optional)',
+      'the fallback label should handle an optional type');
 
   });
 
@@ -13581,41 +13659,6 @@ test('Textbox', function (tape) {
       getLocals({type: t.Str}, {disabled: false}).disabled,
       false,
       'should handle disabled = false');
-  });
-
-  tape.test('label', function (tape) {
-    tape.plan(6);
-
-    tape.strictEqual(
-      getLocals({type: t.Str, label: 'defaultLabel'}).label,
-      null,
-      'should default to null');
-
-    tape.strictEqual(
-      getLocals({type: t.Str, label: 'defaultLabel', auto: 'labels'}).label,
-      'defaultLabel',
-      'should have a default label if ctx.auto = `labels`');
-
-    tape.strictEqual(
-      getLocals({type: t.maybe(t.Str), label: 'defaultLabel', auto: 'labels'}).label,
-      'defaultLabel (optional)',
-      'should handle optional types if ctx.auto = `labels`');
-
-    tape.deepEqual(
-      getLocals({type: t.Str, label: 'defaultLabel'}, {label: 'mylabel'}).placeholder,
-      null,
-      'should override the placeholder');
-
-    tape.strictEqual(
-      getLocals({type: t.Str, label: 'defaultLabel'}, {label: 'mylabel'}).label,
-      'mylabel',
-      'should handle label as strings');
-
-    tape.deepEqual(
-      vdom(getLocals({type: t.Str}, {label: React.DOM.i(null, 'JSX label')}).label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label as JSX');
-
   });
 
   tape.test('help', function (tape) {

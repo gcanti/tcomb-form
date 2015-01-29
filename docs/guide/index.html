@@ -184,7 +184,7 @@ var App = React.createClass({
 
 });
           </code></pre>
-          <p><b>Output</b> (placeholders are automatically generated):</p>
+          <p><b>Output</b> (labels are automatically generated):</p>
           <div class="preview">
             <div id="p1" class="form"></div>
             <pre id="v1" class="value"></pre>
@@ -335,11 +335,11 @@ var Persons = t.list(Person);
 
           <h2>Fieldset options</h2>
 
-          <a name="fieldset-auto"><h3>Automatically generated labels</h3></a>
-          <p>Pass the option <code>auto: 'labels'</code> to generate default labels:</p>
+          <a name="fieldset-auto"><h3>Automatically generated placeholders</h3></a>
+          <p>Pass the option <code>auto: 'placeholders'</code> to generate default placeholders:</p>
           <pre><code>
 var options = {
-  auto: 'labels'
+  auto: 'placeholders'
 };
 
 &lt;Form type={Person} options={options} /&gt;

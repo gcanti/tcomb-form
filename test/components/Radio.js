@@ -42,22 +42,22 @@ test('Radio', function (tape) {
     tape.plan(5);
 
     tape.strictEqual(
-      getLocals({type: Country, label: 'defaultLabel'}).label,
+      getLocals({type: Country}).label,
       null,
       'should default to null');
 
     tape.strictEqual(
       getLocals({type: Country, label: 'defaultLabel', auto: 'labels'}).label,
       'defaultLabel',
-      'should have a default label if ctx.auto = `labels`');
+      'should have a default label if ctx.auto === `labels`');
 
     tape.strictEqual(
       getLocals({type: t.maybe(Country), label: 'defaultLabel', auto: 'labels'}).label,
       'defaultLabel (optional)',
-      'should handle optional types if ctx.auto = `labels`');
+      'should handle optional types if ctx.auto === `labels`');
 
     tape.strictEqual(
-      getLocals({type: Country, label: 'defaultLabel'}, {label: 'mylabel'}).label,
+      getLocals({type: Country}, {label: 'mylabel'}).label,
       'mylabel',
       'should handle label as strings');
 
