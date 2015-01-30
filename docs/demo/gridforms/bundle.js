@@ -306,7 +306,7 @@ var Struct = struct({
   hasError: maybe(Bool),
   help: maybe(Label),
   error: maybe(ErrorMessage),
-  label: maybe(Label),
+  legend: maybe(Label),
   order: maybe(list(Label)),
   templates: maybe(Obj)
 }, 'Struct');
@@ -323,7 +323,7 @@ var List = struct({
   hasError: maybe(Bool),
   help: maybe(Label),
   error: maybe(ErrorMessage),
-  label: maybe(Label),
+  legend: maybe(Label),
   templates: maybe(Obj)
 }, 'List');
 
@@ -618,12 +618,12 @@ var List = React.createClass({
     var i18n = opts.i18n || ctx.i18n;
     var value = t.Arr(this.state.value || []);
 
-    // handle labels
-    var label = opts.label; // always use the option value if is manually set
-    if (!label && ctx.auto === 'labels') {
-      // add automatically a label only if there is not a label
+    // handle legend
+    var legend = opts.legend; // always use the option value if is manually set
+    if (!legend && ctx.auto === 'labels') {
+      // add automatically a legend only if there is not a legend
       // and the 'labels' auto option is turned on
-      label = ctx.getDefaultLabel();
+      legend = ctx.getDefaultLabel();
     }
 
     var config = merge(ctx.config, opts.config);
@@ -667,7 +667,7 @@ var List = React.createClass({
       hasError: opts.hasError || this.state.hasError,
       help: opts.help,
       items: items,
-      label: label,
+      legend: legend,
       value: value,
       templates: templates
     };
@@ -977,12 +977,12 @@ var Struct = React.createClass({
     t.assert(!ctx.report.maybe, 'maybe structs are not supported');
     var auto =  opts.auto || ctx.auto;
 
-    // handle labels
-    var label = opts.label; // always use the option value if is manually set
-    if (!label && ctx.auto === 'labels') {
-      // add automatically a label only if there is not a label
+    // handle legend
+    var legend = opts.legend; // always use the option value if is manually set
+    if (!legend && ctx.auto === 'labels') {
+      // add automatically a legend only if there is not a legend
       // and the 'labels' auto option is turned on
-      label = ctx.getDefaultLabel();
+      legend = ctx.getDefaultLabel();
     }
 
     var config = merge(ctx.config, opts.config);
@@ -1021,7 +1021,7 @@ var Struct = React.createClass({
       hasError: opts.hasError || this.state.hasError,
       help: opts.help,
       inputs: inputs,
-      label: label,
+      legend: legend,
       order: opts.order || Object.keys(props),
       value: value,
       templates: templates
@@ -1373,7 +1373,7 @@ var Struct = struct({
   help: maybe(Label),
   hasError: maybe(Bool),
   inputs: t.dict(Str, ReactElement),
-  label: maybe(Label),
+  legend: maybe(Label),
   order: list(Label),
   value: maybe(StructValue)
 }, 'Struct');
@@ -1397,7 +1397,7 @@ var List = struct({
   hasError: maybe(Bool),
   help: maybe(Label),
   items: list(ListItem),
-  label: maybe(Label),
+  legend: maybe(Label),
   value: maybe(list(t.Any))
 }, 'List');
 
@@ -1504,9 +1504,6 @@ var StructConfig = t.struct({
 var ListConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
-
-var TupleConfig = t.struct({
-}, 'TupleConfig');
 
 function getLabel(opts) {
   if (!opts.label) { return; }
@@ -1825,7 +1822,7 @@ function struct(locals) {
     children: getFieldset({
       className: config.horizontal && config.horizontal.getFieldsetClassName(),
       disabled: locals.disabled,
-      legend: locals.label,
+      legend: locals.legend,
       children: rows
     })
   });
@@ -1880,38 +1877,7 @@ function list(locals) {
     children: getFieldset({
       className: config.horizontal && config.horizontal.getFieldsetClassName(),
       disabled: locals.disabled,
-      legend: locals.label,
-      children: rows
-    })
-  });
-}
-
-function tuple(locals) {
-
-  var config = new TupleConfig(locals.config || {});
-
-  var rows = [];
-
-  if (locals.help) {
-    rows.push(getAlert({
-      children: locals.help
-    }));
-  }
-
-  rows = rows.concat(locals.items);
-
-  if (locals.error && locals.hasError) {
-    rows.push(getAlert({
-      type: 'danger',
-      children: locals.error
-    }));
-  }
-
-  return getFormGroup({
-    children: getFieldset({
-      className: config.horizontal && config.horizontal.getFieldsetClassName(),
-      disabled: locals.disabled,
-      legend: locals.label,
+      legend: locals.legend,
       children: rows
     })
   });
@@ -1924,8 +1890,7 @@ module.exports = {
   select: select,
   radio: radio,
   struct: struct,
-  list: list,
-  tuple: tuple
+  list: list
 };
 
 
@@ -2093,10 +2058,6 @@ function list() {
   throw new Error('lists are not (yet) supported');
 }
 
-function tuple() {
-  throw new Error('tuples are not (yet) supported');
-}
-
 module.exports = {
   name: 'gridforms',
   textbox: textbox,
@@ -2104,8 +2065,7 @@ module.exports = {
   select: select,
   radio: radio,
   struct: struct,
-  list: list,
-  tuple: tuple
+  list: list
 };
 
 

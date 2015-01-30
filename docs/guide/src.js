@@ -173,7 +173,7 @@ render('11', Person6, null, {
 // ===============================================
 
 render('12', Person1, {
-  label: React.DOM.i(null, 'My form legend')
+  legend: React.DOM.i(null, 'My form legend')
 });
 
 // ===============================================

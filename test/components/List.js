@@ -32,18 +32,18 @@ test('List', function (tape) {
       'should handle disabled = false');
   });
 
-  tape.test('label', function (tape) {
+  tape.test('legend', function (tape) {
     tape.plan(2);
 
     tape.strictEqual(
-      getLocals({type: t.list(t.Str)}, {label: 'mylabel'}).label,
-      'mylabel',
-      'should handle label as strings');
+      getLocals({type: t.list(t.Str)}, {legend: 'mylegend'}).legend,
+      'mylegend',
+      'should handle legend as strings');
 
     tape.deepEqual(
-      vdom(getLocals({type: t.list(t.Str)}, {label: React.DOM.i(null, 'JSX label')}).label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label as JSX');
+      vdom(getLocals({type: t.list(t.Str)}, {legend: React.DOM.i(null, 'JSX legend')}).legend),
+      {tag: 'i', attrs: {}, children: 'JSX legend'},
+      'should handle legend as JSX');
   });
 
   tape.test('help', function (tape) {

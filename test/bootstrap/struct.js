@@ -104,9 +104,9 @@ test('bootstrap struct()', function (tape) {
     });
   });
 
-  tape.test('label', function (tape) {
+  tape.test('legend', function (tape) {
     tape.plan(1);
-    equal(tape, {label: 'mylabel'}, {
+    equal(tape, {legend: 'mylegend'}, {
       tag: 'div',
       attrs: {
         className: {'form-group': true}
@@ -116,7 +116,7 @@ test('bootstrap struct()', function (tape) {
         attrs: {},
         children: {
           tag: 'legend',
-          children: 'mylabel'
+          children: 'mylegend'
         }
       }
     });

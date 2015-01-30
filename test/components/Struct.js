@@ -64,18 +64,18 @@ test('Struct', function (tape) {
 
   });
 
-  tape.test('label', function (tape) {
+  tape.test('legend', function (tape) {
     tape.plan(2);
 
     tape.strictEqual(
-      getLocals({type: Person}, {label: 'mylabel'}).label,
-      'mylabel',
-      'should handle label as strings');
+      getLocals({type: Person}, {legend: 'mylegend'}).legend,
+      'mylegend',
+      'should handle legend as strings');
 
     tape.deepEqual(
-      vdom(getLocals({type: Person}, {label: React.DOM.i(null, 'JSX label')}).label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label as JSX');
+      vdom(getLocals({type: Person}, {legend: React.DOM.i(null, 'JSX legend')}).legend),
+      {tag: 'i', attrs: {}, children: 'JSX legend'},
+      'should handle legend as JSX');
   });
 
   tape.test('help', function (tape) {

@@ -174,7 +174,7 @@ var Struct = struct({
   hasError: maybe(Bool),
   help: maybe(Label),
   error: maybe(ErrorMessage),
-  label: maybe(Label),
+  legend: maybe(Label),
   order: maybe(list(Label)),
   templates: maybe(Obj)
 }, 'Struct');
@@ -191,7 +191,7 @@ var List = struct({
   hasError: maybe(Bool),
   help: maybe(Label),
   error: maybe(ErrorMessage),
-  label: maybe(Label),
+  legend: maybe(Label),
   templates: maybe(Obj)
 }, 'List');
 
@@ -253,9 +253,8 @@ var Checkbox = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -376,7 +375,8 @@ function justify(value, keys) {
 }
 
 function normalize(value) {
-  return t.maybe(t.Arr)(value) || [];
+  t.maybe(t.Arr)(value);
+  return value || [];
 }
 
 var List = React.createClass({
@@ -403,9 +403,8 @@ var List = React.createClass({
   shouldComponentUpdate: shouldComponentUpdate,
 
   onChange: function (value, keys) {
-    this.setState({value: value, keys: keys}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value, keys: keys});
   },
 
   getValue: function () {
@@ -482,9 +481,15 @@ var List = React.createClass({
     var auto = opts.auto || ctx.auto;
     var i18n = opts.i18n || ctx.i18n;
     var value = t.Arr(this.state.value || []);
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      auto !== 'none' ? ctx.getDefaultLabel() :
-      null;
+
+    // handle legend
+    var legend = opts.legend; // always use the option value if is manually set
+    if (!legend && ctx.auto === 'labels') {
+      // add automatically a legend only if there is not a legend
+      // and the 'labels' auto option is turned on
+      legend = ctx.getDefaultLabel();
+    }
+
     var config = merge(ctx.config, opts.config);
     var templates = merge(ctx.templates, opts.templates);
     var itemType = ctx.report.innerType.meta.type;
@@ -526,7 +531,7 @@ var List = React.createClass({
       hasError: opts.hasError || this.state.hasError,
       help: opts.help,
       items: items,
-      label: label,
+      legend: legend,
       value: value,
       templates: templates
     };
@@ -579,9 +584,8 @@ var Radio = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -676,9 +680,8 @@ var Select = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -769,7 +772,8 @@ var compile = require('uvdom/react').compile;
 var debug = require('debug')('Struct');
 
 function normalize(value) {
-  return t.maybe(t.Obj)(value) || {};
+  t.maybe(t.Obj)(value);
+  return value || {};
 }
 
 var Struct = React.createClass({
@@ -792,9 +796,8 @@ var Struct = React.createClass({
   onChange: function (fieldName, fieldValue) {
     var value = t.util.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -832,9 +835,15 @@ var Struct = React.createClass({
     debug('render', ctx.name);
     t.assert(!ctx.report.maybe, 'maybe structs are not supported');
     var auto =  opts.auto || ctx.auto;
-    var label = !t.Nil.is(opts.label) ? opts.label :
-      auto !== 'none' ? ctx.getDefaultLabel() :
-      null;
+
+    // handle legend
+    var legend = opts.legend; // always use the option value if is manually set
+    if (!legend && ctx.auto === 'labels') {
+      // add automatically a legend only if there is not a legend
+      // and the 'labels' auto option is turned on
+      legend = ctx.getDefaultLabel();
+    }
+
     var config = merge(ctx.config, opts.config);
     var value = this.state.value;
     var props = ctx.report.innerType.meta.props;
@@ -871,7 +880,7 @@ var Struct = React.createClass({
       hasError: opts.hasError || this.state.hasError,
       help: opts.help,
       inputs: inputs,
-      label: label,
+      legend: legend,
       order: opts.order || Object.keys(props),
       value: value,
       templates: templates
@@ -927,9 +936,8 @@ var Textbox = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -1007,8 +1015,7 @@ module.exports = function (nextProps, nextState) {
     nextState.hasError !== this.state.hasError ||
     nextProps.value !== this.props.value ||
     nextProps.options !== this.props.options ||
-    nextProps.ctx.report.type !== this.props.ctx.report.type ||
-    nextProps.onChange !== this.props.onChange;
+    nextProps.ctx.report.type !== this.props.ctx.report.type;
 };
 
 },{}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js":[function(require,module,exports){
@@ -1217,7 +1224,7 @@ var Struct = struct({
   help: maybe(Label),
   hasError: maybe(Bool),
   inputs: t.dict(Str, ReactElement),
-  label: maybe(Label),
+  legend: maybe(Label),
   order: list(Label),
   value: maybe(StructValue)
 }, 'Struct');
@@ -1241,7 +1248,7 @@ var List = struct({
   hasError: maybe(Bool),
   help: maybe(Label),
   items: list(ListItem),
-  label: maybe(Label),
+  legend: maybe(Label),
   value: maybe(list(t.Any))
 }, 'List');
 
@@ -1347,9 +1354,6 @@ var StructConfig = t.struct({
 var ListConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
-
-var TupleConfig = t.struct({
-}, 'TupleConfig');
 
 function getLabel(opts) {
   if (!opts.label) { return; }
@@ -1668,7 +1672,7 @@ function struct(locals) {
     children: getFieldset({
       className: config.horizontal && config.horizontal.getFieldsetClassName(),
       disabled: locals.disabled,
-      legend: locals.label,
+      legend: locals.legend,
       children: rows
     })
   });
@@ -1723,38 +1727,7 @@ function list(locals) {
     children: getFieldset({
       className: config.horizontal && config.horizontal.getFieldsetClassName(),
       disabled: locals.disabled,
-      legend: locals.label,
-      children: rows
-    })
-  });
-}
-
-function tuple(locals) {
-
-  var config = new TupleConfig(locals.config || {});
-
-  var rows = [];
-
-  if (locals.help) {
-    rows.push(getAlert({
-      children: locals.help
-    }));
-  }
-
-  rows = rows.concat(locals.items);
-
-  if (locals.error && locals.hasError) {
-    rows.push(getAlert({
-      type: 'danger',
-      children: locals.error
-    }));
-  }
-
-  return getFormGroup({
-    children: getFieldset({
-      className: config.horizontal && config.horizontal.getFieldsetClassName(),
-      disabled: locals.disabled,
-      legend: locals.label,
+      legend: locals.legend,
       children: rows
     })
   });
@@ -1767,8 +1740,7 @@ module.exports = {
   select: select,
   radio: radio,
   struct: struct,
-  list: list,
-  tuple: tuple
+  list: list
 };
 
 },{"../../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom-bootstrap/form":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/form.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js":[function(require,module,exports){
@@ -10829,9 +10801,9 @@ test('bootstrap list()', function (tape) {
     });
   });
 
-  tape.test('label', function (tape) {
+  tape.test('legend', function (tape) {
     tape.plan(1);
-    equal(tape, {label: 'mylabel'}, {
+    equal(tape, {legend: 'mylegend'}, {
       tag: 'div',
       attrs: {
         className: {'form-group': true}
@@ -10841,7 +10813,7 @@ test('bootstrap list()', function (tape) {
         attrs: {},
         children: {
           tag: 'legend',
-          children: 'mylabel'
+          children: 'mylegend'
         }
       }
     });
@@ -12053,9 +12025,9 @@ test('bootstrap struct()', function (tape) {
     });
   });
 
-  tape.test('label', function (tape) {
+  tape.test('legend', function (tape) {
     tape.plan(1);
-    equal(tape, {label: 'mylabel'}, {
+    equal(tape, {legend: 'mylegend'}, {
       tag: 'div',
       attrs: {
         className: {'form-group': true}
@@ -12065,7 +12037,7 @@ test('bootstrap struct()', function (tape) {
         attrs: {},
         children: {
           tag: 'legend',
-          children: 'mylabel'
+          children: 'mylegend'
         }
       }
     });
@@ -12599,18 +12571,18 @@ test('List', function (tape) {
       'should handle disabled = false');
   });
 
-  tape.test('label', function (tape) {
+  tape.test('legend', function (tape) {
     tape.plan(2);
 
     tape.strictEqual(
-      getLocals({type: t.list(t.Str)}, {label: 'mylabel'}).label,
-      'mylabel',
-      'should handle label as strings');
+      getLocals({type: t.list(t.Str)}, {legend: 'mylegend'}).legend,
+      'mylegend',
+      'should handle legend as strings');
 
     tape.deepEqual(
-      vdom(getLocals({type: t.list(t.Str)}, {label: React.DOM.i(null, 'JSX label')}).label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label as JSX');
+      vdom(getLocals({type: t.list(t.Str)}, {legend: React.DOM.i(null, 'JSX legend')}).legend),
+      {tag: 'i', attrs: {}, children: 'JSX legend'},
+      'should handle legend as JSX');
   });
 
   tape.test('help', function (tape) {
@@ -13409,18 +13381,18 @@ test('Struct', function (tape) {
 
   });
 
-  tape.test('label', function (tape) {
+  tape.test('legend', function (tape) {
     tape.plan(2);
 
     tape.strictEqual(
-      getLocals({type: Person}, {label: 'mylabel'}).label,
-      'mylabel',
-      'should handle label as strings');
+      getLocals({type: Person}, {legend: 'mylegend'}).legend,
+      'mylegend',
+      'should handle legend as strings');
 
     tape.deepEqual(
-      vdom(getLocals({type: Person}, {label: React.DOM.i(null, 'JSX label')}).label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label as JSX');
+      vdom(getLocals({type: Person}, {legend: React.DOM.i(null, 'JSX legend')}).legend),
+      {tag: 'i', attrs: {}, children: 'JSX legend'},
+      'should handle legend as JSX');
   });
 
   tape.test('help', function (tape) {
