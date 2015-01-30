@@ -676,7 +676,82 @@ render('43', Person7, {
 
 // ===============================================
 
-render('44', Person7, null, null, true);
+var Person8 = t.struct({
+  name: t.Str,
+  surname: t.Str
+});
+
+var Person9 = t.struct({
+  name: t.Str,
+  surname: t.Str,
+  age: t.Num
+});
+
+(function render(i) {
+
+  var formPreview = document.getElementById('p' + i);
+  var Form = t.form.Form;
+
+  var App  = React.createClass({
+
+    getInitialState: function () {
+      return {
+        type: Person8,
+        options: {
+          fields: {
+            name: {
+              help: 'Type "a" to change the form configuration on the fly'
+            }
+          }
+        },
+        value: {}
+      };
+    },
+
+    onClick: function () {
+      var value = this.refs.form.getValue();
+      if (value) {
+        var valuePreview = document.getElementById('v' + i)
+        valuePreview.style.display = 'block';
+        valuePreview.innerHTML = JSON.stringify(value, null, 2);
+      }
+    },
+
+    onChange: function (value) {
+      if (value.name === 'a') {
+        this.state.type = Person9;
+        this.state.options.fields.surname = {disabled: true};
+      }
+      this.state.value = value;
+      this.forceUpdate();
+    },
+
+    render: function () {
+      return (
+        React.DOM.div(null,
+          React.createFactory(Form)({
+            ref: 'form',
+            type: this.state.type,
+            options: this.state.options,
+            value: this.state.value,
+            onChange: this.onChange
+          }),
+          React.DOM.button({
+            onClick: this.onClick,
+            className: 'btn btn-primary'
+          }, 'Click me')
+        )
+      );
+    }
+
+  });
+
+  React.render(React.createFactory(App)(), formPreview);
+})('44');
+
+// ===============================================
+
+render('45', Person7, null, null, true);
 
 // ===============================================
 

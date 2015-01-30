@@ -124,9 +124,14 @@
                 <li><a href="#isomorphic-name">name attributes</a></li>
               </ul>
             </li>
+            <li><b>Controlled forms</b>
+              <ul>
+                <li><a href="#controlled-forms">Changing the form configuration on the fly</a></li>
+              </ul>
+            </li>
             <li><b>API</b>
               <ul>
-                <li><a href="#api-create">t.form.create</a></li>
+                <li><a href="#api-Form">t.form.Form</a></li>
               </ul>
             </li>
           <ul>
@@ -1439,9 +1444,76 @@ app.post('/', function (req, res) {
 });
           </code></pre>
 
+          <h1>Controlled forms</h1>
+
+          <a name="controlled-forms"><h2>Changing the form configuration on the fly</h2></a>
+          <pre><code>
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str
+});
+
+var Person2 = t.struct({
+  name: t.Str,
+  surname: t.Str,
+  age: t.Num
+});
+
+var App = React.createClass({
+  getInitialState: function () {
+    return {
+      type: Person,
+      options: {
+        fields: {
+          name: {
+            help: 'Type "a" to change the form configuration on the fly'
+          }
+        }
+      },
+      value: {}
+    };
+  },
+  getValue: function () {
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+    }
+  },
+  onChange: function (value) {
+    // changes the form configuration on the fly!
+    if (value.name === 'a') {
+      // you can change even the type
+      this.state.type = Person2;
+      // change options
+      this.state.options.fields.surname = {disabled: true};
+    }
+    this.state.value = value;
+    this.forceUpdate();
+  },
+  render: function() {
+    return (
+      &lt;div&gt;
+        &lt;Form ref="form"
+          <b>type={this.state.type}
+          options={this.state.options}
+          value={this.state.value}</b>
+          onChange={this.onChange} /&gt;
+        &lt;button className="btn btn-primary" onClick={this.getValue}>getValue&lt;/button&gt;
+      &lt;/div&gt;
+    );
+  }
+});
+          </code></pre>
+
+          <p><b>Output</b>:</p>
+          <div class="preview">
+            <div id="p44" class="form"></div>
+            <pre id="v44" class="value"></pre>
+          </div>
+
           <h1>API</h1>
 
-          <a name="api-create"><h2>t.form.create</h2></a>
+          <a name="api-Form"><h2>t.form.Form</h2></a>
           <p>Main API</p>
           <pre><code>
 t.form.Form: ReactClass
@@ -1479,8 +1551,8 @@ var App = React.createClass({
 
           <p><b>Output</b> (raw values will be displayed while typing):</p>
           <div class="preview">
-            <div id="p44" class="form"></div>
-            <pre id="v44" class="value"></pre>
+            <div id="p45" class="form"></div>
+            <pre id="v45" class="value"></pre>
           </div>
 
         </div>

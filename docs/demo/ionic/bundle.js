@@ -312,9 +312,8 @@ var Checkbox = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -437,7 +436,8 @@ function justify(value, keys) {
 }
 
 function normalize(value) {
-  return t.maybe(t.Arr)(value) || [];
+  t.maybe(t.Arr)(value);
+  return value || [];
 }
 
 var List = React.createClass({
@@ -464,9 +464,8 @@ var List = React.createClass({
   shouldComponentUpdate: shouldComponentUpdate,
 
   onChange: function (value, keys) {
-    this.setState({value: value, keys: keys}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value, keys: keys});
   },
 
   getValue: function () {
@@ -647,9 +646,8 @@ var Radio = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -745,9 +743,8 @@ var Select = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -839,7 +836,8 @@ var compile = require('uvdom/react').compile;
 var debug = require('debug')('Struct');
 
 function normalize(value) {
-  return t.maybe(t.Obj)(value) || {};
+  t.maybe(t.Obj)(value);
+  return value || {};
 }
 
 var Struct = React.createClass({
@@ -862,9 +860,8 @@ var Struct = React.createClass({
   onChange: function (fieldName, fieldValue) {
     var value = t.util.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -1004,9 +1001,8 @@ var Textbox = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.setState({value: value}, function () {
-      this.props.onChange(value);
-    }.bind(this));
+    this.props.onChange(value);
+    this.setState({value: value});
   },
 
   getValue: function () {
@@ -1085,8 +1081,7 @@ module.exports = function (nextProps, nextState) {
     nextState.hasError !== this.state.hasError ||
     nextProps.value !== this.props.value ||
     nextProps.options !== this.props.options ||
-    nextProps.ctx.report.type !== this.props.ctx.report.type ||
-    nextProps.onChange !== this.props.onChange;
+    nextProps.ctx.report.type !== this.props.ctx.report.type;
 };
 
 
