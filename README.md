@@ -29,6 +29,9 @@ With tcomb-form you simply call `<Form type={Model} />` to generate a form based
 
 # Contributions
 
+Thanks so much to [Chris Pearce](https://github.com/Chrisui) for pointing me in the right direction
+and for supporting me in the v0.4 rewrite.
+
 Special thanks to [William Lubelski](https://github.com/lubelski) ([@uiwill](https://twitter.com/uiwill)), without him this library would be less magic.
 
 Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the excellent `humanize()` function.
