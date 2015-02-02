@@ -287,7 +287,7 @@ var getError = require('../util/getError');
 var merge = require('../util/merge');
 var uuid = require('../util/uuid');
 var compile = require('uvdom/react').compile;
-var debug = require('debug')('Checkbox');
+var debug = require('debug')('component:Checkbox');
 
 function normalize(value) {
   return !!t.maybe(t.Bool)(value);
@@ -329,7 +329,7 @@ var Checkbox = React.createClass({
     t.assert(ctx.report.innerType === t.Bool, 'checkboxes support only booleans');
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
-    debug('render', name);
+    debug('render() called for `%s` field', name);
 
     // handle labels
     var label = opts.label || ctx.getDefaultLabel(); // checkboxes must have a label
@@ -424,7 +424,7 @@ var move = require('../util/move');
 var uuid = require('../util/uuid');
 var getReport = require('../util/getReport');
 var compile = require('uvdom/react').compile;
-var debug = require('debug')('List');
+var debug = require('debug')('component:List');
 
 function justify(value, keys) {
   if (value.length === keys.length) { return keys; }
@@ -537,7 +537,7 @@ var List = React.createClass({
   getLocals: function () {
     var opts = new api.List(this.props.options || {});
     var ctx = this.props.ctx;
-    debug('render', ctx.name);
+    debug('render() called for `%s` field', ctx.name);
     t.assert(!ctx.report.maybe, 'maybe lists are not supported');
     var auto = opts.auto || ctx.auto;
     var i18n = opts.i18n || ctx.i18n;
@@ -621,7 +621,7 @@ var merge = require('../util/merge');
 var uuid = require('../util/uuid');
 var getOptionsOfEnum = require('../util/getOptionsOfEnum');
 var compile = require('uvdom/react').compile;
-var debug = require('debug')('Radio');
+var debug = require('debug')('component:Radio');
 
 function normalize(value) {
   return t.maybe(api.SelectValue)(value);
@@ -661,7 +661,7 @@ var Radio = React.createClass({
     var ctx = this.props.ctx;
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
-    debug('render', name);
+    debug('render() called for `%s` field', name);
 
     // handle labels
     var label = opts.label; // always use the option value if is manually set
@@ -718,7 +718,7 @@ var merge = require('../util/merge');
 var uuid = require('../util/uuid');
 var getOptionsOfEnum = require('../util/getOptionsOfEnum');
 var compile = require('uvdom/react').compile;
-var debug = require('debug')('Select');
+var debug = require('debug')('component:Select');
 
 function normalize(value) {
   return t.maybe(api.SelectValue)(value);
@@ -758,7 +758,7 @@ var Select = React.createClass({
     var ctx = this.props.ctx;
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
-    debug('render', name);
+    debug('render() called for `%s` field', name);
     var Enum = ctx.report.innerType;
     // handle `multiple` attribute
     var multiple = false;
@@ -833,7 +833,7 @@ var merge = require('../util/merge');
 var humanize = require('../util/humanize');
 var getReport = require('../util/getReport');
 var compile = require('uvdom/react').compile;
-var debug = require('debug')('Struct');
+var debug = require('debug')('component:Struct');
 
 function normalize(value) {
   t.maybe(t.Obj)(value);
@@ -896,7 +896,7 @@ var Struct = React.createClass({
   getLocals: function () {
     var opts = new api.Struct(this.props.options || {});
     var ctx = this.props.ctx;
-    debug('render', ctx.name);
+    debug('render() called for `%s` field', ctx.name);
     t.assert(!ctx.report.maybe, 'maybe structs are not supported');
     var auto =  opts.auto || ctx.auto;
 
@@ -974,7 +974,7 @@ var merge = require('../util/merge');
 var uuid = require('../util/uuid');
 var config = require('../config');
 var compile = require('uvdom/react').compile;
-var debug = require('debug')('Textbox');
+var debug = require('debug')('component:Textbox');
 
 function normalize(value) {
   return (t.Str.is(value) && value.trim() === '') ? null :
@@ -1017,7 +1017,7 @@ var Textbox = React.createClass({
     var ctx = this.props.ctx;
     var id = opts.id || this._rootNodeID || uuid();
     var name = opts.name || ctx.name || id;
-    debug('render', name);
+    debug('render() called for `%s` field', name);
 
     // handle labels
     var label = opts.label; // always use the option value if is manually set
@@ -1089,10 +1089,9 @@ module.exports = function (nextProps, nextState) {
 'use strict';
 
 var api = require('./api');
-var Checkbox = require('./components/Checkbox');
 var t = require('tcomb-validation');
 
-var i18n = new api.I18n({
+var defaultLocaleBundle = new api.I18n({
   optional: ' (optional)',
   add: 'Add',
   remove: 'Remove',
@@ -1100,22 +1099,24 @@ var i18n = new api.I18n({
   down: 'Down'
 });
 
+var NumberTransformer = new api.Transformer({
+  format: function (value) {
+    return t.Nil.is(value) ? value : String(value);
+  },
+  parse: function (value) {
+    var n = parseFloat(value);
+    var isNumeric = (value - n + 1) >= 0;
+    return isNumeric ? n : value;
+  }
+});
+
 module.exports = {
-  i18n: i18n,
+  i18n: defaultLocaleBundle,
   transformers: {
-    Num: new api.Transformer({
-      format: function (value) {
-        return t.Nil.is(value) ? value : String(value);
-      },
-      parse: function (value) {
-        var n = parseFloat(value);
-        var isNumeric = (value - n + 1) >= 0;
-        return isNumeric ? n : value;
-      }
-    })
+    Num: NumberTransformer
   },
   irreducibles: {
-    Bool: Checkbox
+    Bool: require('./components/Checkbox')
   }
 };
 

@@ -1,6 +1,6 @@
 v0.4
 
-- complete refactoring
+- complete rewrite
 
 **BREAKING**
 
