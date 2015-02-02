@@ -397,7 +397,7 @@ render('31', Select2, {
 render('32', Select, {
   fields: {
     gender: {
-      factory: t.form.radio
+      factory: t.form.Radio
     }
   }
 });

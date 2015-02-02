@@ -1,12 +1,14 @@
 v0.4
 
 - complete refactoring
-- changed auto default value to `labels`, #62
-- Always show placeholders that are set, #61
 
 **BREAKING**
 
 - removed `t.form.create` API, use `t.form.Form` component instead
+- Renamed options->label to options->legend (structs and lists)
+- changed auto default value to `labels`, #62
+- Always show placeholders that are set, #61
+- renamed `t.form.radio` to `t.form.Radio`
 
 v0.3.1
 
