@@ -496,7 +496,7 @@ var List = React.createClass({
     var factory = React.createFactory(getComponent(itemType, opts.item));
     var items = value.map(function (value, i) {
       var buttons = [];
-      if (!opts.disabledRemove) { buttons.push({ label: i18n.remove, click: this.removeItem.bind(this, i) }); }
+      if (!opts.disableRemove) { buttons.push({ label: i18n.remove, click: this.removeItem.bind(this, i) }); }
       if (!opts.disableOrder)   { buttons.push({ label: i18n.up, click: this.moveUpItem.bind(this, i) }); }
       if (!opts.disableOrder)   { buttons.push({ label: i18n.down, click: this.moveDownItem.bind(this, i) }); }
       return {
@@ -545,6 +545,7 @@ var List = React.createClass({
 });
 
 module.exports = List;
+
 
 },{"../api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../getComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/getComponent.js","../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../util/getError":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js","../util/getReport":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getReport.js","../util/merge":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/merge.js","../util/move":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/move.js","../util/uuid":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/uuid.js","./shouldComponentUpdate":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/shouldComponentUpdate.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"react","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom/react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Radio.js":[function(require,module,exports){
 'use strict';
@@ -1683,6 +1684,17 @@ function list(locals) {
   }
 
   rows = rows.concat(locals.items.map(function (item) {
+    if (item.buttons.length === 0) {
+      return uform.getRow({
+        key: item.key,
+        children: [
+          getCol({
+            breakpoints: {xs: 12},
+            children: item.input
+          })
+        ]
+      });
+    }
     return uform.getRow({
       key: item.key,
       children: [
@@ -12561,6 +12573,21 @@ test('List', function (tape) {
       getLocals({type: t.list(t.Str)}, {disabled: false}).disabled,
       false,
       'should handle disabled = false');
+  });
+
+  tape.test('disableRemove', function (tape) {
+    tape.plan(2);
+
+    tape.strictEqual(
+      getLocals({type: t.list(t.Str)}, null, ['a']).items[0].buttons[0].label,
+      'Remove',
+      'default disableRemove should be null');
+
+    tape.strictEqual(
+      getLocals({type: t.list(t.Str)}, {disableRemove: true}, ['a']).items[0].buttons[0].label,
+      'Up',
+      'should handle disableRemove = true');
+
   });
 
   tape.test('legend', function (tape) {

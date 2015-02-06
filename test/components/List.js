@@ -32,6 +32,21 @@ test('List', function (tape) {
       'should handle disabled = false');
   });
 
+  tape.test('disableRemove', function (tape) {
+    tape.plan(2);
+
+    tape.strictEqual(
+      getLocals({type: t.list(t.Str)}, null, ['a']).items[0].buttons[0].label,
+      'Remove',
+      'default disableRemove should be null');
+
+    tape.strictEqual(
+      getLocals({type: t.list(t.Str)}, {disableRemove: true}, ['a']).items[0].buttons[0].label,
+      'Up',
+      'should handle disableRemove = true');
+
+  });
+
   tape.test('legend', function (tape) {
     tape.plan(2);
 

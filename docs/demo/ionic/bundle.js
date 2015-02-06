@@ -557,7 +557,7 @@ var List = React.createClass({
     var factory = React.createFactory(getComponent(itemType, opts.item));
     var items = value.map(function (value, i) {
       var buttons = [];
-      if (!opts.disabledRemove) { buttons.push({ label: i18n.remove, click: this.removeItem.bind(this, i) }); }
+      if (!opts.disableRemove) { buttons.push({ label: i18n.remove, click: this.removeItem.bind(this, i) }); }
       if (!opts.disableOrder)   { buttons.push({ label: i18n.up, click: this.moveUpItem.bind(this, i) }); }
       if (!opts.disableOrder)   { buttons.push({ label: i18n.down, click: this.moveDownItem.bind(this, i) }); }
       return {
@@ -606,6 +606,7 @@ var List = React.createClass({
 });
 
 module.exports = List;
+
 
 
 },{"../api":3,"../getComponent":13,"../skin":15,"../util/getError":18,"../util/getReport":20,"../util/merge":22,"../util/move":23,"../util/uuid":24,"./shouldComponentUpdate":11,"debug":25,"react":"react","tcomb-validation":28,"uvdom/react":54}],7:[function(require,module,exports){
