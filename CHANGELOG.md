@@ -1,3 +1,8 @@
+v0.4.1
+
+- fix #65 bug
+- bootstrap skin: lists - if there are no buttons, give items 12 cols
+
 v0.4
 
 - complete rewrite
