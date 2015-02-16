@@ -1,3 +1,7 @@
+v0.4.2
+
+- upgrade to tcomb-validation v1.0
+
 v0.4.1
 
 - fix #65 bug

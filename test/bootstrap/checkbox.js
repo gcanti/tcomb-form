@@ -6,7 +6,7 @@ var skin = require('../../lib/skin');
 var bootstrap = require('../../lib/skins/bootstrap');
 var diff = require('deep-diff').diff;
 var compact = require('./compact');
-var mixin = t.util.mixin;
+var mixin = t.mixin;
 
 test('bootstrap checkbox()', function (tape) {
 

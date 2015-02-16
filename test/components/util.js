@@ -10,7 +10,7 @@ var Context = require('../../lib/api').Context;
 function noop() {}
 
 function getContext(ctx) {
-  return new Context(t.util.mixin({
+  return new Context(t.mixin({
     templates: config.templates,
     i18n: config.i18n,
     report: getReport(ctx.type),
