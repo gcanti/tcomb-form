@@ -182,7 +182,7 @@ declare module tcomb {
       onChange?: (value: any) => void;
     }
 
-    interface Form extends React.ComponentClass<FormProps> {}
+    interface Form extends React.ReactElement<any> {}
 
     //
     // exports
