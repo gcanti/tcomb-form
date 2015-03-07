@@ -1,3 +1,7 @@
+v0.4.3
+
+- fix onChange order: after setState
+
 v0.4.2
 
 - upgrade to tcomb-validation v1.0

@@ -253,8 +253,9 @@ var Checkbox = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -403,8 +404,9 @@ var List = React.createClass({
   shouldComponentUpdate: shouldComponentUpdate,
 
   onChange: function (value, keys) {
-    this.props.onChange(value);
-    this.setState({value: value, keys: keys});
+    this.setState({value: value, keys: keys}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -585,8 +587,9 @@ var Radio = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -681,8 +684,9 @@ var Select = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -797,8 +801,9 @@ var Struct = React.createClass({
   onChange: function (fieldName, fieldValue) {
     var value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -937,8 +942,9 @@ var Textbox = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
