@@ -114,7 +114,7 @@ var Booking = t.struct({
   message:        t.maybe(t.Str)
 });
 
-var Form = t.form.create(Person, {
+var Form = t.form.create(Booking, {
   templates: {
     struct: <b>mylayout</b> // custom layout
   }
