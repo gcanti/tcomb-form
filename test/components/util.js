@@ -20,10 +20,9 @@ function getContext(ctx) {
 
 function getLocalsFactory(factory) {
   return function getLocals(ctx, options, value, onChange) {
-    console.log(React.version);
     var x;
     if (React.version.indexOf('0.13') !== -1) {
-      x = new factory.type({
+      x = new factory({
         ctx: getContext(ctx),
         options: options,
         value: value,
