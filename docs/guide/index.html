@@ -78,6 +78,7 @@
                     <li><a href="#textbox-disabled">Disabled</a></li>
                     <li><a href="#textbox-error">Error message</a></li>
                     <li><a href="#textbox-autoFocus">Auto focus</a></li>
+                    <li><a href="#textbox-className">className</a></li>
                   </ul>
                 </li>
                 <li>Checkbox
@@ -687,6 +688,18 @@ var options = {
 };
           </code></pre>
 
+          <a name="textbox-className"><h3>className</h3></a>
+          <p>Adds a custom className to the <code>&lt;input /&gt;</code> tag.</p>
+          <pre><code>
+var options = {
+  fields: {
+    mytext: {
+      className: 'myClassName'
+    }
+  }
+};
+          </code></pre>
+
           <h2>Checkbox options</h2>
 
           <a name="checkbox-common"><h3>Common options</h3></a>
@@ -698,6 +711,7 @@ var options = {
             <li><code>hasError</code></li>
             <li><code>error</code></li>
             <li><code>autoFocus</code></li>
+            <li><code>className</code></li>
           </ul>
           <pre><code>
 var Checkbox = t.struct({
@@ -732,6 +746,7 @@ var options = {
             <li><code>hasError</code></li>
             <li><code>error</code></li>
             <li><code>autoFocus</code></li>
+            <li><code>className</code></li>
           </ul>
           <pre><code>
 var Select = t.struct({
