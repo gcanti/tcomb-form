@@ -120,7 +120,7 @@ declare module tcomb {
       error?: ErrorMessage;
       label?: Label;
       name?: string;
-      nullOption?: Option;
+      nullOption?: Option | boolean;
       options?: Array<Option | OptGroup>;
       order?: Order;
       template?: Template;
