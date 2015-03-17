@@ -266,7 +266,7 @@ test('Select', function (tape) {
   });
 
   tape.test('nullOption', function (tape) {
-    tape.plan(1);
+    tape.plan(2);
 
     tape.deepEqual(
       getLocals({type: Country}, {nullOption: {value: '-1', text: 'my text'}}).options,
@@ -277,6 +277,15 @@ test('Select', function (tape) {
         {value: 'FR', text: 'France'}
       ],
       'should add the nullOption in first position');
+
+    tape.deepEqual(
+      getLocals({type: Country}, {nullOption: false}).options,
+      [
+        {value: 'IT', text: 'Italy'},
+        {value: 'US', text: 'United States'},
+        {value: 'FR', text: 'France'}
+      ],
+      'should handle nullOption = false');
 
   });
 

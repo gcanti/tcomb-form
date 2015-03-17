@@ -134,6 +134,12 @@ Order.getComparator = function (order) {
 // handle multiple attribute
 var SelectValue = union([Str, list(Str)], 'SelectValue');
 
+var NullOption = union([Option, Bool], 'NullOption');
+
+NullOption.dispatch = function (x) {
+  return Bool.is(x) ? Bool : Option;
+};
+
 var Select = struct({
   autoFocus: maybe(Bool),
   config: maybe(Obj),
@@ -144,7 +150,7 @@ var Select = struct({
   error: maybe(ErrorMessage),
   label: maybe(Label),
   name: maybe(t.Str),
-  nullOption: maybe(Option),
+  nullOption: maybe(NullOption),
   options: maybe(list(SelectOption)),
   order: maybe(Order),
   template: maybe(Func)
@@ -725,7 +731,7 @@ var Select = React.createClass({
     }
     // add a `null` option in first position
     var nullOption = opts.nullOption || {value: '', text: '-'};
-    if (!multiple) {
+    if (!multiple && opts.nullOption !== false) {
       options.unshift(nullOption);
     }
     return {
@@ -33639,7 +33645,7 @@ test('Select', function (tape) {
   });
 
   tape.test('nullOption', function (tape) {
-    tape.plan(1);
+    tape.plan(2);
 
     tape.deepEqual(
       getLocals({type: Country}, {nullOption: {value: '-1', text: 'my text'}}).options,
@@ -33650,6 +33656,15 @@ test('Select', function (tape) {
         {value: 'FR', text: 'France'}
       ],
       'should add the nullOption in first position');
+
+    tape.deepEqual(
+      getLocals({type: Country}, {nullOption: false}).options,
+      [
+        {value: 'IT', text: 'Italy'},
+        {value: 'US', text: 'United States'},
+        {value: 'FR', text: 'France'}
+      ],
+      'should handle nullOption = false');
 
   });
 
