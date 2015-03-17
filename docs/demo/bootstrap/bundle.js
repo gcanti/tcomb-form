@@ -287,11 +287,12 @@ var Textbox = struct({
   help: maybe(Label),
   id: maybe(Str),
   label: maybe(Label),
-  name: maybe(t.Str),
+  name: maybe(Str),
   placeholder: maybe(Str),
   template: maybe(Func),
   transformer: maybe(Transformer),
-  type: maybe(TypeAttr)
+  type: maybe(TypeAttr),
+  className: maybe(Str)
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -304,7 +305,8 @@ var Checkbox = struct({
   error: maybe(ErrorMessage),
   label: maybe(Label),
   name: maybe(t.Str),
-  template: maybe(Func)
+  template: maybe(Func),
+  className: maybe(Str)
 }, 'Checkbox');
 
 function asc(a, b) {
@@ -325,6 +327,12 @@ Order.getComparator = function (order) {
 // handle multiple attribute
 var SelectValue = union([Str, list(Str)], 'SelectValue');
 
+var NullOption = union([Option, Bool], 'NullOption');
+
+NullOption.dispatch = function (x) {
+  return Bool.is(x) ? Bool : Option;
+};
+
 var Select = struct({
   autoFocus: maybe(Bool),
   config: maybe(Obj),
@@ -335,10 +343,11 @@ var Select = struct({
   error: maybe(ErrorMessage),
   label: maybe(Label),
   name: maybe(t.Str),
-  nullOption: maybe(Option),
+  nullOption: maybe(NullOption),
   options: maybe(list(SelectOption)),
   order: maybe(Order),
-  template: maybe(Func)
+  template: maybe(Func),
+  className: maybe(Str)
 }, 'Select');
 
 var Radio = struct({
@@ -353,7 +362,8 @@ var Radio = struct({
   name: maybe(t.Str),
   options: maybe(list(SelectOption)),
   order: maybe(Order),
-  template: maybe(Func)
+  template: maybe(Func),
+  className: maybe(Str)
 }, 'Select');
 
 var Struct = struct({
@@ -367,7 +377,8 @@ var Struct = struct({
   error: maybe(ErrorMessage),
   legend: maybe(Label),
   order: maybe(list(Label)),
-  templates: maybe(Obj)
+  templates: maybe(Obj),
+  className: maybe(Str)
 }, 'Struct');
 
 var List = struct({
@@ -383,7 +394,8 @@ var List = struct({
   help: maybe(Label),
   error: maybe(ErrorMessage),
   legend: maybe(Label),
-  templates: maybe(Obj)
+  templates: maybe(Obj),
+  className: maybe(Str)
 }, 'List');
 
 module.exports = {
@@ -445,8 +457,9 @@ var Checkbox = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -480,7 +493,8 @@ var Checkbox = React.createClass({
       name: name,
       onChange: this.onChange,
       value: value,
-      template: opts.template || ctx.templates.checkbox
+      template: opts.template || ctx.templates.checkbox,
+      className: opts.className
     };
   },
 
@@ -597,8 +611,9 @@ var List = React.createClass({
   shouldComponentUpdate: shouldComponentUpdate,
 
   onChange: function (value, keys) {
-    this.props.onChange(value);
-    this.setState({value: value, keys: keys});
+    this.setState({value: value, keys: keys}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -727,7 +742,8 @@ var List = React.createClass({
       items: items,
       legend: legend,
       value: value,
-      templates: templates
+      templates: templates,
+      className: opts.className
     };
   },
 
@@ -780,8 +796,9 @@ var Radio = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -824,7 +841,8 @@ var Radio = React.createClass({
       onChange: this.onChange,
       options: options,
       value: value,
-      template: opts.template || ctx.templates.radio
+      template: opts.template || ctx.templates.radio,
+      className: opts.className
     };
   },
 
@@ -877,8 +895,9 @@ var Select = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -917,7 +936,7 @@ var Select = React.createClass({
     }
     // add a `null` option in first position
     var nullOption = opts.nullOption || {value: '', text: '-'};
-    if (!multiple) {
+    if (!multiple && opts.nullOption !== false) {
       options.unshift(nullOption);
     }
     return {
@@ -939,7 +958,8 @@ var Select = React.createClass({
       }.bind(this),
       options: options,
       value: value,
-      template: opts.template || ctx.templates.select
+      template: opts.template || ctx.templates.select,
+      className: opts.className
     };
   },
 
@@ -994,8 +1014,9 @@ var Struct = React.createClass({
   onChange: function (fieldName, fieldValue) {
     var value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -1081,7 +1102,8 @@ var Struct = React.createClass({
       legend: legend,
       order: opts.order || Object.keys(props),
       value: value,
-      templates: templates
+      templates: templates,
+      className: opts.className
     };
   },
 
@@ -1135,8 +1157,9 @@ var Textbox = React.createClass({
 
   onChange: function (value) {
     value = normalize(value);
-    this.props.onChange(value);
-    this.setState({value: value});
+    this.setState({value: value}, function () {
+      this.props.onChange(value);
+    }.bind(this));
   },
 
   getValue: function () {
@@ -1193,7 +1216,8 @@ var Textbox = React.createClass({
       placeholder: placeholder,
       type: opts.type || 'text',
       value: value,
-      template: opts.template || ctx.templates.textbox
+      template: opts.template || ctx.templates.textbox,
+      className: opts.className
     };
   },
 
@@ -1360,7 +1384,8 @@ var Textbox = struct({
   onChange: Func,           // should call this function with the changed value
   placeholder: maybe(Str),  // should show a placeholder
   type: TypeAttr,           // should use this as type attribute
-  value: t.Any              // should use this as value attribute
+  value: t.Any,             // should use this as value attribute
+  className: maybe(Str)     // should add this to the className attribute
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -1374,7 +1399,8 @@ var Checkbox = struct({
   label: Label,             // checkboxes must always have a label
   name: Str,
   onChange: Func,
-  value: Bool
+  value: Bool,
+  className: maybe(Str)
 }, 'Checkbox');
 
 // handle multiple attribute
@@ -1393,7 +1419,8 @@ var Select = struct({
   name: Str,
   onChange: Func,
   options: list(SelectOption),
-  value: maybe(SelectValue)
+  value: maybe(SelectValue),
+  className: maybe(Str)
 }, 'Select');
 
 var Radio = struct({
@@ -1408,7 +1435,8 @@ var Radio = struct({
   name: Str,
   onChange: Func,
   options: list(Option),
-  value: maybe(Str)
+  value: maybe(Str),
+  className: maybe(Str)
 }, 'Radio');
 
 var StructValue = t.dict(Str, t.Any, 'StructValue');
@@ -1422,7 +1450,8 @@ var Struct = struct({
   inputs: t.dict(Str, ReactElement),
   legend: maybe(Label),
   order: list(Label),
-  value: maybe(StructValue)
+  value: maybe(StructValue),
+  className: maybe(Str)
 }, 'Struct');
 
 var Button = struct({
@@ -1445,7 +1474,8 @@ var List = struct({
   help: maybe(Label),
   items: list(ListItem),
   legend: maybe(Label),
-  value: maybe(list(t.Any))
+  value: maybe(list(t.Any)),
+  className: maybe(Str)
 }, 'List');
 
 module.exports = {
@@ -1624,7 +1654,8 @@ function textbox(locals) {
     },
     placeholder: locals.placeholder,
     name: locals.name,
-    size: config.size
+    size: config.size,
+    className: locals.className
   });
 
   if (config.addonBefore || config.addonAfter) {
@@ -1687,7 +1718,8 @@ function checkbox(locals) {
     name: locals.name,
     onChange: function (evt) {
       locals.onChange(evt.target.checked);
-    }
+    },
+    className: locals.className
   });
 
   var error = getError(locals);
@@ -1743,7 +1775,8 @@ function select(locals) {
     onChange: onChange,
     options: options,
     size: config.size,
-    multiple: locals.multiple
+    multiple: locals.multiple,
+    className: locals.className
   });
 
   var horizontal = config.horizontal;
@@ -1800,7 +1833,8 @@ function radio(locals) {
       onChange: function (evt) {
         locals.onChange(evt.target.value);
       },
-      value: option.value
+      value: option.value,
+      className: locals.className
     });
   });
 
@@ -1865,9 +1899,18 @@ function struct(locals) {
     }));
   }
 
+  var fieldsetClassName = null;
+  if (config.horizontal) {
+    fieldsetClassName = config.horizontal.getFieldsetClassName();
+  }
+  if (locals.className) {
+    fieldsetClassName = fieldsetClassName || {};
+    fieldsetClassName[locals.className] = true;
+  }
+
   return getFormGroup({
     children: getFieldset({
-      className: config.horizontal && config.horizontal.getFieldsetClassName(),
+      className: fieldsetClassName,
       disabled: locals.disabled,
       legend: locals.legend,
       children: rows
@@ -1931,9 +1974,18 @@ function list(locals) {
     rows.push(getButton(locals.add));
   }
 
+  var fieldsetClassName = null;
+  if (config.horizontal) {
+    fieldsetClassName = config.horizontal.getFieldsetClassName();
+  }
+  if (locals.className) {
+    fieldsetClassName = fieldsetClassName || {};
+    fieldsetClassName[locals.className] = true;
+  }
+
   return getFormGroup({
     children: getFieldset({
-      className: config.horizontal && config.horizontal.getFieldsetClassName(),
+      className: fieldsetClassName,
       disabled: locals.disabled,
       legend: locals.legend,
       children: rows
@@ -3649,7 +3701,8 @@ module.exports = getButtonGroup;
     events: {
       ...
     },
-    autoFocus: true
+    autoFocus: true,
+    className: 'myClassName'
   }
 
 */
@@ -3659,6 +3712,12 @@ function getCheckbox(opts) {
   var events = opts.events || {
     change: opts.onChange
   };
+
+  var className = null;
+  if (opts.className) {
+    className = {};
+    className[opts.className] = true;
+  }
 
   return {
     tag: 'div',
@@ -3682,7 +3741,8 @@ function getCheckbox(opts) {
             id: opts.id,
             name: opts.name,
             type: 'checkbox',
-            autoFocus: opts.autoFocus
+            autoFocus: opts.autoFocus,
+            className: className
           },
           events: events
         },
@@ -3963,7 +4023,8 @@ module.exports = getOption;
     events: {
       ...
     },
-    autoFocus: true
+    autoFocus: true,
+    className: 'myClassName'
   }
 
 */
@@ -3973,6 +4034,12 @@ function getRadio(opts) {
   var events = opts.events || {
     change: opts.onChange
   };
+
+  var className = null;
+  if (opts.className) {
+    className = {};
+    className[opts.className] = true;
+  }
 
   return {
     tag: 'div',
@@ -4000,7 +4067,8 @@ function getRadio(opts) {
             id: opts.id,
             // aria support
             'aria-describedby': opts['aria-describedby'],
-            autoFocus: opts.autoFocus
+            autoFocus: opts.autoFocus,
+            className: className
           },
           events: events
         },
@@ -4047,7 +4115,8 @@ module.exports = getRow;
       ...
     },
     'aria-describedby': 'password-tip',
-    autoFocus: false
+    autoFocus: false,
+    className: 'myClassName'
   }
 
 */
@@ -4063,6 +4132,9 @@ function getSelect(opts) {
   };
   if (opts.size) {
     className['input-' + opts.size] = true;
+  }
+  if (opts.className) {
+    className[opts.className] = true;
   }
 
   return {
@@ -4121,7 +4193,8 @@ module.exports = getStatic;
       ...
     },
     'aria-describedby': 'password-tip',
-    autoFocus: true
+    autoFocus: true,
+    className: 'myClassName'
   }
 
 */
@@ -4138,6 +4211,9 @@ function getTextbox(opts) {
   };
   if (opts.size) {
     className['input-' + opts.size] = true;
+  }
+  if (opts.className) {
+    className[opts.className] = true;
   }
 
   return {

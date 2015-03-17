@@ -40,6 +40,24 @@ test('bootstrap struct()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'fieldset',
+        attrs: {
+          className: {
+            'myClassName': true
+          }
+        }
+      }
+    });
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(1);
     equal(tape, {disabled: true}, {

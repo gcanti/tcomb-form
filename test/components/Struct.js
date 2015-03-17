@@ -30,6 +30,16 @@ var Person = t.struct({
 
 test('Struct', function (tape) {
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: Person}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(3);
 

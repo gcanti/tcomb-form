@@ -96,11 +96,12 @@ var Textbox = struct({
   help: maybe(Label),
   id: maybe(Str),
   label: maybe(Label),
-  name: maybe(t.Str),
+  name: maybe(Str),
   placeholder: maybe(Str),
   template: maybe(Func),
   transformer: maybe(Transformer),
-  type: maybe(TypeAttr)
+  type: maybe(TypeAttr),
+  className: maybe(Str)
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -113,7 +114,8 @@ var Checkbox = struct({
   error: maybe(ErrorMessage),
   label: maybe(Label),
   name: maybe(t.Str),
-  template: maybe(Func)
+  template: maybe(Func),
+  className: maybe(Str)
 }, 'Checkbox');
 
 function asc(a, b) {
@@ -153,7 +155,8 @@ var Select = struct({
   nullOption: maybe(NullOption),
   options: maybe(list(SelectOption)),
   order: maybe(Order),
-  template: maybe(Func)
+  template: maybe(Func),
+  className: maybe(Str)
 }, 'Select');
 
 var Radio = struct({
@@ -168,7 +171,8 @@ var Radio = struct({
   name: maybe(t.Str),
   options: maybe(list(SelectOption)),
   order: maybe(Order),
-  template: maybe(Func)
+  template: maybe(Func),
+  className: maybe(Str)
 }, 'Select');
 
 var Struct = struct({
@@ -182,7 +186,8 @@ var Struct = struct({
   error: maybe(ErrorMessage),
   legend: maybe(Label),
   order: maybe(list(Label)),
-  templates: maybe(Obj)
+  templates: maybe(Obj),
+  className: maybe(Str)
 }, 'Struct');
 
 var List = struct({
@@ -198,7 +203,8 @@ var List = struct({
   help: maybe(Label),
   error: maybe(ErrorMessage),
   legend: maybe(Label),
-  templates: maybe(Obj)
+  templates: maybe(Obj),
+  className: maybe(Str)
 }, 'List');
 
 module.exports = {
@@ -295,7 +301,8 @@ var Checkbox = React.createClass({
       name: name,
       onChange: this.onChange,
       value: value,
-      template: opts.template || ctx.templates.checkbox
+      template: opts.template || ctx.templates.checkbox,
+      className: opts.className
     };
   },
 
@@ -541,7 +548,8 @@ var List = React.createClass({
       items: items,
       legend: legend,
       value: value,
-      templates: templates
+      templates: templates,
+      className: opts.className
     };
   },
 
@@ -638,7 +646,8 @@ var Radio = React.createClass({
       onChange: this.onChange,
       options: options,
       value: value,
-      template: opts.template || ctx.templates.radio
+      template: opts.template || ctx.templates.radio,
+      className: opts.className
     };
   },
 
@@ -753,7 +762,8 @@ var Select = React.createClass({
       }.bind(this),
       options: options,
       value: value,
-      template: opts.template || ctx.templates.select
+      template: opts.template || ctx.templates.select,
+      className: opts.className
     };
   },
 
@@ -895,7 +905,8 @@ var Struct = React.createClass({
       legend: legend,
       order: opts.order || Object.keys(props),
       value: value,
-      templates: templates
+      templates: templates,
+      className: opts.className
     };
   },
 
@@ -1007,7 +1018,8 @@ var Textbox = React.createClass({
       placeholder: placeholder,
       type: opts.type || 'text',
       value: value,
-      template: opts.template || ctx.templates.textbox
+      template: opts.template || ctx.templates.textbox,
+      className: opts.className
     };
   },
 
@@ -1169,7 +1181,8 @@ var Textbox = struct({
   onChange: Func,           // should call this function with the changed value
   placeholder: maybe(Str),  // should show a placeholder
   type: TypeAttr,           // should use this as type attribute
-  value: t.Any              // should use this as value attribute
+  value: t.Any,             // should use this as value attribute
+  className: maybe(Str)     // should add this to the className attribute
 }, 'Textbox');
 
 var Checkbox = struct({
@@ -1183,7 +1196,8 @@ var Checkbox = struct({
   label: Label,             // checkboxes must always have a label
   name: Str,
   onChange: Func,
-  value: Bool
+  value: Bool,
+  className: maybe(Str)
 }, 'Checkbox');
 
 // handle multiple attribute
@@ -1202,7 +1216,8 @@ var Select = struct({
   name: Str,
   onChange: Func,
   options: list(SelectOption),
-  value: maybe(SelectValue)
+  value: maybe(SelectValue),
+  className: maybe(Str)
 }, 'Select');
 
 var Radio = struct({
@@ -1217,7 +1232,8 @@ var Radio = struct({
   name: Str,
   onChange: Func,
   options: list(Option),
-  value: maybe(Str)
+  value: maybe(Str),
+  className: maybe(Str)
 }, 'Radio');
 
 var StructValue = t.dict(Str, t.Any, 'StructValue');
@@ -1231,7 +1247,8 @@ var Struct = struct({
   inputs: t.dict(Str, ReactElement),
   legend: maybe(Label),
   order: list(Label),
-  value: maybe(StructValue)
+  value: maybe(StructValue),
+  className: maybe(Str)
 }, 'Struct');
 
 var Button = struct({
@@ -1254,7 +1271,8 @@ var List = struct({
   help: maybe(Label),
   items: list(ListItem),
   legend: maybe(Label),
-  value: maybe(list(t.Any))
+  value: maybe(list(t.Any)),
+  className: maybe(Str)
 }, 'List');
 
 module.exports = {
@@ -1432,7 +1450,8 @@ function textbox(locals) {
     },
     placeholder: locals.placeholder,
     name: locals.name,
-    size: config.size
+    size: config.size,
+    className: locals.className
   });
 
   if (config.addonBefore || config.addonAfter) {
@@ -1495,7 +1514,8 @@ function checkbox(locals) {
     name: locals.name,
     onChange: function (evt) {
       locals.onChange(evt.target.checked);
-    }
+    },
+    className: locals.className
   });
 
   var error = getError(locals);
@@ -1551,7 +1571,8 @@ function select(locals) {
     onChange: onChange,
     options: options,
     size: config.size,
-    multiple: locals.multiple
+    multiple: locals.multiple,
+    className: locals.className
   });
 
   var horizontal = config.horizontal;
@@ -1608,7 +1629,8 @@ function radio(locals) {
       onChange: function (evt) {
         locals.onChange(evt.target.value);
       },
-      value: option.value
+      value: option.value,
+      className: locals.className
     });
   });
 
@@ -1673,9 +1695,18 @@ function struct(locals) {
     }));
   }
 
+  var fieldsetClassName = null;
+  if (config.horizontal) {
+    fieldsetClassName = config.horizontal.getFieldsetClassName();
+  }
+  if (locals.className) {
+    fieldsetClassName = fieldsetClassName || {};
+    fieldsetClassName[locals.className] = true;
+  }
+
   return getFormGroup({
     children: getFieldset({
-      className: config.horizontal && config.horizontal.getFieldsetClassName(),
+      className: fieldsetClassName,
       disabled: locals.disabled,
       legend: locals.legend,
       children: rows
@@ -1739,9 +1770,18 @@ function list(locals) {
     rows.push(getButton(locals.add));
   }
 
+  var fieldsetClassName = null;
+  if (config.horizontal) {
+    fieldsetClassName = config.horizontal.getFieldsetClassName();
+  }
+  if (locals.className) {
+    fieldsetClassName = fieldsetClassName || {};
+    fieldsetClassName[locals.className] = true;
+  }
+
   return getFormGroup({
     children: getFieldset({
-      className: config.horizontal && config.horizontal.getFieldsetClassName(),
+      className: fieldsetClassName,
       disabled: locals.disabled,
       legend: locals.legend,
       children: rows
@@ -25735,7 +25775,8 @@ module.exports = getButtonGroup;
     events: {
       ...
     },
-    autoFocus: true
+    autoFocus: true,
+    className: 'myClassName'
   }
 
 */
@@ -25745,6 +25786,12 @@ function getCheckbox(opts) {
   var events = opts.events || {
     change: opts.onChange
   };
+
+  var className = null;
+  if (opts.className) {
+    className = {};
+    className[opts.className] = true;
+  }
 
   return {
     tag: 'div',
@@ -25768,7 +25815,8 @@ function getCheckbox(opts) {
             id: opts.id,
             name: opts.name,
             type: 'checkbox',
-            autoFocus: opts.autoFocus
+            autoFocus: opts.autoFocus,
+            className: className
           },
           events: events
         },
@@ -26049,7 +26097,8 @@ module.exports = getOption;
     events: {
       ...
     },
-    autoFocus: true
+    autoFocus: true,
+    className: 'myClassName'
   }
 
 */
@@ -26059,6 +26108,12 @@ function getRadio(opts) {
   var events = opts.events || {
     change: opts.onChange
   };
+
+  var className = null;
+  if (opts.className) {
+    className = {};
+    className[opts.className] = true;
+  }
 
   return {
     tag: 'div',
@@ -26086,7 +26141,8 @@ function getRadio(opts) {
             id: opts.id,
             // aria support
             'aria-describedby': opts['aria-describedby'],
-            autoFocus: opts.autoFocus
+            autoFocus: opts.autoFocus,
+            className: className
           },
           events: events
         },
@@ -26133,7 +26189,8 @@ module.exports = getRow;
       ...
     },
     'aria-describedby': 'password-tip',
-    autoFocus: false
+    autoFocus: false,
+    className: 'myClassName'
   }
 
 */
@@ -26149,6 +26206,9 @@ function getSelect(opts) {
   };
   if (opts.size) {
     className['input-' + opts.size] = true;
+  }
+  if (opts.className) {
+    className[opts.className] = true;
   }
 
   return {
@@ -26207,7 +26267,8 @@ module.exports = getStatic;
       ...
     },
     'aria-describedby': 'password-tip',
-    autoFocus: true
+    autoFocus: true,
+    className: 'myClassName'
   }
 
 */
@@ -26224,6 +26285,9 @@ function getTextbox(opts) {
   };
   if (opts.size) {
     className['input-' + opts.size] = true;
+  }
+  if (opts.className) {
+    className[opts.className] = true;
   }
 
   return {
@@ -30848,6 +30912,49 @@ test('bootstrap checkbox()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'div',
+        attrs: {
+          className: {
+            'checkbox': true
+          }
+        },
+        children: {
+          tag: 'label',
+          attrs: {
+            htmlFor: 'myid'
+          },
+          children: [
+            {
+              tag: 'input',
+              attrs: {
+                type: 'checkbox',
+                name: 'myname',
+                checked: false,
+                id: 'myid',
+                className: {
+                  'myClassName': true
+                }
+              },
+              events: {
+                change: base.onChange
+              }
+            },
+            ' ',
+            'mylabel'
+          ]
+        }
+      }
+    });
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(1);
     equal(tape, {disabled: true}, {
@@ -31125,6 +31232,24 @@ test('bootstrap list()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'fieldset',
+        attrs: {
+          className: {
+            'myClassName': true
+          }
+        }
+      }
+    });
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(1);
     equal(tape, {disabled: true}, {
@@ -31336,6 +31461,88 @@ test('bootstrap radio()', function (tape) {
                   name: 'myname',
                   checked: false,
                   id: 'myid-F'
+                },
+                events: {
+                  change: base.onChange
+                }
+              },
+              ' ',
+              'Female'
+            ]
+          },
+          key: 'F'
+        }
+      ]
+    });
+  });
+
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: [
+        {
+          tag: 'div',
+          attrs: {
+            className: {
+              'radio': true
+            }
+          },
+          children: {
+            tag: 'label',
+            attrs: {
+              htmlFor: 'myid-M'
+            },
+            children: [
+              {
+                tag: 'input',
+                attrs: {
+                  type: 'radio',
+                  value: 'M',
+                  name: 'myname',
+                  checked: false,
+                  id: 'myid-M',
+                  className: {
+                    'myClassName': true
+                  }
+                },
+                events: {
+                  change: base.onChange
+                }
+              },
+              ' ',
+              'Male'
+            ]
+          },
+          key: 'M'
+        },
+        {
+          tag: 'div',
+          attrs: {
+            className: {
+              'radio': true
+            }
+          },
+          children: {
+            tag: 'label',
+            attrs: {
+              htmlFor: 'myid-F'
+            },
+            children: [
+              {
+                tag: 'input',
+                attrs: {
+                  type: 'radio',
+                  value: 'F',
+                  name: 'myname',
+                  checked: false,
+                  id: 'myid-F',
+                  className: {
+                    'myClassName': true
+                  }
                 },
                 events: {
                   change: base.onChange
@@ -31866,6 +32073,55 @@ test('bootstrap select()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'select',
+        attrs: {
+          className: {
+            'form-control': true,
+            'myClassName': true
+          },
+          name: 'myname'
+        },
+        events: {
+          change: base.onChange
+        },
+        children: [
+          {
+            tag: 'option',
+            attrs: {
+              value: ''
+            },
+            children: '-',
+            key: ''
+          },
+          {
+            tag: 'option',
+            attrs: {
+              value: 'M'
+            },
+            children: 'Male',
+            key: 'M'
+          },
+          {
+            tag: 'option',
+            attrs: {
+              value: 'F'
+            },
+            children: 'Female',
+            key: 'F'
+          }
+        ]
+      }
+    });
+  });
+
   tape.test('error', function (tape) {
     tape.plan(1);
     equal(tape, {error: 'myerror', hasError: true}, {
@@ -32349,6 +32605,24 @@ test('bootstrap struct()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'fieldset',
+        attrs: {
+          className: {
+            'myClassName': true
+          }
+        }
+      }
+    });
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(1);
     equal(tape, {disabled: true}, {
@@ -32481,6 +32755,30 @@ test('bootstrap textbox()', function (tape) {
         attrs: {
           className: {
             'form-control': true
+          },
+          name: 'myname',
+          type: 'text'
+        },
+        events: {
+          change: base.onChange
+        }
+      }
+    });
+  });
+
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'input',
+        attrs: {
+          className: {
+            'form-control': true,
+            'myClassName': true
           },
           name: 'myname',
           type: 'text'
@@ -32719,6 +33017,16 @@ var getValue = util.getValueFactory(Checkbox, bootstrap.checkbox);
 
 test('Checkbox', function (tape) {
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: t.Bool}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(3);
 
@@ -32940,6 +33248,16 @@ var getValue = util.getValueFactory(List, bootstrap.list);
 
 test('List', function (tape) {
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: t.list(t.Str)}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(3);
 
@@ -33098,6 +33416,16 @@ var Country = t.enums({
 }, 'Country');
 
 test('Radio', function (tape) {
+
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: Country}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
 
   tape.test('disabled', function (tape) {
     tape.plan(3);
@@ -33397,6 +33725,16 @@ var Country = t.enums({
 }, 'Country');
 
 test('Select', function (tape) {
+
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: Country}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
 
   tape.test('disabled', function (tape) {
     tape.plan(3);
@@ -33759,6 +34097,16 @@ var Person = t.struct({
 
 test('Struct', function (tape) {
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: Person}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(3);
 
@@ -33930,6 +34278,16 @@ var transformer = {
 };
 
 test('Textbox', function (tape) {
+
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: t.Str}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
 
   tape.test('type', function (tape) {
     tape.plan(2);

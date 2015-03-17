@@ -51,6 +51,30 @@ test('bootstrap textbox()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'input',
+        attrs: {
+          className: {
+            'form-control': true,
+            'myClassName': true
+          },
+          name: 'myname',
+          type: 'text'
+        },
+        events: {
+          change: base.onChange
+        }
+      }
+    });
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(1);
     equal(tape, {disabled: true}, {

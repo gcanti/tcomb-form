@@ -1,3 +1,22 @@
+v0.4.4
+
+- Allow removal of nullOption if a default value is set, fix #71
+- Input className customization, fix #76
+  1. added a `className` option to:
+    - `Textbox`
+    - `Select`
+    - `Checkbox`
+    - `Radio`
+    - `List`
+    - `Struct`
+  2. handled in Bootstrap's skin:
+    - `Textbox`: add the className to the `<input type="text"/>` / `<textarea/>` tag
+    - `Select`: add the className to the `<select/>` tag
+    - `Checkbox`: add the className to the `<input type="checkbox"/>` tag
+    - `Radio`: add the className to **all** the `<input type="radio"/>` tags
+    - `List`: add the className to the `<fieldset/>` tag
+    - `Struct`: add the className to the `<fieldset/>` tag
+
 v0.4.3
 
 - fix onChange order: after setState

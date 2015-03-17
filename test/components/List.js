@@ -13,6 +13,16 @@ var getValue = util.getValueFactory(List, bootstrap.list);
 
 test('List', function (tape) {
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: t.list(t.Str)}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(3);
 

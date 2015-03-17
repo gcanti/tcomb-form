@@ -107,6 +107,88 @@ test('bootstrap radio()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: [
+        {
+          tag: 'div',
+          attrs: {
+            className: {
+              'radio': true
+            }
+          },
+          children: {
+            tag: 'label',
+            attrs: {
+              htmlFor: 'myid-M'
+            },
+            children: [
+              {
+                tag: 'input',
+                attrs: {
+                  type: 'radio',
+                  value: 'M',
+                  name: 'myname',
+                  checked: false,
+                  id: 'myid-M',
+                  className: {
+                    'myClassName': true
+                  }
+                },
+                events: {
+                  change: base.onChange
+                }
+              },
+              ' ',
+              'Male'
+            ]
+          },
+          key: 'M'
+        },
+        {
+          tag: 'div',
+          attrs: {
+            className: {
+              'radio': true
+            }
+          },
+          children: {
+            tag: 'label',
+            attrs: {
+              htmlFor: 'myid-F'
+            },
+            children: [
+              {
+                tag: 'input',
+                attrs: {
+                  type: 'radio',
+                  value: 'F',
+                  name: 'myname',
+                  checked: false,
+                  id: 'myid-F',
+                  className: {
+                    'myClassName': true
+                  }
+                },
+                events: {
+                  change: base.onChange
+                }
+              },
+              ' ',
+              'Female'
+            ]
+          },
+          key: 'F'
+        }
+      ]
+    });
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(1);
     equal(tape, {disabled: true}, {

@@ -81,6 +81,7 @@ declare module tcomb {
       template?: Template;
       transformer?: Transformer<any, any>;
       type?: string;
+      className?: string;
     }
 
     interface CheckboxOptions {
@@ -94,6 +95,7 @@ declare module tcomb {
       label?: Label;
       name?: string;
       template?: Template;
+      className?: string;
     }
 
     type Order = string;
@@ -124,6 +126,7 @@ declare module tcomb {
       options?: Array<Option | OptGroup>;
       order?: Order;
       template?: Template;
+      className?: string;
     }
 
     interface RadioOptions {
@@ -139,6 +142,7 @@ declare module tcomb {
       options?: Array<Option>;
       order?: Order;
       template?: Template;
+      className?: string;
     }
 
     interface StructOptions {
@@ -153,6 +157,7 @@ declare module tcomb {
       legend?: Label;
       order?: Array<Label>;
       templates?: {[key: string]: Template;};
+      className?: string;
     }
 
     interface ListOptions {
@@ -169,6 +174,7 @@ declare module tcomb {
       error?: ErrorMessage;
       legend?: Label;
       templates?: {[key: string]: Template;};
+      className?: string;
     }
 
     type FormOptions = StructOptions | ListOptions;

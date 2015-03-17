@@ -22,6 +22,16 @@ var transformer = {
 
 test('Textbox', function (tape) {
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: t.Str}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
+
   tape.test('type', function (tape) {
     tape.plan(2);
 

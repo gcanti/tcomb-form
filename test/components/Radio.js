@@ -19,6 +19,16 @@ var Country = t.enums({
 
 test('Radio', function (tape) {
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: Country}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(3);
 

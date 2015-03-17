@@ -69,6 +69,49 @@ test('bootstrap checkbox()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'div',
+        attrs: {
+          className: {
+            'checkbox': true
+          }
+        },
+        children: {
+          tag: 'label',
+          attrs: {
+            htmlFor: 'myid'
+          },
+          children: [
+            {
+              tag: 'input',
+              attrs: {
+                type: 'checkbox',
+                name: 'myname',
+                checked: false,
+                id: 'myid',
+                className: {
+                  'myClassName': true
+                }
+              },
+              events: {
+                change: base.onChange
+              }
+            },
+            ' ',
+            'mylabel'
+          ]
+        }
+      }
+    });
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(1);
     equal(tape, {disabled: true}, {

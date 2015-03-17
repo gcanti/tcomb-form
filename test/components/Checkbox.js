@@ -13,6 +13,16 @@ var getValue = util.getValueFactory(Checkbox, bootstrap.checkbox);
 
 test('Checkbox', function (tape) {
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(
+      getLocals({type: t.Bool}, {className: 'myClassName'}).className,
+      'myClassName',
+      'should handle className option');
+
+  });
+
   tape.test('disabled', function (tape) {
     tape.plan(3);
 

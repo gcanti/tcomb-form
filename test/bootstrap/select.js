@@ -80,6 +80,55 @@ test('bootstrap select()', function (tape) {
     });
   });
 
+  tape.test('className', function (tape) {
+    tape.plan(1);
+    equal(tape, {className: 'myClassName'}, {
+      tag: 'div',
+      attrs: {
+        className: {'form-group': true}
+      },
+      children: {
+        tag: 'select',
+        attrs: {
+          className: {
+            'form-control': true,
+            'myClassName': true
+          },
+          name: 'myname'
+        },
+        events: {
+          change: base.onChange
+        },
+        children: [
+          {
+            tag: 'option',
+            attrs: {
+              value: ''
+            },
+            children: '-',
+            key: ''
+          },
+          {
+            tag: 'option',
+            attrs: {
+              value: 'M'
+            },
+            children: 'Male',
+            key: 'M'
+          },
+          {
+            tag: 'option',
+            attrs: {
+              value: 'F'
+            },
+            children: 'Female',
+            key: 'F'
+          }
+        ]
+      }
+    });
+  });
+
   tape.test('error', function (tape) {
     tape.plan(1);
     equal(tape, {error: 'myerror', hasError: true}, {
