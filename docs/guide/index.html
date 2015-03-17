@@ -756,7 +756,7 @@ var options = {
           </div>
 
           <a name="select-null-option"><h3>Null option</h3></a>
-          <p>You can customize the null options with the <code>nullOption</code> option:</p>
+          <p>You can customize the null option with the <code>nullOption</code> option:</p>
           <pre><code>
 var options = {
   fields: {
@@ -771,6 +771,11 @@ var options = {
             <div id="p28" class="form"></div>
             <pre id="v28" class="value"></pre>
           </div>
+
+          <p>You can remove the null option setting the <code>nullOption</code> option to <code>false</code>.</p>
+
+          <p class="alert alert-warning">Warning: when you set <code>nullOption = false</code> you must also set the Form's <code>value</code> prop for the select field.
+          </p>
 
           <p><b>Tech note.</b> A value equal to <code>nullOption.value</code> (default <code>''</code>) is converted to <code>null</code>.</p>
 
@@ -882,7 +887,7 @@ var options = {
           <p>To customize the "skin" of tcomb-form you have to write a <em>template</em>. A template is simply a function with the following signature:</p>
           <pre><code>function(locals) -> UVDOM | ReactElement</code></pre>
           <p>where <code>locals</code> is an object contaning the "recipe" for rendering the input and is built by tcomb-form for you. The returned value can be a <a href="https://github.com/gcanti/uvdom">UVDOM</a> or a ReactElement.</p>
-          <p>Let's build a template for a search textbox styled with Bootstrap. tcomb-form will pass to your template the following recipe (you can find all the recipes in <code>lib/protocols/theme.js</code>):</p>
+          <p>Let's build a template for a search textbox styled with Bootstrap. tcomb-form will pass to your template the following recipe (you can find all the recipes in <code>lib/skin.js</code>):</p>
           <pre><code>
 var Textbox = struct({
   autoFocus: maybe(Bool),   // should receive the focus on start
