@@ -25,7 +25,7 @@ With tcomb-form you simply call `<Form type={Model} />` to generate a form based
 
 [tcomb-form site](http://gcanti.github.io/tcomb-form/) or `docs/guide/index.html`.
 
-**Browser compatibility**: same as React ^0.12.0
+**Browser compatibility**: same as React >=0.12.0
 
 # Contributions
 

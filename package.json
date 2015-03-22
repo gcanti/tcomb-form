@@ -1,10 +1,11 @@
 {
   "name": "tcomb-form",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Open test/index.html in a browser...\" && watchify -t reactify test/index.js -o test/tests.js -v"
+    "test": "echo \"Open test/index.html in a browser...\" && watchify -t reactify test/index.js -o test/tests.js -v",
+    "prod": "browserify ./index.js -x react | uglifyjs > ./dev/prod.js"
   },
   "repository": {
     "type": "git",
@@ -17,11 +18,11 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "peerDependencies": {
-    "react": ">=0.12.0"
+    "react": ">=0.12.0",
+    "tcomb-validation": "^1.0.1"
   },
   "dependencies": {
     "debug": "^2.1.1",
-    "tcomb-validation": "^1.0.0",
     "uvdom": "^0.1.0",
     "uvdom-bootstrap": "^0.1.4"
   },

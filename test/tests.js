@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/giulio/Documents/Projects/github/tcomb-form/index.js":[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var t = require('./lib');
 
 // plug bootstrap skin
@@ -6,7 +6,7 @@ t.form.config.templates = require('./lib/skins/bootstrap');
 
 module.exports = t;
 
-},{"./lib":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/index.js","./lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js":[function(require,module,exports){
+},{"./lib":13,"./lib/skins/bootstrap":15}],2:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -228,7 +228,7 @@ module.exports = {
   List: List
 };
 
-},{"react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Checkbox.js":[function(require,module,exports){
+},{"react":183,"tcomb-validation":196}],3:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -315,7 +315,7 @@ var Checkbox = React.createClass({
 
 module.exports = Checkbox;
 
-},{"../api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../util/getError":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js","../util/merge":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/merge.js","../util/uuid":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/uuid.js","./shouldComponentUpdate":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/shouldComponentUpdate.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom/react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Form.js":[function(require,module,exports){
+},{"../api":2,"../skin":14,"../util/getError":16,"../util/merge":20,"../util/uuid":22,"./shouldComponentUpdate":10,"debug":23,"react":183,"tcomb-validation":196,"uvdom/react":222}],4:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -362,7 +362,7 @@ var Form = React.createClass({
 
 module.exports = Form;
 
-},{"../api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","../getComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/getComponent.js","../util/getReport":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getReport.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/List.js":[function(require,module,exports){
+},{"../api":2,"../config":11,"../getComponent":12,"../util/getReport":18,"react":183}],5:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -563,7 +563,7 @@ var List = React.createClass({
 module.exports = List;
 
 
-},{"../api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../getComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/getComponent.js","../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../util/getError":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js","../util/getReport":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getReport.js","../util/merge":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/merge.js","../util/move":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/move.js","../util/uuid":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/uuid.js","./shouldComponentUpdate":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/shouldComponentUpdate.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom/react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Radio.js":[function(require,module,exports){
+},{"../api":2,"../getComponent":12,"../skin":14,"../util/getError":16,"../util/getReport":18,"../util/merge":20,"../util/move":21,"../util/uuid":22,"./shouldComponentUpdate":10,"debug":23,"react":183,"tcomb-validation":196,"uvdom/react":222}],6:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -660,7 +660,7 @@ var Radio = React.createClass({
 
 module.exports = Radio;
 
-},{"../api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../util/getError":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js","../util/getOptionsOfEnum":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getOptionsOfEnum.js","../util/merge":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/merge.js","../util/uuid":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/uuid.js","./shouldComponentUpdate":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/shouldComponentUpdate.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom/react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Select.js":[function(require,module,exports){
+},{"../api":2,"../skin":14,"../util/getError":16,"../util/getOptionsOfEnum":17,"../util/merge":20,"../util/uuid":22,"./shouldComponentUpdate":10,"debug":23,"react":183,"tcomb-validation":196,"uvdom/react":222}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -776,7 +776,7 @@ var Select = React.createClass({
 
 module.exports = Select;
 
-},{"../api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../util/getError":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js","../util/getOptionsOfEnum":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getOptionsOfEnum.js","../util/getReport":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getReport.js","../util/merge":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/merge.js","../util/uuid":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/uuid.js","./shouldComponentUpdate":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/shouldComponentUpdate.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom/react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Struct.js":[function(require,module,exports){
+},{"../api":2,"../skin":14,"../util/getError":16,"../util/getOptionsOfEnum":17,"../util/getReport":18,"../util/merge":20,"../util/uuid":22,"./shouldComponentUpdate":10,"debug":23,"react":183,"tcomb-validation":196,"uvdom/react":222}],8:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -919,7 +919,7 @@ var Struct = React.createClass({
 
 module.exports = Struct;
 
-},{"../api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../getComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/getComponent.js","../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../util/getError":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js","../util/getReport":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getReport.js","../util/humanize":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/humanize.js","../util/merge":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/merge.js","./shouldComponentUpdate":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/shouldComponentUpdate.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom/react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Textbox.js":[function(require,module,exports){
+},{"../api":2,"../getComponent":12,"../skin":14,"../util/getError":16,"../util/getReport":18,"../util/humanize":19,"../util/merge":20,"./shouldComponentUpdate":10,"debug":23,"react":183,"tcomb-validation":196,"uvdom/react":222}],9:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1032,7 +1032,7 @@ var Textbox = React.createClass({
 
 module.exports = Textbox;
 
-},{"../api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../util/getError":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js","../util/merge":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/merge.js","../util/uuid":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/uuid.js","./shouldComponentUpdate":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/shouldComponentUpdate.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom/react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/shouldComponentUpdate.js":[function(require,module,exports){
+},{"../api":2,"../config":11,"../skin":14,"../util/getError":16,"../util/merge":20,"../util/uuid":22,"./shouldComponentUpdate":10,"debug":23,"react":183,"tcomb-validation":196,"uvdom/react":222}],10:[function(require,module,exports){
 'use strict';
 
 module.exports = function (nextProps, nextState) {
@@ -1043,7 +1043,7 @@ module.exports = function (nextProps, nextState) {
     nextProps.ctx.report.type !== this.props.ctx.report.type;
 };
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js":[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var api = require('./api');
@@ -1078,7 +1078,7 @@ module.exports = {
   }
 };
 
-},{"./api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","./components/Checkbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Checkbox.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/getComponent.js":[function(require,module,exports){
+},{"./api":2,"./components/Checkbox":3,"tcomb-validation":196}],12:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1112,7 +1112,7 @@ function getComponent(type, options) {
 
 module.exports = getComponent;
 
-},{"./components/List":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/List.js","./components/Select":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Select.js","./components/Struct":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Struct.js","./components/Textbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Textbox.js","./config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/index.js":[function(require,module,exports){
+},{"./components/List":5,"./components/Select":7,"./components/Struct":8,"./components/Textbox":9,"./config":11,"tcomb-validation":196}],13:[function(require,module,exports){
 var t = require('tcomb-validation');
 
 t.form = {
@@ -1129,7 +1129,7 @@ t.form = {
 
 module.exports = t;
 
-},{"./components/Checkbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Checkbox.js","./components/Form":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Form.js","./components/List":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/List.js","./components/Radio":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Radio.js","./components/Select":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Select.js","./components/Struct":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Struct.js","./components/Textbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Textbox.js","./config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js":[function(require,module,exports){
+},{"./components/Checkbox":3,"./components/Form":4,"./components/List":5,"./components/Radio":6,"./components/Select":7,"./components/Struct":8,"./components/Textbox":9,"./config":11,"debug":23,"tcomb-validation":196}],14:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1287,7 +1287,7 @@ module.exports = {
   List: List
 };
 
-},{"react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js":[function(require,module,exports){
+},{"react":183,"tcomb-validation":196}],15:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1799,7 +1799,7 @@ module.exports = {
   list: list
 };
 
-},{"../../skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js","uvdom-bootstrap/form":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/form.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getError.js":[function(require,module,exports){
+},{"../../skin":14,"tcomb-validation":196,"uvdom-bootstrap/form":198}],16:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1810,7 +1810,7 @@ function getError(error, value) {
 
 module.exports = getError;
 
-},{"tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getOptionsOfEnum.js":[function(require,module,exports){
+},{"tcomb-validation":196}],17:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -1825,7 +1825,7 @@ function getOptionsOfEnum(type) {
 
 module.exports = getOptionsOfEnum;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getReport.js":[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 function getReport(type) {
@@ -1860,7 +1860,7 @@ function getReport(type) {
 
 module.exports = getReport;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/humanize.js":[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 // thanks to https://github.com/epeli/underscore.string
@@ -1879,7 +1879,7 @@ function humanize(s){
 
 module.exports = humanize;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/merge.js":[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1891,7 +1891,7 @@ function merge(a, b) {
 
 module.exports = merge;
 
-},{"tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/move.js":[function(require,module,exports){
+},{"tcomb-validation":196}],21:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -1902,7 +1902,7 @@ function move(arr, fromIndex, toIndex) {
 
 module.exports = move;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/uuid.js":[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 function uuid() {
@@ -1914,7 +1914,7 @@ function uuid() {
 
 module.exports = uuid;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js":[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -1938,7 +1938,7 @@ var storage;
 if (typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined')
   storage = chrome.storage.local;
 else
-  storage = window.localStorage;
+  storage = localstorage();
 
 /**
  * Colors.
@@ -2074,7 +2074,24 @@ function load() {
 
 exports.enable(load());
 
-},{"./debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/debug.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/debug.js":[function(require,module,exports){
+/**
+ * Localstorage attempts to return the localstorage.
+ *
+ * This is necessary because safari throws
+ * when a user disables cookies/localstorage
+ * and you attempt to access it.
+ *
+ * @return {LocalStorage}
+ * @api private
+ */
+
+function localstorage(){
+  try {
+    return window.localStorage;
+  } catch (e) {}
+}
+
+},{"./debug":24}],24:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -2273,7 +2290,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/node_modules/ms/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/node_modules/ms/index.js":[function(require,module,exports){
+},{"ms":25}],25:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -2314,13 +2331,15 @@ module.exports = function(val, options){
  */
 
 function parse(str) {
-  var match = /^((?:\d+)?\.?\d+) *(ms|seconds?|s|minutes?|m|hours?|h|days?|d|years?|y)?$/i.exec(str);
+  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
   if (!match) return;
   var n = parseFloat(match[1]);
   var type = (match[2] || 'ms').toLowerCase();
   switch (type) {
     case 'years':
     case 'year':
+    case 'yrs':
+    case 'yr':
     case 'y':
       return n * y;
     case 'days':
@@ -2329,16 +2348,26 @@ function parse(str) {
       return n * d;
     case 'hours':
     case 'hour':
+    case 'hrs':
+    case 'hr':
     case 'h':
       return n * h;
     case 'minutes':
     case 'minute':
+    case 'mins':
+    case 'min':
     case 'm':
       return n * m;
     case 'seconds':
     case 'second':
+    case 'secs':
+    case 'sec':
     case 's':
       return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
     case 'ms':
       return n;
   }
@@ -2386,7 +2415,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/deep-diff/index.js":[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 (function (global){
 /*!
  * deep-diff.
@@ -2717,7 +2746,7 @@ function plural(ms, n, name) {
 }());
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/index.js":[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb');
@@ -2779,7 +2808,7 @@ function vdom(x, state) {
 }
 
 module.exports = vdom;
-},{"tcomb":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/node_modules/tcomb/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/node_modules/tcomb/index.js":[function(require,module,exports){
+},{"tcomb":28}],28:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -3708,7 +3737,7 @@ module.exports = vdom;
   };
 }));
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js":[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3735,7 +3764,7 @@ var AutoFocusMixin = {
 
 module.exports = AutoFocusMixin;
 
-},{"./focusNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/focusNode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/BeforeInputEventPlugin.js":[function(require,module,exports){
+},{"./focusNode":147}],30:[function(require,module,exports){
 /**
  * Copyright 2013-2015 Facebook, Inc.
  * All rights reserved.
@@ -4230,7 +4259,7 @@ var BeforeInputEventPlugin = {
 
 module.exports = BeforeInputEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./FallbackCompositionState":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/FallbackCompositionState.js","./SyntheticCompositionEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticCompositionEvent.js","./SyntheticInputEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticInputEvent.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSProperty.js":[function(require,module,exports){
+},{"./EventConstants":42,"./EventPropagators":47,"./ExecutionEnvironment":48,"./FallbackCompositionState":49,"./SyntheticCompositionEvent":121,"./SyntheticInputEvent":125,"./keyOf":169}],31:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4351,7 +4380,7 @@ var CSSProperty = {
 
 module.exports = CSSProperty;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSPropertyOperations.js":[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4533,7 +4562,7 @@ var CSSPropertyOperations = {
 module.exports = CSSPropertyOperations;
 
 }).call(this,require('_process'))
-},{"./CSSProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSProperty.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./camelizeStyleName":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/camelizeStyleName.js","./dangerousStyleValue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/dangerousStyleValue.js","./hyphenateStyleName":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/hyphenateStyleName.js","./memoizeStringOnly":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/memoizeStringOnly.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CallbackQueue.js":[function(require,module,exports){
+},{"./CSSProperty":31,"./ExecutionEnvironment":48,"./camelizeStyleName":136,"./dangerousStyleValue":141,"./hyphenateStyleName":161,"./memoizeStringOnly":171,"./warning":182,"_process":233}],33:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4633,7 +4662,7 @@ PooledClass.addPoolingTo(CallbackQueue);
 module.exports = CallbackQueue;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ChangeEventPlugin.js":[function(require,module,exports){
+},{"./Object.assign":54,"./PooledClass":55,"./invariant":163,"_process":233}],34:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5015,7 +5044,7 @@ var ChangeEventPlugin = {
 
 module.exports = ChangeEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js","./isEventSupported":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isEventSupported.js","./isTextInputElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextInputElement.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ClientReactRootIndex.js":[function(require,module,exports){
+},{"./EventConstants":42,"./EventPluginHub":44,"./EventPropagators":47,"./ExecutionEnvironment":48,"./ReactUpdates":115,"./SyntheticEvent":123,"./isEventSupported":164,"./isTextInputElement":166,"./keyOf":169}],35:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5040,7 +5069,7 @@ var ClientReactRootIndex = {
 
 module.exports = ClientReactRootIndex;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMChildrenOperations.js":[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5178,7 +5207,7 @@ var DOMChildrenOperations = {
 module.exports = DOMChildrenOperations;
 
 }).call(this,require('_process'))
-},{"./Danger":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Danger.js","./ReactMultiChildUpdateTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChildUpdateTypes.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./setTextContent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setTextContent.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js":[function(require,module,exports){
+},{"./Danger":39,"./ReactMultiChildUpdateTypes":100,"./invariant":163,"./setTextContent":177,"_process":233}],37:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5477,7 +5506,7 @@ var DOMProperty = {
 module.exports = DOMProperty;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],38:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5669,7 +5698,7 @@ var DOMPropertyOperations = {
 module.exports = DOMPropertyOperations;
 
 }).call(this,require('_process'))
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./quoteAttributeValueForBrowser":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/quoteAttributeValueForBrowser.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Danger.js":[function(require,module,exports){
+},{"./DOMProperty":37,"./quoteAttributeValueForBrowser":175,"./warning":182,"_process":233}],39:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5856,7 +5885,7 @@ var Danger = {
 module.exports = Danger;
 
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./createNodesFromMarkup":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createNodesFromMarkup.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","./getMarkupWrap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getMarkupWrap.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DefaultEventPluginOrder.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48,"./createNodesFromMarkup":140,"./emptyFunction":142,"./getMarkupWrap":155,"./invariant":163,"_process":233}],40:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5895,7 +5924,7 @@ var DefaultEventPluginOrder = [
 
 module.exports = DefaultEventPluginOrder;
 
-},{"./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EnterLeaveEventPlugin.js":[function(require,module,exports){
+},{"./keyOf":169}],41:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -6035,7 +6064,7 @@ var EnterLeaveEventPlugin = {
 
 module.exports = EnterLeaveEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./SyntheticMouseEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js":[function(require,module,exports){
+},{"./EventConstants":42,"./EventPropagators":47,"./ReactMount":98,"./SyntheticMouseEvent":127,"./keyOf":169}],42:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -6107,7 +6136,7 @@ var EventConstants = {
 
 module.exports = EventConstants;
 
-},{"./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventListener.js":[function(require,module,exports){
+},{"./keyMirror":168}],43:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6197,7 +6226,7 @@ var EventListener = {
 module.exports = EventListener;
 
 }).call(this,require('_process'))
-},{"./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js":[function(require,module,exports){
+},{"./emptyFunction":142,"_process":233}],44:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6475,7 +6504,7 @@ var EventPluginHub = {
 module.exports = EventPluginHub;
 
 }).call(this,require('_process'))
-},{"./EventPluginRegistry":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginRegistry.js","./EventPluginUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js","./accumulateInto":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/forEachAccumulated.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginRegistry.js":[function(require,module,exports){
+},{"./EventPluginRegistry":45,"./EventPluginUtils":46,"./accumulateInto":133,"./forEachAccumulated":148,"./invariant":163,"_process":233}],45:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6755,7 +6784,7 @@ var EventPluginRegistry = {
 module.exports = EventPluginRegistry;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],46:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6976,7 +7005,7 @@ var EventPluginUtils = {
 module.exports = EventPluginUtils;
 
 }).call(this,require('_process'))
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js":[function(require,module,exports){
+},{"./EventConstants":42,"./invariant":163,"_process":233}],47:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7118,7 +7147,7 @@ var EventPropagators = {
 module.exports = EventPropagators;
 
 }).call(this,require('_process'))
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js","./accumulateInto":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/forEachAccumulated.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js":[function(require,module,exports){
+},{"./EventConstants":42,"./EventPluginHub":44,"./accumulateInto":133,"./forEachAccumulated":148,"_process":233}],48:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -7162,7 +7191,7 @@ var ExecutionEnvironment = {
 
 module.exports = ExecutionEnvironment;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/FallbackCompositionState.js":[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -7253,7 +7282,7 @@ PooledClass.addPoolingTo(FallbackCompositionState);
 
 module.exports = FallbackCompositionState;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./getTextContentAccessor":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getTextContentAccessor.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/HTMLDOMPropertyConfig.js":[function(require,module,exports){
+},{"./Object.assign":54,"./PooledClass":55,"./getTextContentAccessor":158}],50:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -7458,7 +7487,7 @@ var HTMLDOMPropertyConfig = {
 
 module.exports = HTMLDOMPropertyConfig;
 
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LinkedValueUtils.js":[function(require,module,exports){
+},{"./DOMProperty":37,"./ExecutionEnvironment":48}],51:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7614,7 +7643,7 @@ var LinkedValueUtils = {
 module.exports = LinkedValueUtils;
 
 }).call(this,require('_process'))
-},{"./ReactPropTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypes.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LocalEventTrapMixin.js":[function(require,module,exports){
+},{"./ReactPropTypes":106,"./invariant":163,"_process":233}],52:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -7671,7 +7700,7 @@ var LocalEventTrapMixin = {
 module.exports = LocalEventTrapMixin;
 
 }).call(this,require('_process'))
-},{"./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./accumulateInto":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/forEachAccumulated.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/MobileSafariClickEventPlugin.js":[function(require,module,exports){
+},{"./ReactBrowserEventEmitter":58,"./accumulateInto":133,"./forEachAccumulated":148,"./invariant":163,"_process":233}],53:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -7729,7 +7758,7 @@ var MobileSafariClickEventPlugin = {
 
 module.exports = MobileSafariClickEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js":[function(require,module,exports){
+},{"./EventConstants":42,"./emptyFunction":142}],54:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -7778,7 +7807,7 @@ function assign(target, sources) {
 
 module.exports = assign;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js":[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7894,7 +7923,7 @@ var PooledClass = {
 module.exports = PooledClass;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/React.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],56:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -8041,12 +8070,12 @@ if ("production" !== process.env.NODE_ENV) {
   }
 }
 
-React.version = '0.13.0';
+React.version = '0.13.1';
 
 module.exports = React;
 
 }).call(this,require('_process'))
-},{"./EventPluginUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactChildren.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactContext":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactDOM":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js","./ReactDOMTextComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMTextComponent.js","./ReactDefaultInjection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultInjection.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactPropTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypes.js","./ReactReconciler":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconciler.js","./ReactServerRendering":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRendering.js","./findDOMNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/findDOMNode.js","./onlyChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/onlyChild.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js":[function(require,module,exports){
+},{"./EventPluginUtils":46,"./ExecutionEnvironment":48,"./Object.assign":54,"./ReactChildren":60,"./ReactClass":61,"./ReactComponent":62,"./ReactContext":66,"./ReactCurrentOwner":67,"./ReactDOM":68,"./ReactDOMTextComponent":79,"./ReactDefaultInjection":82,"./ReactElement":85,"./ReactElementValidator":86,"./ReactInstanceHandles":94,"./ReactMount":98,"./ReactPerf":103,"./ReactPropTypes":106,"./ReactReconciler":109,"./ReactServerRendering":112,"./findDOMNode":145,"./onlyChild":172,"_process":233}],57:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -8077,7 +8106,7 @@ var ReactBrowserComponentMixin = {
 
 module.exports = ReactBrowserComponentMixin;
 
-},{"./findDOMNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/findDOMNode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js":[function(require,module,exports){
+},{"./findDOMNode":145}],58:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -8430,7 +8459,7 @@ var ReactBrowserEventEmitter = assign({}, ReactEventEmitterMixin, {
 
 module.exports = ReactBrowserEventEmitter;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js","./EventPluginRegistry":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginRegistry.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactEventEmitterMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEventEmitterMixin.js","./ViewportMetrics":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ViewportMetrics.js","./isEventSupported":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isEventSupported.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactChildReconciler.js":[function(require,module,exports){
+},{"./EventConstants":42,"./EventPluginHub":44,"./EventPluginRegistry":45,"./Object.assign":54,"./ReactEventEmitterMixin":89,"./ViewportMetrics":132,"./isEventSupported":164}],59:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -8557,7 +8586,7 @@ var ReactChildReconciler = {
 
 module.exports = ReactChildReconciler;
 
-},{"./ReactReconciler":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconciler.js","./flattenChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/flattenChildren.js","./instantiateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js","./shouldUpdateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shouldUpdateReactComponent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactChildren.js":[function(require,module,exports){
+},{"./ReactReconciler":109,"./flattenChildren":146,"./instantiateReactComponent":162,"./shouldUpdateReactComponent":179}],60:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -8710,7 +8739,7 @@ var ReactChildren = {
 module.exports = ReactChildren;
 
 }).call(this,require('_process'))
-},{"./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactFragment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactFragment.js","./traverseAllChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/traverseAllChildren.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js":[function(require,module,exports){
+},{"./PooledClass":55,"./ReactFragment":91,"./traverseAllChildren":181,"./warning":182,"_process":233}],61:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -9656,7 +9685,7 @@ var ReactClass = {
 module.exports = ReactClass;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactErrorUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactErrorUtils.js","./ReactInstanceMap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceMap.js","./ReactLifeCycle":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLifeCycle.js","./ReactPropTypeLocationNames":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocationNames.js","./ReactPropTypeLocations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocations.js","./ReactUpdateQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdateQueue.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponent.js":[function(require,module,exports){
+},{"./Object.assign":54,"./ReactComponent":62,"./ReactCurrentOwner":67,"./ReactElement":85,"./ReactErrorUtils":88,"./ReactInstanceMap":95,"./ReactLifeCycle":96,"./ReactPropTypeLocationNames":104,"./ReactPropTypeLocations":105,"./ReactUpdateQueue":114,"./invariant":163,"./keyMirror":168,"./keyOf":169,"./warning":182,"_process":233}],62:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -9792,7 +9821,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = ReactComponent;
 
 }).call(this,require('_process'))
-},{"./ReactUpdateQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdateQueue.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentBrowserEnvironment.js":[function(require,module,exports){
+},{"./ReactUpdateQueue":114,"./invariant":163,"./warning":182,"_process":233}],63:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -9839,7 +9868,7 @@ var ReactComponentBrowserEnvironment = {
 
 module.exports = ReactComponentBrowserEnvironment;
 
-},{"./ReactDOMIDOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMIDOperations.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentEnvironment.js":[function(require,module,exports){
+},{"./ReactDOMIDOperations":72,"./ReactMount":98}],64:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -9900,7 +9929,7 @@ var ReactComponentEnvironment = {
 module.exports = ReactComponentEnvironment;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],65:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -10790,7 +10819,7 @@ var ReactCompositeComponent = {
 module.exports = ReactCompositeComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactComponentEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentEnvironment.js","./ReactContext":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js","./ReactInstanceMap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceMap.js","./ReactLifeCycle":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLifeCycle.js","./ReactNativeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactNativeComponent.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactPropTypeLocationNames":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocationNames.js","./ReactPropTypeLocations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocations.js","./ReactReconciler":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconciler.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./emptyObject":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyObject.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./shouldUpdateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shouldUpdateReactComponent.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js":[function(require,module,exports){
+},{"./Object.assign":54,"./ReactComponentEnvironment":64,"./ReactContext":66,"./ReactCurrentOwner":67,"./ReactElement":85,"./ReactElementValidator":86,"./ReactInstanceMap":95,"./ReactLifeCycle":96,"./ReactNativeComponent":101,"./ReactPerf":103,"./ReactPropTypeLocationNames":104,"./ReactPropTypeLocations":105,"./ReactReconciler":109,"./ReactUpdates":115,"./emptyObject":143,"./invariant":163,"./shouldUpdateReactComponent":179,"./warning":182,"_process":233}],66:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -10868,7 +10897,7 @@ var ReactContext = {
 module.exports = ReactContext;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./emptyObject":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyObject.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js":[function(require,module,exports){
+},{"./Object.assign":54,"./emptyObject":143,"./warning":182,"_process":233}],67:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -10902,7 +10931,7 @@ var ReactCurrentOwner = {
 
 module.exports = ReactCurrentOwner;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOM.js":[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11080,7 +11109,7 @@ var ReactDOM = mapObject({
 module.exports = ReactDOM;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js","./mapObject":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/mapObject.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMButton.js":[function(require,module,exports){
+},{"./ReactElement":85,"./ReactElementValidator":86,"./mapObject":170,"_process":233}],69:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -11144,7 +11173,7 @@ var ReactDOMButton = ReactClass.createClass({
 
 module.exports = ReactDOMButton;
 
-},{"./AutoFocusMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js":[function(require,module,exports){
+},{"./AutoFocusMixin":29,"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactElement":85,"./keyMirror":168}],70:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11498,6 +11527,7 @@ ReactDOMComponent.Mixin = {
             styleUpdates[styleName] = '';
           }
         }
+        this._previousStyleCopy = null;
       } else if (registrationNameModules.hasOwnProperty(propKey)) {
         deleteListener(this._rootNodeID, propKey);
       } else if (
@@ -11649,7 +11679,7 @@ ReactDOMComponent.injection = {
 module.exports = ReactDOMComponent;
 
 }).call(this,require('_process'))
-},{"./CSSPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSPropertyOperations.js","./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactComponentBrowserEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentBrowserEnvironment.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactMultiChild":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChild.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./escapeTextContentForBrowser":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextContentForBrowser.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./isEventSupported":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isEventSupported.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMForm.js":[function(require,module,exports){
+},{"./CSSPropertyOperations":32,"./DOMProperty":37,"./DOMPropertyOperations":38,"./Object.assign":54,"./ReactBrowserEventEmitter":58,"./ReactComponentBrowserEnvironment":63,"./ReactMount":98,"./ReactMultiChild":99,"./ReactPerf":103,"./escapeTextContentForBrowser":144,"./invariant":163,"./isEventSupported":164,"./keyOf":169,"./warning":182,"_process":233}],71:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -11698,7 +11728,7 @@ var ReactDOMForm = ReactClass.createClass({
 
 module.exports = ReactDOMForm;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./LocalEventTrapMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LocalEventTrapMixin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMIDOperations.js":[function(require,module,exports){
+},{"./EventConstants":42,"./LocalEventTrapMixin":52,"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactElement":85}],72:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11866,7 +11896,7 @@ ReactPerf.measureMethods(ReactDOMIDOperations, 'ReactDOMIDOperations', {
 module.exports = ReactDOMIDOperations;
 
 }).call(this,require('_process'))
-},{"./CSSPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSPropertyOperations.js","./DOMChildrenOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMChildrenOperations.js","./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./setInnerHTML":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setInnerHTML.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMIframe.js":[function(require,module,exports){
+},{"./CSSPropertyOperations":32,"./DOMChildrenOperations":36,"./DOMPropertyOperations":38,"./ReactMount":98,"./ReactPerf":103,"./invariant":163,"./setInnerHTML":176,"_process":233}],73:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -11911,7 +11941,7 @@ var ReactDOMIframe = ReactClass.createClass({
 
 module.exports = ReactDOMIframe;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./LocalEventTrapMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LocalEventTrapMixin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMImg.js":[function(require,module,exports){
+},{"./EventConstants":42,"./LocalEventTrapMixin":52,"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactElement":85}],74:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -11957,7 +11987,7 @@ var ReactDOMImg = ReactClass.createClass({
 
 module.exports = ReactDOMImg;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./LocalEventTrapMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LocalEventTrapMixin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMInput.js":[function(require,module,exports){
+},{"./EventConstants":42,"./LocalEventTrapMixin":52,"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactElement":85}],75:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12134,7 +12164,7 @@ var ReactDOMInput = ReactClass.createClass({
 module.exports = ReactDOMInput;
 
 }).call(this,require('_process'))
-},{"./AutoFocusMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js","./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./LinkedValueUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LinkedValueUtils.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMOption.js":[function(require,module,exports){
+},{"./AutoFocusMixin":29,"./DOMPropertyOperations":38,"./LinkedValueUtils":51,"./Object.assign":54,"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactElement":85,"./ReactMount":98,"./ReactUpdates":115,"./invariant":163,"_process":233}],76:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12186,7 +12216,7 @@ var ReactDOMOption = ReactClass.createClass({
 module.exports = ReactDOMOption;
 
 }).call(this,require('_process'))
-},{"./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMSelect.js":[function(require,module,exports){
+},{"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactElement":85,"./warning":182,"_process":233}],77:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12277,7 +12307,9 @@ function updateOptions(component, propValue) {
         return;
       }
     }
-    options[0].selected = true;
+    if (options.length) {
+      options[0].selected = true;
+    }
   }
 }
 
@@ -12362,7 +12394,7 @@ var ReactDOMSelect = ReactClass.createClass({
 
 module.exports = ReactDOMSelect;
 
-},{"./AutoFocusMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js","./LinkedValueUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LinkedValueUtils.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMSelection.js":[function(require,module,exports){
+},{"./AutoFocusMixin":29,"./LinkedValueUtils":51,"./Object.assign":54,"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactElement":85,"./ReactUpdates":115}],78:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12575,7 +12607,7 @@ var ReactDOMSelection = {
 
 module.exports = ReactDOMSelection;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./getNodeForCharacterOffset":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getNodeForCharacterOffset.js","./getTextContentAccessor":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getTextContentAccessor.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMTextComponent.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48,"./getNodeForCharacterOffset":156,"./getTextContentAccessor":158}],79:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12692,7 +12724,7 @@ assign(ReactDOMTextComponent.prototype, {
 
 module.exports = ReactDOMTextComponent;
 
-},{"./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactComponentBrowserEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentBrowserEnvironment.js","./ReactDOMComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js","./escapeTextContentForBrowser":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextContentForBrowser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMTextarea.js":[function(require,module,exports){
+},{"./DOMPropertyOperations":38,"./Object.assign":54,"./ReactComponentBrowserEnvironment":63,"./ReactDOMComponent":70,"./escapeTextContentForBrowser":144}],80:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12832,7 +12864,7 @@ var ReactDOMTextarea = ReactClass.createClass({
 module.exports = ReactDOMTextarea;
 
 }).call(this,require('_process'))
-},{"./AutoFocusMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/AutoFocusMixin.js","./DOMPropertyOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMPropertyOperations.js","./LinkedValueUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/LinkedValueUtils.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultBatchingStrategy.js":[function(require,module,exports){
+},{"./AutoFocusMixin":29,"./DOMPropertyOperations":38,"./LinkedValueUtils":51,"./Object.assign":54,"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactElement":85,"./ReactUpdates":115,"./invariant":163,"./warning":182,"_process":233}],81:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12905,7 +12937,7 @@ var ReactDefaultBatchingStrategy = {
 
 module.exports = ReactDefaultBatchingStrategy;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./Transaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultInjection.js":[function(require,module,exports){
+},{"./Object.assign":54,"./ReactUpdates":115,"./Transaction":131,"./emptyFunction":142}],82:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -13064,7 +13096,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
-},{"./BeforeInputEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/BeforeInputEventPlugin.js","./ChangeEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ChangeEventPlugin.js","./ClientReactRootIndex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ClientReactRootIndex.js","./DefaultEventPluginOrder":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DefaultEventPluginOrder.js","./EnterLeaveEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EnterLeaveEventPlugin.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./HTMLDOMPropertyConfig":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/HTMLDOMPropertyConfig.js","./MobileSafariClickEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/MobileSafariClickEventPlugin.js","./ReactBrowserComponentMixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactComponentBrowserEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentBrowserEnvironment.js","./ReactDOMButton":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMButton.js","./ReactDOMComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js","./ReactDOMForm":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMForm.js","./ReactDOMIDOperations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMIDOperations.js","./ReactDOMIframe":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMIframe.js","./ReactDOMImg":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMImg.js","./ReactDOMInput":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMInput.js","./ReactDOMOption":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMOption.js","./ReactDOMSelect":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMSelect.js","./ReactDOMTextComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMTextComponent.js","./ReactDOMTextarea":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMTextarea.js","./ReactDefaultBatchingStrategy":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultBatchingStrategy.js","./ReactDefaultPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultPerf.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactEventListener":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEventListener.js","./ReactInjection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInjection.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactReconcileTransaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconcileTransaction.js","./SVGDOMPropertyConfig":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SVGDOMPropertyConfig.js","./SelectEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SelectEventPlugin.js","./ServerReactRootIndex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ServerReactRootIndex.js","./SimpleEventPlugin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SimpleEventPlugin.js","./createFullPageComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createFullPageComponent.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultPerf.js":[function(require,module,exports){
+},{"./BeforeInputEventPlugin":30,"./ChangeEventPlugin":34,"./ClientReactRootIndex":35,"./DefaultEventPluginOrder":40,"./EnterLeaveEventPlugin":41,"./ExecutionEnvironment":48,"./HTMLDOMPropertyConfig":50,"./MobileSafariClickEventPlugin":53,"./ReactBrowserComponentMixin":57,"./ReactClass":61,"./ReactComponentBrowserEnvironment":63,"./ReactDOMButton":69,"./ReactDOMComponent":70,"./ReactDOMForm":71,"./ReactDOMIDOperations":72,"./ReactDOMIframe":73,"./ReactDOMImg":74,"./ReactDOMInput":75,"./ReactDOMOption":76,"./ReactDOMSelect":77,"./ReactDOMTextComponent":79,"./ReactDOMTextarea":80,"./ReactDefaultBatchingStrategy":81,"./ReactDefaultPerf":83,"./ReactElement":85,"./ReactEventListener":90,"./ReactInjection":92,"./ReactInstanceHandles":94,"./ReactMount":98,"./ReactReconcileTransaction":108,"./SVGDOMPropertyConfig":116,"./SelectEventPlugin":117,"./ServerReactRootIndex":118,"./SimpleEventPlugin":119,"./createFullPageComponent":139,"_process":233}],83:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13230,8 +13262,8 @@ var ReactDefaultPerf = {
           ReactDefaultPerf._allMeasurements.length - 1
         ].totalTime = performanceNow() - start;
         return rv;
-      } else if (moduleName === 'ReactDOMIDOperations' ||
-        moduleName === 'ReactComponentBrowserEnvironment') {
+      } else if (fnName === '_mountImageIntoNode' ||
+          moduleName === 'ReactDOMIDOperations') {
         start = performanceNow();
         rv = func.apply(this, args);
         totalTime = performanceNow() - start;
@@ -13277,6 +13309,10 @@ var ReactDefaultPerf = {
         (fnName === 'mountComponent' ||
         fnName === 'updateComponent' || fnName === '_renderValidatedComponent')))) {
 
+        if (typeof this._currentElement.type === 'string') {
+          return func.apply(this, args);
+        }
+
         var rootNodeID = fnName === 'mountComponent' ?
           args[0] :
           this._rootNodeID;
@@ -13310,9 +13346,7 @@ var ReactDefaultPerf = {
         }
 
         entry.displayNames[rootNodeID] = {
-          current: typeof this._currentElement.type === 'string' ?
-            this._currentElement.type :
-            this.getName(),
+          current: this.getName(),
           owner: this._currentElement._owner ?
             this._currentElement._owner.getName() :
             '<root>'
@@ -13328,7 +13362,7 @@ var ReactDefaultPerf = {
 
 module.exports = ReactDefaultPerf;
 
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./ReactDefaultPerfAnalysis":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultPerfAnalysis.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./performanceNow":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/performanceNow.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDefaultPerfAnalysis.js":[function(require,module,exports){
+},{"./DOMProperty":37,"./ReactDefaultPerfAnalysis":84,"./ReactMount":98,"./ReactPerf":103,"./performanceNow":174}],84:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13534,7 +13568,7 @@ var ReactDefaultPerfAnalysis = {
 
 module.exports = ReactDefaultPerfAnalysis;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js":[function(require,module,exports){
+},{"./Object.assign":54}],85:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -13842,7 +13876,7 @@ ReactElement.isValidElement = function(object) {
 module.exports = ReactElement;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactContext":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js":[function(require,module,exports){
+},{"./Object.assign":54,"./ReactContext":66,"./ReactCurrentOwner":67,"./warning":182,"_process":233}],86:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -14307,7 +14341,7 @@ var ReactElementValidator = {
 module.exports = ReactElementValidator;
 
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactFragment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactFragment.js","./ReactNativeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactNativeComponent.js","./ReactPropTypeLocationNames":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocationNames.js","./ReactPropTypeLocations":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocations.js","./getIteratorFn":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getIteratorFn.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js":[function(require,module,exports){
+},{"./ReactCurrentOwner":67,"./ReactElement":85,"./ReactFragment":91,"./ReactNativeComponent":101,"./ReactPropTypeLocationNames":104,"./ReactPropTypeLocations":105,"./getIteratorFn":154,"./invariant":163,"./warning":182,"_process":233}],87:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -14402,7 +14436,7 @@ var ReactEmptyComponent = {
 module.exports = ReactEmptyComponent;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactInstanceMap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceMap.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactErrorUtils.js":[function(require,module,exports){
+},{"./ReactElement":85,"./ReactInstanceMap":95,"./invariant":163,"_process":233}],88:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14434,7 +14468,7 @@ var ReactErrorUtils = {
 
 module.exports = ReactErrorUtils;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEventEmitterMixin.js":[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14484,7 +14518,7 @@ var ReactEventEmitterMixin = {
 
 module.exports = ReactEventEmitterMixin;
 
-},{"./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEventListener.js":[function(require,module,exports){
+},{"./EventPluginHub":44}],90:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14667,7 +14701,7 @@ var ReactEventListener = {
 
 module.exports = ReactEventListener;
 
-},{"./EventListener":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventListener.js","./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./getEventTarget":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventTarget.js","./getUnboundedScrollPosition":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getUnboundedScrollPosition.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactFragment.js":[function(require,module,exports){
+},{"./EventListener":43,"./ExecutionEnvironment":48,"./Object.assign":54,"./PooledClass":55,"./ReactInstanceHandles":94,"./ReactMount":98,"./ReactUpdates":115,"./getEventTarget":153,"./getUnboundedScrollPosition":159}],91:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -14852,7 +14886,7 @@ var ReactFragment = {
 module.exports = ReactFragment;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInjection.js":[function(require,module,exports){
+},{"./ReactElement":85,"./warning":182,"_process":233}],92:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14894,7 +14928,7 @@ var ReactInjection = {
 
 module.exports = ReactInjection;
 
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./EventPluginHub":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginHub.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactComponentEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentEnvironment.js","./ReactDOMComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMComponent.js","./ReactEmptyComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js","./ReactNativeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactNativeComponent.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactRootIndex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactRootIndex.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInputSelection.js":[function(require,module,exports){
+},{"./DOMProperty":37,"./EventPluginHub":44,"./ReactBrowserEventEmitter":58,"./ReactClass":61,"./ReactComponentEnvironment":64,"./ReactDOMComponent":70,"./ReactEmptyComponent":87,"./ReactNativeComponent":101,"./ReactPerf":103,"./ReactRootIndex":111,"./ReactUpdates":115}],93:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -15029,7 +15063,7 @@ var ReactInputSelection = {
 
 module.exports = ReactInputSelection;
 
-},{"./ReactDOMSelection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactDOMSelection.js","./containsNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/containsNode.js","./focusNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/focusNode.js","./getActiveElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getActiveElement.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js":[function(require,module,exports){
+},{"./ReactDOMSelection":78,"./containsNode":137,"./focusNode":147,"./getActiveElement":149}],94:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -15365,7 +15399,7 @@ var ReactInstanceHandles = {
 module.exports = ReactInstanceHandles;
 
 }).call(this,require('_process'))
-},{"./ReactRootIndex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactRootIndex.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceMap.js":[function(require,module,exports){
+},{"./ReactRootIndex":111,"./invariant":163,"_process":233}],95:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -15414,7 +15448,7 @@ var ReactInstanceMap = {
 
 module.exports = ReactInstanceMap;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLifeCycle.js":[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 /**
  * Copyright 2015, Facebook, Inc.
  * All rights reserved.
@@ -15451,7 +15485,7 @@ var ReactLifeCycle = {
 
 module.exports = ReactLifeCycle;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMarkupChecksum.js":[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -15499,7 +15533,7 @@ var ReactMarkupChecksum = {
 
 module.exports = ReactMarkupChecksum;
 
-},{"./adler32":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/adler32.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js":[function(require,module,exports){
+},{"./adler32":134}],98:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -16390,7 +16424,7 @@ ReactPerf.measureMethods(ReactMount, 'ReactMount', {
 module.exports = ReactMount;
 
 }).call(this,require('_process'))
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js","./ReactEmptyComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactInstanceMap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceMap.js","./ReactMarkupChecksum":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMarkupChecksum.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactReconciler":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconciler.js","./ReactUpdateQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdateQueue.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./containsNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/containsNode.js","./emptyObject":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyObject.js","./getReactRootElementInContainer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getReactRootElementInContainer.js","./instantiateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./setInnerHTML":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setInnerHTML.js","./shouldUpdateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shouldUpdateReactComponent.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChild.js":[function(require,module,exports){
+},{"./DOMProperty":37,"./ReactBrowserEventEmitter":58,"./ReactCurrentOwner":67,"./ReactElement":85,"./ReactElementValidator":86,"./ReactEmptyComponent":87,"./ReactInstanceHandles":94,"./ReactInstanceMap":95,"./ReactMarkupChecksum":97,"./ReactPerf":103,"./ReactReconciler":109,"./ReactUpdateQueue":114,"./ReactUpdates":115,"./containsNode":137,"./emptyObject":143,"./getReactRootElementInContainer":157,"./instantiateReactComponent":162,"./invariant":163,"./setInnerHTML":176,"./shouldUpdateReactComponent":179,"./warning":182,"_process":233}],99:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16820,7 +16854,7 @@ var ReactMultiChild = {
 
 module.exports = ReactMultiChild;
 
-},{"./ReactChildReconciler":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactChildReconciler.js","./ReactComponentEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactComponentEnvironment.js","./ReactMultiChildUpdateTypes":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChildUpdateTypes.js","./ReactReconciler":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconciler.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMultiChildUpdateTypes.js":[function(require,module,exports){
+},{"./ReactChildReconciler":59,"./ReactComponentEnvironment":64,"./ReactMultiChildUpdateTypes":100,"./ReactReconciler":109}],100:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16853,7 +16887,7 @@ var ReactMultiChildUpdateTypes = keyMirror({
 
 module.exports = ReactMultiChildUpdateTypes;
 
-},{"./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactNativeComponent.js":[function(require,module,exports){
+},{"./keyMirror":168}],101:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -16960,7 +16994,7 @@ var ReactNativeComponent = {
 module.exports = ReactNativeComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactOwner.js":[function(require,module,exports){
+},{"./Object.assign":54,"./invariant":163,"_process":233}],102:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -17072,7 +17106,7 @@ var ReactOwner = {
 module.exports = ReactOwner;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],103:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -17176,7 +17210,7 @@ function _noMeasure(objName, fnName, func) {
 module.exports = ReactPerf;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocationNames.js":[function(require,module,exports){
+},{"_process":233}],104:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -17204,7 +17238,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = ReactPropTypeLocationNames;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocations.js":[function(require,module,exports){
+},{"_process":233}],105:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17228,7 +17262,7 @@ var ReactPropTypeLocations = keyMirror({
 
 module.exports = ReactPropTypeLocations;
 
-},{"./keyMirror":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypes.js":[function(require,module,exports){
+},{"./keyMirror":168}],106:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17577,7 +17611,7 @@ function getPreciseType(propValue) {
 
 module.exports = ReactPropTypes;
 
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactFragment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactFragment.js","./ReactPropTypeLocationNames":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPropTypeLocationNames.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPutListenerQueue.js":[function(require,module,exports){
+},{"./ReactElement":85,"./ReactFragment":91,"./ReactPropTypeLocationNames":104,"./emptyFunction":142}],107:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17633,7 +17667,7 @@ PooledClass.addPoolingTo(ReactPutListenerQueue);
 
 module.exports = ReactPutListenerQueue;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconcileTransaction.js":[function(require,module,exports){
+},{"./Object.assign":54,"./PooledClass":55,"./ReactBrowserEventEmitter":58}],108:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17809,7 +17843,7 @@ PooledClass.addPoolingTo(ReactReconcileTransaction);
 
 module.exports = ReactReconcileTransaction;
 
-},{"./CallbackQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactBrowserEventEmitter":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactInputSelection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInputSelection.js","./ReactPutListenerQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPutListenerQueue.js","./Transaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconciler.js":[function(require,module,exports){
+},{"./CallbackQueue":33,"./Object.assign":54,"./PooledClass":55,"./ReactBrowserEventEmitter":58,"./ReactInputSelection":93,"./ReactPutListenerQueue":107,"./Transaction":131}],109:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -17933,7 +17967,7 @@ var ReactReconciler = {
 module.exports = ReactReconciler;
 
 }).call(this,require('_process'))
-},{"./ReactElementValidator":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElementValidator.js","./ReactRef":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactRef.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactRef.js":[function(require,module,exports){
+},{"./ReactElementValidator":86,"./ReactRef":110,"_process":233}],110:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18004,7 +18038,7 @@ ReactRef.detachRefs = function(instance, element) {
 
 module.exports = ReactRef;
 
-},{"./ReactOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactOwner.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactRootIndex.js":[function(require,module,exports){
+},{"./ReactOwner":102}],111:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18035,7 +18069,7 @@ var ReactRootIndex = {
 
 module.exports = ReactRootIndex;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRendering.js":[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -18117,7 +18151,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./ReactMarkupChecksum":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMarkupChecksum.js","./ReactServerRenderingTransaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRenderingTransaction.js","./emptyObject":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyObject.js","./instantiateReactComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactServerRenderingTransaction.js":[function(require,module,exports){
+},{"./ReactElement":85,"./ReactInstanceHandles":94,"./ReactMarkupChecksum":97,"./ReactServerRenderingTransaction":113,"./emptyObject":143,"./instantiateReactComponent":162,"./invariant":163,"_process":233}],113:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -18230,7 +18264,7 @@ PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 module.exports = ReactServerRenderingTransaction;
 
-},{"./CallbackQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactPutListenerQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPutListenerQueue.js","./Transaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdateQueue.js":[function(require,module,exports){
+},{"./CallbackQueue":33,"./Object.assign":54,"./PooledClass":55,"./ReactPutListenerQueue":107,"./Transaction":131,"./emptyFunction":142}],114:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -18529,7 +18563,7 @@ var ReactUpdateQueue = {
 module.exports = ReactUpdateQueue;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactInstanceMap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceMap.js","./ReactLifeCycle":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactLifeCycle.js","./ReactUpdates":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactUpdates.js":[function(require,module,exports){
+},{"./Object.assign":54,"./ReactCurrentOwner":67,"./ReactElement":85,"./ReactInstanceMap":95,"./ReactLifeCycle":96,"./ReactUpdates":115,"./invariant":163,"./warning":182,"_process":233}],115:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -18811,7 +18845,7 @@ var ReactUpdates = {
 module.exports = ReactUpdates;
 
 }).call(this,require('_process'))
-},{"./CallbackQueue":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactPerf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactPerf.js","./ReactReconciler":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactReconciler.js","./Transaction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SVGDOMPropertyConfig.js":[function(require,module,exports){
+},{"./CallbackQueue":33,"./Object.assign":54,"./PooledClass":55,"./ReactCurrentOwner":67,"./ReactPerf":103,"./ReactReconciler":109,"./Transaction":131,"./invariant":163,"./warning":182,"_process":233}],116:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18903,7 +18937,7 @@ var SVGDOMPropertyConfig = {
 
 module.exports = SVGDOMPropertyConfig;
 
-},{"./DOMProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/DOMProperty.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SelectEventPlugin.js":[function(require,module,exports){
+},{"./DOMProperty":37}],117:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19098,7 +19132,7 @@ var SelectEventPlugin = {
 
 module.exports = SelectEventPlugin;
 
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./ReactInputSelection":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInputSelection.js","./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js","./getActiveElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getActiveElement.js","./isTextInputElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextInputElement.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js","./shallowEqual":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shallowEqual.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ServerReactRootIndex.js":[function(require,module,exports){
+},{"./EventConstants":42,"./EventPropagators":47,"./ReactInputSelection":93,"./SyntheticEvent":123,"./getActiveElement":149,"./isTextInputElement":166,"./keyOf":169,"./shallowEqual":178}],118:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19129,7 +19163,7 @@ var ServerReactRootIndex = {
 
 module.exports = ServerReactRootIndex;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SimpleEventPlugin.js":[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -19557,7 +19591,7 @@ var SimpleEventPlugin = {
 module.exports = SimpleEventPlugin;
 
 }).call(this,require('_process'))
-},{"./EventConstants":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventConstants.js","./EventPluginUtils":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPluginUtils.js","./EventPropagators":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/EventPropagators.js","./SyntheticClipboardEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticClipboardEvent.js","./SyntheticDragEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticDragEvent.js","./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js","./SyntheticFocusEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticFocusEvent.js","./SyntheticKeyboardEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticKeyboardEvent.js","./SyntheticMouseEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js","./SyntheticTouchEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticTouchEvent.js","./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js","./SyntheticWheelEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticWheelEvent.js","./getEventCharCode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventCharCode.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./keyOf":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticClipboardEvent.js":[function(require,module,exports){
+},{"./EventConstants":42,"./EventPluginUtils":46,"./EventPropagators":47,"./SyntheticClipboardEvent":120,"./SyntheticDragEvent":122,"./SyntheticEvent":123,"./SyntheticFocusEvent":124,"./SyntheticKeyboardEvent":126,"./SyntheticMouseEvent":127,"./SyntheticTouchEvent":128,"./SyntheticUIEvent":129,"./SyntheticWheelEvent":130,"./getEventCharCode":150,"./invariant":163,"./keyOf":169,"./warning":182,"_process":233}],120:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19602,7 +19636,7 @@ SyntheticEvent.augmentClass(SyntheticClipboardEvent, ClipboardEventInterface);
 
 module.exports = SyntheticClipboardEvent;
 
-},{"./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticCompositionEvent.js":[function(require,module,exports){
+},{"./SyntheticEvent":123}],121:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19647,7 +19681,7 @@ SyntheticEvent.augmentClass(
 
 module.exports = SyntheticCompositionEvent;
 
-},{"./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticDragEvent.js":[function(require,module,exports){
+},{"./SyntheticEvent":123}],122:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19686,7 +19720,7 @@ SyntheticMouseEvent.augmentClass(SyntheticDragEvent, DragEventInterface);
 
 module.exports = SyntheticDragEvent;
 
-},{"./SyntheticMouseEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js":[function(require,module,exports){
+},{"./SyntheticMouseEvent":127}],123:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19852,7 +19886,7 @@ PooledClass.addPoolingTo(SyntheticEvent, PooledClass.threeArgumentPooler);
 
 module.exports = SyntheticEvent;
 
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/PooledClass.js","./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","./getEventTarget":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventTarget.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticFocusEvent.js":[function(require,module,exports){
+},{"./Object.assign":54,"./PooledClass":55,"./emptyFunction":142,"./getEventTarget":153}],124:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19891,7 +19925,7 @@ SyntheticUIEvent.augmentClass(SyntheticFocusEvent, FocusEventInterface);
 
 module.exports = SyntheticFocusEvent;
 
-},{"./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticInputEvent.js":[function(require,module,exports){
+},{"./SyntheticUIEvent":129}],125:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19937,7 +19971,7 @@ SyntheticEvent.augmentClass(
 
 module.exports = SyntheticInputEvent;
 
-},{"./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticKeyboardEvent.js":[function(require,module,exports){
+},{"./SyntheticEvent":123}],126:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20024,7 +20058,7 @@ SyntheticUIEvent.augmentClass(SyntheticKeyboardEvent, KeyboardEventInterface);
 
 module.exports = SyntheticKeyboardEvent;
 
-},{"./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js","./getEventCharCode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventCharCode.js","./getEventKey":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventKey.js","./getEventModifierState":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventModifierState.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js":[function(require,module,exports){
+},{"./SyntheticUIEvent":129,"./getEventCharCode":150,"./getEventKey":151,"./getEventModifierState":152}],127:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20105,7 +20139,7 @@ SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 
 module.exports = SyntheticMouseEvent;
 
-},{"./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js","./ViewportMetrics":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ViewportMetrics.js","./getEventModifierState":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventModifierState.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticTouchEvent.js":[function(require,module,exports){
+},{"./SyntheticUIEvent":129,"./ViewportMetrics":132,"./getEventModifierState":152}],128:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20153,7 +20187,7 @@ SyntheticUIEvent.augmentClass(SyntheticTouchEvent, TouchEventInterface);
 
 module.exports = SyntheticTouchEvent;
 
-},{"./SyntheticUIEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js","./getEventModifierState":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventModifierState.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticUIEvent.js":[function(require,module,exports){
+},{"./SyntheticUIEvent":129,"./getEventModifierState":152}],129:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20215,7 +20249,7 @@ SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 
 module.exports = SyntheticUIEvent;
 
-},{"./SyntheticEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticEvent.js","./getEventTarget":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventTarget.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticWheelEvent.js":[function(require,module,exports){
+},{"./SyntheticEvent":123,"./getEventTarget":153}],130:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20276,7 +20310,7 @@ SyntheticMouseEvent.augmentClass(SyntheticWheelEvent, WheelEventInterface);
 
 module.exports = SyntheticWheelEvent;
 
-},{"./SyntheticMouseEvent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/SyntheticMouseEvent.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Transaction.js":[function(require,module,exports){
+},{"./SyntheticMouseEvent":127}],131:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20517,7 +20551,7 @@ var Transaction = {
 module.exports = Transaction;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ViewportMetrics.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],132:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20546,7 +20580,7 @@ var ViewportMetrics = {
 
 module.exports = ViewportMetrics;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/accumulateInto.js":[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -20612,7 +20646,7 @@ function accumulateInto(current, next) {
 module.exports = accumulateInto;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/adler32.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],134:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20646,7 +20680,7 @@ function adler32(data) {
 
 module.exports = adler32;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/camelize.js":[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20678,7 +20712,7 @@ function camelize(string) {
 
 module.exports = camelize;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/camelizeStyleName.js":[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -20720,7 +20754,7 @@ function camelizeStyleName(string) {
 
 module.exports = camelizeStyleName;
 
-},{"./camelize":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/camelize.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/containsNode.js":[function(require,module,exports){
+},{"./camelize":135}],137:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20764,7 +20798,7 @@ function containsNode(outerNode, innerNode) {
 
 module.exports = containsNode;
 
-},{"./isTextNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextNode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createArrayFromMixed.js":[function(require,module,exports){
+},{"./isTextNode":167}],138:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20850,7 +20884,7 @@ function createArrayFromMixed(obj) {
 
 module.exports = createArrayFromMixed;
 
-},{"./toArray":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/toArray.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createFullPageComponent.js":[function(require,module,exports){
+},{"./toArray":180}],139:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20887,6 +20921,7 @@ function createFullPageComponent(tag) {
   var elementFactory = ReactElement.createFactory(tag);
 
   var FullPageComponent = ReactClass.createClass({
+    tagName: tag.toUpperCase(),
     displayName: 'ReactFullPageComponent' + tag,
 
     componentWillUnmount: function() {
@@ -20911,7 +20946,7 @@ function createFullPageComponent(tag) {
 module.exports = createFullPageComponent;
 
 }).call(this,require('_process'))
-},{"./ReactClass":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactClass.js","./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createNodesFromMarkup.js":[function(require,module,exports){
+},{"./ReactClass":61,"./ReactElement":85,"./invariant":163,"_process":233}],140:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21001,7 +21036,7 @@ function createNodesFromMarkup(markup, handleScript) {
 module.exports = createNodesFromMarkup;
 
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./createArrayFromMixed":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/createArrayFromMixed.js","./getMarkupWrap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getMarkupWrap.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/dangerousStyleValue.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48,"./createArrayFromMixed":138,"./getMarkupWrap":155,"./invariant":163,"_process":233}],141:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21059,7 +21094,7 @@ function dangerousStyleValue(name, value) {
 
 module.exports = dangerousStyleValue;
 
-},{"./CSSProperty":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/CSSProperty.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js":[function(require,module,exports){
+},{"./CSSProperty":31}],142:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21093,7 +21128,7 @@ emptyFunction.thatReturnsArgument = function(arg) { return arg; };
 
 module.exports = emptyFunction;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyObject.js":[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21117,7 +21152,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = emptyObject;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextContentForBrowser.js":[function(require,module,exports){
+},{"_process":233}],144:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21157,7 +21192,7 @@ function escapeTextContentForBrowser(text) {
 
 module.exports = escapeTextContentForBrowser;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/findDOMNode.js":[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21230,7 +21265,7 @@ function findDOMNode(componentOrElement) {
 module.exports = findDOMNode;
 
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCurrentOwner.js","./ReactInstanceMap":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceMap.js","./ReactMount":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactMount.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./isNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isNode.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/flattenChildren.js":[function(require,module,exports){
+},{"./ReactCurrentOwner":67,"./ReactInstanceMap":95,"./ReactMount":98,"./invariant":163,"./isNode":165,"./warning":182,"_process":233}],146:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21288,7 +21323,7 @@ function flattenChildren(children) {
 module.exports = flattenChildren;
 
 }).call(this,require('_process'))
-},{"./traverseAllChildren":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/traverseAllChildren.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/focusNode.js":[function(require,module,exports){
+},{"./traverseAllChildren":181,"./warning":182,"_process":233}],147:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -21317,7 +21352,7 @@ function focusNode(node) {
 
 module.exports = focusNode;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/forEachAccumulated.js":[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21348,7 +21383,7 @@ var forEachAccumulated = function(arr, cb, scope) {
 
 module.exports = forEachAccumulated;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getActiveElement.js":[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21377,7 +21412,7 @@ function getActiveElement() /*?DOMElement*/ {
 
 module.exports = getActiveElement;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventCharCode.js":[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21429,7 +21464,7 @@ function getEventCharCode(nativeEvent) {
 
 module.exports = getEventCharCode;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventKey.js":[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21534,7 +21569,7 @@ function getEventKey(nativeEvent) {
 
 module.exports = getEventKey;
 
-},{"./getEventCharCode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventCharCode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventModifierState.js":[function(require,module,exports){
+},{"./getEventCharCode":150}],152:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21581,7 +21616,7 @@ function getEventModifierState(nativeEvent) {
 
 module.exports = getEventModifierState;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getEventTarget.js":[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21612,7 +21647,7 @@ function getEventTarget(nativeEvent) {
 
 module.exports = getEventTarget;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getIteratorFn.js":[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21656,7 +21691,7 @@ function getIteratorFn(maybeIterable) {
 
 module.exports = getIteratorFn;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getMarkupWrap.js":[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21773,7 +21808,7 @@ function getMarkupWrap(nodeName) {
 module.exports = getMarkupWrap;
 
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getNodeForCharacterOffset.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48,"./invariant":163,"_process":233}],156:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21848,7 +21883,7 @@ function getNodeForCharacterOffset(root, offset) {
 
 module.exports = getNodeForCharacterOffset;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getReactRootElementInContainer.js":[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21883,7 +21918,7 @@ function getReactRootElementInContainer(container) {
 
 module.exports = getReactRootElementInContainer;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getTextContentAccessor.js":[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21920,7 +21955,7 @@ function getTextContentAccessor() {
 
 module.exports = getTextContentAccessor;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getUnboundedScrollPosition.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48}],159:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21960,7 +21995,7 @@ function getUnboundedScrollPosition(scrollable) {
 
 module.exports = getUnboundedScrollPosition;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/hyphenate.js":[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21993,7 +22028,7 @@ function hyphenate(string) {
 
 module.exports = hyphenate;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/hyphenateStyleName.js":[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22034,7 +22069,7 @@ function hyphenateStyleName(string) {
 
 module.exports = hyphenateStyleName;
 
-},{"./hyphenate":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/hyphenate.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/instantiateReactComponent.js":[function(require,module,exports){
+},{"./hyphenate":160}],162:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -22171,7 +22206,7 @@ function instantiateReactComponent(node, parentCompositeType) {
 module.exports = instantiateReactComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/Object.assign.js","./ReactCompositeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactCompositeComponent.js","./ReactEmptyComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactEmptyComponent.js","./ReactNativeComponent":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactNativeComponent.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js":[function(require,module,exports){
+},{"./Object.assign":54,"./ReactCompositeComponent":65,"./ReactEmptyComponent":87,"./ReactNativeComponent":101,"./invariant":163,"./warning":182,"_process":233}],163:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -22228,7 +22263,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isEventSupported.js":[function(require,module,exports){
+},{"_process":233}],164:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22293,7 +22328,7 @@ function isEventSupported(eventNameSuffix, capture) {
 
 module.exports = isEventSupported;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isNode.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48}],165:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22320,7 +22355,7 @@ function isNode(object) {
 
 module.exports = isNode;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextInputElement.js":[function(require,module,exports){
+},{}],166:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22363,7 +22398,7 @@ function isTextInputElement(elem) {
 
 module.exports = isTextInputElement;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isTextNode.js":[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22388,7 +22423,7 @@ function isTextNode(object) {
 
 module.exports = isTextNode;
 
-},{"./isNode":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/isNode.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyMirror.js":[function(require,module,exports){
+},{"./isNode":165}],168:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -22443,7 +22478,7 @@ var keyMirror = function(obj) {
 module.exports = keyMirror;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/keyOf.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],169:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22479,7 +22514,7 @@ var keyOf = function(oneKeyObj) {
 
 module.exports = keyOf;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/mapObject.js":[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22532,7 +22567,7 @@ function mapObject(object, callback, context) {
 
 module.exports = mapObject;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/memoizeStringOnly.js":[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22565,7 +22600,7 @@ function memoizeStringOnly(callback) {
 
 module.exports = memoizeStringOnly;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/onlyChild.js":[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -22605,7 +22640,7 @@ function onlyChild(children) {
 module.exports = onlyChild;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/performance.js":[function(require,module,exports){
+},{"./ReactElement":85,"./invariant":163,"_process":233}],173:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22633,7 +22668,7 @@ if (ExecutionEnvironment.canUseDOM) {
 
 module.exports = performance || {};
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/performanceNow.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48}],174:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22661,7 +22696,7 @@ var performanceNow = performance.now.bind(performance);
 
 module.exports = performanceNow;
 
-},{"./performance":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/performance.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/quoteAttributeValueForBrowser.js":[function(require,module,exports){
+},{"./performance":173}],175:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22689,7 +22724,7 @@ function quoteAttributeValueForBrowser(value) {
 
 module.exports = quoteAttributeValueForBrowser;
 
-},{"./escapeTextContentForBrowser":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextContentForBrowser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setInnerHTML.js":[function(require,module,exports){
+},{"./escapeTextContentForBrowser":144}],176:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22778,7 +22813,7 @@ if (ExecutionEnvironment.canUseDOM) {
 
 module.exports = setInnerHTML;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setTextContent.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48}],177:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22820,7 +22855,7 @@ if (ExecutionEnvironment.canUseDOM) {
 
 module.exports = setTextContent;
 
-},{"./ExecutionEnvironment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ExecutionEnvironment.js","./escapeTextContentForBrowser":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/escapeTextContentForBrowser.js","./setInnerHTML":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/setInnerHTML.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shallowEqual.js":[function(require,module,exports){
+},{"./ExecutionEnvironment":48,"./escapeTextContentForBrowser":144,"./setInnerHTML":176}],178:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -22864,7 +22899,7 @@ function shallowEqual(objA, objB) {
 
 module.exports = shallowEqual;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/shouldUpdateReactComponent.js":[function(require,module,exports){
+},{}],179:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -22968,7 +23003,7 @@ function shouldUpdateReactComponent(prevElement, nextElement) {
 module.exports = shouldUpdateReactComponent;
 
 }).call(this,require('_process'))
-},{"./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/toArray.js":[function(require,module,exports){
+},{"./warning":182,"_process":233}],180:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -23040,7 +23075,7 @@ function toArray(obj) {
 module.exports = toArray;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/traverseAllChildren.js":[function(require,module,exports){
+},{"./invariant":163,"_process":233}],181:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -23293,7 +23328,7 @@ function traverseAllChildren(children, callback, traverseContext) {
 module.exports = traverseAllChildren;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactElement.js","./ReactFragment":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactFragment.js","./ReactInstanceHandles":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/ReactInstanceHandles.js","./getIteratorFn":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/getIteratorFn.js","./invariant":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/invariant.js","./warning":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/warning.js":[function(require,module,exports){
+},{"./ReactElement":85,"./ReactFragment":91,"./ReactInstanceHandles":94,"./getIteratorFn":154,"./invariant":163,"./warning":182,"_process":233}],182:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -23356,10 +23391,10 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"./emptyFunction":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/emptyFunction.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js":[function(require,module,exports){
+},{"./emptyFunction":142,"_process":233}],183:[function(require,module,exports){
 module.exports = require('./lib/React');
 
-},{"./lib/React":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/lib/React.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js":[function(require,module,exports){
+},{"./lib/React":56}],184:[function(require,module,exports){
 (function (process){
 var defined = require('defined');
 var createDefaultStream = require('./lib/default_stream');
@@ -23429,15 +23464,9 @@ function createExitHarness (conf) {
 
     var inErrorState = false;
 
-    var $_fatalException = process._fatalException
-    process._fatalException = function fakeFatalException() {
-        inErrorState = true;
-        $_fatalException.apply(this, arguments)
-    }
-
     process.on('exit', function (code) {
         // let the process exit cleanly.
-        if (inErrorState) {
+        if (code !== 0) {
             return
         }
 
@@ -23509,7 +23538,7 @@ function createHarness (conf_) {
 }
 
 }).call(this,require('_process'))
-},{"./lib/default_stream":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/lib/default_stream.js","./lib/results":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/lib/results.js","./lib/test":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/lib/test.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","defined":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/defined/index.js","through":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/through/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/lib/default_stream.js":[function(require,module,exports){
+},{"./lib/default_stream":185,"./lib/results":186,"./lib/test":187,"_process":233,"defined":191,"through":195}],185:[function(require,module,exports){
 (function (process){
 var through = require('through');
 var fs = require('fs');
@@ -23544,7 +23573,7 @@ module.exports = function () {
 };
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","fs":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/lib/_empty.js","through":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/through/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/lib/results.js":[function(require,module,exports){
+},{"_process":233,"fs":223,"through":195}],186:[function(require,module,exports){
 (function (process){
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
@@ -23737,7 +23766,7 @@ function has (obj, prop) {
 }
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","events":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/events/events.js","inherits":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/inherits/inherits_browser.js","object-inspect":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/object-inspect/index.js","resumer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/resumer/index.js","through":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/through/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/lib/test.js":[function(require,module,exports){
+},{"_process":233,"events":229,"inherits":192,"object-inspect":193,"resumer":194,"through":195}],187:[function(require,module,exports){
 (function (process,__dirname){
 var deepEqual = require('deep-equal');
 var defined = require('defined');
@@ -24237,7 +24266,7 @@ Test.skip = function (name_, _opts, _cb) {
 
 
 }).call(this,require('_process'),"/node_modules/tape/lib")
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","deep-equal":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/deep-equal/index.js","defined":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/defined/index.js","events":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/events/events.js","inherits":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/inherits/inherits_browser.js","path":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/path-browserify/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/deep-equal/index.js":[function(require,module,exports){
+},{"_process":233,"deep-equal":188,"defined":191,"events":229,"inherits":192,"path":232}],188:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -24330,10 +24359,10 @@ function objEquiv(a, b, opts) {
     key = ka[i];
     if (!deepEqual(a[key], b[key], opts)) return false;
   }
-  return true;
+  return typeof a === typeof b;
 }
 
-},{"./lib/is_arguments.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/deep-equal/lib/is_arguments.js","./lib/keys.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/deep-equal/lib/keys.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/deep-equal/lib/is_arguments.js":[function(require,module,exports){
+},{"./lib/is_arguments.js":189,"./lib/keys.js":190}],189:[function(require,module,exports){
 var supportsArgumentsClass = (function(){
   return Object.prototype.toString.call(arguments)
 })() == '[object Arguments]';
@@ -24355,7 +24384,7 @@ function unsupported(object){
     false;
 };
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/deep-equal/lib/keys.js":[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -24366,14 +24395,14 @@ function shim (obj) {
   return keys;
 }
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/defined/index.js":[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 module.exports = function () {
     for (var i = 0; i < arguments.length; i++) {
         if (arguments[i] !== undefined) return arguments[i];
     }
 };
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
+},{}],192:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -24398,7 +24427,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/object-inspect/index.js":[function(require,module,exports){
+},{}],193:[function(require,module,exports){
 module.exports = function inspect_ (obj, opts, depth, seen) {
     if (!opts) opts = {};
     
@@ -24527,7 +24556,7 @@ function inspectString (str) {
     }
 }
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/resumer/index.js":[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 (function (process){
 var through = require('through');
 var nextTick = typeof setImmediate !== 'undefined'
@@ -24560,7 +24589,7 @@ module.exports = function (write, end) {
 };
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","through":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/through/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/through/index.js":[function(require,module,exports){
+},{"_process":233,"through":195}],195:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -24672,7 +24701,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","stream":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/stream-browserify/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js":[function(require,module,exports){
+},{"_process":233,"stream":245}],196:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -24890,7 +24919,7 @@ function through (write, end, opts) {
 
 }));
 
-},{"tcomb":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/node_modules/tcomb/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/node_modules/tcomb/index.js":[function(require,module,exports){
+},{"tcomb":197}],197:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -25612,7 +25641,7 @@ function through (write, end, opts) {
 
 }));
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/form.js":[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 module.exports = {
   getAddon: require('./lib/getAddon'),
   getAlert: require('./lib/getAlert'),
@@ -25636,7 +25665,7 @@ module.exports = {
   getStatic: require('./lib/getStatic'),
   getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getAddon.js","./lib/getAlert":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getAlert.js","./lib/getBreakpoints":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getBreakpoints.js","./lib/getButton":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getButton.js","./lib/getButtonGroup":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getButtonGroup.js","./lib/getCheckbox":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getCheckbox.js","./lib/getCol":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getCol.js","./lib/getErrorBlock":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getErrorBlock.js","./lib/getFieldset":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getFieldset.js","./lib/getFormGroup":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getFormGroup.js","./lib/getHelpBlock":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getHelpBlock.js","./lib/getInputGroup":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getInputGroup.js","./lib/getLabel":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getLabel.js","./lib/getOffsets":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getOffsets.js","./lib/getOptGroup":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getOptGroup.js","./lib/getOption":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getOption.js","./lib/getRadio":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getRadio.js","./lib/getRow":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getRow.js","./lib/getSelect":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getSelect.js","./lib/getStatic":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getStatic.js","./lib/getTextbox":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getTextbox.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getAddon.js":[function(require,module,exports){
+},{"./lib/getAddon":199,"./lib/getAlert":200,"./lib/getBreakpoints":201,"./lib/getButton":202,"./lib/getButtonGroup":203,"./lib/getCheckbox":204,"./lib/getCol":205,"./lib/getErrorBlock":206,"./lib/getFieldset":207,"./lib/getFormGroup":208,"./lib/getHelpBlock":209,"./lib/getInputGroup":210,"./lib/getLabel":211,"./lib/getOffsets":212,"./lib/getOptGroup":213,"./lib/getOption":214,"./lib/getRadio":215,"./lib/getRow":216,"./lib/getSelect":217,"./lib/getStatic":218,"./lib/getTextbox":219}],199:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -25652,7 +25681,7 @@ function getAddon(addon) {
 }
 
 module.exports = getAddon;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getAlert.js":[function(require,module,exports){
+},{}],200:[function(require,module,exports){
 'use strict';
 
 function getAlert(opts) {
@@ -25673,7 +25702,7 @@ function getAlert(opts) {
 }
 
 module.exports = getAlert;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getBreakpoints.js":[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 'use strict';
 
 function getBreakpoints(breakpoints) {
@@ -25687,7 +25716,7 @@ function getBreakpoints(breakpoints) {
 }
 
 module.exports = getBreakpoints;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getButton.js":[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 'use strict';
 
 /*
@@ -25741,7 +25770,7 @@ function getButton(opts) {
 
 module.exports = getButton;
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getButtonGroup.js":[function(require,module,exports){
+},{}],203:[function(require,module,exports){
 'use strict';
 
 function getButtonGroup(buttons) {
@@ -25759,7 +25788,7 @@ function getButtonGroup(buttons) {
 module.exports = getButtonGroup;
 
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getCheckbox.js":[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 'use strict';
 
 /*
@@ -25828,7 +25857,7 @@ function getCheckbox(opts) {
 }
 
 module.exports = getCheckbox;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getCol.js":[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 'use strict';
 
 var getBreakpoints = require('./getBreakpoints');
@@ -25847,7 +25876,7 @@ function getCol(opts) {
 }
 
 module.exports = getCol;
-},{"./getBreakpoints":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getBreakpoints.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getErrorBlock.js":[function(require,module,exports){
+},{"./getBreakpoints":201}],206:[function(require,module,exports){
 'use strict';
 
 function getErrorBlock(opts) {
@@ -25866,7 +25895,7 @@ function getErrorBlock(opts) {
 module.exports = getErrorBlock;
 
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getFieldset.js":[function(require,module,exports){
+},{}],207:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -25893,7 +25922,7 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getFormGroup.js":[function(require,module,exports){
+},{}],208:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
@@ -25910,7 +25939,7 @@ function getFormGroup(opts) {
 }
 
 module.exports = getFormGroup;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getHelpBlock.js":[function(require,module,exports){
+},{}],209:[function(require,module,exports){
 'use strict';
 
 /*
@@ -25944,7 +25973,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getInputGroup.js":[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -25960,7 +25989,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getLabel.js":[function(require,module,exports){
+},{}],211:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -26003,7 +26032,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/mixin.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getOffsets.js":[function(require,module,exports){
+},{"./mixin":220}],212:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -26017,7 +26046,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getOptGroup.js":[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -26051,7 +26080,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getOption.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getOption.js":[function(require,module,exports){
+},{"./getOption":214}],214:[function(require,module,exports){
 'use strict';
 
 /*
@@ -26080,7 +26109,7 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getRadio.js":[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 'use strict';
 
 /*
@@ -26155,7 +26184,7 @@ function getRadio(opts) {
 }
 
 module.exports = getRadio;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getRow.js":[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -26172,7 +26201,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getSelect.js":[function(require,module,exports){
+},{}],217:[function(require,module,exports){
 'use strict';
 
 /*
@@ -26231,7 +26260,7 @@ function getSelect(opts) {
 }
 
 module.exports = getSelect;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getStatic.js":[function(require,module,exports){
+},{}],218:[function(require,module,exports){
 'use strict';
 
 function getStatic(value) {
@@ -26247,7 +26276,7 @@ function getStatic(value) {
 }
 
 module.exports = getStatic;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/getTextbox.js":[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 'use strict';
 
 /*
@@ -26310,7 +26339,7 @@ function getTextbox(opts) {
 }
 
 module.exports = getTextbox;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom-bootstrap/lib/mixin.js":[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 'use strict';
 
 function mixin(a, b) {
@@ -26324,52 +26353,43 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/node_modules/react/lib/cx.js":[function(require,module,exports){
-/**
- * Copyright 2013-2014, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule cx
- */
+},{}],221:[function(require,module,exports){
+function classNames() {
+	var classes = '';
+	var arg;
 
-/**
- * This function is used to mark string literals representing CSS class names
- * so that they can be transformed statically. This allows for modularization
- * and minification of CSS class names.
- *
- * In static_upstream, this function is actually implemented, but it should
- * eventually be replaced with something more descriptive, and the transform
- * that is used in the main stack should be ported for use elsewhere.
- *
- * @param string|object className to modularize, or an object of key/values.
- *                      In the object case, the values are conditions that
- *                      determine if the className keys should be included.
- * @param [string ...]  Variable list of classNames in the string case.
- * @return string       Renderable space-separated CSS className.
- */
-function cx(classNames) {
-  if (typeof classNames == 'object') {
-    return Object.keys(classNames).filter(function(className) {
-      return classNames[className];
-    }).join(' ');
-  } else {
-    return Array.prototype.join.call(arguments, ' ');
-  }
+	for (var i = 0; i < arguments.length; i++) {
+		arg = arguments[i];
+		if (!arg) {
+			continue;
+		}
+
+		if ('string' === typeof arg || 'number' === typeof arg) {
+			classes += ' ' + arg;
+		} else if (Object.prototype.toString.call(arg) === '[object Array]') {
+			classes += ' ' + classNames.apply(null, arg);
+		} else if ('object' === typeof arg) {
+			for (var key in arg) {
+				if (!arg.hasOwnProperty(key) || !arg[key]) {
+					continue;
+				}
+				classes += ' ' + key;
+			}
+		}
+	}
+	return classes.substr(1);
 }
 
-module.exports = cx;
+// safely export classNames in case the script is included directly on a page
+if (typeof module !== 'undefined' && module.exports) {
+	module.exports = classNames;
+}
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/node_modules/react/react.js":[function(require,module,exports){
-module.exports=require("/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js")
-},{"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/react.js":[function(require,module,exports){
+},{}],222:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
-var cx = require('react/lib/cx');
+var cx = require('classnames');
 
 // compile: x -> ReactElement
 function compile(x) {
@@ -26434,9 +26454,11 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/node_modules/react/react.js","react/lib/cx":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/uvdom/node_modules/react/lib/cx.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/lib/_empty.js":[function(require,module,exports){
+},{"classnames":221,"react":183}],223:[function(require,module,exports){
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/index.js":[function(require,module,exports){
+},{}],224:[function(require,module,exports){
+arguments[4][223][0].apply(exports,arguments)
+},{"dup":223}],225:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -26483,7 +26505,7 @@ Buffer.TYPED_ARRAY_SUPPORT = (function () {
     var buf = new ArrayBuffer(0)
     var arr = new Uint8Array(buf)
     arr.foo = function () { return 42 }
-    return 42 === arr.foo() && // typed array instances can be augmented
+    return arr.foo() === 42 && // typed array instances can be augmented
         typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
         new Uint8Array(1).subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
   } catch (e) {
@@ -26503,83 +26525,88 @@ Buffer.TYPED_ARRAY_SUPPORT = (function () {
  * By augmenting the instances, we can avoid modifying the `Uint8Array`
  * prototype.
  */
-function Buffer (subject, encoding, noZero) {
-  if (!(this instanceof Buffer))
-    return new Buffer(subject, encoding, noZero)
+function Buffer (subject, encoding) {
+  var self = this
+  if (!(self instanceof Buffer)) return new Buffer(subject, encoding)
 
   var type = typeof subject
-
-  // Find the length
   var length
-  if (type === 'number')
-    length = subject > 0 ? subject >>> 0 : 0
-  else if (type === 'string') {
+
+  if (type === 'number') {
+    length = +subject
+  } else if (type === 'string') {
     length = Buffer.byteLength(subject, encoding)
-  } else if (type === 'object' && subject !== null) { // assume object is array-like
-    if (subject.type === 'Buffer' && isArray(subject.data))
-      subject = subject.data
-    length = +subject.length > 0 ? Math.floor(+subject.length) : 0
-  } else
+  } else if (type === 'object' && subject !== null) {
+    // assume object is array-like
+    if (subject.type === 'Buffer' && isArray(subject.data)) subject = subject.data
+    length = +subject.length
+  } else {
     throw new TypeError('must start with number, buffer, array or string')
+  }
 
-  if (length > kMaxLength)
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-      'size: 0x' + kMaxLength.toString(16) + ' bytes')
+  if (length > kMaxLength) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum size: 0x' +
+      kMaxLength.toString(16) + ' bytes')
+  }
 
-  var buf
+  if (length < 0) length = 0
+  else length >>>= 0 // coerce to uint32
+
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     // Preferred: Return an augmented `Uint8Array` instance for best performance
-    buf = Buffer._augment(new Uint8Array(length))
+    self = Buffer._augment(new Uint8Array(length)) // eslint-disable-line consistent-this
   } else {
     // Fallback: Return THIS instance of Buffer (created by `new`)
-    buf = this
-    buf.length = length
-    buf._isBuffer = true
+    self.length = length
+    self._isBuffer = true
   }
 
   var i
   if (Buffer.TYPED_ARRAY_SUPPORT && typeof subject.byteLength === 'number') {
     // Speed optimization -- use set if we're copying from a typed array
-    buf._set(subject)
+    self._set(subject)
   } else if (isArrayish(subject)) {
     // Treat array-ish objects as a byte array
     if (Buffer.isBuffer(subject)) {
-      for (i = 0; i < length; i++)
-        buf[i] = subject.readUInt8(i)
+      for (i = 0; i < length; i++) {
+        self[i] = subject.readUInt8(i)
+      }
     } else {
-      for (i = 0; i < length; i++)
-        buf[i] = ((subject[i] % 256) + 256) % 256
+      for (i = 0; i < length; i++) {
+        self[i] = ((subject[i] % 256) + 256) % 256
+      }
     }
   } else if (type === 'string') {
-    buf.write(subject, 0, encoding)
-  } else if (type === 'number' && !Buffer.TYPED_ARRAY_SUPPORT && !noZero) {
+    self.write(subject, 0, encoding)
+  } else if (type === 'number' && !Buffer.TYPED_ARRAY_SUPPORT) {
     for (i = 0; i < length; i++) {
-      buf[i] = 0
+      self[i] = 0
     }
   }
 
-  if (length > 0 && length <= Buffer.poolSize)
-    buf.parent = rootParent
+  if (length > 0 && length <= Buffer.poolSize) self.parent = rootParent
 
-  return buf
+  return self
 }
 
-function SlowBuffer(subject, encoding, noZero) {
-  if (!(this instanceof SlowBuffer))
-    return new SlowBuffer(subject, encoding, noZero)
+function SlowBuffer (subject, encoding) {
+  if (!(this instanceof SlowBuffer)) return new SlowBuffer(subject, encoding)
 
-  var buf = new Buffer(subject, encoding, noZero)
+  var buf = new Buffer(subject, encoding)
   delete buf.parent
   return buf
 }
 
-Buffer.isBuffer = function (b) {
+Buffer.isBuffer = function isBuffer (b) {
   return !!(b != null && b._isBuffer)
 }
 
-Buffer.compare = function (a, b) {
-  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b))
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
     throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
 
   var x = a.length
   var y = b.length
@@ -26593,7 +26620,7 @@ Buffer.compare = function (a, b) {
   return 0
 }
 
-Buffer.isEncoding = function (encoding) {
+Buffer.isEncoding = function isEncoding (encoding) {
   switch (String(encoding).toLowerCase()) {
     case 'hex':
     case 'utf8':
@@ -26612,8 +26639,8 @@ Buffer.isEncoding = function (encoding) {
   }
 }
 
-Buffer.concat = function (list, totalLength) {
-  if (!isArray(list)) throw new TypeError('Usage: Buffer.concat(list[, length])')
+Buffer.concat = function concat (list, totalLength) {
+  if (!isArray(list)) throw new TypeError('list argument must be an Array of Buffers.')
 
   if (list.length === 0) {
     return new Buffer(0)
@@ -26639,7 +26666,7 @@ Buffer.concat = function (list, totalLength) {
   return buf
 }
 
-Buffer.byteLength = function (str, encoding) {
+Buffer.byteLength = function byteLength (str, encoding) {
   var ret
   str = str + ''
   switch (encoding || 'utf8') {
@@ -26675,7 +26702,7 @@ Buffer.prototype.length = undefined
 Buffer.prototype.parent = undefined
 
 // toString(encoding, start=0, end=buffer.length)
-Buffer.prototype.toString = function (encoding, start, end) {
+Buffer.prototype.toString = function toString (encoding, start, end) {
   var loweredCase = false
 
   start = start >>> 0
@@ -26711,43 +26738,84 @@ Buffer.prototype.toString = function (encoding, start, end) {
         return utf16leSlice(this, start, end)
 
       default:
-        if (loweredCase)
-          throw new TypeError('Unknown encoding: ' + encoding)
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
         encoding = (encoding + '').toLowerCase()
         loweredCase = true
     }
   }
 }
 
-Buffer.prototype.equals = function (b) {
+Buffer.prototype.equals = function equals (b) {
   if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
   return Buffer.compare(this, b) === 0
 }
 
-Buffer.prototype.inspect = function () {
+Buffer.prototype.inspect = function inspect () {
   var str = ''
   var max = exports.INSPECT_MAX_BYTES
   if (this.length > 0) {
     str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
-    if (this.length > max)
-      str += ' ... '
+    if (this.length > max) str += ' ... '
   }
   return '<Buffer ' + str + '>'
 }
 
-Buffer.prototype.compare = function (b) {
+Buffer.prototype.compare = function compare (b) {
   if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return 0
   return Buffer.compare(this, b)
 }
 
+Buffer.prototype.indexOf = function indexOf (val, byteOffset) {
+  if (byteOffset > 0x7fffffff) byteOffset = 0x7fffffff
+  else if (byteOffset < -0x80000000) byteOffset = -0x80000000
+  byteOffset >>= 0
+
+  if (this.length === 0) return -1
+  if (byteOffset >= this.length) return -1
+
+  // Negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = Math.max(this.length + byteOffset, 0)
+
+  if (typeof val === 'string') {
+    if (val.length === 0) return -1 // special case: looking for empty string always fails
+    return String.prototype.indexOf.call(this, val, byteOffset)
+  }
+  if (Buffer.isBuffer(val)) {
+    return arrayIndexOf(this, val, byteOffset)
+  }
+  if (typeof val === 'number') {
+    if (Buffer.TYPED_ARRAY_SUPPORT && Uint8Array.prototype.indexOf === 'function') {
+      return Uint8Array.prototype.indexOf.call(this, val, byteOffset)
+    }
+    return arrayIndexOf(this, [ val ], byteOffset)
+  }
+
+  function arrayIndexOf (arr, val, byteOffset) {
+    var foundIndex = -1
+    for (var i = 0; byteOffset + i < arr.length; i++) {
+      if (arr[byteOffset + i] === val[foundIndex === -1 ? 0 : i - foundIndex]) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === val.length) return byteOffset + foundIndex
+      } else {
+        foundIndex = -1
+      }
+    }
+    return -1
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
 // `get` will be removed in Node 0.13+
-Buffer.prototype.get = function (offset) {
+Buffer.prototype.get = function get (offset) {
   console.log('.get() is deprecated. Access using array indexes instead.')
   return this.readUInt8(offset)
 }
 
 // `set` will be removed in Node 0.13+
-Buffer.prototype.set = function (v, offset) {
+Buffer.prototype.set = function set (v, offset) {
   console.log('.set() is deprecated. Access using array indexes instead.')
   return this.writeUInt8(v, offset)
 }
@@ -26772,9 +26840,9 @@ function hexWrite (buf, string, offset, length) {
     length = strLen / 2
   }
   for (var i = 0; i < length; i++) {
-    var byte = parseInt(string.substr(i * 2, 2), 16)
-    if (isNaN(byte)) throw new Error('Invalid hex string')
-    buf[offset + i] = byte
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) throw new Error('Invalid hex string')
+    buf[offset + i] = parsed
   }
   return i
 }
@@ -26799,11 +26867,11 @@ function base64Write (buf, string, offset, length) {
 }
 
 function utf16leWrite (buf, string, offset, length) {
-  var charsWritten = blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length, 2)
+  var charsWritten = blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
   return charsWritten
 }
 
-Buffer.prototype.write = function (string, offset, length, encoding) {
+Buffer.prototype.write = function write (string, offset, length, encoding) {
   // Support both (string, offset, length, encoding)
   // and the legacy (string, encoding, offset, length)
   if (isFinite(offset)) {
@@ -26820,8 +26888,9 @@ Buffer.prototype.write = function (string, offset, length, encoding) {
 
   offset = Number(offset) || 0
 
-  if (length < 0 || offset < 0 || offset > this.length)
-    throw new RangeError('attempt to write outside buffer bounds');
+  if (length < 0 || offset < 0 || offset > this.length) {
+    throw new RangeError('attempt to write outside buffer bounds')
+  }
 
   var remaining = this.length - offset
   if (!length) {
@@ -26864,7 +26933,7 @@ Buffer.prototype.write = function (string, offset, length, encoding) {
   return ret
 }
 
-Buffer.prototype.toJSON = function () {
+Buffer.prototype.toJSON = function toJSON () {
   return {
     type: 'Buffer',
     data: Array.prototype.slice.call(this._arr || this, 0)
@@ -26938,43 +27007,39 @@ function utf16leSlice (buf, start, end) {
   return res
 }
 
-Buffer.prototype.slice = function (start, end) {
+Buffer.prototype.slice = function slice (start, end) {
   var len = this.length
   start = ~~start
   end = end === undefined ? len : ~~end
 
   if (start < 0) {
-    start += len;
-    if (start < 0)
-      start = 0
+    start += len
+    if (start < 0) start = 0
   } else if (start > len) {
     start = len
   }
 
   if (end < 0) {
     end += len
-    if (end < 0)
-      end = 0
+    if (end < 0) end = 0
   } else if (end > len) {
     end = len
   }
 
-  if (end < start)
-    end = start
+  if (end < start) end = start
 
   var newBuf
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     newBuf = Buffer._augment(this.subarray(start, end))
   } else {
     var sliceLen = end - start
-    newBuf = new Buffer(sliceLen, undefined, true)
+    newBuf = new Buffer(sliceLen, undefined)
     for (var i = 0; i < sliceLen; i++) {
       newBuf[i] = this[i + start]
     }
   }
 
-  if (newBuf.length)
-    newBuf.parent = this.parent || this
+  if (newBuf.length) newBuf.parent = this.parent || this
 
   return newBuf
 }
@@ -26983,62 +27048,58 @@ Buffer.prototype.slice = function (start, end) {
  * Need to make sure that buffer isn't trying to write out of bounds.
  */
 function checkOffset (offset, ext, length) {
-  if ((offset % 1) !== 0 || offset < 0)
-    throw new RangeError('offset is not uint')
-  if (offset + ext > length)
-    throw new RangeError('Trying to access beyond buffer length')
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
 }
 
-Buffer.prototype.readUIntLE = function (offset, byteLength, noAssert) {
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
   offset = offset >>> 0
   byteLength = byteLength >>> 0
-  if (!noAssert)
-    checkOffset(offset, byteLength, this.length)
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
 
   var val = this[offset]
   var mul = 1
   var i = 0
-  while (++i < byteLength && (mul *= 0x100))
+  while (++i < byteLength && (mul *= 0x100)) {
     val += this[offset + i] * mul
+  }
 
   return val
 }
 
-Buffer.prototype.readUIntBE = function (offset, byteLength, noAssert) {
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
   offset = offset >>> 0
   byteLength = byteLength >>> 0
-  if (!noAssert)
+  if (!noAssert) {
     checkOffset(offset, byteLength, this.length)
+  }
 
   var val = this[offset + --byteLength]
   var mul = 1
-  while (byteLength > 0 && (mul *= 0x100))
-    val += this[offset + --byteLength] * mul;
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
 
   return val
 }
 
-Buffer.prototype.readUInt8 = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 1, this.length)
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
   return this[offset]
 }
 
-Buffer.prototype.readUInt16LE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 2, this.length)
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
   return this[offset] | (this[offset + 1] << 8)
 }
 
-Buffer.prototype.readUInt16BE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 2, this.length)
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
   return (this[offset] << 8) | this[offset + 1]
 }
 
-Buffer.prototype.readUInt32LE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 4, this.length)
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
 
   return ((this[offset]) |
       (this[offset + 1] << 8) |
@@ -27046,117 +27107,104 @@ Buffer.prototype.readUInt32LE = function (offset, noAssert) {
       (this[offset + 3] * 0x1000000)
 }
 
-Buffer.prototype.readUInt32BE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 4, this.length)
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
 
   return (this[offset] * 0x1000000) +
-      ((this[offset + 1] << 16) |
-      (this[offset + 2] << 8) |
-      this[offset + 3])
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
 }
 
-Buffer.prototype.readIntLE = function (offset, byteLength, noAssert) {
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
   offset = offset >>> 0
   byteLength = byteLength >>> 0
-  if (!noAssert)
-    checkOffset(offset, byteLength, this.length)
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
 
   var val = this[offset]
   var mul = 1
   var i = 0
-  while (++i < byteLength && (mul *= 0x100))
+  while (++i < byteLength && (mul *= 0x100)) {
     val += this[offset + i] * mul
+  }
   mul *= 0x80
 
-  if (val >= mul)
-    val -= Math.pow(2, 8 * byteLength)
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
 
   return val
 }
 
-Buffer.prototype.readIntBE = function (offset, byteLength, noAssert) {
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
   offset = offset >>> 0
   byteLength = byteLength >>> 0
-  if (!noAssert)
-    checkOffset(offset, byteLength, this.length)
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
 
   var i = byteLength
   var mul = 1
   var val = this[offset + --i]
-  while (i > 0 && (mul *= 0x100))
+  while (i > 0 && (mul *= 0x100)) {
     val += this[offset + --i] * mul
+  }
   mul *= 0x80
 
-  if (val >= mul)
-    val -= Math.pow(2, 8 * byteLength)
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
 
   return val
 }
 
-Buffer.prototype.readInt8 = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 1, this.length)
-  if (!(this[offset] & 0x80))
-    return (this[offset])
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
   return ((0xff - this[offset] + 1) * -1)
 }
 
-Buffer.prototype.readInt16LE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 2, this.length)
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
   var val = this[offset] | (this[offset + 1] << 8)
   return (val & 0x8000) ? val | 0xFFFF0000 : val
 }
 
-Buffer.prototype.readInt16BE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 2, this.length)
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
   var val = this[offset + 1] | (this[offset] << 8)
   return (val & 0x8000) ? val | 0xFFFF0000 : val
 }
 
-Buffer.prototype.readInt32LE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 4, this.length)
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
 
   return (this[offset]) |
-      (this[offset + 1] << 8) |
-      (this[offset + 2] << 16) |
-      (this[offset + 3] << 24)
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
 }
 
-Buffer.prototype.readInt32BE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 4, this.length)
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
 
   return (this[offset] << 24) |
-      (this[offset + 1] << 16) |
-      (this[offset + 2] << 8) |
-      (this[offset + 3])
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
 }
 
-Buffer.prototype.readFloatLE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 4, this.length)
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
   return ieee754.read(this, offset, true, 23, 4)
 }
 
-Buffer.prototype.readFloatBE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 4, this.length)
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
   return ieee754.read(this, offset, false, 23, 4)
 }
 
-Buffer.prototype.readDoubleLE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 8, this.length)
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
   return ieee754.read(this, offset, true, 52, 8)
 }
 
-Buffer.prototype.readDoubleBE = function (offset, noAssert) {
-  if (!noAssert)
-    checkOffset(offset, 8, this.length)
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
   return ieee754.read(this, offset, false, 52, 8)
 }
 
@@ -27166,43 +27214,42 @@ function checkInt (buf, value, offset, ext, max, min) {
   if (offset + ext > buf.length) throw new RangeError('index out of range')
 }
 
-Buffer.prototype.writeUIntLE = function (value, offset, byteLength, noAssert) {
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
   value = +value
   offset = offset >>> 0
   byteLength = byteLength >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
 
   var mul = 1
   var i = 0
   this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100))
+  while (++i < byteLength && (mul *= 0x100)) {
     this[offset + i] = (value / mul) >>> 0 & 0xFF
+  }
 
   return offset + byteLength
 }
 
-Buffer.prototype.writeUIntBE = function (value, offset, byteLength, noAssert) {
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
   value = +value
   offset = offset >>> 0
   byteLength = byteLength >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
 
   var i = byteLength - 1
   var mul = 1
   this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100))
+  while (--i >= 0 && (mul *= 0x100)) {
     this[offset + i] = (value / mul) >>> 0 & 0xFF
+  }
 
   return offset + byteLength
 }
 
-Buffer.prototype.writeUInt8 = function (value, offset, noAssert) {
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 1, 0xff, 0)
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
   if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
   this[offset] = value
   return offset + 1
@@ -27216,27 +27263,29 @@ function objectWriteUInt16 (buf, value, offset, littleEndian) {
   }
 }
 
-Buffer.prototype.writeUInt16LE = function (value, offset, noAssert) {
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 2, 0xffff, 0)
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     this[offset] = value
     this[offset + 1] = (value >>> 8)
-  } else objectWriteUInt16(this, value, offset, true)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
   return offset + 2
 }
 
-Buffer.prototype.writeUInt16BE = function (value, offset, noAssert) {
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 2, 0xffff, 0)
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value >>> 8)
     this[offset + 1] = value
-  } else objectWriteUInt16(this, value, offset, false)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
   return offset + 2
 }
 
@@ -27247,139 +27296,144 @@ function objectWriteUInt32 (buf, value, offset, littleEndian) {
   }
 }
 
-Buffer.prototype.writeUInt32LE = function (value, offset, noAssert) {
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     this[offset + 3] = (value >>> 24)
     this[offset + 2] = (value >>> 16)
     this[offset + 1] = (value >>> 8)
     this[offset] = value
-  } else objectWriteUInt32(this, value, offset, true)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
   return offset + 4
 }
 
-Buffer.prototype.writeUInt32BE = function (value, offset, noAssert) {
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value >>> 24)
     this[offset + 1] = (value >>> 16)
     this[offset + 2] = (value >>> 8)
     this[offset + 3] = value
-  } else objectWriteUInt32(this, value, offset, false)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
   return offset + 4
 }
 
-Buffer.prototype.writeIntLE = function (value, offset, byteLength, noAssert) {
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) {
-    checkInt(this,
-             value,
-             offset,
-             byteLength,
-             Math.pow(2, 8 * byteLength - 1) - 1,
-             -Math.pow(2, 8 * byteLength - 1))
+    checkInt(
+      this, value, offset, byteLength,
+      Math.pow(2, 8 * byteLength - 1) - 1,
+      -Math.pow(2, 8 * byteLength - 1)
+    )
   }
 
   var i = 0
   var mul = 1
   var sub = value < 0 ? 1 : 0
   this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100))
+  while (++i < byteLength && (mul *= 0x100)) {
     this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
 
   return offset + byteLength
 }
 
-Buffer.prototype.writeIntBE = function (value, offset, byteLength, noAssert) {
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) {
-    checkInt(this,
-             value,
-             offset,
-             byteLength,
-             Math.pow(2, 8 * byteLength - 1) - 1,
-             -Math.pow(2, 8 * byteLength - 1))
+    checkInt(
+      this, value, offset, byteLength,
+      Math.pow(2, 8 * byteLength - 1) - 1,
+      -Math.pow(2, 8 * byteLength - 1)
+    )
   }
 
   var i = byteLength - 1
   var mul = 1
   var sub = value < 0 ? 1 : 0
   this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100))
+  while (--i >= 0 && (mul *= 0x100)) {
     this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
 
   return offset + byteLength
 }
 
-Buffer.prototype.writeInt8 = function (value, offset, noAssert) {
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
   if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
   if (value < 0) value = 0xff + value + 1
   this[offset] = value
   return offset + 1
 }
 
-Buffer.prototype.writeInt16LE = function (value, offset, noAssert) {
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     this[offset] = value
     this[offset + 1] = (value >>> 8)
-  } else objectWriteUInt16(this, value, offset, true)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
   return offset + 2
 }
 
-Buffer.prototype.writeInt16BE = function (value, offset, noAssert) {
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value >>> 8)
     this[offset + 1] = value
-  } else objectWriteUInt16(this, value, offset, false)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
   return offset + 2
 }
 
-Buffer.prototype.writeInt32LE = function (value, offset, noAssert) {
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     this[offset] = value
     this[offset + 1] = (value >>> 8)
     this[offset + 2] = (value >>> 16)
     this[offset + 3] = (value >>> 24)
-  } else objectWriteUInt32(this, value, offset, true)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
   return offset + 4
 }
 
-Buffer.prototype.writeInt32BE = function (value, offset, noAssert) {
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
-  if (!noAssert)
-    checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
   if (value < 0) value = 0xffffffff + value + 1
   if (Buffer.TYPED_ARRAY_SUPPORT) {
     this[offset] = (value >>> 24)
     this[offset + 1] = (value >>> 16)
     this[offset + 2] = (value >>> 8)
     this[offset + 3] = value
-  } else objectWriteUInt32(this, value, offset, false)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
   return offset + 4
 }
 
@@ -27390,39 +27444,39 @@ function checkIEEE754 (buf, value, offset, ext, max, min) {
 }
 
 function writeFloat (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert)
+  if (!noAssert) {
     checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
   ieee754.write(buf, value, offset, littleEndian, 23, 4)
   return offset + 4
 }
 
-Buffer.prototype.writeFloatLE = function (value, offset, noAssert) {
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
   return writeFloat(this, value, offset, true, noAssert)
 }
 
-Buffer.prototype.writeFloatBE = function (value, offset, noAssert) {
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
   return writeFloat(this, value, offset, false, noAssert)
 }
 
 function writeDouble (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert)
+  if (!noAssert) {
     checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
   ieee754.write(buf, value, offset, littleEndian, 52, 8)
   return offset + 8
 }
 
-Buffer.prototype.writeDoubleLE = function (value, offset, noAssert) {
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
   return writeDouble(this, value, offset, true, noAssert)
 }
 
-Buffer.prototype.writeDoubleBE = function (value, offset, noAssert) {
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
   return writeDouble(this, value, offset, false, noAssert)
 }
 
 // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-Buffer.prototype.copy = function (target, target_start, start, end) {
-  var source = this
-
+Buffer.prototype.copy = function copy (target, target_start, start, end) {
   if (!start) start = 0
   if (!end && end !== 0) end = this.length
   if (target_start >= target.length) target_start = target.length
@@ -27431,19 +27485,20 @@ Buffer.prototype.copy = function (target, target_start, start, end) {
 
   // Copy 0 bytes; we're done
   if (end === start) return 0
-  if (target.length === 0 || source.length === 0) return 0
+  if (target.length === 0 || this.length === 0) return 0
 
   // Fatal error conditions
-  if (target_start < 0)
+  if (target_start < 0) {
     throw new RangeError('targetStart out of bounds')
-  if (start < 0 || start >= source.length) throw new RangeError('sourceStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
   if (end < 0) throw new RangeError('sourceEnd out of bounds')
 
   // Are we oob?
-  if (end > this.length)
-    end = this.length
-  if (target.length - target_start < end - start)
+  if (end > this.length) end = this.length
+  if (target.length - target_start < end - start) {
     end = target.length - target_start + start
+  }
 
   var len = end - start
 
@@ -27459,7 +27514,7 @@ Buffer.prototype.copy = function (target, target_start, start, end) {
 }
 
 // fill(value, start=0, end=buffer.length)
-Buffer.prototype.fill = function (value, start, end) {
+Buffer.prototype.fill = function fill (value, start, end) {
   if (!value) value = 0
   if (!start) start = 0
   if (!end) end = this.length
@@ -27493,7 +27548,7 @@ Buffer.prototype.fill = function (value, start, end) {
  * Creates a new `ArrayBuffer` with the *copied* memory of the buffer instance.
  * Added in Node 0.12. Only available in browsers that support ArrayBuffer.
  */
-Buffer.prototype.toArrayBuffer = function () {
+Buffer.prototype.toArrayBuffer = function toArrayBuffer () {
   if (typeof Uint8Array !== 'undefined') {
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       return (new Buffer(this)).buffer
@@ -27517,12 +27572,11 @@ var BP = Buffer.prototype
 /**
  * Augment a Uint8Array *instance* (not the Uint8Array class!) with Buffer methods
  */
-Buffer._augment = function (arr) {
+Buffer._augment = function _augment (arr) {
   arr.constructor = Buffer
   arr._isBuffer = true
 
-  // save reference to original Uint8Array get/set methods before overwriting
-  arr._get = arr.get
+  // save reference to original Uint8Array set method before overwriting
   arr._set = arr.set
 
   // deprecated, will be removed in node 0.13+
@@ -27535,6 +27589,7 @@ Buffer._augment = function (arr) {
   arr.toJSON = BP.toJSON
   arr.equals = BP.equals
   arr.compare = BP.compare
+  arr.indexOf = BP.indexOf
   arr.copy = BP.copy
   arr.slice = BP.slice
   arr.readUIntLE = BP.readUIntLE
@@ -27610,61 +27665,50 @@ function toHex (n) {
   return n.toString(16)
 }
 
-function utf8ToBytes(string, units) {
-  var codePoint, length = string.length
-  var leadSurrogate = null
+function utf8ToBytes (string, units) {
   units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
   var bytes = []
   var i = 0
 
-  for (; i<length; i++) {
+  for (; i < length; i++) {
     codePoint = string.charCodeAt(i)
 
     // is surrogate component
     if (codePoint > 0xD7FF && codePoint < 0xE000) {
-
       // last char was a lead
       if (leadSurrogate) {
-
         // 2 leads in a row
         if (codePoint < 0xDC00) {
           if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
           leadSurrogate = codePoint
           continue
-        }
-
-        // valid surrogate pair
-        else {
+        } else {
+          // valid surrogate pair
           codePoint = leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00 | 0x10000
           leadSurrogate = null
         }
-      }
+      } else {
+        // no lead yet
 
-      // no lead yet
-      else {
-
-        // unexpected trail
         if (codePoint > 0xDBFF) {
+          // unexpected trail
           if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
           continue
-        }
-
-        // unpaired lead
-        else if (i + 1 === length) {
+        } else if (i + 1 === length) {
+          // unpaired lead
           if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
           continue
-        }
-
-        // valid lead
-        else {
+        } else {
+          // valid lead
           leadSurrogate = codePoint
           continue
         }
       }
-    }
-
-    // valid bmp char, but last char was a lead
-    else if (leadSurrogate) {
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
       if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
       leadSurrogate = null
     }
@@ -27673,32 +27717,28 @@ function utf8ToBytes(string, units) {
     if (codePoint < 0x80) {
       if ((units -= 1) < 0) break
       bytes.push(codePoint)
-    }
-    else if (codePoint < 0x800) {
+    } else if (codePoint < 0x800) {
       if ((units -= 2) < 0) break
       bytes.push(
         codePoint >> 0x6 | 0xC0,
         codePoint & 0x3F | 0x80
-      );
-    }
-    else if (codePoint < 0x10000) {
+      )
+    } else if (codePoint < 0x10000) {
       if ((units -= 3) < 0) break
       bytes.push(
         codePoint >> 0xC | 0xE0,
         codePoint >> 0x6 & 0x3F | 0x80,
         codePoint & 0x3F | 0x80
-      );
-    }
-    else if (codePoint < 0x200000) {
+      )
+    } else if (codePoint < 0x200000) {
       if ((units -= 4) < 0) break
       bytes.push(
         codePoint >> 0x12 | 0xF0,
         codePoint >> 0xC & 0x3F | 0x80,
         codePoint >> 0x6 & 0x3F | 0x80,
         codePoint & 0x3F | 0x80
-      );
-    }
-    else {
+      )
+    } else {
       throw new Error('Invalid code point')
     }
   }
@@ -27719,7 +27759,6 @@ function utf16leToBytes (str, units) {
   var c, hi, lo
   var byteArray = []
   for (var i = 0; i < str.length; i++) {
-
     if ((units -= 2) < 0) break
 
     c = str.charCodeAt(i)
@@ -27736,11 +27775,9 @@ function base64ToBytes (str) {
   return base64.toByteArray(base64clean(str))
 }
 
-function blitBuffer (src, dst, offset, length, unitSize) {
-  if (unitSize) length -= length % unitSize;
+function blitBuffer (src, dst, offset, length) {
   for (var i = 0; i < length; i++) {
-    if ((i + offset >= dst.length) || (i >= src.length))
-      break
+    if ((i + offset >= dst.length) || (i >= src.length)) break
     dst[i + offset] = src[i]
   }
   return i
@@ -27754,7 +27791,7 @@ function decodeUtf8Char (str) {
   }
 }
 
-},{"base64-js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/node_modules/base64-js/lib/b64.js","ieee754":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/node_modules/ieee754/index.js","is-array":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/node_modules/is-array/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/node_modules/base64-js/lib/b64.js":[function(require,module,exports){
+},{"base64-js":226,"ieee754":227,"is-array":228}],226:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -27880,7 +27917,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/node_modules/ieee754/index.js":[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -27966,7 +28003,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/node_modules/is-array/index.js":[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 
 /**
  * isArray
@@ -28001,7 +28038,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/events/events.js":[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -28304,14 +28341,14 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
-module.exports=require("/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/inherits/inherits_browser.js")
-},{"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/inherits/inherits_browser.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/node_modules/inherits/inherits_browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/isarray/index.js":[function(require,module,exports){
+},{}],230:[function(require,module,exports){
+arguments[4][192][0].apply(exports,arguments)
+},{"dup":192}],231:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/path-browserify/index.js":[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -28539,73 +28576,44 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
+},{"_process":233}],233:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
+var queue = [];
+var draining = false;
 
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canMutationObserver = typeof window !== 'undefined'
-    && window.MutationObserver;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
+function drainQueue() {
+    if (draining) {
+        return;
     }
-
-    var queue = [];
-
-    if (canMutationObserver) {
-        var hiddenDiv = document.createElement("div");
-        var observer = new MutationObserver(function () {
-            var queueList = queue.slice();
-            queue.length = 0;
-            queueList.forEach(function (fn) {
-                fn();
-            });
-        });
-
-        observer.observe(hiddenDiv, { attributes: true });
-
-        return function nextTick(fn) {
-            if (!queue.length) {
-                hiddenDiv.setAttribute('yes', 'no');
-            }
-            queue.push(fn);
-        };
+    draining = true;
+    var currentQueue;
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        var i = -1;
+        while (++i < len) {
+            currentQueue[i]();
+        }
+        len = queue.length;
     }
-
-    if (canPost) {
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
+    draining = false;
+}
+process.nextTick = function (fun) {
+    queue.push(fun);
+    if (!draining) {
+        setTimeout(drainQueue, 0);
     }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
+};
 
 process.title = 'browser';
 process.browser = true;
 process.env = {};
 process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
 
 function noop() {}
 
@@ -28626,11 +28634,12 @@ process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
+process.umask = function() { return 0; };
 
-},{}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/duplex.js":[function(require,module,exports){
+},{}],234:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_duplex.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
+},{"./lib/_stream_duplex.js":235}],235:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -28723,7 +28732,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_writable.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","core-util-is":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/node_modules/core-util-is/lib/util.js","inherits":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/inherits/inherits_browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
+},{"./_stream_readable":237,"./_stream_writable":239,"_process":233,"core-util-is":240,"inherits":230}],236:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -28771,7 +28780,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/node_modules/core-util-is/lib/util.js","inherits":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/inherits/inherits_browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
+},{"./_stream_transform":238,"core-util-is":240,"inherits":230}],237:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -28824,15 +28833,29 @@ util.inherits = require('inherits');
 
 var StringDecoder;
 
+
+/*<replacement>*/
+var debug = require('util');
+if (debug && debug.debuglog) {
+  debug = debug.debuglog('stream');
+} else {
+  debug = function () {};
+}
+/*</replacement>*/
+
+
 util.inherits(Readable, Stream);
 
 function ReadableState(options, stream) {
+  var Duplex = require('./_stream_duplex');
+
   options = options || {};
 
   // the point at which it stops calling _read() to fill the buffer
   // Note: 0 is a valid value, means "don't call _read preemptively ever"
   var hwm = options.highWaterMark;
-  this.highWaterMark = (hwm || hwm === 0) ? hwm : 16 * 1024;
+  var defaultHwm = options.objectMode ? 16 : 16 * 1024;
+  this.highWaterMark = (hwm || hwm === 0) ? hwm : defaultHwm;
 
   // cast to ints.
   this.highWaterMark = ~~this.highWaterMark;
@@ -28841,19 +28864,13 @@ function ReadableState(options, stream) {
   this.length = 0;
   this.pipes = null;
   this.pipesCount = 0;
-  this.flowing = false;
+  this.flowing = null;
   this.ended = false;
   this.endEmitted = false;
   this.reading = false;
 
-  // In streams that never have any data, and do push(null) right away,
-  // the consumer can miss the 'end' event if they do some I/O before
-  // consuming the stream.  So, we don't emit('end') until some reading
-  // happens.
-  this.calledRead = false;
-
   // a flag to be able to tell if the onwrite cb is called immediately,
-  // or on a later tick.  We set this to true at first, becuase any
+  // or on a later tick.  We set this to true at first, because any
   // actions that shouldn't happen until "later" should generally also
   // not happen before the first write call.
   this.sync = true;
@@ -28868,6 +28885,9 @@ function ReadableState(options, stream) {
   // object stream flag. Used to make read(n) ignore n and to
   // make all the buffer merging and length checks go away
   this.objectMode = !!options.objectMode;
+
+  if (stream instanceof Duplex)
+    this.objectMode = this.objectMode || !!options.readableObjectMode;
 
   // Crypto is kind of old and crusty.  Historically, its default string
   // encoding is 'binary' so we have to make this configurable.
@@ -28895,6 +28915,8 @@ function ReadableState(options, stream) {
 }
 
 function Readable(options) {
+  var Duplex = require('./_stream_duplex');
+
   if (!(this instanceof Readable))
     return new Readable(options);
 
@@ -28913,7 +28935,7 @@ function Readable(options) {
 Readable.prototype.push = function(chunk, encoding) {
   var state = this._readableState;
 
-  if (typeof chunk === 'string' && !state.objectMode) {
+  if (util.isString(chunk) && !state.objectMode) {
     encoding = encoding || state.defaultEncoding;
     if (encoding !== state.encoding) {
       chunk = new Buffer(chunk, encoding);
@@ -28934,7 +28956,7 @@ function readableAddChunk(stream, state, chunk, encoding, addToFront) {
   var er = chunkInvalid(state, chunk);
   if (er) {
     stream.emit('error', er);
-  } else if (chunk === null || chunk === undefined) {
+  } else if (util.isNullOrUndefined(chunk)) {
     state.reading = false;
     if (!state.ended)
       onEofChunk(stream, state);
@@ -28949,17 +28971,24 @@ function readableAddChunk(stream, state, chunk, encoding, addToFront) {
       if (state.decoder && !addToFront && !encoding)
         chunk = state.decoder.write(chunk);
 
-      // update the buffer info.
-      state.length += state.objectMode ? 1 : chunk.length;
-      if (addToFront) {
-        state.buffer.unshift(chunk);
-      } else {
+      if (!addToFront)
         state.reading = false;
-        state.buffer.push(chunk);
-      }
 
-      if (state.needReadable)
-        emitReadable(stream);
+      // if we want the data now, just emit it.
+      if (state.flowing && state.length === 0 && !state.sync) {
+        stream.emit('data', chunk);
+        stream.read(0);
+      } else {
+        // update the buffer info.
+        state.length += state.objectMode ? 1 : chunk.length;
+        if (addToFront)
+          state.buffer.unshift(chunk);
+        else
+          state.buffer.push(chunk);
+
+        if (state.needReadable)
+          emitReadable(stream);
+      }
 
       maybeReadMore(stream, state);
     }
@@ -28992,6 +29021,7 @@ Readable.prototype.setEncoding = function(enc) {
     StringDecoder = require('string_decoder/').StringDecoder;
   this._readableState.decoder = new StringDecoder(enc);
   this._readableState.encoding = enc;
+  return this;
 };
 
 // Don't raise the hwm > 128MB
@@ -29015,7 +29045,7 @@ function howMuchToRead(n, state) {
   if (state.objectMode)
     return n === 0 ? 0 : 1;
 
-  if (n === null || isNaN(n)) {
+  if (isNaN(n) || util.isNull(n)) {
     // only flow one buffer at a time
     if (state.flowing && state.buffer.length)
       return state.buffer[0].length;
@@ -29047,12 +29077,11 @@ function howMuchToRead(n, state) {
 
 // you can override either this method, or the async _read(n) below.
 Readable.prototype.read = function(n) {
+  debug('read', n);
   var state = this._readableState;
-  state.calledRead = true;
   var nOrig = n;
-  var ret;
 
-  if (typeof n !== 'number' || n > 0)
+  if (!util.isNumber(n) || n > 0)
     state.emittedReadable = false;
 
   // if we're doing read(0) to trigger a readable event, but we
@@ -29061,7 +29090,11 @@ Readable.prototype.read = function(n) {
   if (n === 0 &&
       state.needReadable &&
       (state.length >= state.highWaterMark || state.ended)) {
-    emitReadable(this);
+    debug('read: emitReadable', state.length, state.ended);
+    if (state.length === 0 && state.ended)
+      endReadable(this);
+    else
+      emitReadable(this);
     return null;
   }
 
@@ -29069,28 +29102,9 @@ Readable.prototype.read = function(n) {
 
   // if we've ended, and we're now clear, then finish it up.
   if (n === 0 && state.ended) {
-    ret = null;
-
-    // In cases where the decoder did not receive enough data
-    // to produce a full chunk, then immediately received an
-    // EOF, state.buffer will contain [<Buffer >, <Buffer 00 ...>].
-    // howMuchToRead will see this and coerce the amount to
-    // read to zero (because it's looking at the length of the
-    // first <Buffer > in state.buffer), and we'll end up here.
-    //
-    // This can only happen via state.decoder -- no other venue
-    // exists for pushing a zero-length chunk into state.buffer
-    // and triggering this behavior. In this case, we return our
-    // remaining data and end the stream, if appropriate.
-    if (state.length > 0 && state.decoder) {
-      ret = fromList(n, state);
-      state.length -= ret.length;
-    }
-
     if (state.length === 0)
       endReadable(this);
-
-    return ret;
+    return null;
   }
 
   // All the actual chunk generation logic needs to be
@@ -29117,17 +29131,23 @@ Readable.prototype.read = function(n) {
 
   // if we need a readable event, then we need to do some reading.
   var doRead = state.needReadable;
+  debug('need readable', doRead);
 
   // if we currently have less than the highWaterMark, then also read some
-  if (state.length - n <= state.highWaterMark)
+  if (state.length === 0 || state.length - n < state.highWaterMark) {
     doRead = true;
+    debug('length less than watermark', doRead);
+  }
 
   // however, if we've ended, then there's no point, and if we're already
   // reading, then it's unnecessary.
-  if (state.ended || state.reading)
+  if (state.ended || state.reading) {
     doRead = false;
+    debug('reading or ended', doRead);
+  }
 
   if (doRead) {
+    debug('do read');
     state.reading = true;
     state.sync = true;
     // if the length is currently zero, then we *need* a readable event.
@@ -29138,18 +29158,18 @@ Readable.prototype.read = function(n) {
     state.sync = false;
   }
 
-  // If _read called its callback synchronously, then `reading`
-  // will be false, and we need to re-evaluate how much data we
-  // can return to the user.
+  // If _read pushed data synchronously, then `reading` will be false,
+  // and we need to re-evaluate how much data we can return to the user.
   if (doRead && !state.reading)
     n = howMuchToRead(nOrig, state);
 
+  var ret;
   if (n > 0)
     ret = fromList(n, state);
   else
     ret = null;
 
-  if (ret === null) {
+  if (util.isNull(ret)) {
     state.needReadable = true;
     n = 0;
   }
@@ -29161,21 +29181,21 @@ Readable.prototype.read = function(n) {
   if (state.length === 0 && !state.ended)
     state.needReadable = true;
 
-  // If we happened to read() exactly the remaining amount in the
-  // buffer, and the EOF has been seen at this point, then make sure
-  // that we emit 'end' on the very next tick.
-  if (state.ended && !state.endEmitted && state.length === 0)
+  // If we tried to read() past the EOF, then emit end on the next tick.
+  if (nOrig !== n && state.ended && state.length === 0)
     endReadable(this);
+
+  if (!util.isNull(ret))
+    this.emit('data', ret);
 
   return ret;
 };
 
 function chunkInvalid(state, chunk) {
   var er = null;
-  if (!Buffer.isBuffer(chunk) &&
-      'string' !== typeof chunk &&
-      chunk !== null &&
-      chunk !== undefined &&
+  if (!util.isBuffer(chunk) &&
+      !util.isString(chunk) &&
+      !util.isNullOrUndefined(chunk) &&
       !state.objectMode) {
     er = new TypeError('Invalid non-string/buffer chunk');
   }
@@ -29193,12 +29213,8 @@ function onEofChunk(stream, state) {
   }
   state.ended = true;
 
-  // if we've ended and we have some data left, then emit
-  // 'readable' now to make sure it gets picked up.
-  if (state.length > 0)
-    emitReadable(stream);
-  else
-    endReadable(stream);
+  // emit 'readable' now to make sure it gets picked up.
+  emitReadable(stream);
 }
 
 // Don't emit readable right away in sync mode, because this can trigger
@@ -29207,20 +29223,22 @@ function onEofChunk(stream, state) {
 function emitReadable(stream) {
   var state = stream._readableState;
   state.needReadable = false;
-  if (state.emittedReadable)
-    return;
-
-  state.emittedReadable = true;
-  if (state.sync)
-    process.nextTick(function() {
+  if (!state.emittedReadable) {
+    debug('emitReadable', state.flowing);
+    state.emittedReadable = true;
+    if (state.sync)
+      process.nextTick(function() {
+        emitReadable_(stream);
+      });
+    else
       emitReadable_(stream);
-    });
-  else
-    emitReadable_(stream);
+  }
 }
 
 function emitReadable_(stream) {
+  debug('emit readable');
   stream.emit('readable');
+  flow(stream);
 }
 
 
@@ -29243,6 +29261,7 @@ function maybeReadMore_(stream, state) {
   var len = state.length;
   while (!state.reading && !state.flowing && !state.ended &&
          state.length < state.highWaterMark) {
+    debug('maybeReadMore read 0');
     stream.read(0);
     if (len === state.length)
       // didn't get any data, stop spinning.
@@ -29277,6 +29296,7 @@ Readable.prototype.pipe = function(dest, pipeOpts) {
       break;
   }
   state.pipesCount += 1;
+  debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
 
   var doEnd = (!pipeOpts || pipeOpts.end !== false) &&
               dest !== process.stdout &&
@@ -29290,11 +29310,14 @@ Readable.prototype.pipe = function(dest, pipeOpts) {
 
   dest.on('unpipe', onunpipe);
   function onunpipe(readable) {
-    if (readable !== src) return;
-    cleanup();
+    debug('onunpipe');
+    if (readable === src) {
+      cleanup();
+    }
   }
 
   function onend() {
+    debug('onend');
     dest.end();
   }
 
@@ -29306,6 +29329,7 @@ Readable.prototype.pipe = function(dest, pipeOpts) {
   dest.on('drain', ondrain);
 
   function cleanup() {
+    debug('cleanup');
     // cleanup event handlers once the pipe is broken
     dest.removeListener('close', onclose);
     dest.removeListener('finish', onfinish);
@@ -29314,19 +29338,34 @@ Readable.prototype.pipe = function(dest, pipeOpts) {
     dest.removeListener('unpipe', onunpipe);
     src.removeListener('end', onend);
     src.removeListener('end', cleanup);
+    src.removeListener('data', ondata);
 
     // if the reader is waiting for a drain event from this
     // specific writer, then it would cause it to never start
     // flowing again.
     // So, if this is awaiting a drain, then we just call it now.
     // If we don't know, then assume that we are waiting for one.
-    if (!dest._writableState || dest._writableState.needDrain)
+    if (state.awaitDrain &&
+        (!dest._writableState || dest._writableState.needDrain))
       ondrain();
+  }
+
+  src.on('data', ondata);
+  function ondata(chunk) {
+    debug('ondata');
+    var ret = dest.write(chunk);
+    if (false === ret) {
+      debug('false write response, pause',
+            src._readableState.awaitDrain);
+      src._readableState.awaitDrain++;
+      src.pause();
+    }
   }
 
   // if the dest has an error, then stop piping into it.
   // however, don't suppress the throwing behavior for this.
   function onerror(er) {
+    debug('onerror', er);
     unpipe();
     dest.removeListener('error', onerror);
     if (EE.listenerCount(dest, 'error') === 0)
@@ -29350,12 +29389,14 @@ Readable.prototype.pipe = function(dest, pipeOpts) {
   }
   dest.once('close', onclose);
   function onfinish() {
+    debug('onfinish');
     dest.removeListener('close', onclose);
     unpipe();
   }
   dest.once('finish', onfinish);
 
   function unpipe() {
+    debug('unpipe');
     src.unpipe(dest);
   }
 
@@ -29364,16 +29405,8 @@ Readable.prototype.pipe = function(dest, pipeOpts) {
 
   // start the flow if it hasn't been started already.
   if (!state.flowing) {
-    // the handler that waits for readable events after all
-    // the data gets sucked out in flow.
-    // This would be easier to follow with a .once() handler
-    // in flow(), but that is too slow.
-    this.on('readable', pipeOnReadable);
-
-    state.flowing = true;
-    process.nextTick(function() {
-      flow(src);
-    });
+    debug('pipe resume');
+    src.resume();
   }
 
   return dest;
@@ -29381,63 +29414,15 @@ Readable.prototype.pipe = function(dest, pipeOpts) {
 
 function pipeOnDrain(src) {
   return function() {
-    var dest = this;
     var state = src._readableState;
-    state.awaitDrain--;
-    if (state.awaitDrain === 0)
+    debug('pipeOnDrain', state.awaitDrain);
+    if (state.awaitDrain)
+      state.awaitDrain--;
+    if (state.awaitDrain === 0 && EE.listenerCount(src, 'data')) {
+      state.flowing = true;
       flow(src);
-  };
-}
-
-function flow(src) {
-  var state = src._readableState;
-  var chunk;
-  state.awaitDrain = 0;
-
-  function write(dest, i, list) {
-    var written = dest.write(chunk);
-    if (false === written) {
-      state.awaitDrain++;
     }
-  }
-
-  while (state.pipesCount && null !== (chunk = src.read())) {
-
-    if (state.pipesCount === 1)
-      write(state.pipes, 0, null);
-    else
-      forEach(state.pipes, write);
-
-    src.emit('data', chunk);
-
-    // if anyone needs a drain, then we have to wait for that.
-    if (state.awaitDrain > 0)
-      return;
-  }
-
-  // if every destination was unpiped, either before entering this
-  // function, or in the while loop, then stop flowing.
-  //
-  // NB: This is a pretty rare edge case.
-  if (state.pipesCount === 0) {
-    state.flowing = false;
-
-    // if there were data event listeners added, then switch to old mode.
-    if (EE.listenerCount(src, 'data') > 0)
-      emitDataEvents(src);
-    return;
-  }
-
-  // at this point, no one needed a drain, so we just ran out of data
-  // on the next readable event, start it over again.
-  state.ranOut = true;
-}
-
-function pipeOnReadable() {
-  if (this._readableState.ranOut) {
-    this._readableState.ranOut = false;
-    flow(this);
-  }
+  };
 }
 
 
@@ -29460,7 +29445,6 @@ Readable.prototype.unpipe = function(dest) {
     // got a match.
     state.pipes = null;
     state.pipesCount = 0;
-    this.removeListener('readable', pipeOnReadable);
     state.flowing = false;
     if (dest)
       dest.emit('unpipe', this);
@@ -29475,7 +29459,6 @@ Readable.prototype.unpipe = function(dest) {
     var len = state.pipesCount;
     state.pipes = null;
     state.pipesCount = 0;
-    this.removeListener('readable', pipeOnReadable);
     state.flowing = false;
 
     for (var i = 0; i < len; i++)
@@ -29503,8 +29486,11 @@ Readable.prototype.unpipe = function(dest) {
 Readable.prototype.on = function(ev, fn) {
   var res = Stream.prototype.on.call(this, ev, fn);
 
-  if (ev === 'data' && !this._readableState.flowing)
-    emitDataEvents(this);
+  // If listening to data, and it has not explicitly been paused,
+  // then call resume to start the flow of data on the next tick.
+  if (ev === 'data' && false !== this._readableState.flowing) {
+    this.resume();
+  }
 
   if (ev === 'readable' && this.readable) {
     var state = this._readableState;
@@ -29513,7 +29499,11 @@ Readable.prototype.on = function(ev, fn) {
       state.emittedReadable = false;
       state.needReadable = true;
       if (!state.reading) {
-        this.read(0);
+        var self = this;
+        process.nextTick(function() {
+          debug('readable nexttick read 0');
+          self.read(0);
+        });
       } else if (state.length) {
         emitReadable(this, state);
       }
@@ -29527,63 +29517,54 @@ Readable.prototype.addListener = Readable.prototype.on;
 // pause() and resume() are remnants of the legacy readable stream API
 // If the user uses them, then switch into old mode.
 Readable.prototype.resume = function() {
-  emitDataEvents(this);
-  this.read(0);
-  this.emit('resume');
+  var state = this._readableState;
+  if (!state.flowing) {
+    debug('resume');
+    state.flowing = true;
+    if (!state.reading) {
+      debug('resume read 0');
+      this.read(0);
+    }
+    resume(this, state);
+  }
+  return this;
 };
+
+function resume(stream, state) {
+  if (!state.resumeScheduled) {
+    state.resumeScheduled = true;
+    process.nextTick(function() {
+      resume_(stream, state);
+    });
+  }
+}
+
+function resume_(stream, state) {
+  state.resumeScheduled = false;
+  stream.emit('resume');
+  flow(stream);
+  if (state.flowing && !state.reading)
+    stream.read(0);
+}
 
 Readable.prototype.pause = function() {
-  emitDataEvents(this, true);
-  this.emit('pause');
+  debug('call pause flowing=%j', this._readableState.flowing);
+  if (false !== this._readableState.flowing) {
+    debug('pause');
+    this._readableState.flowing = false;
+    this.emit('pause');
+  }
+  return this;
 };
 
-function emitDataEvents(stream, startPaused) {
+function flow(stream) {
   var state = stream._readableState;
-
+  debug('flow', state.flowing);
   if (state.flowing) {
-    // https://github.com/isaacs/readable-stream/issues/16
-    throw new Error('Cannot switch to old mode now.');
+    do {
+      var chunk = stream.read();
+    } while (null !== chunk && state.flowing);
   }
-
-  var paused = startPaused || false;
-  var readable = false;
-
-  // convert to an old-style stream.
-  stream.readable = true;
-  stream.pipe = Stream.prototype.pipe;
-  stream.on = stream.addListener = Stream.prototype.on;
-
-  stream.on('readable', function() {
-    readable = true;
-
-    var c;
-    while (!paused && (null !== (c = stream.read())))
-      stream.emit('data', c);
-
-    if (c === null) {
-      readable = false;
-      stream._readableState.needReadable = true;
-    }
-  });
-
-  stream.pause = function() {
-    paused = true;
-    this.emit('pause');
-  };
-
-  stream.resume = function() {
-    paused = false;
-    if (readable)
-      process.nextTick(function() {
-        stream.emit('readable');
-      });
-    else
-      this.read(0);
-    this.emit('resume');
-  };
-
-  // now make it start, just in case it hadn't already.
-  stream.emit('readable');
 }
 
 // wrap an old-style stream as the async data source.
@@ -29595,6 +29576,7 @@ Readable.prototype.wrap = function(stream) {
 
   var self = this;
   stream.on('end', function() {
+    debug('wrapped end');
     if (state.decoder && !state.ended) {
       var chunk = state.decoder.end();
       if (chunk && chunk.length)
@@ -29605,14 +29587,10 @@ Readable.prototype.wrap = function(stream) {
   });
 
   stream.on('data', function(chunk) {
+    debug('wrapped data');
     if (state.decoder)
       chunk = state.decoder.write(chunk);
-
-    // don't skip over falsy values in objectMode
-    //if (state.objectMode && util.isNullOrUndefined(chunk))
-    if (state.objectMode && (chunk === null || chunk === undefined))
-      return;
-    else if (!state.objectMode && (!chunk || !chunk.length))
+    if (!chunk || !state.objectMode && !chunk.length)
       return;
 
     var ret = self.push(chunk);
@@ -29625,8 +29603,7 @@ Readable.prototype.wrap = function(stream) {
   // proxy all the other methods.
   // important when wrapping filters and duplexes.
   for (var i in stream) {
-    if (typeof stream[i] === 'function' &&
-        typeof this[i] === 'undefined') {
+    if (util.isFunction(stream[i]) && util.isUndefined(this[i])) {
       this[i] = function(method) { return function() {
         return stream[method].apply(stream, arguments);
       }}(i);
@@ -29642,6 +29619,7 @@ Readable.prototype.wrap = function(stream) {
   // when we try to consume some more bytes, simply unpause the
   // underlying stream.
   self._read = function(n) {
+    debug('wrapped _read', n);
     if (paused) {
       paused = false;
       stream.resume();
@@ -29730,7 +29708,7 @@ function endReadable(stream) {
   if (state.length > 0)
     throw new Error('endReadable called on non-empty stream');
 
-  if (!state.endEmitted && state.calledRead) {
+  if (!state.endEmitted) {
     state.ended = true;
     process.nextTick(function() {
       // Check that we didn't get one last unshift.
@@ -29757,7 +29735,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","buffer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/index.js","core-util-is":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/node_modules/core-util-is/lib/util.js","events":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/events/events.js","inherits":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/inherits/inherits_browser.js","isarray":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/isarray/index.js","stream":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/stream-browserify/index.js","string_decoder/":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/string_decoder/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
+},{"./_stream_duplex":235,"_process":233,"buffer":225,"core-util-is":240,"events":229,"inherits":230,"isarray":231,"stream":245,"string_decoder/":246,"util":224}],238:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -29857,7 +29835,7 @@ function afterTransform(stream, er, data) {
   ts.writechunk = null;
   ts.writecb = null;
 
-  if (data !== null && data !== undefined)
+  if (!util.isNullOrUndefined(data))
     stream.push(data);
 
   if (cb)
@@ -29877,7 +29855,7 @@ function Transform(options) {
 
   Duplex.call(this, options);
 
-  var ts = this._transformState = new TransformState(options, this);
+  this._transformState = new TransformState(options, this);
 
   // when the writable side finishes, then flush out anything remaining.
   var stream = this;
@@ -29890,8 +29868,8 @@ function Transform(options) {
   // sync guard flag.
   this._readableState.sync = false;
 
-  this.once('finish', function() {
-    if ('function' === typeof this._flush)
+  this.once('prefinish', function() {
+    if (util.isFunction(this._flush))
       this._flush(function(er) {
         done(stream, er);
       });
@@ -29939,7 +29917,7 @@ Transform.prototype._write = function(chunk, encoding, cb) {
 Transform.prototype._read = function(n) {
   var ts = this._transformState;
 
-  if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
+  if (!util.isNull(ts.writechunk) && ts.writecb && !ts.transforming) {
     ts.transforming = true;
     this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
   } else {
@@ -29957,7 +29935,6 @@ function done(stream, er) {
   // if there's nothing in the write buffer, then that means
   // that nothing more will ever be provided
   var ws = stream._writableState;
-  var rs = stream._readableState;
   var ts = stream._transformState;
 
   if (ws.length)
@@ -29969,7 +29946,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/node_modules/core-util-is/lib/util.js","inherits":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/inherits/inherits_browser.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
+},{"./_stream_duplex":235,"core-util-is":240,"inherits":230}],239:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -30021,17 +29998,23 @@ function WriteReq(chunk, encoding, cb) {
 }
 
 function WritableState(options, stream) {
+  var Duplex = require('./_stream_duplex');
+
   options = options || {};
 
   // the point at which write() starts returning false
   // Note: 0 is a valid value, means that we always return false if
   // the entire buffer is not flushed immediately on write()
   var hwm = options.highWaterMark;
-  this.highWaterMark = (hwm || hwm === 0) ? hwm : 16 * 1024;
+  var defaultHwm = options.objectMode ? 16 : 16 * 1024;
+  this.highWaterMark = (hwm || hwm === 0) ? hwm : defaultHwm;
 
   // object stream flag to indicate whether or not this stream
   // contains buffers or objects.
   this.objectMode = !!options.objectMode;
+
+  if (stream instanceof Duplex)
+    this.objectMode = this.objectMode || !!options.writableObjectMode;
 
   // cast to ints.
   this.highWaterMark = ~~this.highWaterMark;
@@ -30063,8 +30046,11 @@ function WritableState(options, stream) {
   // a flag to see when we're in the middle of a write.
   this.writing = false;
 
+  // when true all writes will be buffered until .uncork() call
+  this.corked = 0;
+
   // a flag to be able to tell if the onwrite cb is called immediately,
-  // or on a later tick.  We set this to true at first, becuase any
+  // or on a later tick.  We set this to true at first, because any
   // actions that shouldn't happen until "later" should generally also
   // not happen before the first write call.
   this.sync = true;
@@ -30086,6 +30072,14 @@ function WritableState(options, stream) {
   this.writelen = 0;
 
   this.buffer = [];
+
+  // number of pending user-supplied write callbacks
+  // this must be 0 before 'finish' can be emitted
+  this.pendingcb = 0;
+
+  // emit prefinish if the only thing we're waiting for is _write cbs
+  // This is relevant for synchronous Transform streams
+  this.prefinished = false;
 
   // True if the error was already emitted and should not be thrown again
   this.errorEmitted = false;
@@ -30129,10 +30123,9 @@ function writeAfterEnd(stream, state, cb) {
 // how many bytes or characters.
 function validChunk(stream, state, chunk, cb) {
   var valid = true;
-  if (!Buffer.isBuffer(chunk) &&
-      'string' !== typeof chunk &&
-      chunk !== null &&
-      chunk !== undefined &&
+  if (!util.isBuffer(chunk) &&
+      !util.isString(chunk) &&
+      !util.isNullOrUndefined(chunk) &&
       !state.objectMode) {
     var er = new TypeError('Invalid non-string/buffer chunk');
     stream.emit('error', er);
@@ -30148,31 +30141,54 @@ Writable.prototype.write = function(chunk, encoding, cb) {
   var state = this._writableState;
   var ret = false;
 
-  if (typeof encoding === 'function') {
+  if (util.isFunction(encoding)) {
     cb = encoding;
     encoding = null;
   }
 
-  if (Buffer.isBuffer(chunk))
+  if (util.isBuffer(chunk))
     encoding = 'buffer';
   else if (!encoding)
     encoding = state.defaultEncoding;
 
-  if (typeof cb !== 'function')
+  if (!util.isFunction(cb))
     cb = function() {};
 
   if (state.ended)
     writeAfterEnd(this, state, cb);
-  else if (validChunk(this, state, chunk, cb))
+  else if (validChunk(this, state, chunk, cb)) {
+    state.pendingcb++;
     ret = writeOrBuffer(this, state, chunk, encoding, cb);
+  }
 
   return ret;
+};
+
+Writable.prototype.cork = function() {
+  var state = this._writableState;
+
+  state.corked++;
+};
+
+Writable.prototype.uncork = function() {
+  var state = this._writableState;
+
+  if (state.corked) {
+    state.corked--;
+
+    if (!state.writing &&
+        !state.corked &&
+        !state.finished &&
+        !state.bufferProcessing &&
+        state.buffer.length)
+      clearBuffer(this, state);
+  }
 };
 
 function decodeChunk(state, chunk, encoding) {
   if (!state.objectMode &&
       state.decodeStrings !== false &&
-      typeof chunk === 'string') {
+      util.isString(chunk)) {
     chunk = new Buffer(chunk, encoding);
   }
   return chunk;
@@ -30183,7 +30199,7 @@ function decodeChunk(state, chunk, encoding) {
 // If we return false, then we need a drain event, so set that flag.
 function writeOrBuffer(stream, state, chunk, encoding, cb) {
   chunk = decodeChunk(state, chunk, encoding);
-  if (Buffer.isBuffer(chunk))
+  if (util.isBuffer(chunk))
     encoding = 'buffer';
   var len = state.objectMode ? 1 : chunk.length;
 
@@ -30194,30 +30210,36 @@ function writeOrBuffer(stream, state, chunk, encoding, cb) {
   if (!ret)
     state.needDrain = true;
 
-  if (state.writing)
+  if (state.writing || state.corked)
     state.buffer.push(new WriteReq(chunk, encoding, cb));
   else
-    doWrite(stream, state, len, chunk, encoding, cb);
+    doWrite(stream, state, false, len, chunk, encoding, cb);
 
   return ret;
 }
 
-function doWrite(stream, state, len, chunk, encoding, cb) {
+function doWrite(stream, state, writev, len, chunk, encoding, cb) {
   state.writelen = len;
   state.writecb = cb;
   state.writing = true;
   state.sync = true;
-  stream._write(chunk, encoding, state.onwrite);
+  if (writev)
+    stream._writev(chunk, state.onwrite);
+  else
+    stream._write(chunk, encoding, state.onwrite);
   state.sync = false;
 }
 
 function onwriteError(stream, state, sync, er, cb) {
   if (sync)
     process.nextTick(function() {
+      state.pendingcb--;
       cb(er);
     });
-  else
+  else {
+    state.pendingcb--;
     cb(er);
+  }
 
   stream._writableState.errorEmitted = true;
   stream.emit('error', er);
@@ -30243,8 +30265,12 @@ function onwrite(stream, er) {
     // Check if we're actually ready to finish, but don't emit yet
     var finished = needFinish(stream, state);
 
-    if (!finished && !state.bufferProcessing && state.buffer.length)
+    if (!finished &&
+        !state.corked &&
+        !state.bufferProcessing &&
+        state.buffer.length) {
       clearBuffer(stream, state);
+    }
 
     if (sync) {
       process.nextTick(function() {
@@ -30259,9 +30285,9 @@ function onwrite(stream, er) {
 function afterWrite(stream, state, finished, cb) {
   if (!finished)
     onwriteDrain(stream, state);
+  state.pendingcb--;
   cb();
-  if (finished)
-    finishMaybe(stream, state);
+  finishMaybe(stream, state);
 }
 
 // Must force callback to be called on nextTick, so that we don't
@@ -30279,50 +30305,81 @@ function onwriteDrain(stream, state) {
 function clearBuffer(stream, state) {
   state.bufferProcessing = true;
 
-  for (var c = 0; c < state.buffer.length; c++) {
-    var entry = state.buffer[c];
-    var chunk = entry.chunk;
-    var encoding = entry.encoding;
-    var cb = entry.callback;
-    var len = state.objectMode ? 1 : chunk.length;
+  if (stream._writev && state.buffer.length > 1) {
+    // Fast case, write everything using _writev()
+    var cbs = [];
+    for (var c = 0; c < state.buffer.length; c++)
+      cbs.push(state.buffer[c].callback);
 
-    doWrite(stream, state, len, chunk, encoding, cb);
+    // count the one we are adding, as well.
+    // TODO(isaacs) clean this up
+    state.pendingcb++;
+    doWrite(stream, state, true, state.length, state.buffer, '', function(err) {
+      for (var i = 0; i < cbs.length; i++) {
+        state.pendingcb--;
+        cbs[i](err);
+      }
+    });
 
-    // if we didn't call the onwrite immediately, then
-    // it means that we need to wait until it does.
-    // also, that means that the chunk and cb are currently
-    // being processed, so move the buffer counter past them.
-    if (state.writing) {
-      c++;
-      break;
+    // Clear buffer
+    state.buffer = [];
+  } else {
+    // Slow case, write chunks one-by-one
+    for (var c = 0; c < state.buffer.length; c++) {
+      var entry = state.buffer[c];
+      var chunk = entry.chunk;
+      var encoding = entry.encoding;
+      var cb = entry.callback;
+      var len = state.objectMode ? 1 : chunk.length;
+
+      doWrite(stream, state, false, len, chunk, encoding, cb);
+
+      // if we didn't call the onwrite immediately, then
+      // it means that we need to wait until it does.
+      // also, that means that the chunk and cb are currently
+      // being processed, so move the buffer counter past them.
+      if (state.writing) {
+        c++;
+        break;
+      }
     }
+
+    if (c < state.buffer.length)
+      state.buffer = state.buffer.slice(c);
+    else
+      state.buffer.length = 0;
   }
 
   state.bufferProcessing = false;
-  if (c < state.buffer.length)
-    state.buffer = state.buffer.slice(c);
-  else
-    state.buffer.length = 0;
 }
 
 Writable.prototype._write = function(chunk, encoding, cb) {
   cb(new Error('not implemented'));
+
 };
+
+Writable.prototype._writev = null;
 
 Writable.prototype.end = function(chunk, encoding, cb) {
   var state = this._writableState;
 
-  if (typeof chunk === 'function') {
+  if (util.isFunction(chunk)) {
     cb = chunk;
     chunk = null;
     encoding = null;
-  } else if (typeof encoding === 'function') {
+  } else if (util.isFunction(encoding)) {
     cb = encoding;
     encoding = null;
   }
 
-  if (typeof chunk !== 'undefined' && chunk !== null)
+  if (!util.isNullOrUndefined(chunk))
     this.write(chunk, encoding);
+
+  // .end() fully uncorks
+  if (state.corked) {
+    state.corked = 1;
+    this.uncork();
+  }
 
   // ignore unnecessary end() calls.
   if (!state.ending && !state.finished)
@@ -30337,11 +30394,22 @@ function needFinish(stream, state) {
           !state.writing);
 }
 
+function prefinish(stream, state) {
+  if (!state.prefinished) {
+    state.prefinished = true;
+    stream.emit('prefinish');
+  }
+}
+
 function finishMaybe(stream, state) {
   var need = needFinish(stream, state);
   if (need) {
-    state.finished = true;
-    stream.emit('finish');
+    if (state.pendingcb === 0) {
+      prefinish(stream, state);
+      state.finished = true;
+      stream.emit('finish');
+    } else
+      prefinish(stream, state);
   }
   return need;
 }
@@ -30359,7 +30427,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_duplex.js","_process":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/process/browser.js","buffer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/index.js","core-util-is":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/node_modules/core-util-is/lib/util.js","inherits":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/inherits/inherits_browser.js","stream":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/stream-browserify/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/node_modules/core-util-is/lib/util.js":[function(require,module,exports){
+},{"./_stream_duplex":235,"_process":233,"buffer":225,"core-util-is":240,"inherits":230,"stream":245}],240:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -30469,26 +30537,25 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/passthrough.js":[function(require,module,exports){
+},{"buffer":225}],241:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_passthrough.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/readable.js":[function(require,module,exports){
-var Stream = require('stream'); // hack to fix a circular dependency issue when used with browserify
+},{"./lib/_stream_passthrough.js":236}],242:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
-exports.Stream = Stream;
+exports.Stream = require('stream');
 exports.Readable = exports;
 exports.Writable = require('./lib/_stream_writable.js');
 exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_writable.js","stream":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/stream-browserify/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/transform.js":[function(require,module,exports){
+},{"./lib/_stream_duplex.js":235,"./lib/_stream_passthrough.js":236,"./lib/_stream_readable.js":237,"./lib/_stream_transform.js":238,"./lib/_stream_writable.js":239,"stream":245}],243:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_transform.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/writable.js":[function(require,module,exports){
+},{"./lib/_stream_transform.js":238}],244:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/lib/_stream_writable.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/stream-browserify/index.js":[function(require,module,exports){
+},{"./lib/_stream_writable.js":239}],245:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -30617,7 +30684,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/events/events.js","inherits":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/inherits/inherits_browser.js","readable-stream/duplex.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/duplex.js","readable-stream/passthrough.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/passthrough.js","readable-stream/readable.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/readable.js","readable-stream/transform.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/transform.js","readable-stream/writable.js":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/readable-stream/writable.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/string_decoder/index.js":[function(require,module,exports){
+},{"events":229,"inherits":230,"readable-stream/duplex.js":234,"readable-stream/passthrough.js":241,"readable-stream/readable.js":242,"readable-stream/transform.js":243,"readable-stream/writable.js":244}],246:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -30840,7 +30907,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/watchify/node_modules/browserify/node_modules/buffer/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/checkbox.js":[function(require,module,exports){
+},{"buffer":225}],247:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -31149,7 +31216,7 @@ test('bootstrap checkbox()', function (tape) {
 });
 
 
-},{"../../lib/skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./compact":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/compact.js","deep-diff":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/deep-diff/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/compact.js":[function(require,module,exports){
+},{"../../lib/skin":14,"../../lib/skins/bootstrap":15,"./compact":248,"deep-diff":26,"tape":184,"tcomb-validation":196}],248:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -31182,7 +31249,7 @@ function compact(x) {
 
 module.exports = compact;
 
-},{"tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/index.js":[function(require,module,exports){
+},{"tcomb-validation":196}],249:[function(require,module,exports){
 require('./checkbox');
 require('./textbox');
 require('./select');
@@ -31190,7 +31257,7 @@ require('./radio');
 require('./struct');
 require('./list');
 
-},{"./checkbox":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/checkbox.js","./list":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/list.js","./radio":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/radio.js","./select":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/select.js","./struct":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/struct.js","./textbox":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/textbox.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/list.js":[function(require,module,exports){
+},{"./checkbox":247,"./list":250,"./radio":251,"./select":252,"./struct":253,"./textbox":254}],250:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -31366,7 +31433,7 @@ test('bootstrap list()', function (tape) {
 });
 
 
-},{"../../lib/skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./compact":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/compact.js","deep-diff":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/deep-diff/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/radio.js":[function(require,module,exports){
+},{"../../lib/skin":14,"../../lib/skins/bootstrap":15,"./compact":248,"deep-diff":26,"tape":184,"tcomb-validation":196}],251:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -31990,7 +32057,7 @@ test('bootstrap radio()', function (tape) {
 });
 
 
-},{"../../lib/skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./compact":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/compact.js","deep-diff":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/deep-diff/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/select.js":[function(require,module,exports){
+},{"../../lib/skin":14,"../../lib/skins/bootstrap":15,"./compact":248,"deep-diff":26,"tape":184,"tcomb-validation":196}],252:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -32562,7 +32629,7 @@ test('bootstrap select()', function (tape) {
 });
 
 
-},{"../../lib/skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./compact":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/compact.js","deep-diff":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/deep-diff/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/struct.js":[function(require,module,exports){
+},{"../../lib/skin":14,"../../lib/skins/bootstrap":15,"./compact":248,"deep-diff":26,"tape":184,"tcomb-validation":196}],253:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -32712,7 +32779,7 @@ test('bootstrap struct()', function (tape) {
 });
 
 
-},{"../../lib/skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./compact":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/compact.js","deep-diff":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/deep-diff/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/textbox.js":[function(require,module,exports){
+},{"../../lib/skin":14,"../../lib/skins/bootstrap":15,"./compact":248,"deep-diff":26,"tape":184,"tcomb-validation":196}],254:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -33001,7 +33068,7 @@ test('bootstrap textbox()', function (tape) {
 });
 
 
-},{"../../lib/skin":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skin.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./compact":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/compact.js","deep-diff":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/deep-diff/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js","tcomb-validation":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tcomb-validation/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Checkbox.js":[function(require,module,exports){
+},{"../../lib/skin":14,"../../lib/skins/bootstrap":15,"./compact":248,"deep-diff":26,"tape":184,"tcomb-validation":196}],255:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -33232,7 +33299,7 @@ test('Checkbox', function (tape) {
 
 
 
-},{"../../.":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","../../lib/components/Checkbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Checkbox.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./util":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/util.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","react-vdom":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/List.js":[function(require,module,exports){
+},{"../../.":1,"../../lib/components/Checkbox":3,"../../lib/skins/bootstrap":15,"./util":262,"react":183,"react-vdom":27,"tape":184}],256:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -33395,7 +33462,7 @@ test('List', function (tape) {
 
 
 
-},{"../../.":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","../../lib/components/List":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/List.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./util":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/util.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","react-vdom":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Radio.js":[function(require,module,exports){
+},{"../../.":1,"../../lib/components/List":5,"../../lib/skins/bootstrap":15,"./util":262,"react":183,"react-vdom":27,"tape":184}],257:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -33704,7 +33771,7 @@ test('Radio', function (tape) {
 
 
 
-},{"../../.":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","../../lib/components/Radio":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Radio.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./util":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/util.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","react-vdom":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Select.js":[function(require,module,exports){
+},{"../../.":1,"../../lib/components/Radio":6,"../../lib/skins/bootstrap":15,"./util":262,"react":183,"react-vdom":27,"tape":184}],258:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -34064,7 +34131,7 @@ test('Select', function (tape) {
 
 
 
-},{"../../.":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","../../lib/components/Select":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Select.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./util":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/util.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","react-vdom":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Struct.js":[function(require,module,exports){
+},{"../../.":1,"../../lib/components/Select":7,"../../lib/skins/bootstrap":15,"./util":262,"react":183,"react-vdom":27,"tape":184}],259:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -34254,7 +34321,7 @@ test('Struct', function (tape) {
 
 
 
-},{"../../.":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","../../lib/components/Struct":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Struct.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./util":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/util.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","react-vdom":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Textbox.js":[function(require,module,exports){
+},{"../../.":1,"../../lib/components/Struct":8,"../../lib/skins/bootstrap":15,"./util":262,"react":183,"react-vdom":27,"tape":184}],260:[function(require,module,exports){
 'use strict';
 
 var test = require('tape');
@@ -34617,7 +34684,7 @@ test('Textbox', function (tape) {
 
 
 
-},{"../../.":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","../../lib/components/Textbox":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/components/Textbox.js","../../lib/skins/bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/skins/bootstrap/index.js","./util":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/util.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js","react-vdom":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react-vdom/index.js","tape":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/tape/index.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/index.js":[function(require,module,exports){
+},{"../../.":1,"../../lib/components/Textbox":9,"../../lib/skins/bootstrap":15,"./util":262,"react":183,"react-vdom":27,"tape":184}],261:[function(require,module,exports){
 require('./Checkbox');
 require('./Textbox');
 require('./Select');
@@ -34625,7 +34692,7 @@ require('./Radio');
 require('./Struct');
 require('./List');
 
-},{"./Checkbox":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Checkbox.js","./List":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/List.js","./Radio":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Radio.js","./Select":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Select.js","./Struct":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Struct.js","./Textbox":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/Textbox.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/util.js":[function(require,module,exports){
+},{"./Checkbox":255,"./List":256,"./Radio":257,"./Select":258,"./Struct":259,"./Textbox":260}],262:[function(require,module,exports){
 /*global document*/
 'use strict';
 
@@ -34699,7 +34766,7 @@ module.exports = {
   getValueFactory: getValueFactory
 };
 
-},{"../../.":"/Users/giulio/Documents/Projects/github/tcomb-form/index.js","../../lib/api":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/api.js","../../lib/config":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/config.js","../../lib/util/getReport":"/Users/giulio/Documents/Projects/github/tcomb-form/lib/util/getReport.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js"}],"/Users/giulio/Documents/Projects/github/tcomb-form/test/index.js":[function(require,module,exports){
+},{"../../.":1,"../../lib/api":2,"../../lib/config":11,"../../lib/util/getReport":18,"react":183}],263:[function(require,module,exports){
 var React = require('react');
 var debug = require('debug');
 debug.disable('*');
@@ -34708,4 +34775,4 @@ require('./components');
 require('./bootstrap');
 
 
-},{"./bootstrap":"/Users/giulio/Documents/Projects/github/tcomb-form/test/bootstrap/index.js","./components":"/Users/giulio/Documents/Projects/github/tcomb-form/test/components/index.js","debug":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/debug/browser.js","react":"/Users/giulio/Documents/Projects/github/tcomb-form/node_modules/react/react.js"}]},{},["/Users/giulio/Documents/Projects/github/tcomb-form/test/index.js"]);
+},{"./bootstrap":249,"./components":261,"debug":23,"react":183}]},{},[263]);

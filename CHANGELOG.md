@@ -1,3 +1,7 @@
+v0.4.5
+
+- move tcomb-validation to peerDependencies, fix #84
+
 v0.4.4
 
 - Allow removal of nullOption if a default value is set, fix #71
