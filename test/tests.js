@@ -741,6 +741,7 @@ var Select = React.createClass({
     // add a `null` option in first position
     var nullOption = opts.nullOption || {value: '', text: '-'};
     if (!multiple && opts.nullOption !== false) {
+      if (t.Nil.is(value)) { value = nullOption.value; }
       options.unshift(nullOption);
     }
     return {
@@ -32956,8 +32957,8 @@ test('Select', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).value,
-      null,
-      'default value should be null');
+      '',
+      'default value should be the nullOption\'s value');
 
     tape.strictEqual(
       getLocals({type: Country}, {}, 'IT').value,
@@ -33173,7 +33174,7 @@ test('Select', function (tape) {
         }, function (locals, rendered) {
           if (rendered) {
             tape.strictEqual(locals.hasError, true);
-            tape.strictEqual(locals.value, null);
+            tape.strictEqual(locals.value, '');
           }
         }, {type: Country});
 
@@ -33182,7 +33183,7 @@ test('Select', function (tape) {
           tape.strictEqual(result.value, null);
         }, function (locals) {
             tape.strictEqual(locals.hasError, false);
-            tape.strictEqual(locals.value, null);
+            tape.strictEqual(locals.value, '');
         }, {type: t.maybe(Country)});
 
         getValue(function (result) {

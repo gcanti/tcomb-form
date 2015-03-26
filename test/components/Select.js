@@ -111,8 +111,8 @@ test('Select', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).value,
-      null,
-      'default value should be null');
+      '',
+      'default value should be the nullOption\'s value');
 
     tape.strictEqual(
       getLocals({type: Country}, {}, 'IT').value,
@@ -328,7 +328,7 @@ test('Select', function (tape) {
         }, function (locals, rendered) {
           if (rendered) {
             tape.strictEqual(locals.hasError, true);
-            tape.strictEqual(locals.value, null);
+            tape.strictEqual(locals.value, '');
           }
         }, {type: Country});
 
@@ -337,7 +337,7 @@ test('Select', function (tape) {
           tape.strictEqual(result.value, null);
         }, function (locals) {
             tape.strictEqual(locals.hasError, false);
-            tape.strictEqual(locals.value, null);
+            tape.strictEqual(locals.value, '');
         }, {type: t.maybe(Country)});
 
         getValue(function (result) {
