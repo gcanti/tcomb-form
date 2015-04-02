@@ -1,6 +1,7 @@
 v0.4.6
 
 - `value = null`, `undefined` or `nullOption.value` selects the null option now
+- fix #89
 
 v0.4.5
 
