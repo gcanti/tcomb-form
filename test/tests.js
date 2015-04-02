@@ -1063,6 +1063,7 @@ var NumberTransformer = new api.Transformer({
     return t.Nil.is(value) ? value : String(value);
   },
   parse: function (value) {
+    if (t.Str.is(value) && value.length > 0 && value[value.length - 1] === '.') { return value; }
     var n = parseFloat(value);
     var isNumeric = (value - n + 1) >= 0;
     return isNumeric ? n : value;
@@ -33845,6 +33846,49 @@ debug.disable('*');
 window.React = React;
 require('./components');
 require('./bootstrap');
+require('./util');
 
 
-},{"./bootstrap":248,"./components":260,"debug":23,"react":182}]},{},[262]);
+},{"./bootstrap":248,"./components":260,"./util":264,"debug":23,"react":182}],263:[function(require,module,exports){
+'use strict';
+
+var test = require('tape');
+var NumberTransformer = require('../../lib/config').transformers.Num;
+var format = NumberTransformer.format;
+var parse = NumberTransformer.parse;
+
+test('NumberTransformer', function (tape) {
+
+  tape.test('format', function (tape) {
+    tape.plan(9);
+    tape.strictEqual(format(0), '0');
+    tape.strictEqual(format('0.0'), '0.0');
+    tape.strictEqual(format(0.1), '0.1');
+    tape.strictEqual(format(1), '1');
+    tape.strictEqual(format('1.0'), '1.0');
+    tape.strictEqual(format(1000), '1000');
+    tape.strictEqual(format(1000.), '1000');
+    tape.strictEqual(format(1000.0), '1000');
+    tape.strictEqual(format(1000.1), '1000.1');
+  });
+
+  tape.test('parse', function (tape) {
+    tape.plan(5);
+    tape.strictEqual(parse(''), '');
+    tape.strictEqual(parse('a'), 'a');
+    tape.strictEqual(parse('0'), 0);
+    tape.strictEqual(parse('0.1'), 0.1);
+    tape.strictEqual(parse('0.'), '0.');
+  });
+
+  tape.test('interaction', function (tape) {
+    tape.plan(1);
+    tape.strictEqual(format(parse('1.')), '1.');
+  });
+
+});
+
+},{"../../lib/config":11,"tape":183}],264:[function(require,module,exports){
+require('./NumberTransformer');
+
+},{"./NumberTransformer":263}]},{},[262]);
