@@ -28,8 +28,7 @@ gulp.task('docs', ['guide', 'demo:bootstrap', 'demo:gridforms', 'demo:ionic', 'p
 gulp.task('guide', function () {
 
   browserify('./docs/guide/src.js', {
-    transform: [reactify],
-    detectGlobals: false
+    transform: [reactify]
   })
   .external('react')
   .bundle()
@@ -41,8 +40,7 @@ gulp.task('guide', function () {
 gulp.task('demo:bootstrap', function () {
 
   browserify('./docs/demo/bootstrap/src.js', {
-    transform: [reactify],
-    detectGlobals: false
+    transform: [reactify]
   })
   .external('react')
   .bundle()
@@ -54,8 +52,7 @@ gulp.task('demo:bootstrap', function () {
 gulp.task('demo:gridforms', function () {
 
   browserify('./docs/demo/gridforms/src.js', {
-    transform: [reactify],
-    detectGlobals: false
+    transform: [reactify]
   })
   .external('react')
   .bundle()
@@ -67,8 +64,7 @@ gulp.task('demo:gridforms', function () {
 gulp.task('demo:ionic', function () {
 
   browserify('./docs/demo/ionic/src.js', {
-    transform: [reactify],
-    detectGlobals: false
+    transform: [reactify]
   })
   .external('react')
   .bundle()
@@ -80,8 +76,7 @@ gulp.task('demo:ionic', function () {
 gulp.task('playground', function () {
 
   browserify('./docs/playground/src.js', {
-    transform: [reactify],
-    detectGlobals: false
+    transform: [reactify]
   })
   .external('react')
   .bundle()

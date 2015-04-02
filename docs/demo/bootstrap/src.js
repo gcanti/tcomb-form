@@ -62,7 +62,6 @@ var Person = t.struct({
 });
 
 render('1', Person, {
-  auto: 'labels',
   fields: {
     gender: {
       factory: t.form.radio
@@ -97,8 +96,7 @@ var Booking = t.struct({
 });
 
 render('2', Booking, {
-  auto: 'labels',
-  label: React.createElement("h2", null, "How can we help?"),
+  legend: React.createElement("h2", null, "How can we help?"),
   fields: {
     booking: { label: '' },
     flexible: { label: 'My dates are flexible' },
@@ -118,7 +116,7 @@ render('2', Booking, {
 function mylayout(locals) {
   return (
     React.createElement("fieldset", null,
-      React.createElement("legend", null, locals.label),
+      React.createElement("legend", null, locals.legend),
       React.createElement("div", {className: "row"},
         React.createElement("div", {className: "col-xs-12"},
           locals.inputs.booking

@@ -1,3 +1,7 @@
+v0.4.6
+
+- `value = null`, `undefined` or `nullOption.value` selects the null option now
+
 v0.4.5
 
 - move tcomb-validation to peerDependencies, fix #84

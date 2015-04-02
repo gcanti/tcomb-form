@@ -26,7 +26,7 @@ var select = t.form.select;
 //
 
 // override default fail behaviour of tcomb https://github.com/gcanti/tcomb
-t.options.onFail = function (message) {
+t.onFail = function (message) {
   throw new Error(message);
 };
 

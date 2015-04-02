@@ -665,7 +665,6 @@ render('42', Textbox, {
 // ===============================================
 
 render('43', Person7, {
-  auto: 'labels',
   config: {
     horizontal: {
       md: [3, 9],
@@ -718,12 +717,22 @@ var Person9 = t.struct({
     },
 
     onChange: function (value) {
+      var state = {
+        type: this.state.type,
+        options: this.state.options,
+        value: value
+      };
+      // changes the form configuration on the fly!
       if (value.name === 'a') {
-        this.state.type = Person9;
-        this.state.options.fields.surname = {disabled: true};
+        // you can change even the type
+        state.type = Person9;
+        // change options
+        state.options.fields.surname = {disabled: true};
+      } else {
+        state.type = Person8;
+        state.options.fields.surname = {};
       }
-      this.state.value = value;
-      this.forceUpdate();
+      this.setState(state);
     },
 
     render: function () {

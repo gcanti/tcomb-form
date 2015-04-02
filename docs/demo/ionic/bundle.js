@@ -15,9 +15,7 @@ var Account = t.struct({
 
 var Form = t.form.Form;
 
-var options = {
-  auto: 'labels'
-};
+var options = {};
 
 var App = React.createClass({displayName: 'App',
 
@@ -804,6 +802,7 @@ var Select = React.createClass({
     // add a `null` option in first position
     var nullOption = opts.nullOption || {value: '', text: '-'};
     if (!multiple && opts.nullOption !== false) {
+      if (t.Nil.is(value)) { value = nullOption.value; }
       options.unshift(nullOption);
     }
     return {

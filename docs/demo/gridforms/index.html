@@ -69,7 +69,6 @@ var Product = t.struct({
 });
 
 var Form = t.form.create(Product, {
-  auto: 'labels',
   label: 'Add to inventory',
   templates: {
     struct: mylayout // custom layout
@@ -144,7 +143,7 @@ function mylayout(locals) {
       </div>
     </div>
   </body>
-  <script type="text/javascript" src="../../js/react-0.12.2.js"></script>
+  <script type="text/javascript" src="../../js/react.js"></script>
   <script type="text/javascript" src="../../js/highlight.js"></script>
   <script type="text/javascript" src="bundle.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>

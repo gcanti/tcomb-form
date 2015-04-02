@@ -64,7 +64,6 @@ var Product = t.struct({
 });
 
 render('1', Product, {
-  auto: 'labels',
   label: 'Add to inventory',
   templates: {
     struct: mylayout  // custom template for structs
@@ -878,6 +877,7 @@ var Select = React.createClass({
     // add a `null` option in first position
     var nullOption = opts.nullOption || {value: '', text: '-'};
     if (!multiple && opts.nullOption !== false) {
+      if (t.Nil.is(value)) { value = nullOption.value; }
       options.unshift(nullOption);
     }
     return {

@@ -14,9 +14,7 @@ var Account = t.struct({
 
 var Form = t.form.Form;
 
-var options = {
-  auto: 'labels'
-};
+var options = {};
 
 var App = React.createClass({displayName: 'App',
 

@@ -240,7 +240,7 @@ var Person = t.struct({
           </div>
 
           <a name="boolean-field"><h2>Boolean field</h2></a>
-          <p>To create a boolean field use <code>t.Bool</code>:</p>
+          <p>In order to create a boolean field use <code>t.Bool</code>:</p>
           <pre><code>
 var Person = t.struct({
   name: t.Str,
@@ -257,7 +257,7 @@ var Person = t.struct({
           </div>
 
           <a name="enum-field"><h2>Enum field</h2></a>
-          <p>To create an enum field use <code>t.enums</code>:</p>
+          <p>In order to create an enum field use <code>t.enums</code>:</p>
           <pre><code>
 var Gender = t.enums({
   M: 'Male',
@@ -334,7 +334,7 @@ var Persons = t.list(Person);
           </div>
 
           <h1>Options</h1>
-          <p>To customize the form look and feel passing a <code>options</code> prop to the form component:</p>
+          <p>In order to customize the look and feel, use a <code>options</code> prop to the form component:</p>
           <pre><code>
 &lt;Form type={Model} options={options} /&gt;
           </code></pre>
@@ -342,7 +342,7 @@ var Persons = t.list(Person);
           <h2>Fieldset options</h2>
 
           <a name="fieldset-auto"><h3>Automatically generated placeholders</h3></a>
-          <p>Pass the option <code>auto: 'placeholders'</code> to generate default placeholders:</p>
+          <p>Use the option <code>auto: 'placeholders'</code> to generate default placeholders:</p>
           <pre><code>
 var options = {
   auto: 'placeholders'
@@ -364,7 +364,7 @@ var options = {
           </code></pre>
 
           <a name="fieldset-order"><h3>Fields order</h3></a>
-          <p>You can order the fields with the <code>order</code> option:</p>
+          <p>You can sort the fields with the <code>order</code> option:</p>
           <pre><code>
 var options = {
   order: ['name', 'surname', 'rememberMe', 'gender', 'age', 'email']
@@ -1426,7 +1426,6 @@ var Person = t.struct({
 });
 
 var options = {
-  auto: 'labels',
   config: {
     // for each of lg md sm xs you can specify the columns width
     horizontal: {
@@ -1500,15 +1499,22 @@ var App = React.createClass({
     }
   },
   onChange: function (value) {
+    var state = {
+      type: this.state.type,
+      options: this.state.options,
+      value: value
+    };
     // changes the form configuration on the fly!
     if (value.name === 'a') {
       // you can change even the type
-      this.state.type = Person2;
+      state.type = Person2;
       // change options
-      this.state.options.fields.surname = {disabled: true};
+      state.options.fields.surname = {disabled: true};
+    } else {
+      state.type = Person;
+      state.options.fields.surname = {};
     }
-    this.state.value = value;
-    this.forceUpdate();
+    this.setState(state);
   },
   render: function() {
     return (
@@ -1592,7 +1598,7 @@ var App = React.createClass({
       </footer>
     </div>
   </body>
-  <script type="text/javascript" src="../js/react-0.12.2.js"></script>
+  <script type="text/javascript" src="../js/react.js"></script>
   <script type="text/javascript" src="../js/highlight.js"></script>
   <script type="text/javascript" src="bundle.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>

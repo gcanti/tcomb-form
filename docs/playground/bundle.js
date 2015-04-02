@@ -27,7 +27,7 @@ var select = t.form.select;
 //
 
 // override default fail behaviour of tcomb https://github.com/gcanti/tcomb
-t.options.onFail = function (message) {
+t.onFail = function (message) {
   throw new Error(message);
 };
 
@@ -884,6 +884,7 @@ var Select = React.createClass({
     // add a `null` option in first position
     var nullOption = opts.nullOption || {value: '', text: '-'};
     if (!multiple && opts.nullOption !== false) {
+      if (t.Nil.is(value)) { value = nullOption.value; }
       options.unshift(nullOption);
     }
     return {

@@ -69,7 +69,6 @@ var Person = t.struct({
 });
 
 var Form = t.form.create(Person, {
-  auto: 'labels',
   fields: {
     gender: {
       factory: t.form.radio
@@ -141,7 +140,7 @@ function mylayout(locals) {
 
   return (
     &lt;fieldset&gt;
-      &lt;legend&gt;{locals.label}&lt;/legend&gt;
+      &lt;legend&gt;{locals.legend}&lt;/legend&gt;
       &lt;div className="row"&gt;
         &lt;div className="col-xs-12"&gt;
           {inputs.booking}
@@ -203,7 +202,7 @@ function mylayout(locals) {
       </div>
     </div>
   </body>
-  <script type="text/javascript" src="../../js/react-0.12.2.js"></script>
+  <script type="text/javascript" src="../../js/react.js"></script>
   <script type="text/javascript" src="../../js/highlight.js"></script>
   <script type="text/javascript" src="bundle.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>

@@ -63,7 +63,6 @@ var Product = t.struct({
 });
 
 render('1', Product, {
-  auto: 'labels',
   label: 'Add to inventory',
   templates: {
     struct: mylayout  // custom template for structs

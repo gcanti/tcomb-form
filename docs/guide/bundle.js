@@ -666,7 +666,6 @@ render('42', Textbox, {
 // ===============================================
 
 render('43', Person7, {
-  auto: 'labels',
   config: {
     horizontal: {
       md: [3, 9],
@@ -719,12 +718,22 @@ var Person9 = t.struct({
     },
 
     onChange: function (value) {
+      var state = {
+        type: this.state.type,
+        options: this.state.options,
+        value: value
+      };
+      // changes the form configuration on the fly!
       if (value.name === 'a') {
-        this.state.type = Person9;
-        this.state.options.fields.surname = {disabled: true};
+        // you can change even the type
+        state.type = Person9;
+        // change options
+        state.options.fields.surname = {disabled: true};
+      } else {
+        state.type = Person8;
+        state.options.fields.surname = {};
       }
-      this.state.value = value;
-      this.forceUpdate();
+      this.setState(state);
     },
 
     render: function () {
@@ -767,7 +776,7 @@ themeSelector.onchange = function () {
 
 
 
-},{"../../.":2,"react":"react","react/lib/cx":27}],2:[function(require,module,exports){
+},{"../../.":2,"react":"react","react/lib/cx":28}],2:[function(require,module,exports){
 var t = require('./lib');
 
 // plug bootstrap skin
@@ -999,7 +1008,7 @@ module.exports = {
 };
 
 
-},{"react":"react","tcomb-validation":30}],4:[function(require,module,exports){
+},{"react":"react","tcomb-validation":31}],4:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1087,7 +1096,7 @@ var Checkbox = React.createClass({
 module.exports = Checkbox;
 
 
-},{"../api":3,"../skin":15,"../util/getError":17,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":30,"uvdom/react":56}],5:[function(require,module,exports){
+},{"../api":3,"../skin":15,"../util/getError":17,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":25,"react":"react","tcomb-validation":31,"uvdom/react":57}],5:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1337,7 +1346,7 @@ module.exports = List;
 
 
 
-},{"../api":3,"../getComponent":13,"../skin":15,"../util/getError":17,"../util/getReport":19,"../util/merge":21,"../util/move":22,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":30,"uvdom/react":56}],7:[function(require,module,exports){
+},{"../api":3,"../getComponent":13,"../skin":15,"../util/getError":17,"../util/getReport":19,"../util/merge":21,"../util/move":22,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":25,"react":"react","tcomb-validation":31,"uvdom/react":57}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1435,7 +1444,7 @@ var Radio = React.createClass({
 module.exports = Radio;
 
 
-},{"../api":3,"../skin":15,"../util/getError":17,"../util/getOptionsOfEnum":18,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":30,"uvdom/react":56}],8:[function(require,module,exports){
+},{"../api":3,"../skin":15,"../util/getError":17,"../util/getOptionsOfEnum":18,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":25,"react":"react","tcomb-validation":31,"uvdom/react":57}],8:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1516,6 +1525,7 @@ var Select = React.createClass({
     // add a `null` option in first position
     var nullOption = opts.nullOption || {value: '', text: '-'};
     if (!multiple && opts.nullOption !== false) {
+      if (t.Nil.is(value)) { value = nullOption.value; }
       options.unshift(nullOption);
     }
     return {
@@ -1552,7 +1562,7 @@ var Select = React.createClass({
 module.exports = Select;
 
 
-},{"../api":3,"../skin":15,"../util/getError":17,"../util/getOptionsOfEnum":18,"../util/getReport":19,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":30,"uvdom/react":56}],9:[function(require,module,exports){
+},{"../api":3,"../skin":15,"../util/getError":17,"../util/getOptionsOfEnum":18,"../util/getReport":19,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":25,"react":"react","tcomb-validation":31,"uvdom/react":57}],9:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1696,7 +1706,7 @@ var Struct = React.createClass({
 module.exports = Struct;
 
 
-},{"../api":3,"../getComponent":13,"../skin":15,"../util/getError":17,"../util/getReport":19,"../util/humanize":20,"../util/merge":21,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":30,"uvdom/react":56}],10:[function(require,module,exports){
+},{"../api":3,"../getComponent":13,"../skin":15,"../util/getError":17,"../util/getReport":19,"../util/humanize":20,"../util/merge":21,"./shouldComponentUpdate":11,"debug":25,"react":"react","tcomb-validation":31,"uvdom/react":57}],10:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1810,7 +1820,7 @@ var Textbox = React.createClass({
 module.exports = Textbox;
 
 
-},{"../api":3,"../config":12,"../skin":15,"../util/getError":17,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":30,"uvdom/react":56}],11:[function(require,module,exports){
+},{"../api":3,"../config":12,"../skin":15,"../util/getError":17,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":25,"react":"react","tcomb-validation":31,"uvdom/react":57}],11:[function(require,module,exports){
 'use strict';
 
 module.exports = function (nextProps, nextState) {
@@ -1858,7 +1868,7 @@ module.exports = {
 };
 
 
-},{"./api":3,"./components/Checkbox":4,"tcomb-validation":30}],13:[function(require,module,exports){
+},{"./api":3,"./components/Checkbox":4,"tcomb-validation":31}],13:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1893,7 +1903,7 @@ function getComponent(type, options) {
 module.exports = getComponent;
 
 
-},{"./components/List":6,"./components/Select":8,"./components/Struct":9,"./components/Textbox":10,"./config":12,"tcomb-validation":30}],14:[function(require,module,exports){
+},{"./components/List":6,"./components/Select":8,"./components/Struct":9,"./components/Textbox":10,"./config":12,"tcomb-validation":31}],14:[function(require,module,exports){
 var t = require('tcomb-validation');
 
 t.form = {
@@ -1911,7 +1921,7 @@ t.form = {
 module.exports = t;
 
 
-},{"./components/Checkbox":4,"./components/Form":5,"./components/List":6,"./components/Radio":7,"./components/Select":8,"./components/Struct":9,"./components/Textbox":10,"./config":12,"debug":24,"tcomb-validation":30}],15:[function(require,module,exports){
+},{"./components/Checkbox":4,"./components/Form":5,"./components/List":6,"./components/Radio":7,"./components/Select":8,"./components/Struct":9,"./components/Textbox":10,"./config":12,"debug":25,"tcomb-validation":31}],15:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -2070,7 +2080,7 @@ module.exports = {
 };
 
 
-},{"react":"react","tcomb-validation":30}],16:[function(require,module,exports){
+},{"react":"react","tcomb-validation":31}],16:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -2583,7 +2593,7 @@ module.exports = {
 };
 
 
-},{"../../skin":15,"tcomb-validation":30,"uvdom-bootstrap/form":32}],17:[function(require,module,exports){
+},{"../../skin":15,"tcomb-validation":31,"uvdom-bootstrap/form":33}],17:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -2595,7 +2605,7 @@ function getError(error, value) {
 module.exports = getError;
 
 
-},{"tcomb-validation":30}],18:[function(require,module,exports){
+},{"tcomb-validation":31}],18:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -2680,7 +2690,7 @@ function merge(a, b) {
 module.exports = merge;
 
 
-},{"tcomb-validation":30}],22:[function(require,module,exports){
+},{"tcomb-validation":31}],22:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -2706,6 +2716,94 @@ module.exports = uuid;
 
 
 },{}],24:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canMutationObserver = typeof window !== 'undefined'
+    && window.MutationObserver;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    var queue = [];
+
+    if (canMutationObserver) {
+        var hiddenDiv = document.createElement("div");
+        var observer = new MutationObserver(function () {
+            var queueList = queue.slice();
+            queue.length = 0;
+            queueList.forEach(function (fn) {
+                fn();
+            });
+        });
+
+        observer.observe(hiddenDiv, { attributes: true });
+
+        return function nextTick(fn) {
+            if (!queue.length) {
+                hiddenDiv.setAttribute('yes', 'no');
+            }
+            queue.push(fn);
+        };
+    }
+
+    if (canPost) {
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],25:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -2882,7 +2980,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":25}],25:[function(require,module,exports){
+},{"./debug":26}],26:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -3081,7 +3179,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":26}],26:[function(require,module,exports){
+},{"ms":27}],27:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -3206,7 +3304,8 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
+(function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3260,7 +3359,8 @@ function cx(classNames) {
 
 module.exports = cx;
 
-},{"./warning":29}],28:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"./warning":30,"_process":24}],29:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3294,7 +3394,8 @@ emptyFunction.thatReturnsArgument = function(arg) { return arg; };
 
 module.exports = emptyFunction;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
+(function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -3355,7 +3456,8 @@ if ("production" !== process.env.NODE_ENV) {
 
 module.exports = warning;
 
-},{"./emptyFunction":28}],30:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"./emptyFunction":29,"_process":24}],31:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -3573,7 +3675,7 @@ module.exports = warning;
 
 }));
 
-},{"tcomb":31}],31:[function(require,module,exports){
+},{"tcomb":32}],32:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
@@ -4295,7 +4397,7 @@ module.exports = warning;
 
 }));
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = {
   getAddon: require('./lib/getAddon'),
   getAlert: require('./lib/getAlert'),
@@ -4319,7 +4421,7 @@ module.exports = {
   getStatic: require('./lib/getStatic'),
   getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":33,"./lib/getAlert":34,"./lib/getBreakpoints":35,"./lib/getButton":36,"./lib/getButtonGroup":37,"./lib/getCheckbox":38,"./lib/getCol":39,"./lib/getErrorBlock":40,"./lib/getFieldset":41,"./lib/getFormGroup":42,"./lib/getHelpBlock":43,"./lib/getInputGroup":44,"./lib/getLabel":45,"./lib/getOffsets":46,"./lib/getOptGroup":47,"./lib/getOption":48,"./lib/getRadio":49,"./lib/getRow":50,"./lib/getSelect":51,"./lib/getStatic":52,"./lib/getTextbox":53}],33:[function(require,module,exports){
+},{"./lib/getAddon":34,"./lib/getAlert":35,"./lib/getBreakpoints":36,"./lib/getButton":37,"./lib/getButtonGroup":38,"./lib/getCheckbox":39,"./lib/getCol":40,"./lib/getErrorBlock":41,"./lib/getFieldset":42,"./lib/getFormGroup":43,"./lib/getHelpBlock":44,"./lib/getInputGroup":45,"./lib/getLabel":46,"./lib/getOffsets":47,"./lib/getOptGroup":48,"./lib/getOption":49,"./lib/getRadio":50,"./lib/getRow":51,"./lib/getSelect":52,"./lib/getStatic":53,"./lib/getTextbox":54}],34:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -4335,7 +4437,7 @@ function getAddon(addon) {
 }
 
 module.exports = getAddon;
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 function getAlert(opts) {
@@ -4356,7 +4458,7 @@ function getAlert(opts) {
 }
 
 module.exports = getAlert;
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 function getBreakpoints(breakpoints) {
@@ -4370,7 +4472,7 @@ function getBreakpoints(breakpoints) {
 }
 
 module.exports = getBreakpoints;
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4424,7 +4526,7 @@ function getButton(opts) {
 
 module.exports = getButton;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 function getButtonGroup(buttons) {
@@ -4442,7 +4544,7 @@ function getButtonGroup(buttons) {
 module.exports = getButtonGroup;
 
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4511,7 +4613,7 @@ function getCheckbox(opts) {
 }
 
 module.exports = getCheckbox;
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 var getBreakpoints = require('./getBreakpoints');
@@ -4530,7 +4632,7 @@ function getCol(opts) {
 }
 
 module.exports = getCol;
-},{"./getBreakpoints":35}],40:[function(require,module,exports){
+},{"./getBreakpoints":36}],41:[function(require,module,exports){
 'use strict';
 
 function getErrorBlock(opts) {
@@ -4549,7 +4651,7 @@ function getErrorBlock(opts) {
 module.exports = getErrorBlock;
 
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -4576,7 +4678,7 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
@@ -4593,7 +4695,7 @@ function getFormGroup(opts) {
 }
 
 module.exports = getFormGroup;
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4627,7 +4729,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -4643,7 +4745,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -4686,7 +4788,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":54}],46:[function(require,module,exports){
+},{"./mixin":55}],47:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -4700,7 +4802,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -4734,7 +4836,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":48}],48:[function(require,module,exports){
+},{"./getOption":49}],49:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4763,7 +4865,7 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4838,7 +4940,7 @@ function getRadio(opts) {
 }
 
 module.exports = getRadio;
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -4855,7 +4957,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4914,7 +5016,7 @@ function getSelect(opts) {
 }
 
 module.exports = getSelect;
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 'use strict';
 
 function getStatic(value) {
@@ -4930,7 +5032,7 @@ function getStatic(value) {
 }
 
 module.exports = getStatic;
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4993,7 +5095,7 @@ function getTextbox(opts) {
 }
 
 module.exports = getTextbox;
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 'use strict';
 
 function mixin(a, b) {
@@ -5007,7 +5109,7 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 function classNames() {
 	var classes = '';
 	var arg;
@@ -5039,7 +5141,7 @@ if (typeof module !== 'undefined' && module.exports) {
 	module.exports = classNames;
 }
 
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -5108,4 +5210,4 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"classnames":55,"react":"react"}]},{},[1]);
+},{"classnames":56,"react":"react"}]},{},[1]);

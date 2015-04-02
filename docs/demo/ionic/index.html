@@ -67,9 +67,7 @@ var Account = t.struct({
   email: t.maybe(t.Str)
 });
 
-var Form = t.form.create(Account, {
-  auto: 'labels'
-});
+var Form = t.form.create(Account);
           </code></pre>
           <pre id="value" class="value"></pre>
         </div>
@@ -81,7 +79,7 @@ var Form = t.form.create(Account, {
       </div>
     </div>
   </body>
-  <script type="text/javascript" src="../../js/react-0.12.2.js"></script>
+  <script type="text/javascript" src="../../js/react.js"></script>
   <script type="text/javascript" src="../../js/highlight.js"></script>
   <script type="text/javascript" src="bundle.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
