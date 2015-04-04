@@ -1,3 +1,7 @@
+v0.4.8
+
+- fix #98
+
 v0.4.7
 
 - added path field to contexts: validations report correct error paths now, fix #94
