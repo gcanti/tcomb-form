@@ -1,6 +1,6 @@
 {
   "name": "tcomb-form",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "homepage": "https://github.com/gcanti/tcomb-form",
   "peerDependencies": {
     "react": ">=0.12.0",
-    "tcomb-validation": "^1.0.1"
+    "tcomb-validation": "^1.0.3"
   },
   "dependencies": {
     "debug": "^2.1.1",

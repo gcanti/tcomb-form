@@ -1,3 +1,7 @@
+v0.4.7
+
+- added path field to contexts: validations report correct error paths now, fix #94
+
 v0.4.6
 
 - `value = null`, `undefined` or `nullOption.value` selects the null option now
