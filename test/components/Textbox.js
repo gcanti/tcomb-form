@@ -16,6 +16,7 @@ var transformer = {
     return value.join(',');
   },
   parse: function (value) {
+    console.log(value);
     return value.split(',');
   }
 };

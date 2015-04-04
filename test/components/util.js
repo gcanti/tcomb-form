@@ -3,7 +3,7 @@
 
 var React = require('react');
 var t = require('../../.');
-var config = require('../../lib/config');
+var Form = require('../../lib/components/Form');
 var getReport = require('../../lib/util/getReport');
 var Context = require('../../lib/api').Context;
 
@@ -11,10 +11,11 @@ function noop() {}
 
 function getContext(ctx) {
   return new Context(t.mixin({
-    templates: config.templates,
-    i18n: config.i18n,
+    templates: Form.templates,
+    i18n: Form.i18n,
     report: getReport(ctx.type),
-    auto: 'placeholders'
+    auto: 'placeholders',
+    path: []
   }, ctx, true));
 }
 

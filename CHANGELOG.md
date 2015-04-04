@@ -1,6 +1,7 @@
 v0.4.7
 
 - added path field to contexts: validations report correct error paths now, fix #94
+- added support for transformers in all the components, fix #90, fix #93
 
 v0.4.6
 

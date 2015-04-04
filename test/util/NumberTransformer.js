@@ -1,11 +1,11 @@
 'use strict';
 
 var test = require('tape');
-var NumberTransformer = require('../../lib/config').transformers.Num;
-var format = NumberTransformer.format;
-var parse = NumberTransformer.parse;
+var numberTransformer = require('../../lib/util/numberTransformer');
+var format = numberTransformer.format;
+var parse = numberTransformer.parse;
 
-test('NumberTransformer', function (tape) {
+test('numberTransformer', function (tape) {
 
   tape.test('format', function (tape) {
     tape.plan(9);
