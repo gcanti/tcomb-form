@@ -385,30 +385,28 @@ var debug = require('debug')('component:Checkbox');
 
 var defaultTransformer = new api.Transformer({
   format: function (value) {
-    return value;
+    return t.Nil.is(value) ? false : value;
   },
   parse: function (value) {
     return t.Nil.is(value) ? false : value;
   }
 });
 
-function normalize(value) {
-  return t.Nil.is(value) ? false : value;
-}
-
 var Checkbox = React.createClass({
 
   displayName: 'Checkbox',
 
   getInitialState: function () {
+    var value = this.getTransformer().format(this.props.value);
     return {
       hasError: false,
-      value: normalize(this.props.value)
+      value: value
     };
   },
 
   componentWillReceiveProps: function (props) {
-    this.setState({value: normalize(props.value)});
+    var value = this.getTransformer().format(props.value);
+    this.setState({value: value});
   },
 
   shouldComponentUpdate: shouldComponentUpdate,
@@ -421,14 +419,14 @@ var Checkbox = React.createClass({
   },
 
   onChange: function (value) {
-    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
       this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type, this.props.ctx.path);
+    var value = this.getTransformer().parse(this.state.value);
+    var result = t.validate(value, this.props.ctx.report.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -445,7 +443,7 @@ var Checkbox = React.createClass({
     // handle labels
     var label = opts.label || ctx.getDefaultLabel(); // checkboxes must have a label
 
-    var value = this.getTransformer().format(this.state.value);
+    var value = this.state.value;
     return {
       autoFocus: opts.autoFocus,
       config: merge(ctx.config, opts.config),
@@ -550,16 +548,12 @@ function justify(value, keys) {
   return ret;
 }
 
-function normalize(value) {
-  return t.Nil.is(value) ? [] : value;
-}
-
 var List = React.createClass({
 
   displayName: 'List',
 
   getInitialState: function () {
-    var value = normalize(this.props.value);
+    var value = this.getTransformer().format(this.props.value || []);
     return {
       hasError: false,
       value: value,
@@ -568,7 +562,7 @@ var List = React.createClass({
   },
 
   componentWillReceiveProps: function (props) {
-    var value = normalize(props.value);
+    var value = this.getTransformer().format(props.value || []);
     this.setState({
       value: value,
       keys: justify(value, this.state.keys)
@@ -585,7 +579,6 @@ var List = React.createClass({
   },
 
   onChange: function (value, keys, path) {
-    value = this.getTransformer().parse(value);
     this.setState({value: value, keys: justify(value, keys)}, function () {
       this.props.onChange(value, path || this.props.ctx.path);
     }.bind(this));
@@ -664,7 +657,7 @@ var List = React.createClass({
     t.assert(!ctx.report.maybe, 'maybe lists are not supported');
     var auto = opts.auto || ctx.auto;
     var i18n = opts.i18n || ctx.i18n;
-    var value = this.getTransformer().format(this.state.value);
+    var value = this.state.value || [];
 
     // handle legend
     var legend = opts.legend; // always use the option value if is manually set
@@ -750,23 +743,21 @@ var getOptionsOfEnum = require('../util/getOptionsOfEnum');
 var compile = require('uvdom/react').compile;
 var debug = require('debug')('component:Radio');
 
-function normalize(value) {
-  return t.Nil.is(value) ? null : value;
-}
-
 var Radio = React.createClass({
 
   displayName: 'Radio',
 
   getInitialState: function () {
+    var value = this.getTransformer().format(this.props.value);
     return {
       hasError: false,
-      value: normalize(this.props.value)
+      value: value
     };
   },
 
   componentWillReceiveProps: function (props) {
-    this.setState({value: normalize(props.value)});
+    var value = this.getTransformer().format(props.value);
+    this.setState({value: value});
   },
 
   shouldComponentUpdate: shouldComponentUpdate,
@@ -779,14 +770,14 @@ var Radio = React.createClass({
   },
 
   onChange: function (value) {
-    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
       this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type, this.props.ctx.path);
+    var value = this.getTransformer().parse(this.state.value);
+    var result = t.validate(value, this.props.ctx.report.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -811,7 +802,7 @@ var Radio = React.createClass({
     if (opts.order) {
       options.sort(api.Order.getComparator(opts.order));
     }
-    var value = this.getTransformer().format(this.state.value);
+    var value = this.state.value;
     return {
       autoFocus: opts.autoFocus,
       config: merge(ctx.config, opts.config),
@@ -857,23 +848,21 @@ var getOptionsOfEnum = require('../util/getOptionsOfEnum');
 var compile = require('uvdom/react').compile;
 var debug = require('debug')('component:Select');
 
-function normalize(value) {
-  return t.Nil.is(value) ? null : value;
-}
-
 var Select = React.createClass({
 
   displayName: 'Select',
 
   getInitialState: function () {
+    var value = this.getTransformer().format(this.props.value);
     return {
       hasError: false,
-      value: normalize(this.props.value)
+      value: value
     };
   },
 
   componentWillReceiveProps: function (props) {
-    this.setState({value: normalize(props.value)});
+    var value = this.getTransformer().format(props.value);
+    this.setState({value: value});
   },
 
   shouldComponentUpdate: shouldComponentUpdate,
@@ -886,14 +875,14 @@ var Select = React.createClass({
   },
 
   onChange: function (value) {
-    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
       this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type, this.props.ctx.path);
+    var value = this.getTransformer().parse(this.state.value);
+    var result = t.validate(value, this.props.ctx.report.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -920,7 +909,7 @@ var Select = React.createClass({
       label = ctx.getDefaultLabel();
     }
 
-    var value = this.getTransformer().format(this.state.value);
+    var value = this.state.value;
     var options = opts.options ? opts.options.slice() : getOptionsOfEnum(Enum);
     // sort opts
     if (opts.order) {
@@ -983,23 +972,21 @@ var getReport = require('../util/getReport');
 var compile = require('uvdom/react').compile;
 var debug = require('debug')('component:Struct');
 
-function normalize(value) {
-  return t.Nil.is(value) ? {} : value;
-}
-
 var Struct = React.createClass({
 
   displayName: 'Struct',
 
   getInitialState: function () {
+    var value = this.getTransformer().format(this.props.value || {});
     return {
       hasError: false,
-      value: normalize(this.props.value)
+      value: value
     };
   },
 
   componentWillReceiveProps: function (props) {
-    this.setState({value: normalize(props.value)});
+    var value = this.getTransformer().format(props.value || {});
+    this.setState({value: value});
   },
 
   shouldComponentUpdate: shouldComponentUpdate,
@@ -1014,7 +1001,6 @@ var Struct = React.createClass({
   onChange: function (fieldName, fieldValue, path) {
     var value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
-    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
       this.props.onChange(value, path);
     }.bind(this));
@@ -1065,7 +1051,7 @@ var Struct = React.createClass({
     }
 
     var config = merge(ctx.config, opts.config);
-    var value = this.getTransformer().format(this.state.value);
+    var value = this.state.value || {};
     var props = ctx.report.innerType.meta.props;
     var i18n =  opts.i18n || ctx.i18n;
     var templates = merge(ctx.templates, opts.templates);
@@ -1136,30 +1122,28 @@ var debug = require('debug')('component:Textbox');
 
 var defaultTransformer = new api.Transformer({
   format: function (value) {
-    return value;
+    return t.Nil.is(value) ? null : value;
   },
   parse: function (value) {
     return (t.Str.is(value) && value.trim() === '') || t.Nil.is(value) ? null : value;
   }
 });
 
-function normalize(value) {
-  return t.Nil.is(value) ? null : value;
-}
-
 var Textbox = React.createClass({
 
   displayName: 'Textbox',
 
   getInitialState: function () {
+    var value = this.getTransformer().format(this.props.value);
     return {
       hasError: false,
-      value: normalize(this.props.value)
+      value: value
     };
   },
 
   componentWillReceiveProps: function (props) {
-    this.setState({value: normalize(props.value)});
+    var value = this.getTransformer().format(props.value);
+    this.setState({value: value});
   },
 
   shouldComponentUpdate: shouldComponentUpdate,
@@ -1175,14 +1159,14 @@ var Textbox = React.createClass({
   },
 
   onChange: function (value) {
-    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
       this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type, this.props.ctx.path);
+    var value = this.getTransformer().parse(this.state.value);
+    var result = t.validate(value, this.props.ctx.report.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -1211,7 +1195,7 @@ var Textbox = React.createClass({
       placeholder = ctx.getDefaultLabel();
     }
 
-    var value = this.getTransformer().format(this.state.value);
+    var value = this.state.value;
 
     return {
       autoFocus: opts.autoFocus,
@@ -1991,11 +1975,12 @@ module.exports = new api.I18n({
 },{"../api":3}],17:[function(require,module,exports){
 'use strict';
 
+var t = require('tcomb-validation');
 var api = require('../api');
 
 module.exports = new api.Transformer({
   format: function (value) {
-    return value;
+    return t.Nil.is(value) ? null : value;
   },
   parse: function (value) {
     return value;
@@ -2004,7 +1989,7 @@ module.exports = new api.Transformer({
 
 
 
-},{"../api":3}],18:[function(require,module,exports){
+},{"../api":3,"tcomb-validation":29}],18:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -2124,7 +2109,6 @@ module.exports = new api.Transformer({
     return t.Nil.is(value) ? value : String(value);
   },
   parse: function (value) {
-    if (t.Str.is(value) && value.length > 0 && value[value.length - 1] === '.') { return value; }
     var n = parseFloat(value);
     var isNumeric = (value - n + 1) >= 0;
     return isNumeric ? n : value;

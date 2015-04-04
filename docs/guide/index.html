@@ -927,7 +927,7 @@ var TypeAttr = enums.of('textarea hidden text password color date datetime datet
           <p>Writing the custom template with JSX:</p>
 
           <pre><code>
-var cx = require('react/lib/cx');
+var cx = require('classnames');
 
 // the custom template
 function search(locals) {
@@ -1112,7 +1112,7 @@ var options = {
 
           <pre><code>
 var Transformer = struct({
-  format: Func, // from value to string
+  format: Func, // from value to string, it must be idempotent
   parse: Func   // from string to value
 });
           </code></pre>
@@ -1122,7 +1122,7 @@ var Transformer = struct({
           <pre><code>
 var listTransformer = {
   format: function (value) {
-    return value ? value.join(' ') : null;
+    return Array.isArray(value) ? value.join(' ') : value;
   },
   parse: function (str) {
     return str ? str.split(' ') : [];
@@ -1172,12 +1172,12 @@ var SearchComponent = React.createClass({
   getInitialState: function () {
     return {
       hasError: false,
-      value: this.props.value
+      value: listTransformer.format(this.props.value)
     };
   },
 
   componentWillReceiveProps: function (props) {
-    this.setState({value: props.value});
+    this.setState({value: listTransformer.format(props.value)});
   },
 
   // aggressive optimization (optional)
@@ -1191,14 +1191,14 @@ var SearchComponent = React.createClass({
   },
 
   onChange: function (value) {
-    value = listTransformer.parse(value);
     this.setState({value: value}, function () {
       this.props.onChange(value);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type);
+    var value = listTransformer.parse(this.state.value)
+    var result = t.validate(value, this.props.ctx.report.type);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -1224,8 +1224,7 @@ var SearchComponent = React.createClass({
     // handling name attribute
     var name = opts.name || ctx.name;
 
-    // formatting
-    var value = listTransformer.format(this.state.value);
+    var value = this.state.value;
 
     // handling error message
     var error = t.Func.is(opts.error) ? opts.error(this.state.value) : opts.error;

@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "browserify": "^6.3.2",
+    "classnames": "^1.2.0",
     "deep-diff": "^0.3.0",
     "gulp": "^3.8.10",
     "gulp-jshint": "^1.9.0",

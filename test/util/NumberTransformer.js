@@ -8,10 +8,11 @@ var parse = numberTransformer.parse;
 test('numberTransformer', function (tape) {
 
   tape.test('format', function (tape) {
-    tape.plan(9);
+    tape.plan(10);
     tape.strictEqual(format(0), '0');
     tape.strictEqual(format('0.0'), '0.0');
     tape.strictEqual(format(0.1), '0.1');
+    tape.strictEqual(format(-0.1), '-0.1');
     tape.strictEqual(format(1), '1');
     tape.strictEqual(format('1.0'), '1.0');
     tape.strictEqual(format(1000), '1000');
@@ -21,17 +22,13 @@ test('numberTransformer', function (tape) {
   });
 
   tape.test('parse', function (tape) {
-    tape.plan(5);
+    tape.plan(6);
     tape.strictEqual(parse(''), '');
     tape.strictEqual(parse('a'), 'a');
     tape.strictEqual(parse('0'), 0);
     tape.strictEqual(parse('0.1'), 0.1);
-    tape.strictEqual(parse('0.'), '0.');
-  });
-
-  tape.test('interaction', function (tape) {
-    tape.plan(1);
-    tape.strictEqual(format(parse('1.')), '1.');
+    tape.strictEqual(parse('-0.1'), -0.1);
+    tape.strictEqual(parse('0'), 0);
   });
 
 });

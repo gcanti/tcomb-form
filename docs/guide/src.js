@@ -410,7 +410,7 @@ render('33', t.list(Car), {
 
 // ===============================================
 
-var cx = require('react/lib/cx');
+var cx = require('classnames');
 
 function search(locals) {
 
@@ -497,7 +497,7 @@ render('36', Search2, {
 
 var listTransformer = {
   format: function (value) {
-    return value ? value.join(' ') : null;
+    return Array.isArray(value) ? value.join(' ') : value;
   },
   parse: function (value) {
     return value ? value.split(' ') : [];
@@ -510,7 +510,7 @@ render('37', Search2, {
   },
   fields: {
     search: {
-      factory: t.form.textbox,
+      factory: t.form.Textbox,
       transformer: listTransformer,
       help: 'Keywords are separated by spaces'
     }
@@ -525,11 +525,11 @@ var SearchComponent = React.createClass({
   getInitialState: function () {
     return {
       hasError: false,
-      value: this.props.value
+      value: listTransformer.format(this.props.value)
     };
   },
   componentWillReceiveProps: function (props) {
-    this.setState({value: props.value});
+    this.setState({value: listTransformer.format(props.value)});
   },
   shouldComponentUpdate: function (nextProps, nextState) {
     return nextState.value !== this.state.value ||
@@ -540,13 +540,13 @@ var SearchComponent = React.createClass({
       nextProps.onChange !== this.props.onChange;
   },
   onChange: function (value) {
-    value = listTransformer.parse(value);
     this.setState({value: value}, function () {
       this.props.onChange(value);
     }.bind(this));
   },
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type);
+    var value = listTransformer.parse(this.state.value)
+    var result = t.validate(value, this.props.ctx.report.type);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -571,8 +571,7 @@ var SearchComponent = React.createClass({
     // handling name attribute
     var name = opts.name || ctx.name;
 
-    // formatting
-    var value = listTransformer.format(this.state.value);
+    var value = this.state.value;
 
     // handling errors
     var error = t.Func.is(opts.error) ? opts.error(this.state.value) : opts.error;
