@@ -284,7 +284,7 @@ var Checkbox = React.createClass({
   onChange: function (value) {
     value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
@@ -443,10 +443,10 @@ var List = React.createClass({
     return defaultTransformer;
   },
 
-  onChange: function (value, keys) {
+  onChange: function (value, keys, path) {
     value = this.getTransformer().parse(value);
     this.setState({value: value, keys: justify(value, keys)}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, path || this.props.ctx.path);
     }.bind(this));
   },
 
@@ -478,13 +478,13 @@ var List = React.createClass({
     evt.preventDefault();
     var value = this.state.value.concat(null);
     var keys = this.state.keys.concat(uuid());
-    this.onChange(value, keys);
+    this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1));
   },
 
-  onItemChange: function (itemIndex, itemValue) {
+  onItemChange: function (itemIndex, itemValue, path) {
     var value = this.state.value.slice();
     value[itemIndex] = itemValue;
-    this.onChange(value, this.state.keys);
+    this.onChange(value, this.state.keys, path);
   },
 
   removeItem: function (i, evt) {
@@ -493,7 +493,7 @@ var List = React.createClass({
     value.splice(i, 1);
     var keys = this.state.keys.slice();
     keys.splice(i, 1);
-    this.onChange(value, keys);
+    this.onChange(value, keys, this.props.ctx.path.concat(i));
   },
 
   moveUpItem: function (i, evt) {
@@ -639,7 +639,7 @@ var Radio = React.createClass({
   onChange: function (value) {
     value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
@@ -745,7 +745,7 @@ var Select = React.createClass({
   onChange: function (value) {
     value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
@@ -867,12 +867,12 @@ var Struct = React.createClass({
     return defaultTransformer;
   },
 
-  onChange: function (fieldName, fieldValue) {
+  onChange: function (fieldName, fieldValue, path) {
     var value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, path);
     }.bind(this));
   },
 
@@ -1032,7 +1032,7 @@ var Textbox = React.createClass({
   onChange: function (value) {
     value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
