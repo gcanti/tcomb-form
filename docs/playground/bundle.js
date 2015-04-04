@@ -144,7 +144,7 @@ t.form.config.templates = require('./lib/skins/bootstrap');
 module.exports = t;
 
 
-},{"./lib":14,"./lib/skins/bootstrap":16}],3:[function(require,module,exports){
+},{"./lib":13,"./lib/skins/bootstrap":15}],3:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -185,7 +185,8 @@ var Context = struct({
   label: maybe(Str), // must be a string because of `i18n.optional` concatenation
   name: maybe(Str),
   report: Report,
-  templates: Obj
+  templates: Obj,
+  path: t.Arr
 }, 'Context');
 
 Context.prototype.getDefaultLabel = function () {
@@ -253,6 +254,7 @@ var Checkbox = struct({
   label: maybe(Label),
   name: maybe(t.Str),
   template: maybe(Func),
+  transformer: maybe(Transformer),
   className: maybe(Str)
 }, 'Checkbox');
 
@@ -270,9 +272,6 @@ var Order = t.enums({
 Order.getComparator = function (order) {
   return Order.meta.map[order];
 };
-
-// handle multiple attribute
-var SelectValue = union([Str, list(Str)], 'SelectValue');
 
 var NullOption = union([Option, Bool], 'NullOption');
 
@@ -294,6 +293,7 @@ var Select = struct({
   options: maybe(list(SelectOption)),
   order: maybe(Order),
   template: maybe(Func),
+  transformer: maybe(Transformer),
   className: maybe(Str)
 }, 'Select');
 
@@ -310,6 +310,7 @@ var Radio = struct({
   options: maybe(list(SelectOption)),
   order: maybe(Order),
   template: maybe(Func),
+  transformer: maybe(Transformer),
   className: maybe(Str)
 }, 'Select');
 
@@ -325,6 +326,7 @@ var Struct = struct({
   legend: maybe(Label),
   order: maybe(list(Label)),
   templates: maybe(Obj),
+  transformer: maybe(Transformer),
   className: maybe(Str)
 }, 'Struct');
 
@@ -342,6 +344,7 @@ var List = struct({
   error: maybe(ErrorMessage),
   legend: maybe(Label),
   templates: maybe(Obj),
+  transformer: maybe(Transformer),
   className: maybe(Str)
 }, 'List');
 
@@ -360,14 +363,13 @@ module.exports = {
   Textbox: Textbox,
   Checkbox: Checkbox,
   Select: Select,
-  SelectValue: SelectValue,
   Radio: Radio,
   Struct: Struct,
   List: List
 };
 
 
-},{"react":"react","tcomb-validation":27}],4:[function(require,module,exports){
+},{"react":"react","tcomb-validation":29}],4:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -381,8 +383,17 @@ var uuid = require('../util/uuid');
 var compile = require('uvdom/react').compile;
 var debug = require('debug')('component:Checkbox');
 
+var defaultTransformer = new api.Transformer({
+  format: function (value) {
+    return value;
+  },
+  parse: function (value) {
+    return t.Nil.is(value) ? false : value;
+  }
+});
+
 function normalize(value) {
-  return !!t.maybe(t.Bool)(value);
+  return t.Nil.is(value) ? false : value;
 }
 
 var Checkbox = React.createClass({
@@ -402,15 +413,22 @@ var Checkbox = React.createClass({
 
   shouldComponentUpdate: shouldComponentUpdate,
 
+  getTransformer: function () {
+    if (this.props.options && this.props.options.transformer) {
+      return this.props.options.transformer;
+    }
+    return defaultTransformer;
+  },
+
   onChange: function (value) {
-    value = normalize(value);
+    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type);
+    var result = t.validate(this.state.value, this.props.ctx.report.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -427,7 +445,7 @@ var Checkbox = React.createClass({
     // handle labels
     var label = opts.label || ctx.getDefaultLabel(); // checkboxes must have a label
 
-    var value = this.state.value;
+    var value = this.getTransformer().format(this.state.value);
     return {
       autoFocus: opts.autoFocus,
       config: merge(ctx.config, opts.config),
@@ -455,14 +473,13 @@ var Checkbox = React.createClass({
 module.exports = Checkbox;
 
 
-},{"../api":3,"../skin":15,"../util/getError":17,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":27,"uvdom/react":53}],5:[function(require,module,exports){
+},{"../api":3,"../skin":14,"../util/getError":18,"../util/merge":22,"../util/uuid":25,"./shouldComponentUpdate":11,"debug":26,"react":"react","tcomb-validation":29,"uvdom/react":55}],5:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
 var getComponent = require('../getComponent');
 var api = require('../api');
 var getReport = require('../util/getReport');
-var config =  require('../config');
 
 function noop() {}
 
@@ -484,9 +501,10 @@ var Form = React.createClass({
     var options = this.props.options;
     var ctx = new api.Context({
       auto: api.Auto.defaultValue,
-      i18n: config.i18n,
+      i18n: Form.i18n,
       report: getReport(type),
-      templates: config.templates
+      templates: Form.templates,
+      path: []
     });
     var factory = React.createFactory(getComponent(type, options));
     return factory({
@@ -500,15 +518,18 @@ var Form = React.createClass({
 
 });
 
+Form.i18n = require('../util/defaultLocaleBundle');
+
 module.exports = Form;
 
 
-},{"../api":3,"../config":12,"../getComponent":13,"../util/getReport":19,"react":"react"}],6:[function(require,module,exports){
+},{"../api":3,"../getComponent":12,"../util/defaultLocaleBundle":16,"../util/getReport":20,"react":"react"}],6:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
 var t = require('tcomb-validation');
 var shouldComponentUpdate = require('./shouldComponentUpdate');
+var defaultTransformer = require('../util/defaultTransformer');
 var getComponent = require('../getComponent');
 var api = require('../api');
 var skin = require('../skin');
@@ -530,8 +551,7 @@ function justify(value, keys) {
 }
 
 function normalize(value) {
-  t.maybe(t.Arr)(value);
-  return value || [];
+  return t.Nil.is(value) ? [] : value;
 }
 
 var List = React.createClass({
@@ -557,9 +577,17 @@ var List = React.createClass({
 
   shouldComponentUpdate: shouldComponentUpdate,
 
-  onChange: function (value, keys) {
-    this.setState({value: value, keys: keys}, function () {
-      this.props.onChange(value);
+  getTransformer: function () {
+    if (this.props.options && this.props.options.transformer) {
+      return this.props.options.transformer;
+    }
+    return defaultTransformer;
+  },
+
+  onChange: function (value, keys, path) {
+    value = this.getTransformer().parse(value);
+    this.setState({value: value, keys: justify(value, keys)}, function () {
+      this.props.onChange(value, path || this.props.ctx.path);
     }.bind(this));
   },
 
@@ -578,7 +606,7 @@ var List = React.createClass({
 
     // handle subtype
     if (report.subtype && errors.length === 0) {
-      result = t.validate(value, report.type);
+      result = t.validate(value, report.type, this.props.ctx.path);
       hasError = !result.isValid();
       errors = errors.concat(result.errors);
     }
@@ -591,13 +619,13 @@ var List = React.createClass({
     evt.preventDefault();
     var value = this.state.value.concat(null);
     var keys = this.state.keys.concat(uuid());
-    this.onChange(value, keys);
+    this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1));
   },
 
-  onItemChange: function (itemIndex, itemValue) {
+  onItemChange: function (itemIndex, itemValue, path) {
     var value = this.state.value.slice();
     value[itemIndex] = itemValue;
-    this.onChange(value, this.state.keys);
+    this.onChange(value, this.state.keys, path);
   },
 
   removeItem: function (i, evt) {
@@ -606,7 +634,7 @@ var List = React.createClass({
     value.splice(i, 1);
     var keys = this.state.keys.slice();
     keys.splice(i, 1);
-    this.onChange(value, keys);
+    this.onChange(value, keys, this.props.ctx.path.concat(i));
   },
 
   moveUpItem: function (i, evt) {
@@ -636,7 +664,7 @@ var List = React.createClass({
     t.assert(!ctx.report.maybe, 'maybe lists are not supported');
     var auto = opts.auto || ctx.auto;
     var i18n = opts.i18n || ctx.i18n;
-    var value = t.Arr(this.state.value || []);
+    var value = this.getTransformer().format(this.state.value);
 
     // handle legend
     var legend = opts.legend; // always use the option value if is manually set
@@ -669,7 +697,8 @@ var List = React.createClass({
             label:      null,
             name:       ctx.name + '[' + i + ']',
             report:     new getReport(itemType),
-            templates:  templates
+            templates:  templates,
+            path:       ctx.path.concat(i)
           })
         }),
         key: this.state.keys[i],
@@ -705,7 +734,7 @@ module.exports = List;
 
 
 
-},{"../api":3,"../getComponent":13,"../skin":15,"../util/getError":17,"../util/getReport":19,"../util/merge":21,"../util/move":22,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":27,"uvdom/react":53}],7:[function(require,module,exports){
+},{"../api":3,"../getComponent":12,"../skin":14,"../util/defaultTransformer":17,"../util/getError":18,"../util/getReport":20,"../util/merge":22,"../util/move":23,"../util/uuid":25,"./shouldComponentUpdate":11,"debug":26,"react":"react","tcomb-validation":29,"uvdom/react":55}],7:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -713,6 +742,7 @@ var t = require('tcomb-validation');
 var api = require('../api');
 var skin = require('../skin');
 var shouldComponentUpdate = require('./shouldComponentUpdate');
+var defaultTransformer = require('../util/defaultTransformer');
 var getError = require('../util/getError');
 var merge = require('../util/merge');
 var uuid = require('../util/uuid');
@@ -721,7 +751,7 @@ var compile = require('uvdom/react').compile;
 var debug = require('debug')('component:Radio');
 
 function normalize(value) {
-  return t.maybe(api.SelectValue)(value);
+  return t.Nil.is(value) ? null : value;
 }
 
 var Radio = React.createClass({
@@ -741,15 +771,22 @@ var Radio = React.createClass({
 
   shouldComponentUpdate: shouldComponentUpdate,
 
+  getTransformer: function () {
+    if (this.props.options && this.props.options.transformer) {
+      return this.props.options.transformer;
+    }
+    return defaultTransformer;
+  },
+
   onChange: function (value) {
-    value = normalize(value);
+    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type);
+    var result = t.validate(this.state.value, this.props.ctx.report.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -774,7 +811,7 @@ var Radio = React.createClass({
     if (opts.order) {
       options.sort(api.Order.getComparator(opts.order));
     }
-    var value = this.state.value;
+    var value = this.getTransformer().format(this.state.value);
     return {
       autoFocus: opts.autoFocus,
       config: merge(ctx.config, opts.config),
@@ -803,7 +840,7 @@ var Radio = React.createClass({
 module.exports = Radio;
 
 
-},{"../api":3,"../skin":15,"../util/getError":17,"../util/getOptionsOfEnum":18,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":27,"uvdom/react":53}],8:[function(require,module,exports){
+},{"../api":3,"../skin":14,"../util/defaultTransformer":17,"../util/getError":18,"../util/getOptionsOfEnum":19,"../util/merge":22,"../util/uuid":25,"./shouldComponentUpdate":11,"debug":26,"react":"react","tcomb-validation":29,"uvdom/react":55}],8:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -811,6 +848,7 @@ var t = require('tcomb-validation');
 var api = require('../api');
 var skin = require('../skin');
 var shouldComponentUpdate = require('./shouldComponentUpdate');
+var defaultTransformer = require('../util/defaultTransformer');
 var getError = require('../util/getError');
 var getReport = require('../util/getReport');
 var merge = require('../util/merge');
@@ -820,7 +858,7 @@ var compile = require('uvdom/react').compile;
 var debug = require('debug')('component:Select');
 
 function normalize(value) {
-  return t.maybe(api.SelectValue)(value);
+  return t.Nil.is(value) ? null : value;
 }
 
 var Select = React.createClass({
@@ -840,15 +878,22 @@ var Select = React.createClass({
 
   shouldComponentUpdate: shouldComponentUpdate,
 
+  getTransformer: function () {
+    if (this.props.options && this.props.options.transformer) {
+      return this.props.options.transformer;
+    }
+    return defaultTransformer;
+  },
+
   onChange: function (value) {
-    value = normalize(value);
+    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type);
+    var result = t.validate(this.state.value, this.props.ctx.report.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -875,7 +920,7 @@ var Select = React.createClass({
       label = ctx.getDefaultLabel();
     }
 
-    var value = this.state.value;
+    var value = this.getTransformer().format(this.state.value);
     var options = opts.options ? opts.options.slice() : getOptionsOfEnum(Enum);
     // sort opts
     if (opts.order) {
@@ -921,12 +966,13 @@ var Select = React.createClass({
 module.exports = Select;
 
 
-},{"../api":3,"../skin":15,"../util/getError":17,"../util/getOptionsOfEnum":18,"../util/getReport":19,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":27,"uvdom/react":53}],9:[function(require,module,exports){
+},{"../api":3,"../skin":14,"../util/defaultTransformer":17,"../util/getError":18,"../util/getOptionsOfEnum":19,"../util/getReport":20,"../util/merge":22,"../util/uuid":25,"./shouldComponentUpdate":11,"debug":26,"react":"react","tcomb-validation":29,"uvdom/react":55}],9:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
 var t = require('tcomb-validation');
 var shouldComponentUpdate = require('./shouldComponentUpdate');
+var defaultTransformer = require('../util/defaultTransformer');
 var getComponent = require('../getComponent');
 var api = require('../api');
 var skin = require('../skin');
@@ -938,8 +984,7 @@ var compile = require('uvdom/react').compile;
 var debug = require('debug')('component:Struct');
 
 function normalize(value) {
-  t.maybe(t.Obj)(value);
-  return value || {};
+  return t.Nil.is(value) ? {} : value;
 }
 
 var Struct = React.createClass({
@@ -959,11 +1004,19 @@ var Struct = React.createClass({
 
   shouldComponentUpdate: shouldComponentUpdate,
 
-  onChange: function (fieldName, fieldValue) {
+  getTransformer: function () {
+    if (this.props.options && this.props.options.transformer) {
+      return this.props.options.transformer;
+    }
+    return defaultTransformer;
+  },
+
+  onChange: function (fieldName, fieldValue, path) {
     var value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
+    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, path);
     }.bind(this));
   },
 
@@ -986,7 +1039,7 @@ var Struct = React.createClass({
       value = new report.innerType(value);
       // handle subtype
       if (report.subtype && errors.length === 0) {
-        result = t.validate(value, report.type);
+        result = t.validate(value, report.type, this.props.ctx.path);
         hasError = !result.isValid();
         errors = errors.concat(result.errors);
       }
@@ -1012,7 +1065,7 @@ var Struct = React.createClass({
     }
 
     var config = merge(ctx.config, opts.config);
-    var value = this.state.value;
+    var value = this.getTransformer().format(this.state.value);
     var props = ctx.report.innerType.meta.props;
     var i18n =  opts.i18n || ctx.i18n;
     var templates = merge(ctx.templates, opts.templates);
@@ -1035,7 +1088,8 @@ var Struct = React.createClass({
             label:      humanize(prop),
             name:       ctx.name ? ctx.name + '[' + prop + ']' : prop,
             report:     new getReport(propType),
-            templates:  templates
+            templates:  templates,
+            path:       ctx.path.concat(prop)
           })
         });
       }
@@ -1065,7 +1119,7 @@ var Struct = React.createClass({
 module.exports = Struct;
 
 
-},{"../api":3,"../getComponent":13,"../skin":15,"../util/getError":17,"../util/getReport":19,"../util/humanize":20,"../util/merge":21,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":27,"uvdom/react":53}],10:[function(require,module,exports){
+},{"../api":3,"../getComponent":12,"../skin":14,"../util/defaultTransformer":17,"../util/getError":18,"../util/getReport":20,"../util/humanize":21,"../util/merge":22,"./shouldComponentUpdate":11,"debug":26,"react":"react","tcomb-validation":29,"uvdom/react":55}],10:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1073,17 +1127,24 @@ var t = require('tcomb-validation');
 var api = require('../api');
 var skin = require('../skin');
 var shouldComponentUpdate = require('./shouldComponentUpdate');
+var numberTransformer = require('../util/numberTransformer');
 var getError = require('../util/getError');
 var merge = require('../util/merge');
 var uuid = require('../util/uuid');
-var config = require('../config');
 var compile = require('uvdom/react').compile;
 var debug = require('debug')('component:Textbox');
 
+var defaultTransformer = new api.Transformer({
+  format: function (value) {
+    return value;
+  },
+  parse: function (value) {
+    return (t.Str.is(value) && value.trim() === '') || t.Nil.is(value) ? null : value;
+  }
+});
+
 function normalize(value) {
-  return (t.Str.is(value) && value.trim() === '') ? null :
-    !t.Nil.is(value) ? value :
-    null;
+  return t.Nil.is(value) ? null : value;
 }
 
 var Textbox = React.createClass({
@@ -1103,15 +1164,25 @@ var Textbox = React.createClass({
 
   shouldComponentUpdate: shouldComponentUpdate,
 
+  getTransformer: function () {
+    if (this.props.options && this.props.options.transformer) {
+      return this.props.options.transformer;
+    }
+    if (this.props.ctx.report.innerType === t.Num) {
+      return numberTransformer;
+    }
+    return defaultTransformer;
+  },
+
   onChange: function (value) {
-    value = normalize(value);
+    value = this.getTransformer().parse(value);
     this.setState({value: value}, function () {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.ctx.path);
     }.bind(this));
   },
 
   getValue: function () {
-    var result = t.validate(this.state.value, this.props.ctx.report.type);
+    var result = t.validate(this.state.value, this.props.ctx.report.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   },
@@ -1140,11 +1211,8 @@ var Textbox = React.createClass({
       placeholder = ctx.getDefaultLabel();
     }
 
-    var value = this.state.value;
-    var transformer = opts.transformer || config.transformers[t.getTypeName(ctx.report.innerType)];
-    if (transformer) {
-      value = transformer.format(value);
-    }
+    var value = this.getTransformer().format(this.state.value);
+
     return {
       autoFocus: opts.autoFocus,
       config: merge(ctx.config, opts.config),
@@ -1155,12 +1223,7 @@ var Textbox = React.createClass({
       id: id,
       label: label,
       name: name,
-      onChange: function (value) {
-        if (transformer) {
-          value = transformer.parse(value);
-        }
-        this.onChange(value);
-      }.bind(this),
+      onChange: this.onChange,
       placeholder: placeholder,
       type: opts.type || 'text',
       value: value,
@@ -1179,7 +1242,7 @@ var Textbox = React.createClass({
 module.exports = Textbox;
 
 
-},{"../api":3,"../config":12,"../skin":15,"../util/getError":17,"../util/merge":21,"../util/uuid":23,"./shouldComponentUpdate":11,"debug":24,"react":"react","tcomb-validation":27,"uvdom/react":53}],11:[function(require,module,exports){
+},{"../api":3,"../skin":14,"../util/getError":18,"../util/merge":22,"../util/numberTransformer":24,"../util/uuid":25,"./shouldComponentUpdate":11,"debug":26,"react":"react","tcomb-validation":29,"uvdom/react":55}],11:[function(require,module,exports){
 'use strict';
 
 module.exports = function (nextProps, nextState) {
@@ -1194,45 +1257,7 @@ module.exports = function (nextProps, nextState) {
 },{}],12:[function(require,module,exports){
 'use strict';
 
-var api = require('./api');
 var t = require('tcomb-validation');
-
-var defaultLocaleBundle = new api.I18n({
-  optional: ' (optional)',
-  add: 'Add',
-  remove: 'Remove',
-  up: 'Up',
-  down: 'Down'
-});
-
-var NumberTransformer = new api.Transformer({
-  format: function (value) {
-    return t.Nil.is(value) ? value : String(value);
-  },
-  parse: function (value) {
-    if (t.Str.is(value) && value.length > 0 && value[value.length - 1] === '.') { return value; }
-    var n = parseFloat(value);
-    var isNumeric = (value - n + 1) >= 0;
-    return isNumeric ? n : value;
-  }
-});
-
-module.exports = {
-  i18n: defaultLocaleBundle,
-  transformers: {
-    Num: NumberTransformer
-  },
-  irreducibles: {
-    Bool: require('./components/Checkbox')
-  }
-};
-
-
-},{"./api":3,"./components/Checkbox":4,"tcomb-validation":27}],13:[function(require,module,exports){
-'use strict';
-
-var t = require('tcomb-validation');
-var config = require('./config');
 
 // here requires must be dynamic since there is a circular
 // dependency between getComponent and the components
@@ -1242,12 +1267,9 @@ function getComponent(type, options) {
   }
   switch (type.meta.kind) {
     case 'irreducible' :
-      var name = t.getTypeName(type);
-      if (t.Func.is(config.irreducibles[name])) {
-        return config.irreducibles[name];
-      }
-      // fallback on textbox
-      return require('./components/Textbox');
+    return type === t.Bool ?
+      require('./components/Checkbox') :
+      require('./components/Textbox');
     case 'struct' :
       return require('./components/Struct');
     case 'enums' :
@@ -1263,13 +1285,15 @@ function getComponent(type, options) {
 module.exports = getComponent;
 
 
-},{"./components/List":6,"./components/Select":8,"./components/Struct":9,"./components/Textbox":10,"./config":12,"tcomb-validation":27}],14:[function(require,module,exports){
+},{"./components/Checkbox":4,"./components/List":6,"./components/Select":8,"./components/Struct":9,"./components/Textbox":10,"tcomb-validation":29}],13:[function(require,module,exports){
 var t = require('tcomb-validation');
+
+var Form = require('./components/Form');
 
 t.form = {
   debug:    require('debug'),
-  config:   require('./config'),
-  Form:     require('./components/Form'),
+  config:   Form,
+  Form:     Form,
   Textbox:  require('./components/Textbox'),
   Select:   require('./components/Select'),
   Checkbox: require('./components/Checkbox'),
@@ -1281,7 +1305,7 @@ t.form = {
 module.exports = t;
 
 
-},{"./components/Checkbox":4,"./components/Form":5,"./components/List":6,"./components/Radio":7,"./components/Select":8,"./components/Struct":9,"./components/Textbox":10,"./config":12,"debug":24,"tcomb-validation":27}],15:[function(require,module,exports){
+},{"./components/Checkbox":4,"./components/Form":5,"./components/List":6,"./components/Radio":7,"./components/Select":8,"./components/Struct":9,"./components/Textbox":10,"debug":26,"tcomb-validation":29}],14:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1290,6 +1314,7 @@ var Str = t.Str;
 var Bool = t.Bool;
 var Func = t.Func;
 var Obj = t.Obj;
+var Any = t.Any;
 var maybe = t.maybe;
 var list = t.list;
 var struct = t.struct;
@@ -1333,7 +1358,7 @@ var Textbox = struct({
   onChange: Func,           // should call this function with the changed value
   placeholder: maybe(Str),  // should show a placeholder
   type: TypeAttr,           // should use this as type attribute
-  value: t.Any,             // should use this as value attribute
+  value: Any,               // should use this as value attribute
   className: maybe(Str)     // should add this to the className attribute
 }, 'Textbox');
 
@@ -1348,12 +1373,9 @@ var Checkbox = struct({
   label: Label,             // checkboxes must always have a label
   name: Str,
   onChange: Func,
-  value: Bool,
+  value: Any,
   className: maybe(Str)
 }, 'Checkbox');
-
-// handle multiple attribute
-var SelectValue = union([Str, list(Str)], 'SelectValue');
 
 var Select = struct({
   autoFocus: maybe(Bool),
@@ -1368,7 +1390,7 @@ var Select = struct({
   name: Str,
   onChange: Func,
   options: list(SelectOption),
-  value: maybe(SelectValue),
+  value: Any,
   className: maybe(Str)
 }, 'Select');
 
@@ -1384,11 +1406,9 @@ var Radio = struct({
   name: Str,
   onChange: Func,
   options: list(Option),
-  value: maybe(Str),
+  value: Any,
   className: maybe(Str)
 }, 'Radio');
-
-var StructValue = t.dict(Str, t.Any, 'StructValue');
 
 var Struct = struct({
   config: maybe(Obj),
@@ -1399,7 +1419,7 @@ var Struct = struct({
   inputs: t.dict(Str, ReactElement),
   legend: maybe(Label),
   order: list(Label),
-  value: maybe(StructValue),
+  value: Any,
   className: maybe(Str)
 }, 'Struct');
 
@@ -1423,7 +1443,7 @@ var List = struct({
   help: maybe(Label),
   items: list(ListItem),
   legend: maybe(Label),
-  value: maybe(list(t.Any)),
+  value: Any,
   className: maybe(Str)
 }, 'List');
 
@@ -1440,7 +1460,7 @@ module.exports = {
 };
 
 
-},{"react":"react","tcomb-validation":27}],16:[function(require,module,exports){
+},{"react":"react","tcomb-validation":29}],15:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1953,7 +1973,38 @@ module.exports = {
 };
 
 
-},{"../../skin":15,"tcomb-validation":27,"uvdom-bootstrap/form":29}],17:[function(require,module,exports){
+},{"../../skin":14,"tcomb-validation":29,"uvdom-bootstrap/form":31}],16:[function(require,module,exports){
+'use strict';
+
+var api = require('../api');
+
+module.exports = new api.I18n({
+  optional: ' (optional)',
+  add: 'Add',
+  remove: 'Remove',
+  up: 'Up',
+  down: 'Down'
+});
+
+
+
+},{"../api":3}],17:[function(require,module,exports){
+'use strict';
+
+var api = require('../api');
+
+module.exports = new api.Transformer({
+  format: function (value) {
+    return value;
+  },
+  parse: function (value) {
+    return value;
+  }
+});
+
+
+
+},{"../api":3}],18:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -1965,7 +2016,7 @@ function getError(error, value) {
 module.exports = getError;
 
 
-},{"tcomb-validation":27}],18:[function(require,module,exports){
+},{"tcomb-validation":29}],19:[function(require,module,exports){
 'use strict';
 
 function getOptionsOfEnum(type) {
@@ -1981,7 +2032,7 @@ function getOptionsOfEnum(type) {
 module.exports = getOptionsOfEnum;
 
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 function getReport(type) {
@@ -2017,7 +2068,7 @@ function getReport(type) {
 module.exports = getReport;
 
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 // thanks to https://github.com/epeli/underscore.string
@@ -2037,7 +2088,7 @@ function humanize(s){
 module.exports = humanize;
 
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -2050,7 +2101,7 @@ function merge(a, b) {
 module.exports = merge;
 
 
-},{"tcomb-validation":27}],22:[function(require,module,exports){
+},{"tcomb-validation":29}],23:[function(require,module,exports){
 'use strict';
 
 function move(arr, fromIndex, toIndex) {
@@ -2062,7 +2113,27 @@ function move(arr, fromIndex, toIndex) {
 module.exports = move;
 
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
+'use strict';
+
+var t = require('tcomb-validation');
+var api = require('../api');
+
+module.exports = new api.Transformer({
+  format: function (value) {
+    return t.Nil.is(value) ? value : String(value);
+  },
+  parse: function (value) {
+    if (t.Str.is(value) && value.length > 0 && value[value.length - 1] === '.') { return value; }
+    var n = parseFloat(value);
+    var isNumeric = (value - n + 1) >= 0;
+    return isNumeric ? n : value;
+  }
+});
+
+
+
+},{"../api":3,"tcomb-validation":29}],25:[function(require,module,exports){
 'use strict';
 
 function uuid() {
@@ -2075,7 +2146,7 @@ function uuid() {
 module.exports = uuid;
 
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -2252,7 +2323,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":25}],25:[function(require,module,exports){
+},{"./debug":27}],27:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -2451,7 +2522,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":26}],26:[function(require,module,exports){
+},{"ms":28}],28:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -2576,10 +2647,10 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
-  if (typeof define === 'function' && define.amd) {
+  if (typeof define === 'function' && define.amd && typeof __fbBatchedBridgeConfig === 'undefined') {
     define(['tcomb'], factory);
   } else if (typeof exports === 'object') {
     module.exports = factory(require('tcomb'));
@@ -2647,8 +2718,8 @@ function plural(ms, n, name) {
   // validate
   //
 
-  function validate(x, type) {
-    return new ValidationResult(recurse(x, type, []));
+  function validate(x, type, path) {
+    return new ValidationResult(recurse(x, type, path || []));
   }
 
   function recurse(x, type, path) {
@@ -2794,10 +2865,10 @@ function plural(ms, n, name) {
 
 }));
 
-},{"tcomb":28}],28:[function(require,module,exports){
+},{"tcomb":30}],30:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
-  if (typeof define === 'function' && define.amd) {
+  if (typeof define === 'function' && define.amd && typeof __fbBatchedBridgeConfig === 'undefined') {
     define([], factory);
   } else if (typeof exports === 'object') {
     module.exports = factory();
@@ -3516,7 +3587,7 @@ function plural(ms, n, name) {
 
 }));
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = {
   getAddon: require('./lib/getAddon'),
   getAlert: require('./lib/getAlert'),
@@ -3540,7 +3611,7 @@ module.exports = {
   getStatic: require('./lib/getStatic'),
   getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":30,"./lib/getAlert":31,"./lib/getBreakpoints":32,"./lib/getButton":33,"./lib/getButtonGroup":34,"./lib/getCheckbox":35,"./lib/getCol":36,"./lib/getErrorBlock":37,"./lib/getFieldset":38,"./lib/getFormGroup":39,"./lib/getHelpBlock":40,"./lib/getInputGroup":41,"./lib/getLabel":42,"./lib/getOffsets":43,"./lib/getOptGroup":44,"./lib/getOption":45,"./lib/getRadio":46,"./lib/getRow":47,"./lib/getSelect":48,"./lib/getStatic":49,"./lib/getTextbox":50}],30:[function(require,module,exports){
+},{"./lib/getAddon":32,"./lib/getAlert":33,"./lib/getBreakpoints":34,"./lib/getButton":35,"./lib/getButtonGroup":36,"./lib/getCheckbox":37,"./lib/getCol":38,"./lib/getErrorBlock":39,"./lib/getFieldset":40,"./lib/getFormGroup":41,"./lib/getHelpBlock":42,"./lib/getInputGroup":43,"./lib/getLabel":44,"./lib/getOffsets":45,"./lib/getOptGroup":46,"./lib/getOption":47,"./lib/getRadio":48,"./lib/getRow":49,"./lib/getSelect":50,"./lib/getStatic":51,"./lib/getTextbox":52}],32:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -3556,7 +3627,7 @@ function getAddon(addon) {
 }
 
 module.exports = getAddon;
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 function getAlert(opts) {
@@ -3577,7 +3648,7 @@ function getAlert(opts) {
 }
 
 module.exports = getAlert;
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 function getBreakpoints(breakpoints) {
@@ -3591,7 +3662,7 @@ function getBreakpoints(breakpoints) {
 }
 
 module.exports = getBreakpoints;
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3645,7 +3716,7 @@ function getButton(opts) {
 
 module.exports = getButton;
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 function getButtonGroup(buttons) {
@@ -3663,7 +3734,7 @@ function getButtonGroup(buttons) {
 module.exports = getButtonGroup;
 
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3732,7 +3803,7 @@ function getCheckbox(opts) {
 }
 
 module.exports = getCheckbox;
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var getBreakpoints = require('./getBreakpoints');
@@ -3751,7 +3822,7 @@ function getCol(opts) {
 }
 
 module.exports = getCol;
-},{"./getBreakpoints":32}],37:[function(require,module,exports){
+},{"./getBreakpoints":34}],39:[function(require,module,exports){
 'use strict';
 
 function getErrorBlock(opts) {
@@ -3770,7 +3841,7 @@ function getErrorBlock(opts) {
 module.exports = getErrorBlock;
 
 
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -3797,7 +3868,7 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
@@ -3814,7 +3885,7 @@ function getFormGroup(opts) {
 }
 
 module.exports = getFormGroup;
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3848,7 +3919,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -3864,7 +3935,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -3907,7 +3978,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":51}],43:[function(require,module,exports){
+},{"./mixin":53}],45:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -3921,7 +3992,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -3955,7 +4026,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":45}],45:[function(require,module,exports){
+},{"./getOption":47}],47:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3984,7 +4055,7 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4059,7 +4130,7 @@ function getRadio(opts) {
 }
 
 module.exports = getRadio;
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -4076,7 +4147,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4135,7 +4206,7 @@ function getSelect(opts) {
 }
 
 module.exports = getSelect;
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
 function getStatic(value) {
@@ -4151,7 +4222,7 @@ function getStatic(value) {
 }
 
 module.exports = getStatic;
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4214,7 +4285,7 @@ function getTextbox(opts) {
 }
 
 module.exports = getTextbox;
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 'use strict';
 
 function mixin(a, b) {
@@ -4228,7 +4299,7 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 function classNames() {
 	var classes = '';
 	var arg;
@@ -4260,7 +4331,7 @@ if (typeof module !== 'undefined' && module.exports) {
 	module.exports = classNames;
 }
 
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -4329,4 +4400,4 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"classnames":52,"react":"react"}]},{},[1]);
+},{"classnames":54,"react":"react"}]},{},[1]);

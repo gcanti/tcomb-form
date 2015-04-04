@@ -2,7 +2,7 @@ v0.4.7
 
 - added path field to contexts: validations report correct error paths now, fix #94
 - added support for transformers (all components), fix #90, fix #93
-- added a path argument to onChange in order to know what field changed, fix #97
+- added a path argument to onChange in order to know what field changed, fix #97, fix #87
 
 v0.4.6
 
