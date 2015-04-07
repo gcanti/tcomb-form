@@ -86,15 +86,11 @@ class Component extends React.Component {
     });
   }
 
-  getValue() {
-    var result = this.validate();
-    this.setState({hasError: !result.isValid()});
-    return result;
-  }
-
   validate() {
     var value = this.getTransformer().parse(this.state.value);
-    return t.validate(value, this.props.type, this.props.ctx.path);
+    var result = t.validate(value, this.props.type, this.props.ctx.path);
+    this.setState({hasError: !result.isValid()});
+    return result;
   }
 
   getDefaultLabel() {
@@ -346,7 +342,7 @@ class Struct extends Component {
 
     for (var ref in this.refs) {
       if (this.refs.hasOwnProperty(ref)) {
-        result = this.refs[ref].getValue();
+        result = this.refs[ref].validate();
         errors = errors.concat(result.errors);
         value[ref] = result.value;
       }
@@ -361,6 +357,7 @@ class Struct extends Component {
       }
     }
 
+    this.setState({hasError: errors.length > 0});
     return new t.ValidationResult({errors, value});
   }
 
@@ -495,7 +492,7 @@ class List extends Component {
     var result;
 
     for (var i = 0, len = this.state.value.length ; i < len ; i++ ) {
-      result = this.refs[i].getValue();
+      result = this.refs[i].validate();
       errors = errors.concat(result.errors);
       value.push(result.value);
     }
@@ -507,6 +504,7 @@ class List extends Component {
       errors = errors.concat(result.errors);
     }
 
+    this.setState({hasError: errors.length > 0});
     return new t.ValidationResult({errors: errors, value: value});
   }
 
@@ -641,10 +639,15 @@ List.defaultTransformer = {
 class Form {
 
   getValue(raw) {
-    var result = this.refs.input.getValue();
-    if (raw === true) { return result; }
-    if (result.isValid()) { return result.value; }
-    return null;
+    var result = this.refs.input.validate();
+    return raw === true ? result :
+      result.isValid() ? result.value :
+      null;
+  }
+
+  getComponent(path) {
+    path = t.Str.is(path) ? path.split('.') : path;
+    return path.reduce((input, name) => input.refs[name], this.refs.input);
   }
 
   render() {

@@ -5,6 +5,7 @@ v0.5
 - Support attributes and input className customization, fix #76
 - Pass events to inputs, fix #53, #67
 - Set class on form-group div indicating its depth within form, fix #64
+- added Form.getComponent(path) API to access form components, fix #101
 
 v0.4.8
 
