@@ -170,6 +170,7 @@ class Component extends React.Component {
 
   render() {
     var locals = this.getLocals();
+    t.assert(t.Func.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
     var template = this.getTemplate();
     return compile(template(locals));
   }
