@@ -60,6 +60,31 @@ tape('Textbox', function (tape) {
 
   });
 
+  tape.test('attrs.events', function (tape) {
+    tape.plan(1);
+
+    function onBlur() {}
+
+    tape.deepEqual(
+      new Textbox({
+        type: t.Str,
+        options: {
+          attrs: {
+            id: 'myid',
+            onBlur: onBlur
+          }
+        },
+        ctx: ctx
+      }).getLocals().attrs,
+      {
+        name: 'defaultName',
+        id: 'myid',
+        onBlur: onBlur
+      },
+      'should handle events');
+
+  });
+
   tape.test('attrs.className', function (tape) {
     tape.plan(3);
 
