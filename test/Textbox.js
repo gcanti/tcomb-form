@@ -34,6 +34,32 @@ tape('Textbox', function (tape) {
 
   var Textbox = components.Textbox;
 
+  tape.test('attrs', function (tape) {
+    tape.plan(1);
+
+    tape.deepEqual(
+      new Textbox({
+        type: t.Num,
+        options: {
+          type: 'number',
+          attrs: {
+            id: 'myid',
+            min: 0,
+            max: 5
+          }
+        },
+        ctx: ctx
+      }).getLocals().attrs,
+      {
+        name: 'defaultName',
+        id: 'myid',
+        min: 0,
+        max: 5
+      },
+      'should handle attrs option');
+
+  });
+
   tape.test('label', function (tape) {
     tape.plan(4);
 
