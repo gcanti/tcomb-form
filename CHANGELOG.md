@@ -2,6 +2,7 @@ v0.5
 
 - Support bootstrap static controls, fix #92
 - Support min/max for number type, fix #91
+- Support attributes and input className customization, fix #76
 
 v0.4.8
 

@@ -60,6 +60,76 @@ tape('Textbox', function (tape) {
 
   });
 
+  tape.test('attrs.className', function (tape) {
+    tape.plan(3);
+
+    tape.deepEqual(
+      new Textbox({
+        type: t.Str,
+        options: {
+          attrs: {
+            id: 'myid',
+            className: 'myclass'
+          }
+        },
+        ctx: ctx
+      }).getLocals().attrs,
+      {
+        name: 'defaultName',
+        id: 'myid',
+        className: {
+          myclass: true
+        }
+      },
+      'should handle classNames as strings');
+
+    tape.deepEqual(
+      new Textbox({
+        type: t.Str,
+        options: {
+          attrs: {
+            id: 'myid',
+            className: ['myclass1', 'myclass2']
+          }
+        },
+        ctx: ctx
+      }).getLocals().attrs,
+      {
+        name: 'defaultName',
+        id: 'myid',
+        className: {
+          myclass1: true,
+          myclass2: true
+        }
+      },
+      'should handle classNames as arrays');
+
+    tape.deepEqual(
+      new Textbox({
+        type: t.Str,
+        options: {
+          attrs: {
+            id: 'myid',
+            className: {
+              myclass1: true,
+              myclass2: true
+            }
+          }
+        },
+        ctx: ctx
+      }).getLocals().attrs,
+      {
+        name: 'defaultName',
+        id: 'myid',
+        className: {
+          myclass1: true,
+          myclass2: true
+        }
+      },
+      'should handle classNames as object');
+
+  });
+
   tape.test('label', function (tape) {
     tape.plan(4);
 
