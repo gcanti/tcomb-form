@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "http-server": "^0.8.0",
+    "react-vdom": "^0.2.3",
     "reactify": "^1.1.0",
     "tape": "^4.0.0",
     "watchify": "^3.1.0"
