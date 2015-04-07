@@ -11,9 +11,18 @@ tape('textbox', function (tape) {
     tape.plan(1);
 
     tape.deepEqual(
-      textbox({type: 'static', attrs: {}}).children[1].attrs.className,
+      textbox({type: 'static', attrs: {}, path: []}).children[1].attrs.className,
       { 'form-control-static': true },
       'should handle static type');
+  });
+
+  tape.test('depth', function (tape) {
+    tape.plan(1);
+
+    tape.deepEqual(
+      textbox({type: 'static', attrs: {}, path: []}).attrs.className,
+      {'form-group': true, 'form-group-depth-0': true, 'has-error': undefined},
+      'should handle form depth');
   });
 
 });

@@ -208,6 +208,7 @@ function textbox(locals) {
   }
 
   return bootstrap.getFormGroup({
+    className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children
   });
@@ -215,7 +216,7 @@ function textbox(locals) {
 }
 
 function checkbox(locals) {
-console.log(locals)
+
   var config = new CheckboxConfig(locals.config || {});
 
   var attrs = locals.attrs;
@@ -249,6 +250,7 @@ console.log(locals)
   }
 
   return bootstrap.getFormGroup({
+    className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children
   });
@@ -328,6 +330,7 @@ function select(locals) {
   }
 
   return bootstrap.getFormGroup({
+    className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children: children
   });
@@ -389,6 +392,7 @@ function radio(locals) {
   }
 
   return bootstrap.getFormGroup({
+    className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children
   });
@@ -425,6 +429,7 @@ function struct(locals) {
   }
 
   return bootstrap.getFormGroup({
+    className: 'form-group-depth-' + locals.path.length,
     children: bootstrap.getFieldset({
       className,
       disabled: locals.disabled,
@@ -500,6 +505,7 @@ function list(locals) {
   }
 
   return bootstrap.getFormGroup({
+    className: 'form-group-depth-' + locals.path.length,
     children: bootstrap.getFieldset({
       className: fieldsetClassName,
       disabled: locals.disabled,

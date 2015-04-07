@@ -25,7 +25,7 @@
   "dependencies": {
     "debug": "^2.1.1",
     "uvdom": "^0.1.2",
-    "uvdom-bootstrap": "^0.2.0"
+    "uvdom-bootstrap": "^0.2.1"
   },
   "devDependencies": {
     "http-server": "^0.8.0",

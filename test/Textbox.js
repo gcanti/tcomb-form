@@ -34,6 +34,20 @@ tape('Textbox', function (tape) {
 
   var Textbox = components.Textbox;
 
+  tape.test('path', function (tape) {
+    tape.plan(1);
+
+    tape.deepEqual(
+      new Textbox({
+        type: t.Str,
+        options: {},
+        ctx: ctx
+      }).getLocals().path,
+      [ 'defaultPath' ],
+      'should handle the path');
+
+  });
+
   tape.test('attrs', function (tape) {
     tape.plan(1);
 

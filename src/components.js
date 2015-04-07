@@ -153,6 +153,7 @@ class Component extends React.Component {
     var options = this.props.options;
     var value = this.state.value;
     var locals = {
+      path: this.props.ctx.path,
       error: this.getError(),
       hasError: this.hasError(),
       label: this.getLabel(),
@@ -428,6 +429,7 @@ class Struct extends Component {
 
     var options = this.props.options;
     var locals = {
+      path: this.props.ctx.path,
       order: this.getOrder(),
       inputs: this.getInputs(),
       error: this.getError(),
@@ -610,6 +612,7 @@ class List extends Component {
     var options = this.props.options;
     var i18n = this.getI81n();
     var locals = {
+      path: this.props.ctx.path,
       error: this.getError(),
       hasError: this.hasError(),
       legend: this.getLabel(),
