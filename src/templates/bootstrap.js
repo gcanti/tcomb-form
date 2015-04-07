@@ -1,17 +1,13 @@
 'use strict';
 
 var t = require('tcomb-validation');
-var skin = require('../../skin');
-var Label = skin.Label;
-var uform = require('uvdom-bootstrap/form');
+var bootstrap = require('uvdom-bootstrap');
+
+// cancellare getTextbox, getSelect
+// modificato getCheckbox, getRadio
+
+var Any = t.Any;
 var maybe = t.maybe;
-var getFieldset = uform.getFieldset;
-var getFormGroup = uform.getFormGroup;
-var getAddon = uform.getAddon;
-var getButton = uform.getButton;
-var getCol = uform.getCol;
-var getAlert = uform.getAlert;
-var getBreakpoints = uform.getBreakpoints;
 
 var Positive = t.subtype(t.Num, function (n) {
   return n % 1 === 0 && n >= 0;
@@ -39,15 +35,15 @@ Breakpoints.prototype.getBreakpoints = function (index) {
 };
 
 Breakpoints.prototype.getLabelClassName = function () {
-  return getBreakpoints(this.getBreakpoints(0));
+  return bootstrap.getBreakpoints(this.getBreakpoints(0));
 };
 
 Breakpoints.prototype.getInputClassName = function () {
-  return getBreakpoints(this.getBreakpoints(1));
+  return bootstrap.getBreakpoints(this.getBreakpoints(1));
 };
 
 Breakpoints.prototype.getOffsetClassName = function () {
-  return t.mixin(uform.getOffsets(this.getBreakpoints(1)), getBreakpoints(this.getBreakpoints(1)));
+  return t.mixin(bootstrap.getOffsets(this.getBreakpoints(1)), bootstrap.getBreakpoints(this.getBreakpoints(1)));
 };
 
 Breakpoints.prototype.getFieldsetClassName = function () {
@@ -59,8 +55,8 @@ Breakpoints.prototype.getFieldsetClassName = function () {
 var Size = t.enums.of('xs sm md lg', 'Size');
 
 var TextboxConfig = t.struct({
-  addonBefore: maybe(Label),
-  addonAfter: maybe(Label),
+  addonBefore: Any,
+  addonAfter: Any,
   horizontal: maybe(Breakpoints),
   size: maybe(Size)
 }, 'TextboxConfig');
@@ -70,8 +66,8 @@ var CheckboxConfig = t.struct({
 }, 'CheckboxConfig');
 
 var SelectConfig = t.struct({
-  addonBefore: maybe(Label),
-  addonAfter: maybe(Label),
+  addonBefore: Any,
+  addonAfter: Any,
   horizontal: maybe(Breakpoints),
   size: maybe(Size)
 }, 'SelectConfig');
@@ -88,54 +84,49 @@ var ListConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
 
-function getLabel(opts) {
-  if (!opts.label) { return; }
+function getLabel({label, breakpoints, htmlFor, id}) {
+  if (!label) { return; }
 
   var align = null;
   var className = null;
 
-  if (opts.breakpoints) {
+  if (breakpoints) {
     align = 'right';
-    className = opts.breakpoints.getLabelClassName();
+    className = breakpoints.getLabelClassName();
   }
 
-  return uform.getLabel({
-    align: align,
-    className: className,
-    htmlFor: opts.htmlFor,
-    id: opts.id,
-    label: opts.label
+  return bootstrap.getLabel({
+    align,
+    className,
+    htmlFor,
+    id,
+    label
   });
 }
 
-function getHelp(locals) {
-  if (!locals.help) { return; }
-  return uform.getHelpBlock({
-    help: locals.help,
-    id: locals.id + '-tip'
+function getHelp({help, attrs}) {
+  if (!help) { return; }
+  return bootstrap.getHelpBlock({
+    help,
+    id: attrs.id + '-tip'
   });
 }
 
-function getError(locals) {
-  if (!locals.hasError || !locals.error) { return; }
-  return uform.getErrorBlock({
-    error: locals.error,
-    hasError: locals.hasError
+function getError({hasError, error}) {
+  if (!hasError || !error) { return; }
+  return bootstrap.getErrorBlock({
+    error,
+    hasError
   });
 }
 
-function getHiddenTextbox(locals) {
+function getHiddenTextbox({value, name}) {
   return {
     tag: 'input',
     attrs: {
       type: 'hidden',
-      value: locals.value,
-      name: locals.name
-    },
-    events: {
-      change: function (evt) {
-        locals.onChange(evt.target.value);
-      }
+      value,
+      name
     }
   };
 }
@@ -148,34 +139,48 @@ function textbox(locals) {
     return getHiddenTextbox(locals);
   }
 
-  var control = uform.getTextbox({
-    autoFocus: locals.autoFocus,
-    type: locals.type,
-    value: locals.value,
-    disabled: locals.disabled,
-    'aria-describedby': locals.help ? locals.id + '-tip' : null,
-    id: locals.label ? locals.id : null,
-    onChange: function (evt) {
-      locals.onChange(evt.target.value);
-    },
-    placeholder: locals.placeholder,
-    name: locals.name,
-    size: config.size,
-    className: locals.className
-  });
+  var control;
 
-  if (config.addonBefore || config.addonAfter) {
-    control = uform.getInputGroup([
-      config.addonBefore ? getAddon(config.addonBefore) : null,
-      control,
-      config.addonAfter ? getAddon(config.addonAfter) : null
-    ]);
+  if (locals.type === 'static') {
+    control = bootstrap.getStatic(locals.value);
+  } else {
+
+    var attrs = locals.attrs;
+    var tag = 'textarea';
+    if (locals.type !== 'textarea') {
+      tag = 'input';
+      attrs.type = locals.type;
+    }
+
+    attrs.className = t.mixin({}, attrs.className);
+    attrs.className['form-control'] = true;
+
+    attrs.disabled = locals.disabled;
+    attrs.placeholder = locals.placeholder;
+    attrs.value = locals.value;
+    attrs.onChange = evt => locals.onChange(evt.target.value);
+
+    if (locals.help) {
+      attrs['aria-describedby'] = attrs['aria-describedby'] || attrs.id + '-tip';
+    }
+
+    control = {
+      tag,
+      attrs: attrs
+    };
+    if (config.addonBefore || config.addonAfter) {
+      control = bootstrap.getInputGroup([
+        config.addonBefore ? bootstrap.getAddon(config.addonBefore) : null,
+        control,
+        config.addonAfter ? bootstrap.getAddon(config.addonAfter) : null
+      ]);
+    }
   }
 
   var horizontal = config.horizontal;
   var label = getLabel({
     label: locals.label,
-    htmlFor: locals.id,
+    htmlFor: attrs.id,
     breakpoints: config.horizontal
   });
   var error = getError(locals);
@@ -205,28 +210,28 @@ function textbox(locals) {
     ];
   }
 
-  return getFormGroup({
+  return bootstrap.getFormGroup({
     hasError: locals.hasError,
-    children: children
+    children
   });
+
 }
 
 function checkbox(locals) {
-
+console.log(locals)
   var config = new CheckboxConfig(locals.config || {});
 
-  var control = uform.getCheckbox({
-    autoFocus: locals.autoFocus,
-    checked: locals.value,
-    disabled: locals.disabled,
-    id: locals.id,
-    label: locals.label,
-    name: locals.name,
-    onChange: function (evt) {
-      locals.onChange(evt.target.checked);
-    },
-    className: locals.className
-  });
+  var attrs = locals.attrs;
+  attrs.type = 'checkbox';
+  attrs.disabled = locals.disabled;
+  attrs.checked = locals.value;
+  attrs.onChange = evt => locals.onChange(evt.target.checked);
+
+  if (locals.help) {
+    attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
+  }
+
+  var control = bootstrap.getCheckbox(attrs, locals.label);
 
   var error = getError(locals);
   var help = getHelp(locals);
@@ -246,49 +251,57 @@ function checkbox(locals) {
     };
   }
 
-  return getFormGroup({
+  return bootstrap.getFormGroup({
     hasError: locals.hasError,
-    children: children
+    children
   });
+
 }
 
 function select(locals) {
 
   var config = new SelectConfig(locals.config || {});
 
-  var options = locals.options.map(function (x) {
-    return skin.Option.is(x) ? uform.getOption(x) : uform.getOptGroup(x);
-  });
-
-  function onChange(evt) {
-    var value = locals.multiple ?
-      evt.target.options.filter(function (option) {
-        return option.selected;
-      }).map(function (option) {
-        return option.value;
-      }) :
-      evt.target.value;
-    locals.onChange(value);
+  var attrs = locals.attrs;
+  var tag = 'textarea';
+  if (locals.type !== 'textarea') {
+    tag = 'input';
+    attrs.type = locals.type;
   }
 
-  var control = uform.getSelect({
-    autoFocus: locals.autoFocus,
-    value: locals.value,
-    disabled: locals.disabled,
-    'aria-describedby': locals.help ? locals.id + '-tip' : null,
-    id: locals.label ? locals.id : null,
-    name: locals.name,
-    onChange: onChange,
-    options: options,
-    size: config.size,
-    multiple: locals.multiple,
-    className: locals.className
-  });
+  attrs.className = t.mixin({}, attrs.className);
+  attrs.className['form-control'] = true;
+
+  attrs.disabled = locals.disabled;
+  attrs.value = locals.value;
+  attrs.onChange = evt => {
+    var value = attrs.multiple ?
+      Array.prototype.slice.call(evt.target.options)
+        .filter(option => option.selected)
+        .map(option => option.value) :
+      evt.target.value;
+    locals.onChange(value);
+  };
+
+  if (locals.help) {
+    attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
+  }
+
+  var options = locals.options.map(x => x.label ?
+    bootstrap.getOptGroup(x) :
+    bootstrap.getOption(x)
+  );
+
+  var control = {
+    tag: 'select',
+    attrs,
+    children: options
+  };
 
   var horizontal = config.horizontal;
   var label = getLabel({
     label: locals.label,
-    htmlFor: locals.id,
+    htmlFor: attrs.id,
     breakpoints: config.horizontal
   });
   var error = getError(locals);
@@ -317,44 +330,46 @@ function select(locals) {
     ];
   }
 
-  return getFormGroup({
+  return bootstrap.getFormGroup({
     hasError: locals.hasError,
     children: children
   });
+
 }
 
 function radio(locals) {
 
   var config = new RadioConfig(locals.config || {});
 
-  var control = locals.options.map(function (option, i) {
-    return uform.getRadio({
-      autoFocus: locals.autoFocus && (i === 0),
-      'aria-describedby': locals.label ? locals.id : null,
-      id: locals.id + '-' + option.value,
-      checked: (option.value === locals.value),
-      disabled: option.disabled || locals.disabled,
-      label: option.text,
-      name: locals.name,
-      onChange: function (evt) {
-        locals.onChange(evt.target.value);
-      },
-      value: option.value,
-      className: locals.className
-    });
+  var id = locals.attrs.id;
+  var onChange = evt => locals.onChange(evt.target.value);
+
+  var controls = locals.options.map((option, i) => {
+
+    var attrs = t.mixin({}, locals.attrs);
+    attrs.type = 'radio';
+    attrs.checked = (option.value === locals.value);
+    attrs.disabled = locals.disabled;
+    attrs.value = option.value;
+    attrs.autoFocus = attrs.autoFocus && (i === 0),
+    attrs.id = `${id}_${i}`;
+    attrs['aria-describedby'] = attrs['aria-describedby'] || (locals.label ? id : null);
+    attrs.onChange = onChange;
+
+    return bootstrap.getRadio(attrs, option.text, option.value);
   });
 
   var horizontal = config.horizontal;
   var label = getLabel({
     label: locals.label,
-    id: locals.id,
+    id,
     breakpoints: config.horizontal
   });
   var error = getError(locals);
   var help = getHelp(locals);
   var children = [
     label,
-    control,
+    controls,
     error,
     help
   ];
@@ -368,7 +383,7 @@ function radio(locals) {
           className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
         },
         children: [
-          control,
+          controls,
           error,
           help
         ]
@@ -376,69 +391,74 @@ function radio(locals) {
     ];
   }
 
-  return getFormGroup({
+  return bootstrap.getFormGroup({
     hasError: locals.hasError,
-    children: children
+    children
   });
+
 }
 
 function struct(locals) {
 
   var config = new StructConfig(locals.config || {});
-
-  var rows = [];
+  var children = [];
 
   if (locals.help) {
-    rows.push(getAlert({
+    children.push(bootstrap.getAlert({
       children: locals.help
     }));
   }
 
-  rows = rows.concat(locals.order.map(function (name) {
-    return locals.inputs.hasOwnProperty(name) ? locals.inputs[name] : name;
-  }));
-
   if (locals.error && locals.hasError) {
-    rows.push(getAlert({
+    children.push(bootstrap.getAlert({
       type: 'danger',
       children: locals.error
     }));
   }
 
-  var fieldsetClassName = null;
+  children = children.concat(locals.order.map(name => locals.inputs[name]));
+
+  var className = null;
   if (config.horizontal) {
-    fieldsetClassName = config.horizontal.getFieldsetClassName();
+    className = config.horizontal.getFieldsetClassName();
   }
   if (locals.className) {
-    fieldsetClassName = fieldsetClassName || {};
-    fieldsetClassName[locals.className] = true;
+    className = className || {};
+    className[locals.className] = true;
   }
 
-  return getFormGroup({
-    children: getFieldset({
-      className: fieldsetClassName,
+  return bootstrap.getFormGroup({
+    children: bootstrap.getFieldset({
+      className,
       disabled: locals.disabled,
       legend: locals.legend,
-      children: rows
+      children
     })
   });
+
 }
 
 function list(locals) {
 
   var config = new ListConfig(locals.config || {});
-
-  var rows = [];
+  var children = [];
 
   if (locals.help) {
-    rows.push(getAlert({
+    children.push(bootstrap.getAlert({
       children: locals.help
     }));
   }
 
-  rows = rows.concat(locals.items.map(function (item) {
+  if (locals.error && locals.hasError) {
+    children.push(bootstrap.getAlert({
+      type: 'danger',
+      children: locals.error
+    }));
+  }
+
+  children = children.concat(locals.items.map(function (item) {
     if (item.buttons.length === 0) {
-      return uform.getRow({
+      return bootstrap.getRow({
         key: item.key,
         children: [
           getCol({
@@ -448,17 +468,17 @@ function list(locals) {
         ]
       });
     }
-    return uform.getRow({
+    return bootstrap.getRow({
       key: item.key,
       children: [
-        getCol({
+        bootstrap.getCol({
           breakpoints: {sm: 8, xs: 6},
           children: item.input
         }),
-        getCol({
+        bootstrap.getCol({
           breakpoints: {sm: 4, xs: 6},
-          children: uform.getButtonGroup(item.buttons.map(function (button, i) {
-            return getButton({
+          children: bootstrap.getButtonGroup(item.buttons.map(function (button, i) {
+            return bootstrap.getButton({
               click: button.click,
               key: i,
               label: button.label
@@ -469,15 +489,8 @@ function list(locals) {
     });
   }));
 
-  if (locals.error && locals.hasError) {
-    rows.push(getAlert({
-      type: 'danger',
-      children: locals.error
-    }));
-  }
-
   if (locals.add) {
-    rows.push(getButton(locals.add));
+    children.push(bootstrap.getButton(locals.add));
   }
 
   var fieldsetClassName = null;
@@ -489,22 +502,22 @@ function list(locals) {
     fieldsetClassName[locals.className] = true;
   }
 
-  return getFormGroup({
-    children: getFieldset({
+  return bootstrap.getFormGroup({
+    children: bootstrap.getFieldset({
       className: fieldsetClassName,
       disabled: locals.disabled,
       legend: locals.legend,
-      children: rows
+      children
     })
   });
+
 }
 
 module.exports = {
-  name: 'bootstrap',
-  textbox: textbox,
-  checkbox: checkbox,
-  select: select,
-  radio: radio,
-  struct: struct,
-  list: list
+  textbox,
+  checkbox,
+  select,
+  radio,
+  struct,
+  list
 };

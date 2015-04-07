@@ -1,7 +1,7 @@
 .*
 *.log
-gulpfile.js
-node_modules
-test
 dev
 docs
+node_modules
+src
+test
