@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node test",
-    "transpile": "jsx -w -x js --harmony --no-cache-dir ./src ./lib",
+    "jsx": "jsx -w -x js --harmony --no-cache-dir ./src ./lib",
+    "transpile": "./node_modules/.bin/babel -w ./src -d ./lib",
     "start": "./node_modules/.bin/http-server ./dev -s -o"
   },
   "repository": {
@@ -28,6 +29,7 @@
     "uvdom-bootstrap": "^0.2.1"
   },
   "devDependencies": {
+    "babel": "^5.0.10",
     "http-server": "^0.8.0",
     "react-vdom": "^0.2.3",
     "reactify": "^1.1.0",
