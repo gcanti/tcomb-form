@@ -1,5 +1,5 @@
-var t = require('tcomb-validation');
-var components = require('./components');
+import t from 'tcomb-validation';
+import * as components from './components';
 
 t.form = components;
 

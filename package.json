@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node test",
-    "jsx": "jsx -w -x js --harmony --no-cache-dir ./src ./lib",
-    "transpile": "./node_modules/.bin/babel -w ./src -d ./lib",
+    "dev": "watchify -t [reactify --harmony] dev/dev.jsx -o dev/dev.js -v -x react",
+    "transpile": "./node_modules/.bin/babel ./src -d ./lib -w --stage 0 --playground --loose",
     "start": "./node_modules/.bin/http-server ./dev -s -o"
   },
   "repository": {

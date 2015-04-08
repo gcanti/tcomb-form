@@ -1,3 +1,4 @@
 *.log
 dev
+lib
 node_modules

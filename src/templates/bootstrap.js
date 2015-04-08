@@ -1,20 +1,20 @@
 'use strict';
 
-var t = require('tcomb-validation');
-var bootstrap = require('uvdom-bootstrap');
+import t from 'tcomb-validation';
+import bootstrap from 'uvdom-bootstrap';
 
-var Any = t.Any;
-var maybe = t.maybe;
+const Any = t.Any;
+const maybe = t.maybe;
 
-var Positive = t.subtype(t.Num, function (n) {
+const Positive = t.subtype(t.Num, function (n) {
   return n % 1 === 0 && n >= 0;
 }, 'Positive');
 
-var Cols = t.subtype(t.tuple([Positive, Positive]), function (cols) {
+const Cols = t.subtype(t.tuple([Positive, Positive]), function (cols) {
   return cols[0] + cols[1] === 12;
 }, 'Cols');
 
-var Breakpoints = t.struct({
+const Breakpoints = t.struct({
   xs: maybe(Cols),
   sm: maybe(Cols),
   md: maybe(Cols),
@@ -22,8 +22,8 @@ var Breakpoints = t.struct({
 }, 'Breakpoints');
 
 Breakpoints.prototype.getBreakpoints = function (index) {
-  var breakpoints = {};
-  for (var size in this) {
+  const breakpoints = {};
+  for (const size in this) {
     if (this.hasOwnProperty(size) && !t.Nil.is(this[size])) {
       breakpoints[size] = this[size][index];
     }
@@ -49,43 +49,43 @@ Breakpoints.prototype.getFieldsetClassName = function () {
   };
 };
 
-var Size = t.enums.of('xs sm md lg', 'Size');
+const Size = t.enums.of('xs sm md lg', 'Size');
 
-var TextboxConfig = t.struct({
+const TextboxConfig = t.struct({
   addonBefore: Any,
   addonAfter: Any,
   horizontal: maybe(Breakpoints),
   size: maybe(Size)
 }, 'TextboxConfig');
 
-var CheckboxConfig = t.struct({
+const CheckboxConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'CheckboxConfig');
 
-var SelectConfig = t.struct({
+const SelectConfig = t.struct({
   addonBefore: Any,
   addonAfter: Any,
   horizontal: maybe(Breakpoints),
   size: maybe(Size)
 }, 'SelectConfig');
 
-var RadioConfig = t.struct({
+const RadioConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'RadioConfig');
 
-var StructConfig = t.struct({
+const StructConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'StructConfig');
 
-var ListConfig = t.struct({
+const ListConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
 
 function getLabel({label, breakpoints, htmlFor, id}) {
   if (!label) { return; }
 
-  var align = null;
-  var className = null;
+  let align = null;
+  let className = null;
 
   if (breakpoints) {
     align = 'right';
@@ -130,20 +130,20 @@ function getHiddenTextbox({value, name}) {
 
 function textbox(locals) {
 
-  var config = new TextboxConfig(locals.config || {});
+  const config = new TextboxConfig(locals.config || {});
 
   if (locals.type === 'hidden') {
     return getHiddenTextbox(locals);
   }
 
-  var attrs = t.mixin({}, locals.attrs);
-  var control;
+  const attrs = t.mixin({}, locals.attrs);
+  let control;
 
   if (locals.type === 'static') {
     control = bootstrap.getStatic(locals.value);
   } else {
 
-    var tag = 'textarea';
+    let tag = 'textarea';
     if (locals.type !== 'textarea') {
       tag = 'input';
       attrs.type = locals.type;
@@ -174,16 +174,16 @@ function textbox(locals) {
     }
   }
 
-  var horizontal = config.horizontal;
-  var label = getLabel({
+  const horizontal = config.horizontal;
+  const label = getLabel({
     label: locals.label,
     htmlFor: attrs.id,
     breakpoints: config.horizontal
   });
-  var error = getError(locals);
-  var help = getHelp(locals);
+  const error = getError(locals);
+  const help = getHelp(locals);
 
-  var children = [
+  let children = [
     label,
     control,
     error,
@@ -217,9 +217,9 @@ function textbox(locals) {
 
 function checkbox(locals) {
 
-  var config = new CheckboxConfig(locals.config || {});
+  const config = new CheckboxConfig(locals.config || {});
 
-  var attrs = t.mixin({}, locals.attrs);
+  const attrs = t.mixin({}, locals.attrs);
   attrs.type = 'checkbox';
   attrs.disabled = locals.disabled;
   attrs.checked = locals.value;
@@ -229,11 +229,11 @@ function checkbox(locals) {
     attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
   }
 
-  var control = bootstrap.getCheckbox(attrs, locals.label);
+  const control = bootstrap.getCheckbox(attrs, locals.label);
 
-  var error = getError(locals);
-  var help = getHelp(locals);
-  var children = [
+  const error = getError(locals);
+  const help = getHelp(locals);
+  let children = [
     control,
     error,
     help
@@ -259,22 +259,18 @@ function checkbox(locals) {
 
 function select(locals) {
 
-  var config = new SelectConfig(locals.config || {});
+  const config = new SelectConfig(locals.config || {});
 
-  var attrs = t.mixin({}, locals.attrs);
-  var tag = 'textarea';
-  if (locals.type !== 'textarea') {
-    tag = 'input';
-    attrs.type = locals.type;
-  }
+  const attrs = t.mixin({}, locals.attrs);
 
   attrs.className = t.mixin({}, attrs.className);
   attrs.className['form-control'] = true;
 
+  attrs.multiple = locals.isMultiple;
   attrs.disabled = locals.disabled;
   attrs.value = locals.value;
   attrs.onChange = evt => {
-    var value = attrs.multiple ?
+    const value = locals.isMultiple ?
       Array.prototype.slice.call(evt.target.options)
         .filter(option => option.selected)
         .map(option => option.value) :
@@ -286,26 +282,26 @@ function select(locals) {
     attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
   }
 
-  var options = locals.options.map(x => x.label ?
+  const options = locals.options.map(x => x.label ?
     bootstrap.getOptGroup(x) :
     bootstrap.getOption(x)
   );
 
-  var control = {
+  const control = {
     tag: 'select',
     attrs,
     children: options
   };
 
-  var horizontal = config.horizontal;
-  var label = getLabel({
+  const horizontal = config.horizontal;
+  const label = getLabel({
     label: locals.label,
     htmlFor: attrs.id,
     breakpoints: config.horizontal
   });
-  var error = getError(locals);
-  var help = getHelp(locals);
-  var children = [
+  const error = getError(locals);
+  const help = getHelp(locals);
+  let children = [
     label,
     control,
     error,
@@ -339,14 +335,14 @@ function select(locals) {
 
 function radio(locals) {
 
-  var config = new RadioConfig(locals.config || {});
+  const config = new RadioConfig(locals.config || {});
 
-  var id = locals.attrs.id;
-  var onChange = evt => locals.onChange(evt.target.value);
+  const id = locals.attrs.id;
+  const onChange = evt => locals.onChange(evt.target.value);
 
-  var controls = locals.options.map((option, i) => {
+  const controls = locals.options.map((option, i) => {
 
-    var attrs = t.mixin({}, locals.attrs);
+    const attrs = t.mixin({}, locals.attrs);
     attrs.type = 'radio';
     attrs.checked = (option.value === locals.value);
     attrs.disabled = locals.disabled;
@@ -359,15 +355,15 @@ function radio(locals) {
     return bootstrap.getRadio(attrs, option.text, option.value);
   });
 
-  var horizontal = config.horizontal;
-  var label = getLabel({
+  const horizontal = config.horizontal;
+  const label = getLabel({
     label: locals.label,
     id,
     breakpoints: config.horizontal
   });
-  var error = getError(locals);
-  var help = getHelp(locals);
-  var children = [
+  const error = getError(locals);
+  const help = getHelp(locals);
+  let children = [
     label,
     controls,
     error,
@@ -401,8 +397,8 @@ function radio(locals) {
 
 function struct(locals) {
 
-  var config = new StructConfig(locals.config || {});
-  var children = [];
+  const config = new StructConfig(locals.config || {});
+  let children = [];
 
   if (locals.help) {
     children.push(bootstrap.getAlert({
@@ -419,7 +415,7 @@ function struct(locals) {
 
   children = children.concat(locals.order.map(name => locals.inputs[name]));
 
-  var className = null;
+  let className = null;
   if (config.horizontal) {
     className = config.horizontal.getFieldsetClassName();
   }
@@ -442,8 +438,8 @@ function struct(locals) {
 
 function list(locals) {
 
-  var config = new ListConfig(locals.config || {});
-  var children = [];
+  const config = new ListConfig(locals.config || {});
+  let children = [];
 
   if (locals.help) {
     children.push(bootstrap.getAlert({
@@ -495,7 +491,7 @@ function list(locals) {
     children.push(bootstrap.getButton(locals.add));
   }
 
-  var fieldsetClassName = null;
+  let fieldsetClassName = null;
   if (config.horizontal) {
     fieldsetClassName = config.horizontal.getFieldsetClassName();
   }
