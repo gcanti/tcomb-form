@@ -432,19 +432,10 @@ export class Struct extends Component {
   }
 
   getLocals() {
-
     const options = this.props.options;
-    const locals = {
-      path: this.props.ctx.path,
-      order: this.getOrder(),
-      inputs: this.getInputs(),
-      error: this.getError(),
-      hasError: this.hasError(),
-      legend: this.getLabel(),
-      disabled: options.disabled,
-      help: options.help
-    };
-
+    const locals = super.getLocals();
+    locals.order = this.getOrder();
+    locals.inputs = this.getInputs();
     return locals;
   }
 
@@ -609,19 +600,13 @@ export class List extends Component {
 
     const options = this.props.options;
     const i18n = this.getI81n();
-    return {
-      path: this.props.ctx.path,
-      error: this.getError(),
-      hasError: this.hasError(),
-      legend: this.getLabel(),
-      add: options.disableAdd ? null : {
-        label: i18n.add,
-        click: this.addItem.bind(this)
-      },
-      items: this.getItems(),
-      disabled: options.disabled,
-      help: options.help
+    const locals = super.getLocals();
+    locals.add = options.disableAdd ? null : {
+      label: i18n.add,
+      click: this.addItem.bind(this)
     };
+    locals.items = this.getItems();
+    return locals;
   }
 
 }

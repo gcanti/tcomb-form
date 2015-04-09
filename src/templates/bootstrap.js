@@ -429,7 +429,7 @@ function struct(locals) {
     children: bootstrap.getFieldset({
       className,
       disabled: locals.disabled,
-      legend: locals.legend,
+      legend: locals.label,
       children
     })
   });
@@ -505,7 +505,7 @@ function list(locals) {
     children: bootstrap.getFieldset({
       className: fieldsetClassName,
       disabled: locals.disabled,
-      legend: locals.legend,
+      legend: locals.label,
       children
     })
   });
