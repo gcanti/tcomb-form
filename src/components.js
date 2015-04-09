@@ -138,12 +138,14 @@ export class Component extends React.Component {
     });
   }
 
-  validate() {
+  getValidationResult() {
     const value = this.getTransformer().parse(this.state.value);
-    const result = t.validate(value, this.props.type, this.props.ctx.path);
-    if (this.isMounted) {
-      this.setState({hasError: !result.isValid()});
-    }
+    return t.validate(value, this.props.type, this.props.ctx.path);
+  }
+
+  validate() {
+    const result = this.getValidationResult();
+    this.setState({hasError: !result.isValid()});
     return result;
   }
 
@@ -261,19 +263,23 @@ export class Select extends Component {
 
   static defaultTransformer = (nullOption) => {
     return {
-      format: value => {
-        return Nil.is(value) && nullOption ? nullOption.value : value;
-      },
-      parse: value => {
-        return nullOption && nullOption.value === value ? null : value;
-      }
+      format: value => Nil.is(value) && nullOption ? nullOption.value : value,
+      parse: value => nullOption && nullOption.value === value ? null : value
     };
+  };
+
+  static multipleTransformer = {
+    format: value => Nil.is(value) ? [] : value,
+    parse: value => value
   };
 
   getTransformer() {
     const options = this.props.options;
     if (options.transformer) {
       return options.transformer;
+    }
+    if (this.isMultiple()) {
+      return Select.multipleTransformer;
     }
     return Select.defaultTransformer(this.getNullOption());
   }
@@ -340,7 +346,7 @@ export class Struct extends Component {
     parse: value => value
   };
 
-  validate() {
+  getValidationResult() {
 
     let value = {};
     let errors = [];
@@ -364,9 +370,7 @@ export class Struct extends Component {
       }
     }
 
-    if (this.isMounted) {
-      this.setState({hasError: errors.length > 0});
-    }
+    this.setState({hasError: errors.length > 0});
     return new t.ValidationResult({errors, value});
   }
 
@@ -473,7 +477,7 @@ export class List extends Component {
     });
   }
 
-  validate() {
+  getValidationResult() {
 
     const value = [];
     let errors = [];
@@ -493,9 +497,7 @@ export class List extends Component {
       errors = errors.concat(result.errors);
     }
 
-    if (this.isMounted) {
-      this.setState({hasError: errors.length > 0});
-    }
+    this.setState({hasError: errors.length > 0});
     return new t.ValidationResult({errors: errors, value: value});
   }
 
