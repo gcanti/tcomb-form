@@ -12,6 +12,15 @@ var ctxPlaceholders = util.ctxPlaceholders;
 var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Radio);
 
+var transformer = {
+  format: function (value) {
+    return t.Str.is(value) ? value : value === true ? '1' : '0';
+  },
+  parse: function (value) {
+    return value === '1';
+  }
+};
+
 tape('Radio', function (tape) {
 
   var Country = t.enums({
@@ -100,16 +109,7 @@ tape('Radio', function (tape) {
   });
 
   tape.test('transformer', function (tape) {
-    tape.plan(2);
-
-    var transformer = {
-      format: function (value) {
-        return t.Str.is(value) ? value : value === true ? '1' : '0';
-      },
-      parse: function (value) {
-        return value === '1';
-      }
-    };
+    tape.plan(1);
 
     tape.strictEqual(
       new Radio({
@@ -126,22 +126,6 @@ tape('Radio', function (tape) {
       }).getLocals().value,
       '1',
       'should handle transformer option (format)');
-
-    tape.deepEqual(
-      new Radio({
-        type: t.maybe(t.Bool),
-        options: {
-          transformer: transformer,
-          options: [
-            {value: '0', text: 'No'},
-            {value: '1', text: 'Yes'}
-          ]
-        },
-        ctx: ctx,
-        value: true
-      }).getValidationResult().value,
-      true,
-      'should handle transformer option (parse)');
 
   });
 
@@ -285,7 +269,7 @@ tape('Radio', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(6);
+      tape.plan(8);
 
       var result;
 
@@ -313,6 +297,21 @@ tape('Radio', function (tape) {
 
       tape.strictEqual(result.isValid(), true);
       tape.strictEqual(result.value, null);
+
+      result = renderComponent({
+        type: t.maybe(t.Bool),
+        options: {
+          transformer: transformer,
+          options: [
+            {value: '0', text: 'No'},
+            {value: '1', text: 'Yes'}
+          ]
+        },
+        value: true
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, true);
 
     });
 

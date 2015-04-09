@@ -140,13 +140,9 @@ export class Component extends React.Component {
     });
   }
 
-  getValidationResult() {
-    const value = this.getTransformer().parse(this.state.value);
-    return t.validate(value, this.props.type, this.props.ctx.path);
-  }
-
   validate() {
-    const result = this.getValidationResult();
+    const value = this.getTransformer().parse(this.state.value);
+    const result = t.validate(value, this.props.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
   }
@@ -258,6 +254,13 @@ export class Checkbox extends Component {
     parse: value => value
   };
 
+  getLocals() {
+    const locals = super.getLocals();
+    // checkboxes must always have a label
+    locals.label = locals.label || this.getDefaultLabel();
+    return locals;
+  }
+
 }
 
 @annotations.attrs
@@ -349,7 +352,7 @@ export class Struct extends Component {
     parse: value => value
   };
 
-  getValidationResult() {
+  validate() {
 
     let value = {};
     let errors = [];
@@ -373,7 +376,7 @@ export class Struct extends Component {
       }
     }
 
-    this.setState({hasError: errors.length > 0});
+    this.setState({hasError: hasError});
     return new t.ValidationResult({errors, value});
   }
 
@@ -480,7 +483,7 @@ export class List extends Component {
     });
   }
 
-  getValidationResult() {
+  validate() {
 
     const value = [];
     let errors = [];
@@ -494,13 +497,13 @@ export class List extends Component {
     }
 
     // handle subtype
-    if (this.typeInfo.subtype && errors.length === 0) {
+    if (this.typeInfo.isSubtype && errors.length === 0) {
       result = t.validate(value, this.props.type, this.props.ctx.path);
       hasError = !result.isValid();
       errors = errors.concat(result.errors);
     }
 
-    this.setState({hasError: errors.length > 0});
+    this.setState({hasError: hasError});
     return new t.ValidationResult({errors: errors, value: value});
   }
 

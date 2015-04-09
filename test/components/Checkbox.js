@@ -12,10 +12,19 @@ var ctxPlaceholders = util.ctxPlaceholders;
 var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Checkbox);
 
+var transformer = {
+  format: function (value) {
+    return t.Str.is(value) ? value : value === true ? '1' : '0';
+  },
+  parse: function (value) {
+    return value === '1';
+  }
+};
+
 tape('Checkbox', function (tape) {
 
   tape.test('label', function (tape) {
-    tape.plan(3);
+    tape.plan(4);
 
     tape.strictEqual(
       new Checkbox({
@@ -29,11 +38,20 @@ tape('Checkbox', function (tape) {
     tape.strictEqual(
       new Checkbox({
         type: t.Bool,
+        options: {},
+        ctx: ctxPlaceholders
+      }).getLocals().label,
+      'Default label',
+      'should have a default label even if auto !== labels');
+
+    tape.strictEqual(
+      new Checkbox({
+        type: t.Bool,
         options: {label: 'mylabel'},
         ctx: ctx
       }).getLocals().label,
       'mylabel',
-      'should handle label option as tring');
+      'should handle label option as string');
 
     tape.deepEqual(
       vdom(new Checkbox({
@@ -43,7 +61,6 @@ tape('Checkbox', function (tape) {
       }).getLocals().label),
       {tag: 'i', attrs: {}, children: 'JSX label'},
       'should handle label option as JSX');
-
 
   });
 
@@ -105,16 +122,7 @@ tape('Checkbox', function (tape) {
   });
 
   tape.test('transformer', function (tape) {
-    tape.plan(2);
-
-    var transformer = {
-      format: function (value) {
-        return t.Str.is(value) ? value : value === true ? '1' : '0';
-      },
-      parse: function (value) {
-        return value === '1';
-      }
-    };
+    tape.plan(1);
 
     tape.strictEqual(
       new Checkbox({
@@ -125,16 +133,6 @@ tape('Checkbox', function (tape) {
       }).getLocals().value,
       '1',
       'should handle transformer option (format)');
-
-    tape.deepEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {transformer: transformer},
-        ctx: ctx,
-        value: true
-      }).getValidationResult().value,
-      true,
-      'should handle transformer option (parse)');
 
   });
 
@@ -223,7 +221,7 @@ tape('Checkbox', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(4);
+      tape.plan(6);
 
       var result;
 
@@ -241,6 +239,16 @@ tape('Checkbox', function (tape) {
         value: true
       }).validate();
 
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, true);
+
+      result = renderComponent({
+        type: t.Bool,
+        options: {transformer: transformer},
+        value: true
+      }).validate();
+
+      // 'should handle transformer option (parse)'
       tape.strictEqual(result.isValid(), true);
       tape.strictEqual(result.value, true);
 

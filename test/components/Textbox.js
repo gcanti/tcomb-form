@@ -12,6 +12,15 @@ var ctxPlaceholders = util.ctxPlaceholders;
 var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Textbox);
 
+var transformer = {
+  format: function (value) {
+    return Array.isArray(value) ? value : value.split(' ');
+  },
+  parse: function (value) {
+    return value.join(' ');
+  }
+};
+
 tape('Textbox', function (tape) {
 
   tape.test('path', function (tape) {
@@ -338,36 +347,17 @@ tape('Textbox', function (tape) {
   });
 
   tape.test('transformer', function (tape) {
-    tape.plan(2);
-
-    var transformer = {
-      format: function (value) {
-        return Array.isArray(value) ? value.join(' ') : value;
-      },
-      parse: function (value) {
-        return value.split(' ');
-      }
-    };
-
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {transformer: transformer},
-        ctx: ctx,
-        value: ['a', 'b']
-      }).getLocals().value,
-      'a b',
-      'should handle transformer option (format)');
+    tape.plan(1);
 
     tape.deepEqual(
       new Textbox({
         type: t.Str,
         options: {transformer: transformer},
         ctx: ctx,
-        value: ['a', 'b']
-      }).getValidationResult().value,
+        value: 'a b'
+      }).getLocals().value,
       ['a', 'b'],
-      'should handle transformer option (parse)');
+      'should handle transformer option (format)');
 
   });
 
@@ -464,7 +454,7 @@ tape('Textbox', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(14);
+      tape.plan(16);
 
       var result;
 
@@ -528,6 +518,16 @@ tape('Textbox', function (tape) {
 
       tape.strictEqual(result.isValid(), false);
       tape.strictEqual(result.value, -1);
+
+      // should handle transformer option (parse)
+      result = renderComponent({
+        type: t.Str,
+        options: {transformer: transformer},
+        value: ['a', 'b']
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.deepEqual(result.value, 'a b');
 
     });
 

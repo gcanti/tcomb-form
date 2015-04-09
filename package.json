@@ -4,10 +4,10 @@
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "test-node": "node test",
     "test": "echo \"Open test/index.html in a browser...\" && watchify -t [reactify --harmony] test/index.js -o test/browser.js  -v -x react",
-    "dev": "watchify -t [reactify --harmony] dev/dev.jsx -o dev/dev.js -v -x react",
     "transpile": "./node_modules/.bin/babel ./src -d ./lib -w --stage 0 --playground --loose",
+    "dist": "browserify -r ./index.js:tcomb-form -x react | uglifyjs -c > ./docs/js/tcomb-form.js",
+    "dev": "watchify -t [reactify --harmony] dev/dev.jsx -o dev/dev.js -v -x react",
     "start": "./node_modules/.bin/http-server ./dev -s -o"
   },
   "repository": {
@@ -27,7 +27,7 @@
   "dependencies": {
     "debug": "^2.1.1",
     "uvdom": "^0.1.2",
-    "uvdom-bootstrap": "^0.2.1"
+    "uvdom-bootstrap": "^0.2.3"
   },
   "devDependencies": {
     "babel": "^5.0.10",

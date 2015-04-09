@@ -170,13 +170,9 @@ var Component = (function (_React$Component) {
     });
   };
 
-  Component.prototype.getValidationResult = function getValidationResult() {
-    var value = this.getTransformer().parse(this.state.value);
-    return _t2['default'].validate(value, this.props.type, this.props.ctx.path);
-  };
-
   Component.prototype.validate = function validate() {
-    var result = this.getValidationResult();
+    var value = this.getTransformer().parse(this.state.value);
+    var result = _t2['default'].validate(value, this.props.type, this.props.ctx.path);
     this.setState({ hasError: !result.isValid() });
     return result;
   };
@@ -337,6 +333,13 @@ var Checkbox = (function (_Component2) {
 
   _inherits(Checkbox, _Component2);
 
+  Checkbox.prototype.getLocals = function getLocals() {
+    var locals = _Component2.prototype.getLocals.call(this);
+    // checkboxes must always have a label
+    locals.label = locals.label || this.getDefaultLabel();
+    return locals;
+  };
+
   _createClass(Checkbox, null, [{
     key: 'defaultTransformer',
     enumerable: true,
@@ -491,7 +494,7 @@ var Struct = (function (_Component5) {
 
   _inherits(Struct, _Component5);
 
-  Struct.prototype.getValidationResult = function getValidationResult() {
+  Struct.prototype.validate = function validate() {
 
     var value = {};
     var errors = [];
@@ -515,7 +518,7 @@ var Struct = (function (_Component5) {
       }
     }
 
-    this.setState({ hasError: errors.length > 0 });
+    this.setState({ hasError: hasError });
     return new _t2['default'].ValidationResult({ errors: errors, value: value });
   };
 
@@ -640,7 +643,7 @@ var List = (function (_Component6) {
     });
   };
 
-  List.prototype.getValidationResult = function getValidationResult() {
+  List.prototype.validate = function validate() {
 
     var value = [];
     var errors = [];
@@ -654,13 +657,13 @@ var List = (function (_Component6) {
     }
 
     // handle subtype
-    if (this.typeInfo.subtype && errors.length === 0) {
+    if (this.typeInfo.isSubtype && errors.length === 0) {
       result = _t2['default'].validate(value, this.props.type, this.props.ctx.path);
       hasError = !result.isValid();
       errors = errors.concat(result.errors);
     }
 
-    this.setState({ hasError: errors.length > 0 });
+    this.setState({ hasError: hasError });
     return new _t2['default'].ValidationResult({ errors: errors, value: value });
   };
 
@@ -9346,10 +9349,19 @@ var ctxPlaceholders = util.ctxPlaceholders;
 var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Checkbox);
 
+var transformer = {
+  format: function (value) {
+    return t.Str.is(value) ? value : value === true ? '1' : '0';
+  },
+  parse: function (value) {
+    return value === '1';
+  }
+};
+
 tape('Checkbox', function (tape) {
 
   tape.test('label', function (tape) {
-    tape.plan(3);
+    tape.plan(4);
 
     tape.strictEqual(
       new Checkbox({
@@ -9363,11 +9375,20 @@ tape('Checkbox', function (tape) {
     tape.strictEqual(
       new Checkbox({
         type: t.Bool,
+        options: {},
+        ctx: ctxPlaceholders
+      }).getLocals().label,
+      'Default label',
+      'should have a default label even if auto !== labels');
+
+    tape.strictEqual(
+      new Checkbox({
+        type: t.Bool,
         options: {label: 'mylabel'},
         ctx: ctx
       }).getLocals().label,
       'mylabel',
-      'should handle label option as tring');
+      'should handle label option as string');
 
     tape.deepEqual(
       vdom(new Checkbox({
@@ -9377,7 +9398,6 @@ tape('Checkbox', function (tape) {
       }).getLocals().label),
       {tag: 'i', attrs: {}, children: 'JSX label'},
       'should handle label option as JSX');
-
 
   });
 
@@ -9439,16 +9459,7 @@ tape('Checkbox', function (tape) {
   });
 
   tape.test('transformer', function (tape) {
-    tape.plan(2);
-
-    var transformer = {
-      format: function (value) {
-        return t.Str.is(value) ? value : value === true ? '1' : '0';
-      },
-      parse: function (value) {
-        return value === '1';
-      }
-    };
+    tape.plan(1);
 
     tape.strictEqual(
       new Checkbox({
@@ -9459,16 +9470,6 @@ tape('Checkbox', function (tape) {
       }).getLocals().value,
       '1',
       'should handle transformer option (format)');
-
-    tape.deepEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {transformer: transformer},
-        ctx: ctx,
-        value: true
-      }).getValidationResult().value,
-      true,
-      'should handle transformer option (parse)');
 
   });
 
@@ -9557,7 +9558,7 @@ tape('Checkbox', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(4);
+      tape.plan(6);
 
       var result;
 
@@ -9575,6 +9576,16 @@ tape('Checkbox', function (tape) {
         value: true
       }).validate();
 
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, true);
+
+      result = renderComponent({
+        type: t.Bool,
+        options: {transformer: transformer},
+        value: true
+      }).validate();
+
+      // 'should handle transformer option (parse)'
       tape.strictEqual(result.isValid(), true);
       tape.strictEqual(result.value, true);
 
@@ -9600,6 +9611,15 @@ var ctx = util.ctx;
 var ctxPlaceholders = util.ctxPlaceholders;
 var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Radio);
+
+var transformer = {
+  format: function (value) {
+    return t.Str.is(value) ? value : value === true ? '1' : '0';
+  },
+  parse: function (value) {
+    return value === '1';
+  }
+};
 
 tape('Radio', function (tape) {
 
@@ -9689,16 +9709,7 @@ tape('Radio', function (tape) {
   });
 
   tape.test('transformer', function (tape) {
-    tape.plan(2);
-
-    var transformer = {
-      format: function (value) {
-        return t.Str.is(value) ? value : value === true ? '1' : '0';
-      },
-      parse: function (value) {
-        return value === '1';
-      }
-    };
+    tape.plan(1);
 
     tape.strictEqual(
       new Radio({
@@ -9715,22 +9726,6 @@ tape('Radio', function (tape) {
       }).getLocals().value,
       '1',
       'should handle transformer option (format)');
-
-    tape.deepEqual(
-      new Radio({
-        type: t.maybe(t.Bool),
-        options: {
-          transformer: transformer,
-          options: [
-            {value: '0', text: 'No'},
-            {value: '1', text: 'Yes'}
-          ]
-        },
-        ctx: ctx,
-        value: true
-      }).getValidationResult().value,
-      true,
-      'should handle transformer option (parse)');
 
   });
 
@@ -9874,7 +9869,7 @@ tape('Radio', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(6);
+      tape.plan(8);
 
       var result;
 
@@ -9903,6 +9898,21 @@ tape('Radio', function (tape) {
       tape.strictEqual(result.isValid(), true);
       tape.strictEqual(result.value, null);
 
+      result = renderComponent({
+        type: t.maybe(t.Bool),
+        options: {
+          transformer: transformer,
+          options: [
+            {value: '0', text: 'No'},
+            {value: '1', text: 'Yes'}
+          ]
+        },
+        value: true
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, true);
+
     });
 
   }
@@ -9925,6 +9935,15 @@ var ctx = util.ctx;
 var ctxPlaceholders = util.ctxPlaceholders;
 var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Select);
+
+var transformer = {
+  format: function (value) {
+    return t.Str.is(value) ? value : value === true ? '1' : '0';
+  },
+  parse: function (value) {
+    return value === '1';
+  }
+};
 
 tape('Select', function (tape) {
 
@@ -10023,16 +10042,7 @@ tape('Select', function (tape) {
   });
 
   tape.test('transformer', function (tape) {
-    tape.plan(2);
-
-    var transformer = {
-      format: function (value) {
-        return t.Str.is(value) ? value : value === true ? '1' : '0';
-      },
-      parse: function (value) {
-        return value === '1';
-      }
-    };
+    tape.plan(1);
 
     tape.strictEqual(
       new Select({
@@ -10049,22 +10059,6 @@ tape('Select', function (tape) {
       }).getLocals().value,
       '1',
       'should handle transformer option (format)');
-
-    tape.deepEqual(
-      new Select({
-        type: t.maybe(t.Bool),
-        options: {
-          transformer: transformer,
-          options: [
-            {value: '0', text: 'No'},
-            {value: '1', text: 'Yes'}
-          ]
-        },
-        ctx: ctx,
-        value: true
-      }).getValidationResult().value,
-      true,
-      'should handle transformer option (parse)');
 
   });
 
@@ -10248,7 +10242,7 @@ tape('Select', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(14);
+      tape.plan(16);
 
       var result;
 
@@ -10330,6 +10324,22 @@ tape('Select', function (tape) {
       tape.strictEqual(result.isValid(), false);
       tape.deepEqual(result.value, ['IT']);
 
+      // should handle transformer option (parse)
+      result = renderComponent({
+        type: t.maybe(t.Bool),
+        options: {
+          transformer: transformer,
+          options: [
+            {value: '0', text: 'No'},
+            {value: '1', text: 'Yes'}
+          ]
+        },
+        value: true
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.deepEqual(result.value, true);
+
     });
 
   }
@@ -10352,6 +10362,15 @@ var ctx = util.ctx;
 var ctxPlaceholders = util.ctxPlaceholders;
 var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Textbox);
+
+var transformer = {
+  format: function (value) {
+    return Array.isArray(value) ? value : value.split(' ');
+  },
+  parse: function (value) {
+    return value.join(' ');
+  }
+};
 
 tape('Textbox', function (tape) {
 
@@ -10679,36 +10698,17 @@ tape('Textbox', function (tape) {
   });
 
   tape.test('transformer', function (tape) {
-    tape.plan(2);
-
-    var transformer = {
-      format: function (value) {
-        return Array.isArray(value) ? value.join(' ') : value;
-      },
-      parse: function (value) {
-        return value.split(' ');
-      }
-    };
-
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {transformer: transformer},
-        ctx: ctx,
-        value: ['a', 'b']
-      }).getLocals().value,
-      'a b',
-      'should handle transformer option (format)');
+    tape.plan(1);
 
     tape.deepEqual(
       new Textbox({
         type: t.Str,
         options: {transformer: transformer},
         ctx: ctx,
-        value: ['a', 'b']
-      }).getValidationResult().value,
+        value: 'a b'
+      }).getLocals().value,
       ['a', 'b'],
-      'should handle transformer option (parse)');
+      'should handle transformer option (format)');
 
   });
 
@@ -10805,7 +10805,7 @@ tape('Textbox', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(14);
+      tape.plan(16);
 
       var result;
 
@@ -10869,6 +10869,16 @@ tape('Textbox', function (tape) {
 
       tape.strictEqual(result.isValid(), false);
       tape.strictEqual(result.value, -1);
+
+      // should handle transformer option (parse)
+      result = renderComponent({
+        type: t.Str,
+        options: {transformer: transformer},
+        value: ['a', 'b']
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.deepEqual(result.value, 'a b');
 
     });
 

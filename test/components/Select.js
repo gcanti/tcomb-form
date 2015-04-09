@@ -12,6 +12,15 @@ var ctxPlaceholders = util.ctxPlaceholders;
 var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Select);
 
+var transformer = {
+  format: function (value) {
+    return t.Str.is(value) ? value : value === true ? '1' : '0';
+  },
+  parse: function (value) {
+    return value === '1';
+  }
+};
+
 tape('Select', function (tape) {
 
   var Country = t.enums({
@@ -109,16 +118,7 @@ tape('Select', function (tape) {
   });
 
   tape.test('transformer', function (tape) {
-    tape.plan(2);
-
-    var transformer = {
-      format: function (value) {
-        return t.Str.is(value) ? value : value === true ? '1' : '0';
-      },
-      parse: function (value) {
-        return value === '1';
-      }
-    };
+    tape.plan(1);
 
     tape.strictEqual(
       new Select({
@@ -135,22 +135,6 @@ tape('Select', function (tape) {
       }).getLocals().value,
       '1',
       'should handle transformer option (format)');
-
-    tape.deepEqual(
-      new Select({
-        type: t.maybe(t.Bool),
-        options: {
-          transformer: transformer,
-          options: [
-            {value: '0', text: 'No'},
-            {value: '1', text: 'Yes'}
-          ]
-        },
-        ctx: ctx,
-        value: true
-      }).getValidationResult().value,
-      true,
-      'should handle transformer option (parse)');
 
   });
 
@@ -334,7 +318,7 @@ tape('Select', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(14);
+      tape.plan(16);
 
       var result;
 
@@ -415,6 +399,22 @@ tape('Select', function (tape) {
 
       tape.strictEqual(result.isValid(), false);
       tape.deepEqual(result.value, ['IT']);
+
+      // should handle transformer option (parse)
+      result = renderComponent({
+        type: t.maybe(t.Bool),
+        options: {
+          transformer: transformer,
+          options: [
+            {value: '0', text: 'No'},
+            {value: '1', text: 'Yes'}
+          ]
+        },
+        value: true
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.deepEqual(result.value, true);
 
     });
 
