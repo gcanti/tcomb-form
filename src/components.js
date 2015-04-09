@@ -74,12 +74,9 @@ export const annotations = {
       }
       return attrs;
     };
-    const getLocals = Component.prototype.getLocals;
-    Component.prototype.getLocals = function() {
-      const locals = getLocals.call(this);
-      locals.attrs = this.getAttrs();
-      return locals;
-    };
+    Component.locals = Component.locals.concat({
+      name: 'attrs', method: 'getAttrs'
+    });
   },
 
   placeholder: function (Component) {
@@ -91,12 +88,9 @@ export const annotations = {
       }
       return placeholder;
     };
-    const getLocals = Component.prototype.getLocals;
-    Component.prototype.getLocals = function() {
-      const locals = getLocals.call(this);
-      locals.placeholder = this.getPlaceholder();
-      return locals;
-    };
+    Component.locals = Component.locals.concat({
+      name: 'placeholder', method: 'getPlaceholder'
+    });
   }
 
 };
@@ -181,7 +175,7 @@ export class Component extends React.Component {
 
     const options = this.props.options;
     const value = this.state.value;
-    return {
+    const locals = {
       path: this.props.ctx.path,
       error: this.getError(),
       hasError: this.hasError(),
@@ -192,6 +186,12 @@ export class Component extends React.Component {
       disabled: options.disabled,
       help: options.help
     };
+
+    this.constructor.locals.forEach(({name, method}) => {
+      locals[name] = this[method].call(this);
+    });
+
+    return locals;
   }
 
   render() {
@@ -202,6 +202,8 @@ export class Component extends React.Component {
   }
 
 }
+
+Component.locals = [];
 
 Component.defaultTransformer = {
   format: value => Nil.is(value) ? null : value,
@@ -449,13 +451,10 @@ export class Struct extends Component {
       inputs: this.getInputs(),
       error: this.getError(),
       hasError: this.hasError(),
-      legend: this.getLabel()
+      legend: this.getLabel(),
+      disabled: options.disabled,
+      help: options.help
     };
-
-    [
-      'disabled',
-      'help'
-    ].forEach((name) => locals[name] = options[name]);
 
     return locals;
   }
