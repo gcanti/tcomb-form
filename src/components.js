@@ -97,6 +97,13 @@ export const annotations = {
 
 export class Component extends React.Component {
 
+  static locals = [];
+
+  static defaultTransformer = {
+    format: value => Nil.is(value) ? null : value,
+    parse: value => value
+  };
+
   constructor(props) {
     super(props);
     this.typeInfo = getTypeInfo(props.type);
@@ -107,7 +114,7 @@ export class Component extends React.Component {
   }
 
   getTransformer() {
-    return this.props.options.transformer || Component.defaultTransformer;
+    return this.props.options.transformer || this.constructor.defaultTransformer;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -203,17 +210,24 @@ export class Component extends React.Component {
 
 }
 
-Component.locals = [];
-
-Component.defaultTransformer = {
-  format: value => Nil.is(value) ? null : value,
-  parse: value => value
-};
-
 @annotations.attrs
 @annotations.placeholder
 @annotations.template('textbox')
 export class Textbox extends Component {
+
+  static defaultTransformer = {
+    format: value => Nil.is(value) ? null : value,
+    parse: value => (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value
+  };
+
+  static numberTransformer = {
+    format: value => Nil.is(value) ? null : String(value),
+    parse: value => {
+      const n = parseFloat(value);
+      const isNumeric = (value - n + 1) >= 0;
+      return isNumeric ? n : value;
+    }
+  };
 
   getTransformer() {
     const options = this.props.options;
@@ -230,42 +244,31 @@ export class Textbox extends Component {
 
 }
 
-Textbox.defaultTransformer = {
-  format: value => Nil.is(value) ? null : value,
-  parse: value => (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value
-};
-
-Textbox.numberTransformer = {
-  format: value => Nil.is(value) ? null : String(value),
-  parse: value => {
-    const n = parseFloat(value);
-    const isNumeric = (value - n + 1) >= 0;
-    return isNumeric ? n : value;
-  }
-};
-
 @annotations.attrs
 @annotations.template('checkbox')
 export class Checkbox extends Component {
 
-  getTransformer() {
-    const options = this.props.options;
-    if (options.transformer) {
-      return options.transformer;
-    }
-    return Checkbox.defaultTransformer;
-  }
+  static defaultTransformer = {
+    format: value => Nil.is(value) ? false : value,
+    parse: value => value
+  };
 
 }
-
-Checkbox.defaultTransformer = {
-  format: value => Nil.is(value) ? false : value,
-  parse: value => value
-};
 
 @annotations.attrs
 @annotations.template('select')
 export class Select extends Component {
+
+  static defaultTransformer = (nullOption) => {
+    return {
+      format: value => {
+        return Nil.is(value) && nullOption ? nullOption.value : value;
+      },
+      parse: value => {
+        return nullOption && nullOption.value === value ? null : value;
+      }
+    };
+  };
 
   getTransformer() {
     const options = this.props.options;
@@ -309,17 +312,6 @@ export class Select extends Component {
 
 }
 
-Select.defaultTransformer = (nullOption) => {
-  return {
-    format: value => {
-      return Nil.is(value) && nullOption ? nullOption.value : value;
-    },
-    parse: value => {
-      return nullOption && nullOption.value === value ? null : value;
-    }
-  };
-};
-
 @annotations.attrs
 @annotations.template('radio')
 export class Radio extends Component {
@@ -343,13 +335,10 @@ export class Radio extends Component {
 
 export class Struct extends Component {
 
-  getTransformer() {
-    const options = this.props.options;
-    if (options.transformer) {
-      return options.transformer;
-    }
-    return Struct.defaultTransformer;
-  }
+  static defaultTransformer = {
+    format: value => Nil.is(value) ? {} : value,
+    parse: value => value
+  };
 
   validate() {
 
@@ -470,24 +459,16 @@ function toSameLength(value, keys) {
   return ret;
 }
 
-Struct.defaultTransformer = {
-  format: value => Nil.is(value) ? {} : value,
-  parse: value => value
-};
-
 export class List extends Component {
+
+  static defaultTransformer = {
+    format: value => Nil.is(value) ? [] : value,
+    parse: value => value
+  };
 
   constructor(props) {
     super(props);
     this.state.keys = this.state.value.map(uuid);
-  }
-
-  getTransformer() {
-    const options = this.props.options;
-    if (options.transformer) {
-      return options.transformer;
-    }
-    return List.defaultTransformer;
   }
 
   componentWillReceiveProps(props) {
@@ -644,11 +625,6 @@ export class List extends Component {
   }
 
 }
-
-List.defaultTransformer = {
-  format: value => Nil.is(value) ? [] : value,
-  parse: value => value
-};
 
 export class Form {
 
