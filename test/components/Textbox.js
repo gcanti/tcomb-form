@@ -2,37 +2,17 @@
 
 var tape = require('tape');
 var t = require('tcomb');
-var bootstrap = require('../lib/templates/bootstrap');
-var components = require('../lib/components');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Textbox = require('../../lib/components').Textbox;
 var React = require('react');
 var vdom = require('react-vdom');
-
-var ctx = {
-  auto: 'labels',
-  config: {},
-  name: 'defaultName',
-  label: 'Default label',
-  i18n: {
-    optional: ' (optional)',
-    add: 'Add',
-    remove: 'Remove',
-    up: 'Up',
-    down: 'Down'
-  },
-  templates: bootstrap,
-  path: ['defaultPath']
-};
-
-function getContext(options) {
-  return t.mixin(t.mixin({}, ctx), options, true);
-}
-
-var ctxPlaceholders = getContext({auto: 'placeholders'});
-var ctxNone = getContext({auto: 'none'});
+var util = require('./util');
+var ctx = util.ctx;
+var ctxPlaceholders = util.ctxPlaceholders;
+var ctxNone = util.ctxNone;
+var renderComponent = util.getRenderComponent(Textbox);
 
 tape('Textbox', function (tape) {
-
-  var Textbox = components.Textbox;
 
   tape.test('path', function (tape) {
     tape.plan(1);
@@ -385,14 +365,14 @@ tape('Textbox', function (tape) {
         options: {transformer: transformer},
         ctx: ctx,
         value: ['a', 'b']
-      }).validate().value,
+      }).getValidationResult().value,
       ['a', 'b'],
       'should handle transformer option (parse)');
 
   });
 
   tape.test('hasError', function (tape) {
-    tape.plan(4);
+    tape.plan(2);
 
     tape.strictEqual(
       new Textbox({
@@ -417,27 +397,6 @@ tape('Textbox', function (tape) {
       options: {},
       ctx: ctx
     });
-
-    textbox.validate();
-
-    tape.strictEqual(
-      textbox.getLocals().hasError,
-      false,
-      'after a validation error hasError should be true');
-
-    textbox = new Textbox({
-      type: t.Str,
-      options: {},
-      ctx: ctx,
-        value: 'a'
-    });
-
-    textbox.validate();
-
-    tape.strictEqual(
-      textbox.getLocals().hasError,
-      false,
-      'after a validation success hasError should be false');
 
   });
 
@@ -501,6 +460,78 @@ tape('Textbox', function (tape) {
       'should handle template option');
 
   });
+
+  if (typeof window !== 'undefined') {
+
+    tape.test('validate', function (tape) {
+      tape.plan(14);
+
+      var result;
+
+      // required type, default value
+      result = renderComponent({
+        type: t.Str
+      }).validate();
+
+      tape.strictEqual(result.isValid(), false);
+      tape.strictEqual(result.value, null);
+
+      // required type, setting a value
+      result = renderComponent({
+        type: t.Str,
+        value: 'a'
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, 'a');
+
+      // optional type
+      result = renderComponent({
+        type: t.maybe(t.Str)
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, null);
+
+      // numeric type
+      result = renderComponent({
+        type: t.Num,
+        value: 1
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, 1);
+
+      // numeric type with stringy value
+      result = renderComponent({
+        type: t.Num,
+        value: '1.01'
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, 1.01);
+
+      // subtype, setting a valid value
+      result = renderComponent({
+        type: t.subtype(t.Num, function (n) { return n >= 0; }),
+        value: 1
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, 1);
+
+      // subtype, setting an invalid value
+      result = renderComponent({
+        type: t.subtype(t.Num, function (n) { return n >= 0; }),
+        value: -1
+      }).validate();
+
+      tape.strictEqual(result.isValid(), false);
+      tape.strictEqual(result.value, -1);
+
+    });
+
+  }
 
 });
 

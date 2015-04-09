@@ -1,10 +1,11 @@
 {
   "name": "tcomb-form",
-  "version": "0.5.0-alpha",
+  "version": "0.5.0-beta",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "test": "node test",
+    "test-node": "node test",
+    "test": "echo \"Open test/index.html in a browser...\" && watchify -t [reactify --harmony] test/index.js -o test/browser.js  -v -x react",
     "dev": "watchify -t [reactify --harmony] dev/dev.jsx -o dev/dev.js -v -x react",
     "transpile": "./node_modules/.bin/babel ./src -d ./lib -w --stage 0 --playground --loose",
     "start": "./node_modules/.bin/http-server ./dev -s -o"

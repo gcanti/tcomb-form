@@ -1,7 +1,7 @@
 'use strict';
 
 var tape = require('tape');
-var bootstrap = require('../lib/templates/bootstrap');
+var bootstrap = require('../../lib/templates/bootstrap');
 
 tape('textbox', function (tape) {
 

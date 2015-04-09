@@ -2,37 +2,18 @@
 
 var tape = require('tape');
 var t = require('tcomb');
-var bootstrap = require('../lib/templates/bootstrap');
-var components = require('../lib/components');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Select = require('../../lib/components').Select;
 var React = require('react');
 var vdom = require('react-vdom');
-
-var ctx = {
-  auto: 'labels',
-  config: {},
-  name: 'defaultName',
-  label: 'Default label',
-  i18n: {
-    optional: ' (optional)',
-    add: 'Add',
-    remove: 'Remove',
-    up: 'Up',
-    down: 'Down'
-  },
-  templates: bootstrap,
-  path: ['defaultPath']
-};
-
-function getContext(options) {
-  return t.mixin(t.mixin({}, ctx), options, true);
-}
-
-var ctxPlaceholders = getContext({auto: 'placeholders'});
-var ctxNone = getContext({auto: 'none'});
+var util = require('./util');
+var ctx = util.ctx;
+var ctxPlaceholders = util.ctxPlaceholders;
+var ctxNone = util.ctxNone;
+var renderComponent = util.getRenderComponent(Select);
 
 tape('Select', function (tape) {
 
-  var Select = components.Select;
   var Country = t.enums({
     'IT': 'Italy',
     'FR': 'France',
@@ -167,14 +148,14 @@ tape('Select', function (tape) {
         },
         ctx: ctx,
         value: true
-      }).validate().value,
+      }).getValidationResult().value,
       true,
       'should handle transformer option (parse)');
 
   });
 
   tape.test('hasError', function (tape) {
-    tape.plan(4);
+    tape.plan(2);
 
     tape.strictEqual(
       new Select({
@@ -193,33 +174,6 @@ tape('Select', function (tape) {
       }).getLocals().hasError,
       true,
       'should handle hasError option');
-
-    var select = new Select({
-      type: Country,
-      options: {},
-      ctx: ctx
-    });
-
-    select.validate();
-
-    tape.strictEqual(
-      select.getLocals().hasError,
-      false,
-      'after a validation error hasError should be true');
-
-    var select = new Select({
-      type: Country,
-      options: {},
-      ctx: ctx,
-      value: 'IT'
-    });
-
-    select.validate();
-
-    tape.strictEqual(
-      select.getLocals().hasError,
-      false,
-      'after a validation success hasError should be false');
 
   });
 
@@ -376,6 +330,95 @@ tape('Select', function (tape) {
       'should skip the nullOption if nullOption = false');
 
   });
+
+  if (typeof window !== 'undefined') {
+
+    tape.test('validate', function (tape) {
+      tape.plan(14);
+
+      var result;
+
+      // required type, default value
+      result = renderComponent({
+        type: Country
+      }).validate();
+
+      tape.strictEqual(result.isValid(), false);
+      tape.strictEqual(result.value, null);
+
+      // required type, setting a value
+      result = renderComponent({
+        type: Country,
+        value: 'IT'
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, 'IT');
+
+      // optional type
+      result = renderComponent({
+        type: t.maybe(Country)
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, null);
+
+      // option groups
+      var Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
+      result = renderComponent({
+        type: Car,
+        options: {
+          options: [
+            {value: 'Audi', text: 'Audi'}, // an option
+            {label: 'US', options: [ // a group of options
+              {value: 'Chrysler', text: 'Chrysler'},
+              {value: 'Ford', text: 'Ford'}
+            ]},
+            {label: 'France', options: [ // another group of options
+              {value: 'Renault', text: 'Renault'},
+              {value: 'Peugeot', text: 'Peugeot'}
+            ], disabled: true} // use `disabled: true` to disable an optgroup
+          ]
+        },
+        value: 'Ford'
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, 'Ford');
+
+      //
+      // multiple select
+      //
+
+      // default value should be []
+      result = renderComponent({
+        type: t.list(Country)
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.deepEqual(result.value, []);
+
+      // setting a value
+      result = renderComponent({
+        type: t.list(Country),
+        value: ['IT', 'US']
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.deepEqual(result.value, ['IT', 'US']);
+
+      // subtyped multiple select
+      result = renderComponent({
+        type: t.subtype(t.list(Country), function (x) { return x.length >= 2; }),
+        value: ['IT']
+      }).validate();
+
+      tape.strictEqual(result.isValid(), false);
+      tape.deepEqual(result.value, ['IT']);
+
+    });
+
+  }
 
 });
 

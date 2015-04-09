@@ -11,9 +11,11 @@ import {
   uuid,
   move
 } from './util';
+import debug from 'debug';
 
 const Nil = t.Nil;
 const SOURCE = 'tcomb-form';
+const log = debug(SOURCE);
 const nooptions = Object.freeze({});
 const noop = () => {};
 
@@ -204,6 +206,7 @@ export class Component extends React.Component {
   }
 
   render() {
+    log('rendering %s', this.constructor.name);
     const locals = this.getLocals();
     t.assert(t.Func.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
     const template = this.getTemplate();

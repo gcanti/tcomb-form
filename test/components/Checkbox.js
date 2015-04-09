@@ -2,37 +2,17 @@
 
 var tape = require('tape');
 var t = require('tcomb');
-var bootstrap = require('../lib/templates/bootstrap');
-var components = require('../lib/components');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Checkbox = require('../../lib/components').Checkbox;
 var React = require('react');
 var vdom = require('react-vdom');
-
-var ctx = {
-  auto: 'labels',
-  config: {},
-  name: 'defaultName',
-  label: 'Default label',
-  i18n: {
-    optional: ' (optional)',
-    add: 'Add',
-    remove: 'Remove',
-    up: 'Up',
-    down: 'Down'
-  },
-  templates: bootstrap,
-  path: ['defaultPath']
-};
-
-function getContext(options) {
-  return t.mixin(t.mixin({}, ctx), options, true);
-}
-
-var ctxPlaceholders = getContext({auto: 'placeholders'});
-var ctxNone = getContext({auto: 'none'});
+var util = require('./util');
+var ctx = util.ctx;
+var ctxPlaceholders = util.ctxPlaceholders;
+var ctxNone = util.ctxNone;
+var renderComponent = util.getRenderComponent(Checkbox);
 
 tape('Checkbox', function (tape) {
-
-  var Checkbox = components.Checkbox;
 
   tape.test('label', function (tape) {
     tape.plan(3);
@@ -152,14 +132,14 @@ tape('Checkbox', function (tape) {
         options: {transformer: transformer},
         ctx: ctx,
         value: true
-      }).validate().value,
+      }).getValidationResult().value,
       true,
       'should handle transformer option (parse)');
 
   });
 
   tape.test('hasError', function (tape) {
-    tape.plan(4);
+    tape.plan(2);
 
     var True = t.subtype(t.Bool, function (value) { return value === true; });
 
@@ -180,33 +160,6 @@ tape('Checkbox', function (tape) {
       }).getLocals().hasError,
       true,
       'should handle hasError option');
-
-    var checkbox = new Checkbox({
-      type: True,
-      options: {},
-      ctx: ctx
-    });
-
-    checkbox.validate();
-
-    tape.strictEqual(
-      checkbox.getLocals().hasError,
-      false,
-      'after a validation error hasError should be true');
-
-    var checkbox = new Checkbox({
-      type: True,
-      options: {},
-      ctx: ctx,
-      value: true
-    });
-
-    checkbox.validate();
-
-    tape.strictEqual(
-      checkbox.getLocals().hasError,
-      false,
-      'after a validation success hasError should be false');
 
   });
 
@@ -266,6 +219,34 @@ tape('Checkbox', function (tape) {
       'should handle template option');
 
   });
+
+  if (typeof window !== 'undefined') {
+
+    tape.test('validate', function (tape) {
+      tape.plan(4);
+
+      var result;
+
+      // required type, default value
+      result = renderComponent({
+        type: t.Bool
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, false);
+
+      // required type, setting a value
+      result = renderComponent({
+        type: t.Bool,
+        value: true
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, true);
+
+    });
+
+  }
 
 });
 
