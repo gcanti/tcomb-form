@@ -1,4 +1,5 @@
 *.log
 dev
+docs
 lib
 node_modules

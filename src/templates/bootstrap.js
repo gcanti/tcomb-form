@@ -128,7 +128,7 @@ function getHiddenTextbox({value, name}) {
   };
 }
 
-function textbox(locals) {
+export function textbox(locals) {
 
   const config = new TextboxConfig(locals.config || {});
 
@@ -215,7 +215,7 @@ function textbox(locals) {
 
 }
 
-function checkbox(locals) {
+export function checkbox(locals) {
 
   const config = new CheckboxConfig(locals.config || {});
 
@@ -257,7 +257,7 @@ function checkbox(locals) {
 
 }
 
-function select(locals) {
+export function select(locals) {
 
   const config = new SelectConfig(locals.config || {});
 
@@ -333,7 +333,7 @@ function select(locals) {
 
 }
 
-function radio(locals) {
+export function radio(locals) {
 
   const config = new RadioConfig(locals.config || {});
 
@@ -395,7 +395,7 @@ function radio(locals) {
 
 }
 
-function struct(locals) {
+export function struct(locals) {
 
   const config = new StructConfig(locals.config || {});
   let children = [];
@@ -436,7 +436,7 @@ function struct(locals) {
 
 }
 
-function list(locals) {
+export function list(locals) {
 
   const config = new ListConfig(locals.config || {});
   let children = [];
@@ -512,11 +512,3 @@ function list(locals) {
 
 }
 
-module.exports = {
-  textbox,
-  checkbox,
-  select,
-  radio,
-  struct,
-  list
-};

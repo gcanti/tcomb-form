@@ -58,6 +58,8 @@ function getComponent(_x, _x2) {
         return List;
       case 'enums':
         return Select;
+      case 'dict':
+        return Dict;
       case 'maybe':
       case 'subtype':
         _x = type.meta.type;
@@ -501,11 +503,11 @@ var Struct = (function (_Component5) {
     var hasError = false;
     var result = undefined;
 
-    for (var ref in this.refs) {
-      if (this.refs.hasOwnProperty(ref)) {
-        result = this.refs[ref].validate();
+    for (var _ref3 in this.refs) {
+      if (this.refs.hasOwnProperty(_ref3)) {
+        result = this.refs[_ref3].validate();
         errors = errors.concat(result.errors);
-        value[ref] = result.value;
+        value[_ref3] = result.value;
       }
     }
 
@@ -840,7 +842,7 @@ var Form = (function () {
       options: options,
       value: this.props.value,
       onChange: this.props.onChange || noop,
-      ctx: {
+      ctx: this.props.ctx || {
         auto: 'labels',
         templates: templates,
         i18n: i18n,
@@ -854,10 +856,93 @@ var Form = (function () {
 
 exports.Form = Form;
 
+var Dict = (function (_Component7) {
+  function Dict() {
+    _classCallCheck(this, Dict);
+
+    if (_Component7 != null) {
+      _Component7.apply(this, arguments);
+    }
+  }
+
+  _inherits(Dict, _Component7);
+
+  Dict.prototype.validate = function validate() {
+    var result = this.refs.form.getValue(true);
+    if (!result.isValid()) {
+      return result;
+    }
+    return _Component7.prototype.validate.call(this);
+  };
+
+  Dict.prototype.getTemplate = function getTemplate() {
+    var _this6 = this;
+
+    return function () {
+      var Type = _t2['default'].list(_t2['default'].struct({
+        domain: _this6.typeInfo.innerType.meta.domain,
+        codomain: _this6.typeInfo.innerType.meta.codomain
+      }));
+      return _React2['default'].createElement(Form, {
+        ref: 'form',
+        type: Type,
+        options: _this6.props.options,
+        onChange: _this6.onChange.bind(_this6),
+        value: _this6.state.value,
+        ctx: _this6.props.ctx
+      });
+    };
+  };
+
+  Dict.prototype.getLocals = function getLocals() {};
+
+  _createClass(Dict, null, [{
+    key: 'defaultTransformer',
+    enumerable: true,
+    value: {
+      format: function format(value) {
+        if (_t2['default'].Arr.is(value)) {
+          return value;
+        }
+        value = value || {};
+        var result = [];
+        for (var key in value) {
+          if (value.hasOwnProperty(key)) {
+            result.push({ domain: key, codomain: value[key] });
+          }
+        }
+        return result;
+      },
+      parse: function parse(value) {
+        var result = {};
+        value.forEach(function (_ref2) {
+          var domain = _ref2.domain;
+          var codomain = _ref2.codomain;
+
+          result[domain] = codomain;
+        });
+        return result;
+      }
+    }
+  }]);
+
+  return Dict;
+})(Component);
+
+exports.Dict = Dict;
+
 },{"./util":3,"debug":4,"react":"react","tcomb-validation":20,"uvdom/react":44}],2:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+
+exports.__esModule = true;
+exports.textbox = textbox;
+exports.checkbox = checkbox;
+exports.select = select;
+exports.radio = radio;
+exports.struct = struct;
+exports.list = list;
 
 var _t = require('tcomb-validation');
 
@@ -866,6 +951,8 @@ var _t2 = _interopRequireWildcard(_t);
 var _bootstrap = require('uvdom-bootstrap');
 
 var _bootstrap2 = _interopRequireWildcard(_bootstrap);
+
+'use strict';
 
 var Any = _t2['default'].Any;
 var maybe = _t2['default'].maybe;
@@ -1346,15 +1433,6 @@ function list(locals) {
     })
   });
 }
-
-module.exports = {
-  textbox: textbox,
-  checkbox: checkbox,
-  select: select,
-  radio: radio,
-  struct: struct,
-  list: list
-};
 
 },{"tcomb-validation":20,"uvdom-bootstrap":22}],3:[function(require,module,exports){
 'use strict';

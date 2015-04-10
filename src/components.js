@@ -33,6 +33,8 @@ export function getComponent(type, options) {
       return List;
     case 'enums' :
       return Select;
+    case 'dict' :
+      return Dict;
     case 'maybe' :
     case 'subtype' :
       return getComponent(type.meta.type, options);
@@ -654,7 +656,7 @@ export class Form {
       options: options,
       value: this.props.value,
       onChange: this.props.onChange || noop,
-      ctx: {
+      ctx: this.props.ctx || {
         auto: 'labels',
         templates,
         i18n,
@@ -662,6 +664,56 @@ export class Form {
       }
     });
   }
+
+}
+
+export class Dict extends Component {
+
+  static defaultTransformer = {
+    format: value => {
+      if (t.Arr.is(value)) { return value; }
+      value = value || {};
+      var result = [];
+      for (var key in value) {
+        if (value.hasOwnProperty(key)) {
+          result.push({domain: key, codomain: value[key]});
+        }
+      }
+      return result;
+    },
+    parse: value => {
+      var result = {};
+      value.forEach(({domain, codomain}) => {
+        result[domain] = codomain
+      });
+      return result;
+    }
+  };
+
+  validate() {
+    var result = this.refs.form.getValue(true);
+    if (!result.isValid()) { return result; }
+    return super.validate();
+  }
+
+  getTemplate() {
+    return () => {
+      var Type = t.list(t.struct({
+        domain: this.typeInfo.innerType.meta.domain,
+        codomain: this.typeInfo.innerType.meta.codomain
+      }));
+      return <Form
+        ref="form"
+        type={Type}
+        options={this.props.options}
+        onChange={this.onChange.bind(this)}
+        value={this.state.value}
+        ctx={this.props.ctx}
+      />;
+    };
+  }
+
+  getLocals() {}
 
 }
 
