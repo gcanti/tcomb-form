@@ -8,6 +8,7 @@ v0.5
 - added Form.getComponent(path) API to access form components, fix #101
 - experimental support for dicts, fix #23
 - experimental support for tuples, fix #24
+- added `template` option to structs and lists
 
 v0.4.8
 

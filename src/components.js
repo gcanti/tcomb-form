@@ -397,7 +397,7 @@ export class Struct extends Component {
   }
 
   getTemplate() {
-    return this.getTemplates().struct;
+    return this.props.options.template || this.getTemplates().struct;
   }
 
   getTypeProps() {
@@ -564,7 +564,7 @@ export class List extends Component {
   }
 
   getTemplate() {
-    return this.getTemplates().list;
+    return this.props.options.template || this.getTemplates().list;
   }
 
   getI81n() {

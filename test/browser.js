@@ -539,7 +539,7 @@ var Struct = (function (_Component5) {
   };
 
   Struct.prototype.getTemplate = function getTemplate() {
-    return this.getTemplates().struct;
+    return this.props.options.template || this.getTemplates().struct;
   };
 
   Struct.prototype.getTypeProps = function getTypeProps() {
@@ -720,7 +720,7 @@ var List = (function (_Component6) {
   };
 
   List.prototype.getTemplate = function getTemplate() {
-    return this.getTemplates().list;
+    return this.props.options.template || this.getTemplates().list;
   };
 
   List.prototype.getI81n = function getI81n() {
