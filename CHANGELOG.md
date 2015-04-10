@@ -6,6 +6,8 @@ v0.5
 - Pass events to inputs, fix #53, #67
 - Set class on form-group div indicating its depth within form, fix #64
 - added Form.getComponent(path) API to access form components, fix #101
+- experimental support for dicts, fix #23
+- experimental support for tuples, fix #24
 
 v0.4.8
 

@@ -35,6 +35,8 @@ export function getComponent(type, options) {
       return Select;
     case 'dict' :
       return Dict;
+    case 'tuple' :
+      return Tuple;
     case 'maybe' :
     case 'subtype' :
       return getComponent(type.meta.type, options);
@@ -673,8 +675,8 @@ export class Dict extends Component {
     format: value => {
       if (t.Arr.is(value)) { return value; }
       value = value || {};
-      var result = [];
-      for (var key in value) {
+      const result = [];
+      for (let key in value) {
         if (value.hasOwnProperty(key)) {
           result.push({domain: key, codomain: value[key]});
         }
@@ -682,26 +684,73 @@ export class Dict extends Component {
       return result;
     },
     parse: value => {
-      var result = {};
-      value.forEach(({domain, codomain}) => {
-        result[domain] = codomain
-      });
+      const result = {};
+      value.forEach(({domain, codomain}) => result[domain] = codomain);
       return result;
     }
   };
 
   validate() {
-    var result = this.refs.form.getValue(true);
+    const result = this.refs.form.getValue(true);
     if (!result.isValid()) { return result; }
     return super.validate();
   }
 
   getTemplate() {
     return () => {
-      var Type = t.list(t.struct({
+      const Type = t.list(t.struct({
         domain: this.typeInfo.innerType.meta.domain,
         codomain: this.typeInfo.innerType.meta.codomain
       }));
+      return <Form
+        ref="form"
+        type={Type}
+        options={this.props.options}
+        onChange={this.onChange.bind(this)}
+        value={this.state.value}
+        ctx={this.props.ctx}
+      />;
+    };
+  }
+
+  getLocals() {}
+
+}
+
+export class Tuple extends Component {
+
+  static defaultTransformer = (dict) => {
+    return {
+      format: value => value,
+      parse: value => {
+        const result = [];
+        dict.meta.types.forEach((type, i) => result.push(value[i]));
+        return result;
+      }
+    };
+  };
+
+  getTransformer() {
+    const options = this.props.options;
+    if (options.transformer) {
+      return options.transformer;
+    }
+    return Tuple.defaultTransformer(this.typeInfo.innerType);
+  }
+
+  validate() {
+    const result = this.refs.form.getValue(true);
+    if (!result.isValid()) { return result; }
+    return super.validate();
+  }
+
+  getTemplate() {
+    return () => {
+      const props = {};
+      this.typeInfo.innerType.meta.types.forEach((type, i) => {
+        props[i] = type;
+      });
+      const Type = t.struct(props);
       return <Form
         ref="form"
         type={Type}

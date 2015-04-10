@@ -60,6 +60,8 @@ function getComponent(_x, _x2) {
         return Select;
       case 'dict':
         return Dict;
+      case 'tuple':
+        return Tuple;
       case 'maybe':
       case 'subtype':
         _x = type.meta.type;
@@ -918,8 +920,7 @@ var Dict = (function (_Component7) {
         value.forEach(function (_ref2) {
           var domain = _ref2.domain;
           var codomain = _ref2.codomain;
-
-          result[domain] = codomain;
+          return result[domain] = codomain;
         });
         return result;
       }
@@ -930,6 +931,79 @@ var Dict = (function (_Component7) {
 })(Component);
 
 exports.Dict = Dict;
+
+var Tuple = (function (_Component8) {
+  function Tuple() {
+    _classCallCheck(this, Tuple);
+
+    if (_Component8 != null) {
+      _Component8.apply(this, arguments);
+    }
+  }
+
+  _inherits(Tuple, _Component8);
+
+  Tuple.prototype.getTransformer = function getTransformer() {
+    var options = this.props.options;
+    if (options.transformer) {
+      return options.transformer;
+    }
+    return Tuple.defaultTransformer(this.typeInfo.innerType);
+  };
+
+  Tuple.prototype.validate = function validate() {
+    var result = this.refs.form.getValue(true);
+    if (!result.isValid()) {
+      return result;
+    }
+    return _Component8.prototype.validate.call(this);
+  };
+
+  Tuple.prototype.getTemplate = function getTemplate() {
+    var _this7 = this;
+
+    return function () {
+      var props = {};
+      _this7.typeInfo.innerType.meta.types.forEach(function (type, i) {
+        props[i] = type;
+      });
+      var Type = _t2['default'].struct(props);
+      return _React2['default'].createElement(Form, {
+        ref: 'form',
+        type: Type,
+        options: _this7.props.options,
+        onChange: _this7.onChange.bind(_this7),
+        value: _this7.state.value,
+        ctx: _this7.props.ctx
+      });
+    };
+  };
+
+  Tuple.prototype.getLocals = function getLocals() {};
+
+  _createClass(Tuple, null, [{
+    key: 'defaultTransformer',
+    enumerable: true,
+    value: function (dict) {
+      return {
+        format: function format(value) {
+          return value;
+        },
+        parse: function parse(value) {
+          var result = [];
+          dict.meta.types.forEach(function (type, i) {
+            return result.push(value[i]);
+          });
+          return result;
+        }
+      };
+    }
+  }]);
+
+  return Tuple;
+})(Component);
+
+exports.Tuple = Tuple;
 
 },{"./util":3,"debug":4,"react":"react","tcomb-validation":20,"uvdom/react":44}],2:[function(require,module,exports){
 'use strict';
