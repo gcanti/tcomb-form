@@ -121,9 +121,8 @@ var annotations = {
 
   placeholder: function placeholder(Component) {
     Component.prototype.getPlaceholder = function getPlaceholder() {
-      var ctx = this.props.ctx;
       var placeholder = this.props.options.placeholder;
-      if (Nil.is(placeholder) && ctx.auto === 'placeholders') {
+      if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
         placeholder = this.getDefaultLabel();
       }
       return placeholder;
@@ -179,6 +178,14 @@ var Component = (function (_React$Component) {
     var result = _t2['default'].validate(value, this.props.type, this.props.ctx.path);
     this.setState({ hasError: !result.isValid() });
     return result;
+  };
+
+  Component.prototype.getAuto = function getAuto() {
+    return this.props.options.auto || this.props.ctx.auto;
+  };
+
+  Component.prototype.getI18n = function getI18n() {
+    return this.props.options.i18n || this.props.ctx.i18n;
   };
 
   Component.prototype.getDefaultLabel = function getDefaultLabel() {
@@ -556,8 +563,8 @@ var Struct = (function (_Component5) {
     var ctx = _props.ctx;
 
     var props = this.getTypeProps();
-    var auto = options.auto || ctx.auto;
-    var i18n = options.i18n || ctx.i18n;
+    var auto = this.getAuto();
+    var i18n = this.getI18n();
     var config = this.getConfig();
     var templates = this.getTemplates();
     var value = this.state.value;
@@ -723,10 +730,6 @@ var List = (function (_Component6) {
     return this.props.options.template || this.getTemplates().list;
   };
 
-  List.prototype.getI81n = function getI81n() {
-    return this.props.options.i18n || this.props.ctx.i18n;
-  };
-
   List.prototype.getItems = function getItems() {
     var _this5 = this;
 
@@ -734,8 +737,8 @@ var List = (function (_Component6) {
     var options = _props2.options;
     var ctx = _props2.ctx;
 
-    var auto = options.auto || ctx.auto;
-    var i18n = this.getI81n();
+    var auto = this.getAuto();
+    var i18n = this.getI18n();
     var config = this.getConfig();
     var templates = this.getTemplates();
     var value = this.state.value;
@@ -777,7 +780,7 @@ var List = (function (_Component6) {
   List.prototype.getLocals = function getLocals() {
 
     var options = this.props.options;
-    var i18n = this.getI81n();
+    var i18n = this.getI18n();
     var locals = _Component6.prototype.getLocals.call(this);
     locals.add = options.disableAdd ? null : {
       label: i18n.add,
@@ -805,59 +808,6 @@ var List = (function (_Component6) {
 
 exports.List = List;
 
-var Form = (function () {
-  function Form() {
-    _classCallCheck(this, Form);
-  }
-
-  Form.prototype.getValue = function getValue(raw) {
-    var result = this.refs.input.validate();
-    return raw === true ? result : result.isValid() ? result.value : null;
-  };
-
-  Form.prototype.getComponent = function getComponent(path) {
-    path = _t2['default'].Str.is(path) ? path.split('.') : path;
-    return path.reduce(function (input, name) {
-      return input.refs[name];
-    }, this.refs.input);
-  };
-
-  Form.prototype.render = function render() {
-
-    var options = this.props.options;
-    var type = this.props.type;
-    var i18n = Form.i18n;
-    var templates = Form.templates;
-
-    options = options || nooptions;
-
-    _t2['default'].assert(_t2['default'].Type.is(type), '[' + SOURCE + '] missing required prop type');
-    _t2['default'].assert(_t2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
-    _t2['default'].assert(_t2['default'].Obj.is(templates), '[' + SOURCE + '] missing templates config');
-    _t2['default'].assert(_t2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
-
-    var Component = getComponent(type, options);
-
-    return _React2['default'].createElement(Component, {
-      ref: 'input',
-      type: type,
-      options: options,
-      value: this.props.value,
-      onChange: this.props.onChange || noop,
-      ctx: this.props.ctx || {
-        auto: 'labels',
-        templates: templates,
-        i18n: i18n,
-        path: []
-      }
-    });
-  };
-
-  return Form;
-})();
-
-exports.Form = Form;
-
 var Dict = (function (_Component7) {
   function Dict() {
     _classCallCheck(this, Dict);
@@ -870,7 +820,7 @@ var Dict = (function (_Component7) {
   _inherits(Dict, _Component7);
 
   Dict.prototype.validate = function validate() {
-    var result = this.refs.form.getValue(true);
+    var result = this.refs.form.validate();
     if (!result.isValid()) {
       return result;
     }
@@ -952,7 +902,7 @@ var Tuple = (function (_Component8) {
   };
 
   Tuple.prototype.validate = function validate() {
-    var result = this.refs.form.getValue(true);
+    var result = this.refs.form.validate;
     if (!result.isValid()) {
       return result;
     }
@@ -1004,6 +954,63 @@ var Tuple = (function (_Component8) {
 })(Component);
 
 exports.Tuple = Tuple;
+
+var Form = (function () {
+  function Form() {
+    _classCallCheck(this, Form);
+  }
+
+  Form.prototype.validate = function validate() {
+    return this.refs.input.validate();
+  };
+
+  Form.prototype.getValue = function getValue(raw) {
+    var result = this.validate();
+    return raw === true ? result : result.isValid() ? result.value : null;
+  };
+
+  Form.prototype.getComponent = function getComponent(path) {
+    path = _t2['default'].Str.is(path) ? path.split('.') : path;
+    return path.reduce(function (input, name) {
+      return input.refs[name];
+    }, this.refs.input);
+  };
+
+  Form.prototype.render = function render() {
+
+    var options = this.props.options;
+    var type = this.props.type;
+    var i18n = Form.i18n;
+    var templates = Form.templates;
+
+    options = options || nooptions;
+
+    _t2['default'].assert(_t2['default'].Type.is(type), '[' + SOURCE + '] missing required prop type');
+    _t2['default'].assert(_t2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
+    _t2['default'].assert(_t2['default'].Obj.is(templates), '[' + SOURCE + '] missing templates config');
+    _t2['default'].assert(_t2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
+
+    var Component = getComponent(type, options);
+
+    return _React2['default'].createElement(Component, {
+      ref: 'input',
+      type: type,
+      options: options,
+      value: this.props.value,
+      onChange: this.props.onChange || noop,
+      ctx: this.props.ctx || {
+        auto: 'labels',
+        templates: templates,
+        i18n: i18n,
+        path: []
+      }
+    });
+  };
+
+  return Form;
+})();
+
+exports.Form = Form;
 
 },{"./util":3,"debug":4,"react":"react","tcomb-validation":20,"uvdom/react":44}],2:[function(require,module,exports){
 'use strict';

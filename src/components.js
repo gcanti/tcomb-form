@@ -87,9 +87,8 @@ export const annotations = {
 
   placeholder: function (Component) {
     Component.prototype.getPlaceholder = function getPlaceholder() {
-      const ctx = this.props.ctx;
       let placeholder = this.props.options.placeholder;
-      if (Nil.is(placeholder) && ctx.auto === 'placeholders') {
+      if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
         placeholder = this.getDefaultLabel();
       }
       return placeholder;
@@ -149,6 +148,14 @@ export class Component extends React.Component {
     const result = t.validate(value, this.props.type, this.props.ctx.path);
     this.setState({hasError: !result.isValid()});
     return result;
+  }
+
+  getAuto() {
+    return this.props.options.auto || this.props.ctx.auto;
+  }
+
+  getI18n() {
+    return this.props.options.i18n || this.props.ctx.i18n;
   }
 
   getDefaultLabel() {
@@ -412,8 +419,8 @@ export class Struct extends Component {
 
     const { options, ctx } = this.props;
     const props = this.getTypeProps();
-    const auto = options.auto || ctx.auto;
-    const i18n = options.i18n || ctx.i18n;
+    const auto = this.getAuto();
+    const i18n = this.getI18n();
     const config = this.getConfig();
     const templates = this.getTemplates();
     const value = this.state.value;
@@ -567,15 +574,11 @@ export class List extends Component {
     return this.props.options.template || this.getTemplates().list;
   }
 
-  getI81n() {
-    return this.props.options.i18n || this.props.ctx.i18n;
-  }
-
   getItems() {
 
     const { options, ctx } = this.props;
-    const auto = options.auto || ctx.auto;
-    const i18n = this.getI81n();
+    const auto = this.getAuto();
+    const i18n = this.getI18n();
     const config = this.getConfig();
     const templates = this.getTemplates();
     const value = this.state.value;
@@ -611,7 +614,7 @@ export class List extends Component {
   getLocals() {
 
     const options = this.props.options;
-    const i18n = this.getI81n();
+    const i18n = this.getI18n();
     const locals = super.getLocals();
     locals.add = options.disableAdd ? null : {
       label: i18n.add,
@@ -619,52 +622,6 @@ export class List extends Component {
     };
     locals.items = this.getItems();
     return locals;
-  }
-
-}
-
-export class Form {
-
-  getValue(raw) {
-    const result = this.refs.input.validate();
-    return raw === true ? result :
-      result.isValid() ? result.value :
-      null;
-  }
-
-  getComponent(path) {
-    path = t.Str.is(path) ? path.split('.') : path;
-    return path.reduce((input, name) => input.refs[name], this.refs.input);
-  }
-
-  render() {
-
-    let options = this.props.options;
-    const type = this.props.type;
-    const { i18n, templates } = Form;
-
-    options = options || nooptions;
-
-    t.assert(t.Type.is(type), `[${SOURCE}] missing required prop type`);
-    t.assert(t.Obj.is(options), `[${SOURCE}] prop options must be an object`);
-    t.assert(t.Obj.is(templates), `[${SOURCE}] missing templates config`);
-    t.assert(t.Obj.is(i18n), `[${SOURCE}] missing i18n config`);
-
-    const Component = getComponent(type, options);
-
-    return React.createElement(Component, {
-      ref: 'input',
-      type: type,
-      options: options,
-      value: this.props.value,
-      onChange: this.props.onChange || noop,
-      ctx: this.props.ctx || {
-        auto: 'labels',
-        templates,
-        i18n,
-        path: []
-      }
-    });
   }
 
 }
@@ -691,7 +648,7 @@ export class Dict extends Component {
   };
 
   validate() {
-    const result = this.refs.form.getValue(true);
+    const result = this.refs.form.validate();
     if (!result.isValid()) { return result; }
     return super.validate();
   }
@@ -739,7 +696,7 @@ export class Tuple extends Component {
   }
 
   validate() {
-    const result = this.refs.form.getValue(true);
+    const result = this.refs.form.validate;
     if (!result.isValid()) { return result; }
     return super.validate();
   }
@@ -765,4 +722,55 @@ export class Tuple extends Component {
   getLocals() {}
 
 }
+
+export class Form {
+
+  validate() {
+    return this.refs.input.validate();
+  }
+
+  getValue(raw) {
+    const result = this.validate();
+    return raw === true ? result :
+      result.isValid() ? result.value :
+      null;
+  }
+
+  getComponent(path) {
+    path = t.Str.is(path) ? path.split('.') : path;
+    return path.reduce((input, name) => input.refs[name], this.refs.input);
+  }
+
+  render() {
+
+    let options = this.props.options;
+    const type = this.props.type;
+    const { i18n, templates } = Form;
+
+    options = options || nooptions;
+
+    t.assert(t.Type.is(type), `[${SOURCE}] missing required prop type`);
+    t.assert(t.Obj.is(options), `[${SOURCE}] prop options must be an object`);
+    t.assert(t.Obj.is(templates), `[${SOURCE}] missing templates config`);
+    t.assert(t.Obj.is(i18n), `[${SOURCE}] missing i18n config`);
+
+    const Component = getComponent(type, options);
+
+    return React.createElement(Component, {
+      ref: 'input',
+      type: type,
+      options: options,
+      value: this.props.value,
+      onChange: this.props.onChange || noop,
+      ctx: this.props.ctx || {
+        auto: 'labels',
+        templates,
+        i18n,
+        path: []
+      }
+    });
+  }
+
+}
+
 
