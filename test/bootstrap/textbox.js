@@ -2,7 +2,6 @@
 
 var test = require('tape');
 var t = require('tcomb-validation');
-var skin = require('../../lib/skin');
 var bootstrap = require('../../lib/skins/bootstrap');
 var diff = require('deep-diff').diff;
 var compact = require('./compact');
@@ -19,7 +18,6 @@ test('bootstrap textbox()', function (tape) {
 
   var equal = function (tape, locals, expected, showDiff) {
     locals = mixin(mixin({}, base), locals, true);
-    locals = new skin.Textbox(locals);
     expected = compact(expected);
     var actual = compact(bootstrap.textbox(locals));
     if (showDiff) {

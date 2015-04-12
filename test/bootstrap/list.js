@@ -2,7 +2,6 @@
 
 var test = require('tape');
 var t = require('tcomb-validation');
-var skin = require('../../lib/skin');
 var bootstrap = require('../../lib/skins/bootstrap');
 var diff = require('deep-diff').diff;
 var compact = require('./compact');
@@ -16,7 +15,6 @@ test('bootstrap list()', function (tape) {
 
   var equal = function (tape, locals, expected, showDiff) {
     locals = mixin(mixin({}, base), locals, true);
-    locals = new skin.List(locals);
     expected = compact(expected);
     var actual = compact(bootstrap.list(locals));
     if (showDiff) {
@@ -123,7 +121,7 @@ test('bootstrap list()', function (tape) {
 
   tape.test('legend', function (tape) {
     tape.plan(1);
-    equal(tape, {legend: 'mylegend'}, {
+    equal(tape, {label: 'mylegend'}, {
       tag: 'div',
       attrs: {
         className: {'form-group': true}

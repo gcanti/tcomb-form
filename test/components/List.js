@@ -3,7 +3,7 @@
 var test = require('tape');
 var React = require('react');
 var t = require('../../.');
-var List = require('../../lib/components/List');
+var List = require('../../lib/components').List;
 var bootstrap = require('../../lib/skins/bootstrap');
 var util = require('./util');
 var vdom = require('react-vdom');
@@ -28,8 +28,8 @@ test('List', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.list(t.Str)}).disabled,
-      null,
-      'default disabled should be null');
+      undefined,
+      'default disabled should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.list(t.Str)}, {disabled: true}).disabled,
@@ -61,12 +61,12 @@ test('List', function (tape) {
     tape.plan(2);
 
     tape.strictEqual(
-      getLocals({type: t.list(t.Str)}, {legend: 'mylegend'}).legend,
+      getLocals({type: t.list(t.Str)}, {legend: 'mylegend'}).label,
       'mylegend',
       'should handle legend as strings');
 
     tape.deepEqual(
-      vdom(getLocals({type: t.list(t.Str)}, {legend: React.DOM.i(null, 'JSX legend')}).legend),
+      vdom(getLocals({type: t.list(t.Str)}, {legend: React.DOM.i(null, 'JSX legend')}).label),
       {tag: 'i', attrs: {}, children: 'JSX legend'},
       'should handle legend as JSX');
   });
@@ -104,8 +104,8 @@ test('List', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.list(t.Str)}).error,
-      null,
-      'default error should be null');
+      undefined,
+      'default error should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.list(t.Str)}, {error: 'myerror'}).error,

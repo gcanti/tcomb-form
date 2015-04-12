@@ -4,4 +4,3 @@ debug.disable('*');
 window.React = React;
 require('./components');
 require('./bootstrap');
-require('./util');

@@ -3,7 +3,7 @@
 var test = require('tape');
 var React = require('react');
 var t = require('../../.');
-var Select = require('../../lib/components/Select');
+var Select = require('../../lib/components').Select;
 var bootstrap = require('../../lib/skins/bootstrap');
 var util = require('./util');
 var vdom = require('react-vdom');
@@ -34,8 +34,8 @@ test('Select', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).disabled,
-      null,
-      'default disabled should be null');
+      undefined,
+      'default disabled should be undefined');
 
     tape.strictEqual(
       getLocals({type: Country}, {disabled: true}).disabled,
@@ -53,8 +53,8 @@ test('Select', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).label,
-      null,
-      'should default to null');
+      undefined,
+      'should default to undefined');
 
     tape.strictEqual(
       getLocals({type: Country, label: 'defaultLabel', auto: 'labels'}).label,
@@ -145,8 +145,8 @@ test('Select', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).error,
-      null,
-      'default error should be null');
+      undefined,
+      'default error should be undefined');
 
     tape.strictEqual(
       getLocals({type: Country}, {error: 'myerror'}).error,
@@ -170,19 +170,19 @@ test('Select', function (tape) {
     tape.plan(3);
 
     tape.strictEqual(
-      getLocals({type: Country}).template,
+      util.getInstance(Select, {type: Country}).getTemplate(),
       bootstrap.select,
       'default template should be bootstrap.select');
 
     var template = function () {};
 
     tape.strictEqual(
-      getLocals({type: Country}, {template: template}).template,
+      util.getInstance(Select, {type: Country}, {template: template}).getTemplate(),
       template,
       'should handle template option');
 
     tape.strictEqual(
-      getLocals({type: Country, templates: {select: template}}).template,
+      util.getInstance(Select, {type: Country, templates: {select: template}}).getTemplate(),
       template,
       'should handle context templates');
 
@@ -213,8 +213,8 @@ test('Select', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).autoFocus,
-      null,
-      'default autoFocus should be null');
+      undefined,
+      'default autoFocus should be undefined');
 
     tape.strictEqual(
       getLocals({type: Country}, {autoFocus: true}).autoFocus,
@@ -243,8 +243,8 @@ test('Select', function (tape) {
       ]}).options,
       [
         {value: '', text: '-'},
-        {value: 'IT', text: 'Italia', disabled: null},
-        {value: 'US', text: 'Stati Uniti', disabled: null}
+        {value: 'IT', text: 'Italia'},
+        {value: 'US', text: 'Stati Uniti'}
       ],
       'should handle `option` option');
 
@@ -281,7 +281,7 @@ test('Select', function (tape) {
     tape.deepEqual(
       getLocals({type: Country}, {nullOption: {value: '-1', text: 'my text'}}).options,
       [
-        {value: '-1', text: 'my text', disabled: null},
+        {value: '-1', text: 'my text'},
         {value: 'IT', text: 'Italy'},
         {value: 'US', text: 'United States'},
         {value: 'FR', text: 'France'}

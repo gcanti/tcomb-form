@@ -3,7 +3,7 @@
 var test = require('tape');
 var React = require('react');
 var t = require('../../.');
-var Textbox = require('../../lib/components/Textbox');
+var Textbox = require('../../lib/components').Textbox;
 var bootstrap = require('../../lib/skins/bootstrap');
 var util = require('./util');
 var vdom = require('react-vdom');
@@ -53,8 +53,8 @@ test('Textbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Str}).label,
-      null,
-      'should default to null');
+      undefined,
+      'should default to undefined');
 
     tape.strictEqual(
       getLocals({type: t.Str, label: 'defaultLabel', auto: 'labels'}).label,
@@ -83,8 +83,8 @@ test('Textbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Str}).placeholder,
-      null,
-      'default placeholder should be null');
+      undefined,
+      'default placeholder should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.Str}, {placeholder: 'myplaceholder'}).placeholder,
@@ -98,8 +98,8 @@ test('Textbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Str, auto: 'placeholders'}, {label: 'mylabel'}).placeholder,
-      null,
-      'should be null if a label is specified');
+      undefined,
+      'should be undefined if a label is specified');
 
     tape.strictEqual(
       getLocals({type: t.Str, auto: 'labels'}, {placeholder: 'myplaceholder'}).placeholder,
@@ -118,8 +118,8 @@ test('Textbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Str, auto: 'labels'}).placeholder,
-      null,
-      'should be null if auto !== placeholders');
+      undefined,
+      'should be undefined if auto !== placeholders');
 
     tape.strictEqual(
       getLocals({type: t.maybe(t.Str), label: 'defaultLabel', auto: 'placeholders'}).placeholder,
@@ -133,8 +133,8 @@ test('Textbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Str}).disabled,
-      null,
-      'default disabled should be null');
+      undefined,
+      'default disabled should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.Str}, {disabled: true}).disabled,
@@ -224,8 +224,8 @@ test('Textbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Str}).error,
-      null,
-      'default error should be null');
+      undefined,
+      'default error should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.Str}, {error: 'myerror'}).error,
@@ -249,19 +249,19 @@ test('Textbox', function (tape) {
     tape.plan(3);
 
     tape.strictEqual(
-      getLocals({type: t.Str}).template,
+      util.getInstance(Textbox, {type: t.Str}).getTemplate(),
       bootstrap.textbox,
       'default template should be bootstrap.textbox');
 
     var template = function () {};
 
     tape.strictEqual(
-      getLocals({type: t.Str}, {template: template}).template,
+      util.getInstance(Textbox, {type: t.Str}, {template: template}).getTemplate(),
       template,
       'should handle template option');
 
     tape.strictEqual(
-      getLocals({type: t.Str, templates: {textbox: template}}).template,
+      util.getInstance(Textbox, {type: t.Str, templates: {textbox: template}}).getTemplate(),
       template,
       'should handle context templates');
 
@@ -292,8 +292,8 @@ test('Textbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Str}).autoFocus,
-      null,
-      'default autoFocus should be null');
+      undefined,
+      'default autoFocus should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.Str}, {autoFocus: true}).autoFocus,

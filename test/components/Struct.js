@@ -3,7 +3,7 @@
 var test = require('tape');
 var React = require('react');
 var t = require('../../.');
-var Struct = require('../../lib/components/Struct');
+var Struct = require('../../lib/components').Struct;
 var bootstrap = require('../../lib/skins/bootstrap');
 var util = require('./util');
 var vdom = require('react-vdom');
@@ -45,8 +45,8 @@ test('Struct', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Person}).disabled,
-      null,
-      'default disabled should be null');
+      undefined,
+      'default disabled should be undefined');
 
     tape.strictEqual(
       getLocals({type: Person}, {disabled: true}).disabled,
@@ -78,12 +78,12 @@ test('Struct', function (tape) {
     tape.plan(2);
 
     tape.strictEqual(
-      getLocals({type: Person}, {legend: 'mylegend'}).legend,
+      getLocals({type: Person}, {legend: 'mylegend'}).label,
       'mylegend',
       'should handle legend as strings');
 
     tape.deepEqual(
-      vdom(getLocals({type: Person}, {legend: React.DOM.i(null, 'JSX legend')}).legend),
+      vdom(getLocals({type: Person}, {legend: React.DOM.i(null, 'JSX legend')}).label),
       {tag: 'i', attrs: {}, children: 'JSX legend'},
       'should handle legend as JSX');
   });
@@ -121,8 +121,8 @@ test('Struct', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Person}).error,
-      null,
-      'default error should be null');
+      undefined,
+      'default error should be undefined');
 
     tape.strictEqual(
       getLocals({type: Person}, {error: 'myerror'}).error,

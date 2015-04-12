@@ -3,7 +3,7 @@
 var test = require('tape');
 var React = require('react');
 var t = require('../../.');
-var Checkbox = require('../../lib/components/Checkbox');
+var Checkbox = require('../../lib/components').Checkbox;
 var bootstrap = require('../../lib/skins/bootstrap');
 var util = require('./util');
 var vdom = require('react-vdom');
@@ -28,8 +28,8 @@ test('Checkbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Bool}, {label: 'mylabel'}).disabled,
-      null,
-      'default disabled should be null');
+      undefined,
+      'default disabled should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.Bool}, {label: 'mylabel', disabled: true}).disabled,
@@ -118,8 +118,8 @@ test('Checkbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Bool}).error,
-      null,
-      'default error should be null');
+      undefined,
+      'default error should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.Bool}, {error: 'myerror'}).error,
@@ -143,19 +143,19 @@ test('Checkbox', function (tape) {
     tape.plan(3);
 
     tape.strictEqual(
-      getLocals({type: t.Bool}).template,
+      util.getInstance(Checkbox, {type: t.Bool}).getTemplate(),
       bootstrap.checkbox,
       'default template should be bootstrap.checkbox');
 
     var template = function () {};
 
     tape.strictEqual(
-      getLocals({type: t.Bool}, {template: template}).template,
+      util.getInstance(Checkbox, {type: t.Bool}, {template: template}).getTemplate(),
       template,
       'should handle template option');
 
     tape.strictEqual(
-      getLocals({type: t.Bool, templates: {checkbox: template}}).template,
+      util.getInstance(Checkbox, {type: t.Bool, templates: {checkbox: template}}).getTemplate(),
       template,
       'should handle context templates');
 
@@ -186,8 +186,8 @@ test('Checkbox', function (tape) {
 
     tape.strictEqual(
       getLocals({type: t.Bool}).autoFocus,
-      null,
-      'default autoFocus should be null');
+      undefined,
+      'default autoFocus should be undefined');
 
     tape.strictEqual(
       getLocals({type: t.Bool}, {autoFocus: true}).autoFocus,

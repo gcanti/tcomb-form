@@ -3,7 +3,7 @@
 var test = require('tape');
 var React = require('react');
 var t = require('../../.');
-var Radio = require('../../lib/components/Radio');
+var Radio = require('../../lib/components').Radio;
 var bootstrap = require('../../lib/skins/bootstrap');
 var util = require('./util');
 var vdom = require('react-vdom');
@@ -34,8 +34,8 @@ test('Radio', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).disabled,
-      null,
-      'default disabled should be null');
+      undefined,
+      'default disabled should be undefined');
 
     tape.strictEqual(
       getLocals({type: Country}, {disabled: true}).disabled,
@@ -53,8 +53,8 @@ test('Radio', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).label,
-      null,
-      'should default to null');
+      undefined,
+      'should default to undefined');
 
     tape.strictEqual(
       getLocals({type: Country, label: 'defaultLabel', auto: 'labels'}).label,
@@ -140,8 +140,8 @@ test('Radio', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).error,
-      null,
-      'default error should be null');
+      undefined,
+      'default error should be undefined');
 
     tape.strictEqual(
       getLocals({type: Country}, {error: 'myerror'}).error,
@@ -165,19 +165,19 @@ test('Radio', function (tape) {
     tape.plan(3);
 
     tape.strictEqual(
-      getLocals({type: Country}).template,
+      util.getInstance(Radio, {type: Country}).getTemplate(),
       bootstrap.radio,
       'default template should be bootstrap.radio');
 
     var template = function () {};
 
     tape.strictEqual(
-      getLocals({type: Country}, {template: template}).template,
+      util.getInstance(Radio, {type: Country}, {template: template}).getTemplate(),
       template,
       'should handle template option');
 
     tape.strictEqual(
-      getLocals({type: Country, templates: {radio: template}}).template,
+      util.getInstance(Radio, {type: Country, templates: {radio: template}}).getTemplate(),
       template,
       'should handle context templates');
 
@@ -208,8 +208,8 @@ test('Radio', function (tape) {
 
     tape.strictEqual(
       getLocals({type: Country}).autoFocus,
-      null,
-      'default autoFocus should be null');
+      undefined,
+      'default autoFocus should be undefined');
 
     tape.strictEqual(
       getLocals({type: Country}, {autoFocus: true}).autoFocus,
@@ -236,8 +236,8 @@ test('Radio', function (tape) {
         {value: 'US', text: 'Stati Uniti'}
       ]}).options,
       [
-        {value: 'IT', text: 'Italia', disabled: null},
-        {value: 'US', text: 'Stati Uniti', disabled: null}
+        {value: 'IT', text: 'Italia'},
+        {value: 'US', text: 'Stati Uniti'}
       ],
       'should handle `option` option');
 
