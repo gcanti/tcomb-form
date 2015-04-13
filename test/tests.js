@@ -165,38 +165,39 @@ var Component = {
 
 Component.extend = createExtend(Component);
 
-var textboxDefaultTransformer = Object.freeze({
-  format: function (value) {
-    return Nil.is(value) ? null : value;
-  },
-  parse: function (value) {
-    return (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
-  }
-});
-
-var textboxNumberTransformer = Object.freeze({
-  format: function (value) {
-    return Nil.is(value) ? value : String(value);
-  },
-  parse: function (value) {
-    var n = parseFloat(value);
-    var isNumeric = (value - n + 1) >= 0;
-    return isNumeric ? n : value;
-  }
-});
-
 var Textbox = Component.extend({
 
   displayName: 'Textbox',
+
+  statics: {
+    transformer: Object.freeze({
+      format: function (value) {
+        return Nil.is(value) ? null : value;
+      },
+      parse: function (value) {
+        return (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
+      }
+    }),
+    numberTransformer: Object.freeze({
+      format: function (value) {
+        return Nil.is(value) ? value : String(value);
+      },
+      parse: function (value) {
+        var n = parseFloat(value);
+        var isNumeric = (value - n + 1) >= 0;
+        return isNumeric ? n : value;
+      }
+    })
+  },
 
   getTransformer: function () {
     if (this.props.options.transformer) {
       return this.props.options.transformer;
     }
     if (this.props.ctx.report.innerType === t.Num) {
-      return textboxNumberTransformer;
+      return Textbox.numberTransformer;
     }
-    return textboxDefaultTransformer;
+    return Textbox.transformer;
   },
 
   getPlaceholder: function () {
@@ -225,24 +226,26 @@ var Textbox = Component.extend({
 
 });
 
-var checkboxDefaultTransformer = Object.freeze({
-  format: function (value) {
-    return Nil.is(value) ? false : value;
-  },
-  parse: function (value) {
-    return Nil.is(value) ? false : value;
-  }
-});
-
 var Checkbox = Component.extend({
 
   displayName: 'Checkbox',
+
+  statics: {
+    transformer: Object.freeze({
+      format: function (value) {
+        return Nil.is(value) ? false : value;
+      },
+      parse: function (value) {
+        return Nil.is(value) ? false : value;
+      }
+    })
+  },
 
   getTransformer: function () {
     if (this.props.options && this.props.options.transformer) {
       return this.props.options.transformer;
     }
-    return checkboxDefaultTransformer;
+    return Checkbox.transformer;
   },
 
   getTemplate: function () {
@@ -261,18 +264,6 @@ var Checkbox = Component.extend({
 
 });
 
-var selectDefaultTransformer = function (nullOption) {
-  return {
-    format: function (value) { return Nil.is(value) && nullOption ? nullOption.value : value; },
-    parse: function (value) { return nullOption && nullOption.value === value ? null : value; }
-  };
-};
-
-var selectMultipleTransformer = Object.freeze({
-  format: function (value) { return Nil.is(value) ? [] : value; },
-  parse: function (value) { return value; }
-});
-
 function sortByText(a, b) {
   return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
 }
@@ -288,15 +279,29 @@ var Select = Component.extend({
 
   displayName: 'Select',
 
+  statics: {
+    transformer: function (nullOption) {
+      return {
+        format: function (value) { return Nil.is(value) && nullOption ? nullOption.value : value; },
+        parse: function (value) { return nullOption && nullOption.value === value ? null : value; }
+      };
+    },
+    multipleTransformer: Object.freeze({
+      format: function (value) { return Nil.is(value) ? [] : value; },
+      parse: function (value) { return value; }
+    }),
+    getComparator: getComparator
+  },
+
   getTransformer: function () {
     var options = this.props.options;
     if (options.transformer) {
       return options.transformer;
     }
     if (this.isMultiple()) {
-      return selectMultipleTransformer;
+      return Select.multipleTransformer;
     }
-    return selectDefaultTransformer(this.getNullOption());
+    return Select.transformer(this.getNullOption());
   },
 
   getNullOption: function () {
@@ -342,36 +347,27 @@ var Select = Component.extend({
 
 });
 
-var radioDefaultTransformer = Object.freeze({
-  format: function (value) {
-    return Nil.is(value) ? null : value;
-  },
-  parse: function (value) {
-    return value;
-  }
-});
-
-function sortByText(a, b) {
-  return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
-}
-
-function getComparator(order) {
-  return {
-    asc: sortByText,
-    desc: function(a, b) { return -sortByText(a, b); }
-  }[order];
-}
-
 var Radio = Component.extend({
 
   displayName: 'Radio',
+
+  statics: {
+    transformer: Object.freeze({
+      format: function (value) {
+        return Nil.is(value) ? null : value;
+      },
+      parse: function (value) {
+        return value;
+      }
+    })
+  },
 
   getTransformer: function () {
     var options = this.props.options;
     if (options.transformer) {
       return options.transformer;
     }
-    return radioDefaultTransformer;
+    return Radio.transformer;
   },
 
   getOptions: function () {
@@ -400,24 +396,26 @@ var Radio = Component.extend({
 
 });
 
-var structDefaultTransformer = Object.freeze({
-  format: function (value) {
-    return Nil.is(value) ? {} : value;
-  },
-  parse: function (value) {
-    return value;
-  }
-});
-
 var Struct = Component.extend({
 
   displayName: 'Struct',
+
+  statics: {
+    transformer: Object.freeze({
+      format: function (value) {
+        return Nil.is(value) ? {} : value;
+      },
+      parse: function (value) {
+        return value;
+      }
+    })
+  },
 
   getTransformer: function () {
     if (this.props.options.transformer) {
       return this.props.options.transformer;
     }
-    return structDefaultTransformer;
+    return Struct.transformer;
   },
 
   onChange: function (fieldName, fieldValue, path) {
@@ -525,15 +523,6 @@ var Struct = Component.extend({
 
 });
 
-var listDefaultTransformer = Object.freeze({
-  format: function (value) {
-    return Nil.is(value) ? [] : value;
-  },
-  parse: function (value) {
-    return value;
-  }
-});
-
 function justify(value, keys) {
   if (value.length === keys.length) { return keys; }
   var ret = [];
@@ -546,6 +535,17 @@ function justify(value, keys) {
 var List = Component.extend({
 
   displayName: 'List',
+
+  statics: {
+    transformer: Object.freeze({
+      format: function (value) {
+        return Nil.is(value) ? [] : value;
+      },
+      parse: function (value) {
+        return value;
+      }
+    })
+  },
 
   getInitialState: function () {
     var value = this.getTransformer().format(this.props.value || []);
@@ -568,7 +568,7 @@ var List = Component.extend({
     if (this.props.options.transformer) {
       return this.props.options.transformer;
     }
-    return listDefaultTransformer;
+    return List.transformer;
   },
 
   onChange: function (value, keys, path) {
@@ -710,33 +710,35 @@ var List = Component.extend({
 
 });
 
-var defaultDictTransformer = Object.freeze({
-  format: function (value) {
-    if (t.Arr.is(value)) { return value; }
-    value = value || {};
-    var result = [];
-    for (var key in value) {
-      if (value.hasOwnProperty(key)) {
-        result.push({domain: key, codomain: value[key]});
-      }
-    }
-    return result;
-  },
-  parse: function (value) {
-    var result = {};
-    value.forEach(function (types) {
-      result[types.domain] = types.codomain;
-    });
-    return result;
-  }
-});
-
 var Dict = Component.extend({
 
   displayName: 'Dict',
 
+  statics: {
+    transformer: Object.freeze({
+      format: function (value) {
+        if (t.Arr.is(value)) { return value; }
+        value = value || {};
+        var result = [];
+        for (var key in value) {
+          if (value.hasOwnProperty(key)) {
+            result.push({domain: key, codomain: value[key]});
+          }
+        }
+        return result;
+      },
+      parse: function (value) {
+        var result = {};
+        value.forEach(function (types) {
+          result[types.domain] = types.codomain;
+        });
+        return result;
+      }
+    })
+  },
+
   getTransformer: function () {
-    return this.props.options.transformer || defaultDictTransformer;
+    return this.props.options.transformer || Dict.transformer;
   },
 
   validate: function() {
@@ -747,23 +749,24 @@ var Dict = Component.extend({
 
   getTemplate: function () {
     return function (locals) {
-      t.assert(this.props.ctx.report.innerType.meta.kind === 'dict');
+      var Dict = this.props.ctx.report.innerType;
+      t.assert(Dict.meta.kind === 'dict');
       var Type = t.list(t.struct({
-        domain: this.props.ctx.report.innerType.meta.domain,
-        codomain: this.props.ctx.report.innerType.meta.codomain
+        domain: Dict.meta.domain,
+        codomain: Dict.meta.codomain
       }));
       var ctx = t.mixin({}, this.props.ctx);
       ctx.report = getReport(Type);
       var options = t.mixin({}, this.props.options);
       delete options.factory;
       return React.createElement(Form, {
-        ref: "form", 
-        type: Type, 
-        options: options, 
-        onChange: locals.onChange, 
-        value: locals.value, 
-        ctx: ctx}
-      );
+        ref: 'form',
+        type: Type,
+        options: options,
+        onChange: locals.onChange,
+        value: locals.value,
+        ctx: ctx
+      });
     }.bind(this);
   }
 
