@@ -34,17 +34,18 @@ var getReport = util.getReport;
 var move = util.move;
 var humanize = util.humanize;
 
-function validate() {
-  var value = this.getTransformer().parse(this.state.value);
-  var result = t.validate(value, this.props.ctx.report.type, this.props.ctx.path);
-  this.setState({hasError: !result.isValid()});
-  return result;
+function createExtend(oldSpec) {
+  return function (spec) {
+    var newSpec = merge(oldSpec, spec);
+    var Component = React.createClass(newSpec);
+    Component.extend = createExtend(newSpec);
+    return Component;
+  };
 }
 
-var ComponentMixin = {
+var Component = {
 
   getInitialState: function () {
-    t.assert(t.Func.is(this.getTransformer), '[tcomb-form] missing getTransformer');
     var value = this.getTransformer().format(this.props.value);
     return {
       hasError: false,
@@ -71,6 +72,28 @@ var ComponentMixin = {
     }.bind(this));
   },
 
+  getTransformer: function () {
+    return {
+      format: function (value) { return value; },
+      parse: function (value) { return value; }
+    };
+  },
+
+  validate: function () {
+    var value = this.getTransformer().parse(this.state.value);
+    var result = t.validate(value, this.props.ctx.report.type, this.props.ctx.path);
+    this.setState({hasError: !result.isValid()});
+    return result;
+  },
+
+  getAuto: function () {
+    return this.props.options.auto || this.props.ctx.auto;
+  },
+
+  getI18n: function () {
+    return this.props.options.i18n || this.props.ctx.i18n;
+  },
+
   getDefaultLabel: function () {
     var ctx = this.props.ctx;
     if (ctx.label) {
@@ -79,11 +102,10 @@ var ComponentMixin = {
   },
 
   getLabel: function () {
-    var ctx = this.props.ctx;
     var legend = this.props.options.legend;
     var label = this.props.options.label;
     label = label || legend;
-    if (Nil.is(label) && ctx.auto === 'labels') {
+    if (Nil.is(label) && this.getAuto() === 'labels') {
       label = this.getDefaultLabel();
     }
     return label;
@@ -110,7 +132,7 @@ var ComponentMixin = {
     return this.props.options.name || this.props.ctx.name || this.getId();
   },
 
-  getDefaultLocals: function () {
+  getLocals: function () {
     var options = this.props.options;
     return {
       path: this.props.ctx.path,
@@ -128,8 +150,11 @@ var ComponentMixin = {
   },
 
   render: function () {
-    var locals = this.getLocals ? this.getLocals() : this.getDefaultLocals();
-    t.assert(t.Func.is(this.getTemplate), '[tcomb-form] missing getTemplate');
+    var locals = this.getLocals();
+    // getTemplate is the only required custom implementation
+    if (!t.Func.is(this.getTemplate)) {
+      t.fail('[tcomb-form] missing getTemplate() method for ' + this.constructor.type.displayName);
+    }
     var template = this.getTemplate();
     log('render() called for `%s` field', locals.name);
     return compile(template(locals));
@@ -137,16 +162,19 @@ var ComponentMixin = {
 
 };
 
-var textboxDefaultTransformer = {
+Component.extend = createExtend(Component);
+Object.freeze(Component);
+
+var textboxDefaultTransformer = Object.freeze({
   format: function (value) {
     return Nil.is(value) ? null : value;
   },
   parse: function (value) {
     return (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
   }
-};
+});
 
-var textboxNumberTransformer = {
+var textboxNumberTransformer = Object.freeze({
   format: function (value) {
     return Nil.is(value) ? value : String(value);
   },
@@ -155,11 +183,11 @@ var textboxNumberTransformer = {
     var isNumeric = (value - n + 1) >= 0;
     return isNumeric ? n : value;
   }
-};
+});
 
-var TextboxMixin = {
+var Textbox = Component.extend({
 
-  mixins: [ComponentMixin],
+  displayName: 'Textbox',
 
   getTransformer: function () {
     if (this.props.options.transformer) {
@@ -171,19 +199,21 @@ var TextboxMixin = {
     return textboxDefaultTransformer;
   },
 
-  validate: validate,
-
   getPlaceholder: function () {
     var placeholder = this.props.options.placeholder;
-    if (Nil.is(placeholder) && this.props.ctx.auto === 'placeholders') {
+    if (Nil.is(placeholder) && this.getAuto().auto === 'placeholders') {
       placeholder = this.getDefaultLabel();
     }
     return placeholder;
   },
 
+  getTemplate: function () {
+    return this.props.options.template || this.props.ctx.templates.textbox;
+  },
+
   getLocals: function () {
     var options = this.props.options;
-    var locals = this.getDefaultLocals();
+    var locals = Component.getLocals.call(this);
     locals = t.mixin(locals, {
       autoFocus: options.autoFocus,
       placeholder: this.getPlaceholder(),
@@ -193,36 +223,20 @@ var TextboxMixin = {
     return locals;
   }
 
-};
-
-var Textbox = React.createClass({
-
-  displayName: 'Textbox',
-
-  mixins: [TextboxMixin],
-
-  getTemplate: function () {
-    return this.props.options.template || this.props.ctx.templates.textbox;
-  }
-
 });
 
-Textbox.defaultTransformer = textboxDefaultTransformer;
-Textbox.numberTransformer = textboxNumberTransformer;
-Textbox.Mixin = TextboxMixin;
-
-var checkboxDefaultTransformer = {
+var checkboxDefaultTransformer = Object.freeze({
   format: function (value) {
     return Nil.is(value) ? false : value;
   },
   parse: function (value) {
     return Nil.is(value) ? false : value;
   }
-};
+});
 
-var CheckboxMixin = {
+var Checkbox = Component.extend({
 
-  mixins: [ComponentMixin],
+  displayName: 'Checkbox',
 
   getTransformer: function () {
     if (this.props.options && this.props.options.transformer) {
@@ -231,11 +245,13 @@ var CheckboxMixin = {
     return checkboxDefaultTransformer;
   },
 
-  validate: validate,
+  getTemplate: function () {
+    return this.props.options.template || this.props.ctx.templates.checkbox;
+  },
 
   getLocals: function () {
     var opts = this.props.options;
-    var locals = this.getDefaultLocals();
+    var locals = Component.getLocals.call(this);
     locals = t.mixin(locals, {
       autoFocus: opts.autoFocus,
       className: opts.className
@@ -243,22 +259,7 @@ var CheckboxMixin = {
     return locals;
   }
 
-};
-
-var Checkbox = React.createClass({
-
-  displayName: 'Checkbox',
-
-  mixins: [CheckboxMixin],
-
-  getTemplate: function () {
-    return this.props.options.template || this.props.ctx.templates.checkbox;
-  }
-
 });
-
-Checkbox.defaultTransformer = checkboxDefaultTransformer;
-Checkbox.Mixin = CheckboxMixin;
 
 var selectDefaultTransformer = function (nullOption) {
   return {
@@ -267,10 +268,10 @@ var selectDefaultTransformer = function (nullOption) {
   };
 };
 
-var selectMultipleTransformer = {
+var selectMultipleTransformer = Object.freeze({
   format: function (value) { return Nil.is(value) ? [] : value; },
   parse: function (value) { return value; }
-};
+});
 
 function sortByText(a, b) {
   return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
@@ -283,9 +284,9 @@ function getComparator(order) {
   }[order];
 }
 
-var SelectMixin = {
+var Select = Component.extend({
 
-  mixins: [ComponentMixin],
+  displayName: 'Select',
 
   getTransformer: function () {
     var options = this.props.options;
@@ -297,8 +298,6 @@ var SelectMixin = {
     }
     return selectDefaultTransformer(this.getNullOption());
   },
-
-  validate: validate,
 
   getNullOption: function () {
     return this.props.options.nullOption || {value: '', text: '-'};
@@ -325,46 +324,32 @@ var SelectMixin = {
     return items;
   },
 
+  getTemplate: function () {
+    return this.props.options.template || this.props.ctx.templates.select;
+  },
+
   getLocals: function () {
     var opts = this.props.options;
-    var locals = this.getDefaultLocals();
-
+    var locals = Component.getLocals.call(this);
     locals = t.mixin(locals, {
       autoFocus: opts.autoFocus,
       className: opts.className,
       multiple: this.isMultiple(),
       options: this.getOptions()
     });
-
     return locals;
-  }
-
-};
-
-var Select = React.createClass({
-
-  displayName: 'Select',
-
-  mixins: [SelectMixin],
-
-  getTemplate: function () {
-    return this.props.options.template || this.props.ctx.templates.select;
   }
 
 });
 
-Select.defaultTransformer = selectDefaultTransformer;
-Select.multipleTransformer = selectMultipleTransformer;
-Select.Mixin = SelectMixin;
-
-var radioDefaultTransformer = {
+var radioDefaultTransformer = Object.freeze({
   format: function (value) {
     return Nil.is(value) ? null : value;
   },
   parse: function (value) {
     return value;
   }
-};
+});
 
 function sortByText(a, b) {
   return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
@@ -377,9 +362,9 @@ function getComparator(order) {
   }[order];
 }
 
-var RadioMixin = {
+var Radio = Component.extend({
 
-  mixins: [ComponentMixin],
+  displayName: 'Radio',
 
   getTransformer: function () {
     var options = this.props.options;
@@ -388,8 +373,6 @@ var RadioMixin = {
     }
     return radioDefaultTransformer;
   },
-
-  validate: validate,
 
   getOptions: function () {
     var options = this.props.options;
@@ -400,60 +383,35 @@ var RadioMixin = {
     return items;
   },
 
+  getTemplate: function () {
+    return this.props.options.template || this.props.ctx.templates.radio;
+  },
+
   getLocals: function () {
     var opts = this.props.options;
-    var locals = this.getDefaultLocals();
-
+    var locals = Component.getLocals.call(this);
     locals = t.mixin(locals, {
       autoFocus: opts.autoFocus,
       className: opts.className,
       options: this.getOptions()
     });
-
     return locals;
-  }
-
-};
-
-var Radio = React.createClass({
-
-  displayName: 'Radio',
-
-  mixins: [RadioMixin],
-
-  getTemplate: function () {
-    return this.props.options.template || this.props.ctx.templates.radio;
   }
 
 });
 
-Radio.defaultTransformer = radioDefaultTransformer;
-
-var structDefaultTransformer = {
+var structDefaultTransformer = Object.freeze({
   format: function (value) {
     return Nil.is(value) ? {} : value;
   },
   parse: function (value) {
     return value;
   }
-};
+});
 
-var StructMixin = {
+var Struct = Component.extend({
 
   displayName: 'Struct',
-
-  getInitialState: ComponentMixin.getInitialState,
-  componentWillReceiveProps: ComponentMixin.componentWillReceiveProps,
-  shouldComponentUpdate: ComponentMixin.shouldComponentUpdate,
-  getDefaultLocals: ComponentMixin.getDefaultLocals,
-  getError: ComponentMixin.getError,
-  hasError: ComponentMixin.hasError,
-  getConfig: ComponentMixin.getConfig,
-  getDefaultLabel: ComponentMixin.getDefaultLabel,
-  getLabel: ComponentMixin.getLabel,
-  getId: ComponentMixin.getId,
-  getName: ComponentMixin.getName,
-  render: ComponentMixin.render,
 
   getTransformer: function () {
     if (this.props.options.transformer) {
@@ -499,10 +457,6 @@ var StructMixin = {
     return new t.ValidationResult({errors: errors, value: value});
   },
 
-  getTemplates: function () {
-    return merge(this.props.ctx.templates, this.props.options.templates);
-  },
-
   getTypeProps: function () {
     return this.props.ctx.report.innerType.meta.props;
   },
@@ -511,21 +465,13 @@ var StructMixin = {
     return this.props.options.order || Object.keys(this.getTypeProps());
   },
 
-  getAuto: function () {
-    return this.props.options.auto || this.props.ctx.auto;
-  },
-
-  getI81n: function () {
-    return this.props.options.i18n || this.props.ctx.i18n;
-  },
-
   getInputs: function () {
 
     var options = this.props.options;
     var ctx = this.props.ctx;
     var props = this.getTypeProps();
     var auto = this.getAuto();
-    var i18n = this.getI81n();
+    var i18n = this.getI18n();
     var config = this.getConfig();
     var templates = this.getTemplates();
     var value = this.state.value;
@@ -558,44 +504,35 @@ var StructMixin = {
     return inputs;
   },
 
+  getTemplates: function () {
+    return merge(this.props.ctx.templates, this.props.options.templates);
+  },
+
+  getTemplate: function () {
+    return this.props.options.template || this.getTemplates().struct;
+  },
+
   getLocals: function () {
     var options = this.props.options;
-    var locals = this.getDefaultLocals();
-
+    var locals = Component.getLocals.call(this);
     locals = t.mixin(locals, {
       order: this.getOrder(),
       inputs: this.getInputs(),
       className: options.className
     });
-
     return locals;
-  }
-
-};
-
-var Struct = React.createClass({
-
-  displayName: 'Struct',
-
-  mixins: [StructMixin],
-
-  getTemplate: function () {
-    return this.props.options.template || this.getTemplates().struct;
   }
 
 });
 
-Struct.defaultTransformer = structDefaultTransformer;
-Struct.Mixin = StructMixin;
-
-var listDefaultTransformer = {
+var listDefaultTransformer = Object.freeze({
   format: function (value) {
     return Nil.is(value) ? [] : value;
   },
   parse: function (value) {
     return value;
   }
-};
+});
 
 function justify(value, keys) {
   if (value.length === keys.length) { return keys; }
@@ -606,20 +543,9 @@ function justify(value, keys) {
   return ret;
 }
 
-var ListMixin = {
+var List = Component.extend({
 
   displayName: 'List',
-
-  shouldComponentUpdate: ComponentMixin.shouldComponentUpdate,
-  getDefaultLocals: ComponentMixin.getDefaultLocals,
-  getError: ComponentMixin.getError,
-  hasError: ComponentMixin.hasError,
-  getConfig: ComponentMixin.getConfig,
-  getDefaultLabel: ComponentMixin.getDefaultLabel,
-  getLabel: ComponentMixin.getLabel,
-  getId: ComponentMixin.getId,
-  getName: ComponentMixin.getName,
-  render: ComponentMixin.render,
 
   getInitialState: function () {
     var value = this.getTransformer().format(this.props.value || []);
@@ -717,24 +643,12 @@ var ListMixin = {
     }
   },
 
-  getTemplates: function () {
-    return merge(this.props.ctx.templates, this.props.options.templates);
-  },
-
-  getAuto: function () {
-    return this.props.options.auto || this.props.ctx.auto;
-  },
-
-  getI81n: function () {
-    return this.props.options.i18n || this.props.ctx.i18n;
-  },
-
   getItems: function () {
 
     var options = this.props.options;
     var ctx = this.props.ctx;
     var auto = this.getAuto();
-    var i18n = this.getI81n();
+    var i18n = this.getI18n();
     var config = this.getConfig();
     var templates = this.getTemplates();
     var value = this.state.value;
@@ -769,11 +683,19 @@ var ListMixin = {
     }.bind(this));
   },
 
+  getTemplates: function () {
+    return merge(this.props.ctx.templates, this.props.options.templates);
+  },
+
+  getTemplate: function () {
+    return this.props.options.template || this.getTemplates().list;
+  },
+
   getLocals: function () {
 
     var options = this.props.options;
-    var i18n = this.getI81n();
-    var locals = this.getDefaultLocals();
+    var i18n = this.getI18n();
+    var locals = Component.getLocals.call(this);
     locals = t.mixin(locals, {
       add: options.disableAdd ? null : {
         label: i18n.add,
@@ -786,54 +708,41 @@ var ListMixin = {
     return locals;
   }
 
-};
-
-var List = React.createClass({
-
-  displayName: 'List',
-
-  mixins: [ListMixin],
-
-  getTemplate: function () {
-    return this.props.options.template || this.getTemplates().list;
-  }
-
 });
 
-List.defaultTransformer = listDefaultTransformer;
-List.Mixin = ListMixin;
+var defaultDictTransformer = Object.freeze({
+  format: function (value) {
+    if (t.Arr.is(value)) { return value; }
+    value = value || {};
+    var result = [];
+    for (var key in value) {
+      if (value.hasOwnProperty(key)) {
+        result.push({domain: key, codomain: value[key]});
+      }
+    }
+    return result;
+  },
+  parse: function (value) {
+    var result = {};
+    value.forEach(function (types) {
+      result[types.domain] = types.codomain;
+    });
+    return result;
+  }
+});
 
-var Dict = React.createClass({displayName: "Dict",
+var Dict = Component.extend({
 
-  mixins: [ComponentMixin],
+  displayName: 'Dict',
 
   getTransformer: function () {
-    return {
-      format: function (value) {
-        if (t.Arr.is(value)) { return value; }
-        value = value || {};
-        var result = [];
-        for (var key in value) {
-          if (value.hasOwnProperty(key)) {
-            result.push({domain: key, codomain: value[key]});
-          }
-        }
-        return result;
-      },
-      parse: function (value) {
-        var result = {};
-        value.forEach(function (types) {
-          result[types.domain] = types.codomain;
-        });
-        return result;
-      }
-    };
+    return this.props.options.transformer || defaultDictTransformer;
   },
 
   validate: function() {
     var result = this.refs.form.validate();
     if (!result.isValid()) { return result; }
-    return validate.call(this);
+    return Component.validate.call(this);
   },
 
   getTemplate: function () {
@@ -938,13 +847,14 @@ var Form = React.createClass({
 
 module.exports = {
   getComponent: getComponent,
-  ComponentMixin: ComponentMixin,
+  Component: Component,
   Textbox: Textbox,
   Checkbox: Checkbox,
   Select: Select,
   Radio: Radio,
   Struct: Struct,
   List: List,
+  Dict: Dict,
   Form: Form
 };
 
