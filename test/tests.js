@@ -25,7 +25,8 @@ var util = require('./util');
 var Nil = t.Nil;
 var SOURCE = '[tcomb-form]';
 var log = debug(SOURCE);
-var nooptions = Object.freeze({});
+var noobj = Object.freeze({});
+var noarr = Object.freeze([]);
 var noop = function () {};
 var merge = util.merge;
 var uuid = util.uuid;
@@ -60,11 +61,13 @@ var Component = {
   },
 
   shouldComponentUpdate: function (nextProps, nextState) {
-    return nextState.value !== this.state.value ||
+    var should = nextState.value !== this.state.value ||
       nextState.hasError !== this.state.hasError ||
       nextProps.value !== this.state.value ||
       nextProps.options !== this.props.options ||
       nextProps.ctx.report.type !== this.props.ctx.report.type;
+    //log('shouldComponentUpdate %s - %s: %s', this.getName(), this.constructor.type.displayName, should);
+    return should;
   },
 
   onChange: function (value) {
@@ -161,7 +164,7 @@ var Component = {
       t.fail('[tcomb-form] missing getTemplate() method for ' + this.constructor.type.displayName);
     }
     var template = this.getTemplate();
-    log('render() called for `%s` field', locals.name);
+    //log('render() called for `%s` field', locals.name);
     return compile(template(locals));
   }
 
@@ -195,13 +198,7 @@ var Textbox = Component.extend({
   },
 
   getTransformer: function () {
-    if (this.props.options.transformer) {
-      return this.props.options.transformer;
-    }
-    if (this.getInnerType() === t.Num) {
-      return Textbox.numberTransformer;
-    }
-    return Textbox.transformer;
+    return this.props.options.transformer || (this.getInnerType() === t.Num ? Textbox.numberTransformer : Textbox.transformer);
   },
 
   getPlaceholder: function () {
@@ -291,21 +288,14 @@ var Select = Component.extend({
       };
     },
     multipleTransformer: Object.freeze({
-      format: function (value) { return Nil.is(value) ? [] : value; },
+      format: function (value) { return Nil.is(value) ? noarr : value; },
       parse: function (value) { return value; }
     }),
     getComparator: getComparator
   },
 
   getTransformer: function () {
-    var options = this.props.options;
-    if (options.transformer) {
-      return options.transformer;
-    }
-    if (this.isMultiple()) {
-      return Select.multipleTransformer;
-    }
-    return Select.transformer(this.getNullOption());
+    return this.props.options.transformer || (this.isMultiple() ? Select.multipleTransformer : Select.transformer(this.getNullOption()));
   },
 
   getNullOption: function () {
@@ -368,11 +358,7 @@ var Radio = Component.extend({
   },
 
   getTransformer: function () {
-    var options = this.props.options;
-    if (options.transformer) {
-      return options.transformer;
-    }
-    return Radio.transformer;
+    return this.props.options.transformer || Radio.transformer;
   },
 
   getOptions: function () {
@@ -408,7 +394,7 @@ var Struct = Component.extend({
   statics: {
     transformer: Object.freeze({
       format: function (value) {
-        return Nil.is(value) ? {} : value;
+        return Nil.is(value) ? noobj : value;
       },
       parse: function (value) {
         return value;
@@ -417,10 +403,7 @@ var Struct = Component.extend({
   },
 
   getTransformer: function () {
-    if (this.props.options.transformer) {
-      return this.props.options.transformer;
-    }
-    return Struct.transformer;
+    return this.props.options.transformer || Struct.transformer;
   },
 
   onChange: function (fieldName, fieldValue, path) {
@@ -483,7 +466,7 @@ var Struct = Component.extend({
     for (var prop in props) {
       if (props.hasOwnProperty(prop)) {
         var propType = props[prop];
-        var propOptions = options.fields && options.fields[prop] ? options.fields[prop] : nooptions;
+        var propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj;
         inputs[prop] = React.createElement(getComponent(propType, propOptions), {
           key: prop,
           ref: prop,
@@ -544,7 +527,7 @@ var List = Component.extend({
   statics: {
     transformer: Object.freeze({
       format: function (value) {
-        return Nil.is(value) ? [] : value;
+        return Nil.is(value) ? noarr : value;
       },
       parse: function (value) {
         return value;
@@ -553,7 +536,7 @@ var List = Component.extend({
   },
 
   getInitialState: function () {
-    var value = this.getTransformer().format(this.props.value || []);
+    var value = this.getTransformer().format(this.props.value || noarr);
     return {
       hasError: false,
       value: value,
@@ -562,7 +545,7 @@ var List = Component.extend({
   },
 
   componentWillReceiveProps: function (props) {
-    var value = this.getTransformer().format(props.value || []);
+    var value = this.getTransformer().format(props.value || noarr);
     this.setState({
       value: value,
       keys: justify(value, this.state.keys)
@@ -570,10 +553,7 @@ var List = Component.extend({
   },
 
   getTransformer: function () {
-    if (this.props.options.transformer) {
-      return this.props.options.transformer;
-    }
-    return List.transformer;
+    return this.props.options.transformer || List.transformer;
   },
 
   onChange: function (value, keys, path) {
@@ -659,7 +639,7 @@ var List = Component.extend({
     var value = this.state.value;
     var type = this.getInnerType().meta.type;
     var report = getReport(type);
-    var Component = getComponent(type, options.item || nooptions);
+    var Component = getComponent(type, options.item || noobj);
     return value.map(function (value, i) {
       var buttons = [];
       if (!options.disableRemove) { buttons.push({ label: i18n.remove, click: this.removeItem.bind(this, i) }); }
@@ -669,7 +649,7 @@ var List = Component.extend({
         input: React.createElement(Component, {
           ref: i,
           type: type,
-          options: options.item || nooptions,
+          options: options.item || noobj,
           value: value,
           onChange: this.onItemChange.bind(this, i),
           ctx: {
@@ -764,7 +744,7 @@ var Form = React.createClass({
   render: function () {
 
     var type = this.props.type;
-    var options = this.props.options || nooptions;
+    var options = this.props.options || noobj;
     var templates = Form.templates;
     var i18n = Form.i18n;
 
@@ -827,6 +807,8 @@ var getButton = uform.getButton;
 var getCol = uform.getCol;
 var getAlert = uform.getAlert;
 var getBreakpoints = uform.getBreakpoints;
+
+var noobj = Object.freeze({});
 
 var Positive = t.subtype(t.Num, function (n) {
   return n % 1 === 0 && n >= 0;
@@ -957,7 +939,7 @@ function getHiddenTextbox(locals) {
 
 function textbox(locals) {
 
-  var config = new TextboxConfig(locals.config || {});
+  var config = new TextboxConfig(locals.config || noobj);
 
   if (locals.type === 'hidden') {
     return getHiddenTextbox(locals);
@@ -1028,7 +1010,7 @@ function textbox(locals) {
 
 function checkbox(locals) {
 
-  var config = new CheckboxConfig(locals.config || {});
+  var config = new CheckboxConfig(locals.config || noobj);
 
   var control = uform.getCheckbox({
     autoFocus: locals.autoFocus,
@@ -1069,7 +1051,7 @@ function checkbox(locals) {
 
 function select(locals) {
 
-  var config = new SelectConfig(locals.config || {});
+  var config = new SelectConfig(locals.config || noobj);
 
   var options = locals.options.map(function (x) {
     return x.label ? uform.getOptGroup(x) : uform.getOption(x);
@@ -1140,7 +1122,7 @@ function select(locals) {
 
 function radio(locals) {
 
-  var config = new RadioConfig(locals.config || {});
+  var config = new RadioConfig(locals.config || noobj);
 
   var control = locals.options.map(function (option, i) {
     return uform.getRadio({
@@ -1199,7 +1181,7 @@ function radio(locals) {
 
 function struct(locals) {
 
-  var config = new StructConfig(locals.config || {});
+  var config = new StructConfig(locals.config || noobj);
 
   var rows = [];
 
@@ -1241,7 +1223,7 @@ function struct(locals) {
 
 function list(locals) {
 
-  var config = new ListConfig(locals.config || {});
+  var config = new ListConfig(locals.config || noobj);
 
   var rows = [];
 
@@ -1321,8 +1303,7 @@ module.exports = {
   select: select,
   radio: radio,
   struct: struct,
-  list: list
-};
+  list: list};
 
 },{"tcomb-validation":178,"uvdom-bootstrap/form":180}],5:[function(require,module,exports){
 'use strict';
