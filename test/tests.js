@@ -747,16 +747,19 @@ var Dict = Component.extend({
 
   getTemplate: function () {
     return function (locals) {
+      t.assert(this.props.ctx.report.innerType.meta.kind === 'dict');
       var Type = t.list(t.struct({
         domain: this.props.ctx.report.innerType.meta.domain,
         codomain: this.props.ctx.report.innerType.meta.codomain
       }));
       var ctx = t.mixin({}, this.props.ctx);
       ctx.report = getReport(Type);
+      var options = t.mixin({}, this.props.options);
+      delete options.factory;
       return React.createElement(Form, {
         ref: "form", 
         type: Type, 
-        options: this.props.options, 
+        options: options, 
         onChange: locals.onChange, 
         value: locals.value, 
         ctx: ctx}
