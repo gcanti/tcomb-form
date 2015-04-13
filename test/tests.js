@@ -34,6 +34,7 @@ var getReport = util.getReport;
 var move = util.move;
 var humanize = util.humanize;
 
+// recursively create an extend method
 function createExtend(oldSpec) {
   return function (spec) {
     var newSpec = merge(oldSpec, spec);
@@ -163,7 +164,6 @@ var Component = {
 };
 
 Component.extend = createExtend(Component);
-Object.freeze(Component);
 
 var textboxDefaultTransformer = Object.freeze({
   format: function (value) {
@@ -201,7 +201,7 @@ var Textbox = Component.extend({
 
   getPlaceholder: function () {
     var placeholder = this.props.options.placeholder;
-    if (Nil.is(placeholder) && this.getAuto().auto === 'placeholders') {
+    if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
       placeholder = this.getDefaultLabel();
     }
     return placeholder;
