@@ -164,13 +164,19 @@ var Component = {
       t.fail('[tcomb-form] missing getTemplate() method for ' + this.constructor.type.displayName);
     }
     var template = this.getTemplate();
-    //log('render() called for `%s` field', locals.name);
+    log('render() called for `%s` field', locals.name);
     return compile(template(locals));
   }
 
 };
 
 Component.extend = createExtend(Component);
+
+function parseNumber(value) {
+  var n = parseFloat(value);
+  var isNumeric = (value - n + 1) >= 0;
+  return isNumeric ? n : value;
+}
 
 var Textbox = Component.extend({
 
@@ -181,9 +187,7 @@ var Textbox = Component.extend({
       format: function (value) {
         return Nil.is(value) ? null : value;
       },
-      parse: function (value) {
-        return (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
-      }
+      parse: parseNumber
     }),
     numberTransformer: Object.freeze({
       format: function (value) {
@@ -383,6 +387,36 @@ var Radio = Component.extend({
       options: this.getOptions()
     });
     return locals;
+  }
+
+});
+
+var Dat = Component.extend({
+
+  displayName: 'Dat',
+
+  statics: {
+    transformer: Object.freeze({
+      format: function (value) {
+        return t.Arr.is(value) ? value :
+          t.Dat.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) :
+          [null, null, null];
+      },
+      parse: function (value) {
+        value = value.map(parseNumber);
+        return value.every(t.Num.is) ? new Date(value[0], value[1], value[2]) :
+          value.every(Nil.is) ? null :
+          value;
+      }
+    })
+  },
+
+  getTransformer: function () {
+    return this.props.options.transformer || Dat.transformer;
+  },
+
+  getTemplate: function () {
+    return this.props.options.template || this.props.ctx.templates.dat;
   }
 
 });
@@ -702,7 +736,11 @@ function getComponent(type, options) {
   var name = t.getTypeName(type);
   switch (type.meta.kind) {
     case 'irreducible' :
-      return type === t.Bool ? Checkbox : Textbox;
+      return (
+        type === t.Bool ? Checkbox :
+        type === t.Dat ?  Dat :
+                          Textbox
+      );
     case 'struct' :
       return Struct;
     case 'list' :
@@ -717,6 +755,7 @@ function getComponent(type, options) {
   }
 }
 
+// public api
 var Form = React.createClass({
 
   displayName: 'Form',
@@ -725,13 +764,13 @@ var Form = React.createClass({
     return this.refs.input.validate();
   },
 
-  // the public api returns `null` if validation failed
-  // unless the optional boolean argument `raw` is set to `true`
   getValue: function (raw) {
     var result = this.validate();
-    if (raw === true) { return result; }
-    if (result.isValid()) { return result.value; }
-    return null;
+    return (
+      raw === true ?      result :
+      result.isValid() ?  result.value :
+                          null
+    );
   },
 
   getComponent: function (path) {
@@ -753,8 +792,8 @@ var Form = React.createClass({
     t.assert(t.Obj.is(templates), SOURCE + ' missing templates config');
     t.assert(t.Obj.is(i18n), SOURCE + ' missing i18n config');
 
-    var factory = React.createFactory(getComponent(type, options));
-    return factory({
+    var Component = React.createFactory(getComponent(type, options));
+    return Component({
       ref: 'input',
       type: type,
       options: options,
@@ -1179,6 +1218,120 @@ function radio(locals) {
   });
 }
 
+function range(n) {
+  var result = [];
+  for (var i = 1 ; i <= n ; i++) { result.push(i); }
+  return result;
+}
+
+function padLeft(x, len) {
+  var str = String(x);
+  var times = len - str.length;
+  for (var i = 0 ; i < times ; i++ ) { str = '0' + str; }
+  return str;
+}
+
+function toOption(value, text) {
+  return {
+    tag: 'option',
+    attrs: {value: value + ''},
+    children: text
+  };
+}
+
+var nullOption = [toOption('', '-')];
+
+var days = nullOption.concat(range(31).map(function (i) {
+  return toOption(i - 1, padLeft(i, 2));
+}));
+
+var months = nullOption.concat(range(12).map(function (i) {
+  return toOption(i - 1, padLeft(i, 2));
+}));
+
+function dat(locals) {
+
+  var value = locals.value.slice();
+
+  function onDayChange(evt) {
+    value[2] = evt.target.value === '-' ? null : evt.target.value;
+    locals.onChange(value);
+  }
+
+  function onMonthChange(evt) {
+    value[1] = evt.target.value === '-' ? null : evt.target.value;
+    locals.onChange(value);
+  }
+
+  function onYearChange(evt) {
+    value[0] = evt.target.value.trim() === '' ? null : evt.target.value.trim();
+    locals.onChange(value);
+  }
+
+  var daySelect = {
+    tag: 'select',
+    attrs: {
+      className: {
+        'form-control': true
+      },
+      value: locals.value[2]
+    },
+    events: {
+      change: onDayChange
+    },
+    children: days
+  };
+
+  var monthSelect = {
+    tag: 'select',
+    attrs: {
+      className: {
+        'form-control': true
+      },
+      value: locals.value[1]
+    },
+    events: {
+      change: onMonthChange
+    },
+    children: months
+  };
+
+  var yearTextbox = {
+    tag: 'input',
+    attrs: {
+      type: 'text',
+      size: 5,
+      className: {
+        'form-control': true
+      },
+      value: locals.value[0]
+    },
+    events: {
+      change: onYearChange
+    }
+  };
+
+  var children = {
+    tag: 'ul',
+    attrs: {
+      className: {
+        'nav nav-pills': true
+      }
+    },
+    children: [
+      {tag: 'li', children: daySelect},
+      {tag: 'li', children: monthSelect},
+      {tag: 'li', children: yearTextbox}
+    ]
+  }
+
+  return getFormGroup({
+    hasError: locals.hasError,
+    children: children
+  });
+
+}
+
 function struct(locals) {
 
   var config = new StructConfig(locals.config || noobj);
@@ -1302,6 +1455,7 @@ module.exports = {
   checkbox: checkbox,
   select: select,
   radio: radio,
+  dat: dat,
   struct: struct,
   list: list};
 
