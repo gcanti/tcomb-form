@@ -274,9 +274,11 @@ test('Radio', function (tape) {
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
           tape.strictEqual(result.value, 'IT');
-        }, function (locals) {
-            tape.strictEqual(locals.hasError, false);
-            tape.strictEqual(locals.value, 'IT');
+        }, function (locals, rendered) {
+            if (rendered) {
+              tape.strictEqual(locals.hasError, false);
+              tape.strictEqual(locals.value, 'IT');
+            }
         }, {type: Country}, null, 'IT');
 
         getValue(function (result) {
@@ -292,7 +294,7 @@ test('Radio', function (tape) {
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
           tape.strictEqual(result.value, null);
-        }, function (locals) {
+        }, function (locals, rendered) {
             tape.strictEqual(locals.hasError, false);
             tape.strictEqual(locals.value, null);
         }, {type: t.maybe(Country)});

@@ -310,9 +310,11 @@ test('Textbox', function (tape) {
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
           tape.strictEqual(result.value, null);
-        }, function (locals) {
-            tape.strictEqual(locals.hasError, false);
-            tape.strictEqual(locals.value, null);
+        }, function (locals, rendered) {
+            if (rendered) {
+              tape.strictEqual(locals.hasError, false);
+              tape.strictEqual(locals.value, null);
+            }
         }, {type: t.maybe(t.Str)});
 
         getValue(function (result) {
@@ -329,27 +331,33 @@ test('Textbox', function (tape) {
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
           tape.strictEqual(result.value, 1);
-        }, function (locals) {
-            tape.strictEqual(locals.hasError, false);
-            tape.strictEqual(locals.value, '1');
+        }, function (locals, rendered) {
+            if (rendered) {
+              tape.strictEqual(locals.hasError, false);
+              tape.strictEqual(locals.value, '1');
+            }
         }, {type: t.Num}, null, 1);
 
         // should handle transformer option
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
           tape.deepEqual(result.value, ['a', 'b']);
-        }, function (locals) {
-            tape.strictEqual(locals.hasError, false);
-            tape.strictEqual(locals.value, 'a,b');
+        }, function (locals, rendered) {
+            if (rendered) {
+              tape.strictEqual(locals.hasError, false);
+              tape.strictEqual(locals.value, 'a,b');
+            }
         }, {type: t.Arr}, {transformer: transformer}, ['a', 'b']);
 
         // hidden textbox
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
           tape.strictEqual(result.value, null);
-        }, function (locals) {
-            tape.strictEqual(locals.hasError, false);
-            tape.strictEqual(locals.value, null);
+        }, function (locals, rendered) {
+            if (rendered) {
+              tape.strictEqual(locals.hasError, false);
+              tape.strictEqual(locals.value, null);
+            }
         }, {type: t.maybe(t.Str)}, {type: 'hidden'});
 
     });

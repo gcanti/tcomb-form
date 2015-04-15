@@ -317,9 +317,11 @@ test('Select', function (tape) {
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
           tape.strictEqual(result.value, 'IT');
-        }, function (locals) {
-            tape.strictEqual(locals.hasError, false);
-            tape.strictEqual(locals.value, 'IT');
+        }, function (locals, rendered) {
+            if (rendered) {
+              tape.strictEqual(locals.hasError, false);
+              tape.strictEqual(locals.value, 'IT');
+            }
         }, {type: Country}, null, 'IT');
 
         getValue(function (result) {

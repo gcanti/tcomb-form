@@ -204,9 +204,11 @@ test('Checkbox', function (tape) {
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
           tape.strictEqual(result.value, false);
-        }, function (locals) {
-          tape.strictEqual(locals.hasError, false);
-          tape.strictEqual(locals.value, false);
+        }, function (locals, rendered) {
+          if (rendered) {
+            tape.strictEqual(locals.hasError, false);
+            tape.strictEqual(locals.value, false);
+          }
         }, {type: t.Bool}, {label: 'mylabel'});
 
         getValue(function (result) {
