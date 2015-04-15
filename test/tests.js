@@ -23,6 +23,7 @@ var debug = require('debug');
 var util = require('./util');
 
 var Nil = t.Nil;
+var mixin = t.mixin;
 var SOURCE = '[tcomb-form]';
 var log = debug(SOURCE);
 var noobj = Object.freeze({});
@@ -61,11 +62,13 @@ var Component = {
   },
 
   shouldComponentUpdate: function (nextProps, nextState) {
-    var should = nextState.value !== this.state.value ||
+    var should = (
+      nextState.value !== this.state.value ||
       nextState.hasError !== this.state.hasError ||
       nextProps.value !== this.state.value ||
       nextProps.options !== this.props.options ||
-      nextProps.ctx.report.type !== this.props.ctx.report.type;
+      nextProps.ctx.report.type !== this.props.ctx.report.type
+    );
     //log('shouldComponentUpdate %s - %s: %s', this.getName(), this.constructor.type.displayName, should);
     return should;
   },
@@ -161,7 +164,7 @@ var Component = {
     var locals = this.getLocals();
     // getTemplate is the only required custom implementation
     if (!t.Func.is(this.getTemplate)) {
-      t.fail('[tcomb-form] missing getTemplate() method for ' + this.constructor.type.displayName);
+      t.fail(SOURCE + ' missing getTemplate() method for ' + this.constructor.type.displayName);
     }
     var template = this.getTemplate();
     log('render() called for `%s` field', locals.name);
@@ -202,7 +205,10 @@ var Textbox = Component.extend({
   },
 
   getTransformer: function () {
-    return this.props.options.transformer || (this.getInnerType() === t.Num ? Textbox.numberTransformer : Textbox.transformer);
+    return this.props.options.transformer || (
+      this.getInnerType() === t.Num ? Textbox.numberTransformer :
+                                      Textbox.transformer
+    );
   },
 
   getPlaceholder: function () {
@@ -220,13 +226,12 @@ var Textbox = Component.extend({
   getLocals: function () {
     var options = this.props.options;
     var locals = Component.getLocals.call(this);
-    locals = t.mixin(locals, {
+    return mixin(locals, {
       autoFocus: options.autoFocus,
       placeholder: this.getPlaceholder(),
       type: options.type || 'text',
       className: options.className
     });
-    return locals;
   }
 
 });
@@ -247,10 +252,7 @@ var Checkbox = Component.extend({
   },
 
   getTransformer: function () {
-    if (this.props.options && this.props.options.transformer) {
-      return this.props.options.transformer;
-    }
-    return Checkbox.transformer;
+    return this.props.options.transformer || Checkbox.transformer;
   },
 
   getTemplate: function () {
@@ -260,17 +262,20 @@ var Checkbox = Component.extend({
   getLocals: function () {
     var opts = this.props.options;
     var locals = Component.getLocals.call(this);
-    locals = t.mixin(locals, {
+    return mixin(locals, {
       autoFocus: opts.autoFocus,
       className: opts.className
     });
-    return locals;
   }
 
 });
 
 function sortByText(a, b) {
-  return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
+  return (
+    a.text < b.text ? -1 :
+    a.text > b.text ? 1 :
+                      0
+  );
 }
 
 function getComparator(order) {
@@ -299,7 +304,10 @@ var Select = Component.extend({
   },
 
   getTransformer: function () {
-    return this.props.options.transformer || (this.isMultiple() ? Select.multipleTransformer : Select.transformer(this.getNullOption()));
+    return this.props.options.transformer || (
+      this.isMultiple() ? Select.multipleTransformer :
+                          Select.transformer(this.getNullOption())
+    );
   },
 
   getNullOption: function () {
@@ -312,7 +320,10 @@ var Select = Component.extend({
 
   getEnum: function () {
     var innerType = this.getInnerType();
-    return this.isMultiple() ? getReport(innerType.meta.type).innerType : innerType;
+    return (
+      this.isMultiple() ? getReport(innerType.meta.type).innerType :
+                          innerType
+    );
   },
 
   getOptions: function () {
@@ -335,13 +346,12 @@ var Select = Component.extend({
   getLocals: function () {
     var opts = this.props.options;
     var locals = Component.getLocals.call(this);
-    locals = t.mixin(locals, {
+    return mixin(locals, {
       autoFocus: opts.autoFocus,
       className: opts.className,
       multiple: this.isMultiple(),
       options: this.getOptions()
     });
-    return locals;
   }
 
 });
@@ -381,19 +391,18 @@ var Radio = Component.extend({
   getLocals: function () {
     var opts = this.props.options;
     var locals = Component.getLocals.call(this);
-    locals = t.mixin(locals, {
+    return mixin(locals, {
       autoFocus: opts.autoFocus,
       className: opts.className,
       options: this.getOptions()
     });
-    return locals;
   }
 
 });
 
-var Dat = Component.extend({
+var Datetime = Component.extend({
 
-  displayName: 'Dat',
+  displayName: 'Datetime',
 
   statics: {
     transformer: Object.freeze({
@@ -411,12 +420,23 @@ var Dat = Component.extend({
     })
   },
 
+  getOrder: function () {
+    return this.props.options.order || ['M', 'D', 'YY'];
+  },
+
   getTransformer: function () {
-    return this.props.options.transformer || Dat.transformer;
+    return this.props.options.transformer || Datetime.transformer;
   },
 
   getTemplate: function () {
-    return this.props.options.template || this.props.ctx.templates.dat;
+    return this.props.options.template || this.props.ctx.templates.date;
+  },
+
+  getLocals: function () {
+    var locals = Component.getLocals.call(this);
+    return mixin(locals, {
+      order: this.getOrder()
+    });
   }
 
 });
@@ -441,7 +461,7 @@ var Struct = Component.extend({
   },
 
   onChange: function (fieldName, fieldValue, path) {
-    var value = t.mixin({}, this.state.value);
+    var value = mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.setState({value: value}, function () {
       this.props.onChange(value, path);
@@ -535,12 +555,11 @@ var Struct = Component.extend({
   getLocals: function () {
     var options = this.props.options;
     var locals = Component.getLocals.call(this);
-    locals = t.mixin(locals, {
+    return mixin(locals, {
       order: this.getOrder(),
       inputs: this.getInputs(),
       className: options.className
     });
-    return locals;
   }
 
 });
@@ -715,7 +734,7 @@ var List = Component.extend({
     var options = this.props.options;
     var i18n = this.getI18n();
     var locals = Component.getLocals.call(this);
-    locals = t.mixin(locals, {
+    return mixin(locals, {
       add: options.disableAdd ? null : {
         label: i18n.add,
         click: this.addItem
@@ -723,8 +742,6 @@ var List = Component.extend({
       items: this.getItems(),
       className: options.className
     });
-
-    return locals;
   }
 
 });
@@ -738,7 +755,7 @@ function getComponent(type, options) {
     case 'irreducible' :
       return (
         type === t.Bool ? Checkbox :
-        type === t.Dat ?  Dat :
+        type === t.Dat ?  Datetime :
                           Textbox
       );
     case 'struct' :
@@ -776,8 +793,8 @@ var Form = React.createClass({
   getComponent: function (path) {
     path = t.Str.is(path) ? path.split('.') : path;
     return path.reduce(function (input, name) {
-      return input.refs[name], this.refs.input;
-    });
+      return input.refs[name];
+    }, this.refs.input);
   },
 
   render: function () {
@@ -792,8 +809,8 @@ var Form = React.createClass({
     t.assert(t.Obj.is(templates), SOURCE + ' missing templates config');
     t.assert(t.Obj.is(i18n), SOURCE + ' missing i18n config');
 
-    var Component = React.createFactory(getComponent(type, options));
-    return Component({
+    var Component = getComponent(type, options);
+    return React.createElement(Component, {
       ref: 'input',
       type: type,
       options: options,
@@ -818,6 +835,7 @@ module.exports = {
   Checkbox: Checkbox,
   Select: Select,
   Radio: Radio,
+  Datetime: Datetime,
   Struct: Struct,
   List: List,
   Form: Form
@@ -915,6 +933,10 @@ var SelectConfig = t.struct({
 var RadioConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'RadioConfig');
+
+var DateConfig = t.struct({
+  horizontal: maybe(Breakpoints)
+}, 'DateConfig');
 
 var StructConfig = t.struct({
   horizontal: maybe(Breakpoints)
@@ -1242,15 +1264,16 @@ function toOption(value, text) {
 var nullOption = [toOption('', '-')];
 
 var days = nullOption.concat(range(31).map(function (i) {
-  return toOption(i - 1, padLeft(i, 2));
+  return toOption(i, padLeft(i, 2));
 }));
 
 var months = nullOption.concat(range(12).map(function (i) {
   return toOption(i - 1, padLeft(i, 2));
 }));
 
-function dat(locals) {
+function date(locals) {
 
+  var config = new DateConfig(locals.config || noobj);
   var value = locals.value.slice();
 
   function onDayChange(evt) {
@@ -1268,61 +1291,107 @@ function dat(locals) {
     locals.onChange(value);
   }
 
-  var daySelect = {
-    tag: 'select',
-    attrs: {
-      className: {
-        'form-control': true
-      },
-      value: locals.value[2]
-    },
-    events: {
-      change: onDayChange
-    },
-    children: days
-  };
+  var parts = {
 
-  var monthSelect = {
-    tag: 'select',
-    attrs: {
-      className: {
-        'form-control': true
-      },
-      value: locals.value[1]
+    D: {
+      tag: 'li',
+      key: 'D',
+      children: {
+        tag: 'select',
+        attrs: {
+          className: {
+            'form-control': true
+          },
+          value: value[2]
+        },
+        events: {
+          change: onDayChange
+        },
+        children: days
+      }
     },
-    events: {
-      change: onMonthChange
-    },
-    children: months
-  };
 
-  var yearTextbox = {
-    tag: 'input',
-    attrs: {
-      type: 'text',
-      size: 5,
-      className: {
-        'form-control': true
-      },
-      value: locals.value[0]
+    M: {
+      tag: 'li',
+      key: 'M',
+      children: {
+        tag: 'select',
+        attrs: {
+          className: {
+            'form-control': true
+          },
+          value: value[1]
+        },
+        events: {
+          change: onMonthChange
+        },
+        children: months
+      }
     },
-    events: {
-      change: onYearChange
+
+    YY: {
+      tag: 'li',
+      key: 'YY',
+      children: {
+        tag: 'input',
+        attrs: {
+          type: 'text',
+          size: 5,
+          className: {
+            'form-control': true
+          },
+          value: value[0]
+        },
+        events: {
+          change: onYearChange
+        }
+      }
     }
+
   };
 
-  var children = {
+  var control = {
     tag: 'ul',
     attrs: {
       className: {
         'nav nav-pills': true
       }
     },
-    children: [
-      {tag: 'li', children: daySelect},
-      {tag: 'li', children: monthSelect},
-      {tag: 'li', children: yearTextbox}
-    ]
+    children: locals.order.map(function (id) {
+      return parts[id];
+    })
+  };
+
+  var horizontal = config.horizontal;
+  var label = getLabel({
+    label: locals.label,
+    id: locals.id,
+    breakpoints: config.horizontal
+  });
+  var error = getError(locals);
+  var help = getHelp(locals);
+  var children = [
+    label,
+    control,
+    error,
+    help
+  ];
+
+  if (horizontal) {
+    children = [
+      label,
+      {
+        tag: 'div',
+        attrs: {
+          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
+        },
+        children: [
+          control,
+          error,
+          help
+        ]
+      }
+    ];
   }
 
   return getFormGroup({
@@ -1455,7 +1524,7 @@ module.exports = {
   checkbox: checkbox,
   select: select,
   radio: radio,
-  dat: dat,
+  date: date,
   struct: struct,
   list: list};
 
