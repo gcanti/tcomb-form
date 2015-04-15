@@ -1526,7 +1526,8 @@ module.exports = {
   radio: radio,
   date: date,
   struct: struct,
-  list: list};
+  list: list
+};
 
 },{"tcomb-validation":23,"uvdom-bootstrap/form":25}],5:[function(require,module,exports){
 'use strict';
