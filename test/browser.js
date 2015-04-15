@@ -1012,7 +1012,7 @@ var Form = (function () {
 
 exports.Form = Form;
 
-},{"./util":3,"debug":4,"react":"react","tcomb-validation":20,"uvdom/react":44}],2:[function(require,module,exports){
+},{"./util":3,"debug":4,"react":"react","tcomb-validation":20,"uvdom/react":45}],2:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -2310,7 +2310,7 @@ function createHarness (conf_) {
 }
 
 }).call(this,require('_process'))
-},{"./lib/default_stream":9,"./lib/results":10,"./lib/test":11,"_process":55,"defined":15,"through":19}],9:[function(require,module,exports){
+},{"./lib/default_stream":9,"./lib/results":10,"./lib/test":11,"_process":56,"defined":15,"through":19}],9:[function(require,module,exports){
 (function (process){
 var through = require('through');
 var fs = require('fs');
@@ -2345,7 +2345,7 @@ module.exports = function () {
 };
 
 }).call(this,require('_process'))
-},{"_process":55,"fs":45,"through":19}],10:[function(require,module,exports){
+},{"_process":56,"fs":46,"through":19}],10:[function(require,module,exports){
 (function (process){
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
@@ -2538,7 +2538,7 @@ function has (obj, prop) {
 }
 
 }).call(this,require('_process'))
-},{"_process":55,"events":51,"inherits":16,"object-inspect":17,"resumer":18,"through":19}],11:[function(require,module,exports){
+},{"_process":56,"events":52,"inherits":16,"object-inspect":17,"resumer":18,"through":19}],11:[function(require,module,exports){
 (function (process,__dirname){
 var deepEqual = require('deep-equal');
 var defined = require('defined');
@@ -2664,7 +2664,7 @@ Test.prototype.timeoutAfter = function(ms) {
 
 Test.prototype.end = function (err) { 
     var self = this;
-    if (arguments.length >= 1 && !!err) {
+    if (arguments.length >= 1) {
         this.ifError(err);
     }
     
@@ -2987,7 +2987,7 @@ Test.prototype['throws'] = function (fn, expected, msg, extra) {
         expected = String(expected);
     }
 
-    if (typeof expected === 'function' && caught) {
+    if (typeof expected === 'function') {
         passed = caught.error instanceof expected;
         caught.error = caught.error.constructor;
     }
@@ -3038,7 +3038,7 @@ Test.skip = function (name_, _opts, _cb) {
 
 
 }).call(this,require('_process'),"/node_modules/tape/lib")
-},{"_process":55,"deep-equal":12,"defined":15,"events":51,"inherits":16,"path":54}],12:[function(require,module,exports){
+},{"_process":56,"deep-equal":12,"defined":15,"events":52,"inherits":16,"path":55}],12:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -3205,10 +3205,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     
     var maxDepth = opts.depth === undefined ? 5 : opts.depth;
     if (depth === undefined) depth = 0;
-    if (depth >= maxDepth && maxDepth > 0
-    && obj && typeof obj === 'object') {
-        return '[Object]';
-    }
+    if (depth > maxDepth && maxDepth > 0) return '...';
     
     if (seen === undefined) seen = [];
     else if (indexOf(seen, obj) >= 0) {
@@ -3241,7 +3238,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         }
         s += '>';
         if (obj.childNodes && obj.childNodes.length) s += '...';
-        s += '</' + String(obj.nodeName).toLowerCase() + '>';
+        s += '</' + String(obj.tagName).toLowerCase() + '>';
         return s;
     }
     else if (isArray(obj)) {
@@ -3251,21 +3248,6 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
             xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
         }
         return '[ ' + xs.join(', ') + ' ]';
-    }
-    else if (isError(obj)) {
-        var parts = [];
-        for (var key in obj) {
-            if (!has(obj, key)) continue;
-            
-            if (/[^\w$]/.test(key)) {
-                parts.push(inspect(key) + ': ' + inspect(obj[key]));
-            }
-            else {
-                parts.push(key + ': ' + inspect(obj[key]));
-            }
-        }
-        if (parts.length === 0) return '[' + obj + ']';
-        return '{ [' + obj + '] ' + parts.join(', ') + ' }';
     }
     else if (typeof obj === 'object' && typeof obj.inspect === 'function') {
         return obj.inspect();
@@ -3293,18 +3275,21 @@ function quote (s) {
     return String(s).replace(/"/g, '&quot;');
 }
 
-function isArray (obj) { return toStr(obj) === '[object Array]' }
-function isDate (obj) { return toStr(obj) === '[object Date]' }
-function isRegExp (obj) { return toStr(obj) === '[object RegExp]' }
-function isError (obj) { return toStr(obj) === '[object Error]' }
+function isArray (obj) {
+    return {}.toString.call(obj) === '[object Array]';
+}
+
+function isDate (obj) {
+    return {}.toString.call(obj) === '[object Date]';
+}
+
+function isRegExp (obj) {
+    return {}.toString.call(obj) === '[object RegExp]';
+}
 
 function has (obj, key) {
     if (!{}.hasOwnProperty) return key in obj;
     return {}.hasOwnProperty.call(obj, key);
-}
-
-function toStr (obj) {
-    return Object.prototype.toString.call(obj);
 }
 
 function nameOf (f) {
@@ -3323,10 +3308,10 @@ function indexOf (xs, x) {
 
 function isElement (x) {
     if (!x || typeof x !== 'object') return false;
-    if (typeof HTMLElement !== 'undefined' && x instanceof HTMLElement) {
-        return true;
+    if (typeof HTMLElement !== 'undefined') {
+        return x instanceof HTMLElement;
     }
-    return typeof x.nodeName === 'string'
+    else return typeof x.nodeName === 'string'
         && typeof x.getAttribute === 'function'
     ;
 }
@@ -3376,7 +3361,7 @@ module.exports = function (write, end) {
 };
 
 }).call(this,require('_process'))
-},{"_process":55,"through":19}],19:[function(require,module,exports){
+},{"_process":56,"through":19}],19:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -3488,7 +3473,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":55,"stream":67}],20:[function(require,module,exports){
+},{"_process":56,"stream":68}],20:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd && typeof __fbBatchedBridgeConfig === 'undefined') {
@@ -4437,7 +4422,6 @@ module.exports = {
   getButtonGroup: require('./lib/getButtonGroup'),
   getCheckbox: require('./lib/getCheckbox'),
   getCol: require('./lib/getCol'),
-  getErrorBlock: require('./lib/getErrorBlock'),
   getFieldset: require('./lib/getFieldset'),
   getFormGroup: require('./lib/getFormGroup'),
   getHelpBlock: require('./lib/getHelpBlock'),
@@ -4448,9 +4432,11 @@ module.exports = {
   getOption: require('./lib/getOption'),
   getRadio: require('./lib/getRadio'),
   getRow: require('./lib/getRow'),
-  getStatic: require('./lib/getStatic')
+  getSelect: require('./lib/getSelect'),
+  getStatic: require('./lib/getStatic'),
+  getTextbox: require('./lib/getTextbox')
 };
-},{"./lib/getAddon":23,"./lib/getAlert":24,"./lib/getBreakpoints":25,"./lib/getButton":26,"./lib/getButtonGroup":27,"./lib/getCheckbox":28,"./lib/getCol":29,"./lib/getErrorBlock":30,"./lib/getFieldset":31,"./lib/getFormGroup":32,"./lib/getHelpBlock":33,"./lib/getInputGroup":34,"./lib/getLabel":35,"./lib/getOffsets":36,"./lib/getOptGroup":37,"./lib/getOption":38,"./lib/getRadio":39,"./lib/getRow":40,"./lib/getStatic":41}],23:[function(require,module,exports){
+},{"./lib/getAddon":23,"./lib/getAlert":24,"./lib/getBreakpoints":25,"./lib/getButton":26,"./lib/getButtonGroup":27,"./lib/getCheckbox":28,"./lib/getCol":29,"./lib/getFieldset":30,"./lib/getFormGroup":31,"./lib/getHelpBlock":32,"./lib/getInputGroup":33,"./lib/getLabel":34,"./lib/getOffsets":35,"./lib/getOptGroup":36,"./lib/getOption":37,"./lib/getRadio":38,"./lib/getRow":39,"./lib/getSelect":40,"./lib/getStatic":41,"./lib/getTextbox":42}],23:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -4576,30 +4562,69 @@ module.exports = getButtonGroup;
 },{}],28:[function(require,module,exports){
 'use strict';
 
-function getCheckbox(attrs, label) {
+/*
+
+  Example:
+
+  {
+    label: 'Remember me',
+    defaultChecked: true,
+    checked: true,
+    name: 'rememberMe',
+    disabled: false,
+    events: {
+      ...
+    },
+    autoFocus: true,
+    className: 'myClassName'
+  }
+
+*/
+
+function getCheckbox(opts) {
+
+  var events = opts.events || {
+    change: opts.onChange
+  };
+
+  var className = null;
+  if (opts.className) {
+    className = {};
+    className[opts.className] = true;
+  }
+
   return {
     tag: 'div',
     attrs: {
       className: {
         'checkbox': true,
-        'disabled': attrs.disabled
+        'disabled': opts.disabled
       }
     },
     children: {
       tag: 'label',
       attrs: {
-        htmlFor: attrs.id
+        htmlFor: opts.id
       },
       children: [
         {
           tag: 'input',
-          attrs: attrs
+          attrs: {
+            checked: opts.checked,
+            disabled: opts.disabled,
+            id: opts.id,
+            name: opts.name,
+            type: 'checkbox',
+            autoFocus: opts.autoFocus,
+            className: className
+          },
+          events: events
         },
         ' ',
-        label
+        opts.label
       ]
     }
-  };
+  }
 }
 
 module.exports = getCheckbox;
@@ -4623,25 +4648,6 @@ function getCol(opts) {
 
 module.exports = getCol;
 },{"./getBreakpoints":25}],30:[function(require,module,exports){
-'use strict';
-
-function getErrorBlock(opts) {
-  return {
-    tag: 'span',
-    attrs: {
-      className: {
-        'help-block': true,
-        'error-block': opts.hasError
-      }
-    },
-    children: opts.error
-  };
-}
-
-module.exports = getErrorBlock;
-
-
-},{}],31:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -4668,30 +4674,24 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
-
-  var className = {
-    'form-group': true,
-    'has-error': opts.hasError
-  };
-  if (opts.className) {
-    className[opts.className] = true;
-  }
-
   return {
     tag: 'div',
     attrs: {
-      className: className
+      className: {
+        'form-group': true,
+        'has-error': opts.hasError
+      }
     },
     children: opts.children
   };
 }
 
 module.exports = getFormGroup;
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4725,7 +4725,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -4741,7 +4741,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -4784,7 +4784,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":42}],36:[function(require,module,exports){
+},{"./mixin":43}],35:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -4798,7 +4798,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -4832,7 +4832,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":38}],38:[function(require,module,exports){
+},{"./getOption":37}],37:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4861,38 +4861,82 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
-function getRadio(attrs, text, key) {
+/*
+
+  Example:
+
+  {
+    label: 'Option',
+    defaultChecked: true,
+    checked: true,
+    value: '1',
+    name: 'option',
+    disabled: false,
+    events: {
+      ...
+    },
+    autoFocus: true,
+    className: 'myClassName'
+  }
+
+*/
+
+function getRadio(opts) {
+
+  var events = opts.events || {
+    change: opts.onChange
+  };
+
+  var className = null;
+  if (opts.className) {
+    className = {};
+    className[opts.className] = true;
+  }
+
   return {
     tag: 'div',
     attrs: {
       className: {
         'radio': true,
-        'disabled': attrs.disabled
+        'disabled': opts.disabled
       }
     },
     children: {
       tag: 'label',
       attrs: {
-        htmlFor: attrs.id,
+        htmlFor: opts.id,
       },
       children: [
         {
           tag: 'input',
-          attrs: attrs
+          attrs: {
+            type: 'radio',
+            checked: opts.checked,
+            defaultChecked: opts.defaultChecked,
+            disabled: opts.disabled,
+            name: opts.name,
+            value: opts.value,
+            id: opts.id,
+            // aria support
+            'aria-describedby': opts['aria-describedby'],
+            autoFocus: opts.autoFocus,
+            className: className
+          },
+          events: events
         },
         ' ',
-        text
+        opts.label
       ]
     },
-    key: key
+    key: opts.value
   };
 }
 
 module.exports = getRadio;
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -4909,6 +4953,65 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
+},{}],40:[function(require,module,exports){
+'use strict';
+
+/*
+
+  Example:
+
+  {
+    defaultValue: 'hello',
+    value: 'hello',
+    name: 'myname',
+    disabled: false,
+    size: 'lg',
+    events: {
+      ...
+    },
+    'aria-describedby': 'password-tip',
+    autoFocus: false,
+    className: 'myClassName'
+  }
+
+*/
+
+function getSelect(opts) {
+
+  var events = opts.events || {
+    change: opts.onChange
+  };
+
+  var className = {
+    'form-control': true
+  };
+  if (opts.size) {
+    className['input-' + opts.size] = true;
+  }
+  if (opts.className) {
+    className[opts.className] = true;
+  }
+
+  return {
+    tag: 'select',
+    attrs: {
+      name: opts.name,
+      defaultValue: opts.defaultValue,
+      value: opts.value,
+      disabled: opts.disabled,
+      className: className,
+      multiple: opts.multiple,
+      id: opts.id,
+      // aria support
+      'aria-describedby': opts['aria-describedby'],
+      autoFocus: opts.autoFocus
+    },
+    children: opts.options,
+    events: events
+  };
+}
+
+module.exports = getSelect;
 },{}],41:[function(require,module,exports){
 'use strict';
 
@@ -4928,6 +5031,69 @@ module.exports = getStatic;
 },{}],42:[function(require,module,exports){
 'use strict';
 
+/*
+
+  Example:
+
+  {
+    type: 'password',
+    defaultValue: 'hello',
+    value: 'hello',
+    name: 'myname',
+    disabled: false,
+    placeholder: 'insert your name',
+    readOnly: true,
+    size: 'lg',
+    events: {
+      ...
+    },
+    'aria-describedby': 'password-tip',
+    autoFocus: true,
+    className: 'myClassName'
+  }
+
+*/
+
+function getTextbox(opts) {
+
+  var events = opts.events || {
+    change: opts.onChange
+  };
+
+  var type = opts.type || 'text';
+  var className = {
+    'form-control': true
+  };
+  if (opts.size) {
+    className['input-' + opts.size] = true;
+  }
+  if (opts.className) {
+    className[opts.className] = true;
+  }
+
+  return {
+    tag: type === 'textarea' ? 'textarea' : 'input',
+    attrs: {
+      type: type === 'textarea' ? null : type,
+      name: opts.name,
+      defaultValue: opts.defaultValue,
+      value: opts.value,
+      disabled: opts.disabled,
+      placeholder: opts.placeholder,
+      readOnly: opts.readOnly,
+      className: className,
+      id: opts.id,
+      'aria-describedby': opts['aria-describedby'],
+      autoFocus: opts.autoFocus
+    },
+    events: events
+  };
+}
+
+module.exports = getTextbox;
+},{}],43:[function(require,module,exports){
+'use strict';
+
 function mixin(a, b) {
   if (!b) { return a; }
   for (var k in b) {
@@ -4939,7 +5105,7 @@ function mixin(a, b) {
 }
 
 module.exports = mixin;
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 function classNames() {
 	var classes = '';
 	var arg;
@@ -4971,7 +5137,7 @@ if (typeof module !== 'undefined' && module.exports) {
 	module.exports = classNames;
 }
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -5040,11 +5206,11 @@ function mixin(x, y) {
 module.exports = {
   compile: compile
 };
-},{"classnames":43,"react":"react"}],45:[function(require,module,exports){
+},{"classnames":44,"react":"react"}],46:[function(require,module,exports){
 
-},{}],46:[function(require,module,exports){
-arguments[4][45][0].apply(exports,arguments)
-},{"dup":45}],47:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"dup":46}],48:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -6377,7 +6543,7 @@ function decodeUtf8Char (str) {
   }
 }
 
-},{"base64-js":48,"ieee754":49,"is-array":50}],48:[function(require,module,exports){
+},{"base64-js":49,"ieee754":50,"is-array":51}],49:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -6503,7 +6669,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -6589,7 +6755,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 
 /**
  * isArray
@@ -6624,7 +6790,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6927,14 +7093,14 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 arguments[4][16][0].apply(exports,arguments)
-},{"dup":16}],53:[function(require,module,exports){
+},{"dup":16}],54:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -7162,7 +7328,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":55}],55:[function(require,module,exports){
+},{"_process":56}],56:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -7222,10 +7388,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":57}],57:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":58}],58:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -7318,7 +7484,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":59,"./_stream_writable":61,"_process":55,"core-util-is":62,"inherits":52}],58:[function(require,module,exports){
+},{"./_stream_readable":60,"./_stream_writable":62,"_process":56,"core-util-is":63,"inherits":53}],59:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7366,7 +7532,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":60,"core-util-is":62,"inherits":52}],59:[function(require,module,exports){
+},{"./_stream_transform":61,"core-util-is":63,"inherits":53}],60:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8321,7 +8487,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":57,"_process":55,"buffer":47,"core-util-is":62,"events":51,"inherits":52,"isarray":53,"stream":67,"string_decoder/":68,"util":46}],60:[function(require,module,exports){
+},{"./_stream_duplex":58,"_process":56,"buffer":48,"core-util-is":63,"events":52,"inherits":53,"isarray":54,"stream":68,"string_decoder/":69,"util":47}],61:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -8532,7 +8698,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":57,"core-util-is":62,"inherits":52}],61:[function(require,module,exports){
+},{"./_stream_duplex":58,"core-util-is":63,"inherits":53}],62:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9013,7 +9179,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":57,"_process":55,"buffer":47,"core-util-is":62,"inherits":52,"stream":67}],62:[function(require,module,exports){
+},{"./_stream_duplex":58,"_process":56,"buffer":48,"core-util-is":63,"inherits":53,"stream":68}],63:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9123,10 +9289,10 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":47}],63:[function(require,module,exports){
+},{"buffer":48}],64:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":58}],64:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":59}],65:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
 exports.Readable = exports;
@@ -9135,13 +9301,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":57,"./lib/_stream_passthrough.js":58,"./lib/_stream_readable.js":59,"./lib/_stream_transform.js":60,"./lib/_stream_writable.js":61,"stream":67}],65:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":58,"./lib/_stream_passthrough.js":59,"./lib/_stream_readable.js":60,"./lib/_stream_transform.js":61,"./lib/_stream_writable.js":62,"stream":68}],66:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":60}],66:[function(require,module,exports){
+},{"./lib/_stream_transform.js":61}],67:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":61}],67:[function(require,module,exports){
+},{"./lib/_stream_writable.js":62}],68:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9270,7 +9436,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":51,"inherits":52,"readable-stream/duplex.js":56,"readable-stream/passthrough.js":63,"readable-stream/readable.js":64,"readable-stream/transform.js":65,"readable-stream/writable.js":66}],68:[function(require,module,exports){
+},{"events":52,"inherits":53,"readable-stream/duplex.js":57,"readable-stream/passthrough.js":64,"readable-stream/readable.js":65,"readable-stream/transform.js":66,"readable-stream/writable.js":67}],69:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9493,7 +9659,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":47}],69:[function(require,module,exports){
+},{"buffer":48}],70:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -9756,7 +9922,7 @@ tape('Checkbox', function (tape) {
 
 
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":74,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],70:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],71:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10080,7 +10246,7 @@ tape('Radio', function (tape) {
 
 
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":74,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],71:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],72:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10507,7 +10673,7 @@ tape('Select', function (tape) {
 
 
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":74,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],72:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],73:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -11047,14 +11213,14 @@ tape('Textbox', function (tape) {
 
 
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":74,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],73:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],74:[function(require,module,exports){
 require('./Textbox');
 require('./Checkbox');
 require('./Select');
 require('./Radio');
 
 
-},{"./Checkbox":69,"./Radio":70,"./Select":71,"./Textbox":72}],74:[function(require,module,exports){
+},{"./Checkbox":70,"./Radio":71,"./Select":72,"./Textbox":73}],75:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb');
@@ -11103,12 +11269,12 @@ module.exports = {
   getRenderComponent: getRenderComponent
 };
 
-},{"../../lib/templates/bootstrap":2,"react":"react","tcomb":21}],75:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"react":"react","tcomb":21}],76:[function(require,module,exports){
 require('./components');
 require('./templates');
 
 
-},{"./components":73,"./templates":77}],76:[function(require,module,exports){
+},{"./components":74,"./templates":78}],77:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -11138,7 +11304,7 @@ tape('textbox', function (tape) {
 
 });
 
-},{"../../lib/templates/bootstrap":2,"tape":8}],77:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"tape":8}],78:[function(require,module,exports){
 require('./bootstrap');
 
-},{"./bootstrap":76}]},{},[75]);
+},{"./bootstrap":77}]},{},[76]);

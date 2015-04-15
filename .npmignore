@@ -1,7 +1,7 @@
 .*
 *.log
+.jshintrc
 dev
-docs
 node_modules
 src
 test
