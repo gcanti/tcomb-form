@@ -1,3 +1,11 @@
+v0.4.9
+
+- code refactoring (backporting v0.5)
+- added `template` option to structs and lists
+- added `Component.extend` API
+- added `getComponent(path)` API
+- added basic date component
+
 v0.4.8
 
 - fix #98
