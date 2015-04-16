@@ -224,12 +224,21 @@ test('Select', function (tape) {
   });
 
   tape.test('options', function (tape) {
-    tape.plan(2);
+    tape.plan(3);
 
     tape.deepEqual(
       getLocals({type: Country}).options,
       [
         {value: '', text: '-'},
+        {value: 'IT', text: 'Italy'},
+        {value: 'US', text: 'United States'},
+        {value: 'FR', text: 'France'}
+      ],
+      'should retrieve options from the enum');
+
+    tape.deepEqual(
+      getLocals({type: t.list(Country)}, {factory: Select}).options,
+      [
         {value: 'IT', text: 'Italy'},
         {value: 'US', text: 'United States'},
         {value: 'FR', text: 'France'}

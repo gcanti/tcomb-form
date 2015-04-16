@@ -1,3 +1,7 @@
+v0.4.10
+
+- fix nullOption was incorrectly added to multiple selects
+
 v0.4.9
 
 - code refactoring (backporting v0.5)

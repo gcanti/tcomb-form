@@ -333,7 +333,7 @@ var Select = Component.extend({
       items.sort(getComparator(options.order));
     }
     var nullOption = this.getNullOption();
-    if (options.nullOption !== false) {
+    if (!this.isMultiple() && options.nullOption !== false) {
       items.unshift(nullOption);
     }
     return items;
@@ -1120,11 +1120,9 @@ function select(locals) {
 
   function onChange(evt) {
     var value = locals.multiple ?
-      evt.target.options.filter(function (option) {
-        return option.selected;
-      }).map(function (option) {
-        return option.value;
-      }) :
+      Array.prototype.slice.call(evt.target.options)
+        .filter(function (option) { return option.selected; })
+        .map(function (option) { return option.value; }) :
       evt.target.value;
     locals.onChange(value);
   }
@@ -13200,12 +13198,21 @@ test('Select', function (tape) {
   });
 
   tape.test('options', function (tape) {
-    tape.plan(2);
+    tape.plan(3);
 
     tape.deepEqual(
       getLocals({type: Country}).options,
       [
         {value: '', text: '-'},
+        {value: 'IT', text: 'Italy'},
+        {value: 'US', text: 'United States'},
+        {value: 'FR', text: 'France'}
+      ],
+      'should retrieve options from the enum');
+
+    tape.deepEqual(
+      getLocals({type: t.list(Country)}, {factory: Select}).options,
+      [
         {value: 'IT', text: 'Italy'},
         {value: 'US', text: 'United States'},
         {value: 'FR', text: 'France'}
