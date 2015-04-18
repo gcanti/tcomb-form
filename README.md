@@ -27,6 +27,8 @@ With tcomb-form you simply call `<Form type={Model} />` to generate a form based
 
 **Browser compatibility**: same as React >=0.12.0
 
+**JSON Schema support**: JSON Schemas are supported via the lightweight [tcomb-json-schema library](https://github.com/gcanti/tcomb-json-schema).
+
 # Contributions
 
 Thanks so much to [Chris Pearce](https://github.com/Chrisui) for pointing me in the right direction

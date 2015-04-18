@@ -1,6 +1,7 @@
 v0.4.10
 
 - fix nullOption was incorrectly added to multiple selects
+- experimental semantic ui skin
 
 v0.4.9
 
