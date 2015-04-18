@@ -56,6 +56,8 @@ React.render(<App />, document.getElementById('app'));
 
 If the optional parameter `raw` is set to `true` then `getValue` returns a `ValidationResult` (see [tcomb-validation](https://github.com/gcanti/tcomb-validation) for a reference documentation)
 
+> **Note**. Calling the `getValue` method will cause the validation of all the fields in the form, included some side effects like highlighting the errors in the UI.
+
 ## Adding a default value
 
 The `Form` component behaves like a [controlled component](https://facebook.github.io/react/docs/forms.html)
