@@ -28,12 +28,17 @@ var _debug = require('debug');
 
 var _debug2 = _interopRequireWildcard(_debug);
 
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireWildcard(_classnames);
+
 'use strict';
 
 var Nil = _t2['default'].Nil;
 var SOURCE = 'tcomb-form';
 var log = _debug2['default'](SOURCE);
-var nooptions = Object.freeze({});
+var noobj = Object.freeze({});
+var noarr = Object.freeze([]);
 var noop = function noop() {};
 
 function getComponent(_x, _x2) {
@@ -51,7 +56,7 @@ function getComponent(_x, _x2) {
     var name = _t2['default'].getTypeName(type);
     switch (type.meta.kind) {
       case 'irreducible':
-        return type === _t2['default'].Bool ? Checkbox : Textbox;
+        return type === _t2['default'].Bool ? Checkbox : type === _t2['default'].Dat ? Datetime : Textbox;
       case 'struct':
         return Struct;
       case 'list':
@@ -88,7 +93,7 @@ function getComparator(order) {
   })[order];
 }
 
-var annotations = {
+var decorators = {
 
   template: function template(name) {
     return function (Component) {
@@ -100,23 +105,14 @@ var annotations = {
 
   attrs: function attrs(Component) {
     Component.prototype.getAttrs = function getAttrs() {
+      var _attrs$className;
+
       var attrs = _t2['default'].mixin({}, this.props.options.attrs);
-      attrs.id = attrs.id || this._rootNodeID || _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid();
-      attrs.name = attrs.name || this.props.ctx.name || attrs.id;
-      if (_t2['default'].Str.is(attrs.className)) {
-        attrs.className = [attrs.className];
-      }
-      if (_t2['default'].Arr.is(attrs.className)) {
-        attrs.className = attrs.className.reduce(function (acc, x) {
-          acc[x] = true;
-          return acc;
-        }, {});
-      }
+      attrs.id = this.getId();
+      attrs.name = this.getName();
+      attrs.className = (_attrs$className = {}, _attrs$className[_classnames2['default'](attrs.className)] = true, _attrs$className);
       return attrs;
     };
-    Component.locals = Component.locals.concat({
-      name: 'attrs', method: 'getAttrs'
-    });
   },
 
   placeholder: function placeholder(Component) {
@@ -127,14 +123,17 @@ var annotations = {
       }
       return placeholder;
     };
-    Component.locals = Component.locals.concat({
-      name: 'placeholder', method: 'getPlaceholder'
-    });
+  },
+
+  templates: function templates(Component) {
+    Component.prototype.getTemplates = function getTemplates() {
+      return _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.merge(this.props.ctx.templates, this.props.options.templates);
+    };
   }
 
 };
 
-exports.annotations = annotations;
+exports.decorators = decorators;
 
 var Component = (function (_React$Component) {
   function Component(props) {
@@ -151,11 +150,13 @@ var Component = (function (_React$Component) {
   _inherits(Component, _React$Component);
 
   Component.prototype.getTransformer = function getTransformer() {
-    return this.props.options.transformer || this.constructor.defaultTransformer;
+    return this.props.options.transformer || this.constructor.transformer;
   };
 
   Component.prototype.shouldComponentUpdate = function shouldComponentUpdate(nextProps, nextState) {
-    return nextState.value !== this.state.value || nextState.hasError !== this.state.hasError || nextProps.value !== this.props.value || nextProps.options !== this.props.options || nextProps.type !== this.props.type;
+    var should = nextState.value !== this.state.value || nextState.hasError !== this.state.hasError || nextProps.options !== this.props.options || nextProps.type !== this.props.type;
+    //log('updating %s', this.constructor.name);
+    return should;
   };
 
   Component.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
@@ -166,10 +167,10 @@ var Component = (function (_React$Component) {
   };
 
   Component.prototype.onChange = function onChange(value) {
-    var _this2 = this;
+    var _this6 = this;
 
     this.setState({ value: value }, function () {
-      _this2.props.onChange(value, _this2.props.ctx.path);
+      _this6.props.onChange(value, _this6.props.ctx.path);
     });
   };
 
@@ -219,12 +220,18 @@ var Component = (function (_React$Component) {
     return _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.merge(this.props.ctx.config, this.props.options.config);
   };
 
-  Component.prototype.getLocals = function getLocals() {
-    var _this3 = this;
+  Component.prototype.getId = function getId() {
+    return this.props.options.id || _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid();
+  };
 
+  Component.prototype.getName = function getName() {
+    return this.props.options.name || this.props.ctx.name || this.getId();
+  };
+
+  Component.prototype.getLocals = function getLocals() {
     var options = this.props.options;
     var value = this.state.value;
-    var locals = {
+    return {
       path: this.props.ctx.path,
       error: this.getError(),
       hasError: this.hasError(),
@@ -235,20 +242,12 @@ var Component = (function (_React$Component) {
       disabled: options.disabled,
       help: options.help
     };
-
-    this.constructor.locals.forEach(function (_ref) {
-      var name = _ref.name;
-      var method = _ref.method;
-
-      locals[name] = _this3[method].call(_this3);
-    });
-
-    return locals;
   };
 
   Component.prototype.render = function render() {
     log('rendering %s', this.constructor.name);
     var locals = this.getLocals();
+    // getTemplate is the only required implementation when extending Component
     _t2['default'].assert(_t2['default'].Func.is(this.getTemplate), '[' + SOURCE + '] missing getTemplate method of component ' + this.constructor.name);
     var template = this.getTemplate();
     return _compile.compile(template(locals));
@@ -256,11 +255,10 @@ var Component = (function (_React$Component) {
 
   _createClass(Component, null, [{
     key: 'locals',
-    enumerable: true,
-    value: []
+    value: [],
+    enumerable: true
   }, {
-    key: 'defaultTransformer',
-    enumerable: true,
+    key: 'transformer',
     value: {
       format: function format(value) {
         return Nil.is(value) ? null : value;
@@ -268,13 +266,20 @@ var Component = (function (_React$Component) {
       parse: function parse(value) {
         return value;
       }
-    }
+    },
+    enumerable: true
   }]);
 
   return Component;
 })(_React2['default'].Component);
 
 exports.Component = Component;
+
+function parseNumber(value) {
+  var n = parseFloat(value);
+  var isNumeric = value - n + 1 >= 0;
+  return isNumeric ? n : value;
+}
 
 var Textbox = (function (_Component) {
   function Textbox() {
@@ -287,20 +292,23 @@ var Textbox = (function (_Component) {
 
   _inherits(Textbox, _Component);
 
-  Textbox.prototype.getTransformer = function getTransformer() {
+  var _Textbox = Textbox;
+
+  _Textbox.prototype.getTransformer = function getTransformer() {
     var options = this.props.options;
-    return options.transformer ? options.transformer : this.typeInfo.innerType === _t2['default'].Num ? Textbox.numberTransformer : Textbox.defaultTransformer;
+    return options.transformer ? options.transformer : this.typeInfo.innerType === _t2['default'].Num ? Textbox.numberTransformer : Textbox.transformer;
   };
 
-  Textbox.prototype.getLocals = function getLocals() {
+  _Textbox.prototype.getLocals = function getLocals() {
     var locals = _Component.prototype.getLocals.call(this);
+    locals.attrs = this.getAttrs();
+    locals.attrs.placeholder = locals.attrs.placeholder || this.getPlaceholder();
     locals.type = this.props.options.type || 'text';
     return locals;
   };
 
-  _createClass(Textbox, null, [{
-    key: 'defaultTransformer',
-    enumerable: true,
+  _createClass(_Textbox, null, [{
+    key: 'transformer',
     value: {
       format: function format(value) {
         return Nil.is(value) ? null : value;
@@ -308,26 +316,22 @@ var Textbox = (function (_Component) {
       parse: function parse(value) {
         return _t2['default'].Str.is(value) && value.trim() === '' || Nil.is(value) ? null : value;
       }
-    }
+    },
+    enumerable: true
   }, {
     key: 'numberTransformer',
-    enumerable: true,
     value: {
       format: function format(value) {
         return Nil.is(value) ? null : String(value);
       },
-      parse: function parse(value) {
-        var n = parseFloat(value);
-        var isNumeric = value - n + 1 >= 0;
-        return isNumeric ? n : value;
-      }
-    }
+      parse: parseNumber
+    },
+    enumerable: true
   }]);
 
-  var _Textbox = Textbox;
-  Textbox = annotations.attrs(Textbox) || Textbox;
-  Textbox = annotations.placeholder(Textbox) || Textbox;
-  Textbox = annotations.template('textbox')(Textbox) || Textbox;
+  Textbox = decorators.template('textbox')(Textbox) || Textbox;
+  Textbox = decorators.placeholder(Textbox) || Textbox;
+  Textbox = decorators.attrs(Textbox) || Textbox;
   return Textbox;
 })(Component);
 
@@ -344,16 +348,18 @@ var Checkbox = (function (_Component2) {
 
   _inherits(Checkbox, _Component2);
 
-  Checkbox.prototype.getLocals = function getLocals() {
+  var _Checkbox = Checkbox;
+
+  _Checkbox.prototype.getLocals = function getLocals() {
     var locals = _Component2.prototype.getLocals.call(this);
+    locals.attrs = this.getAttrs();
     // checkboxes must always have a label
     locals.label = locals.label || this.getDefaultLabel();
     return locals;
   };
 
-  _createClass(Checkbox, null, [{
-    key: 'defaultTransformer',
-    enumerable: true,
+  _createClass(_Checkbox, null, [{
+    key: 'transformer',
     value: {
       format: function format(value) {
         return Nil.is(value) ? false : value;
@@ -361,12 +367,12 @@ var Checkbox = (function (_Component2) {
       parse: function parse(value) {
         return value;
       }
-    }
+    },
+    enumerable: true
   }]);
 
-  var _Checkbox = Checkbox;
-  Checkbox = annotations.attrs(Checkbox) || Checkbox;
-  Checkbox = annotations.template('checkbox')(Checkbox) || Checkbox;
+  Checkbox = decorators.template('checkbox')(Checkbox) || Checkbox;
+  Checkbox = decorators.attrs(Checkbox) || Checkbox;
   return Checkbox;
 })(Component);
 
@@ -383,7 +389,9 @@ var Select = (function (_Component3) {
 
   _inherits(Select, _Component3);
 
-  Select.prototype.getTransformer = function getTransformer() {
+  var _Select = Select;
+
+  _Select.prototype.getTransformer = function getTransformer() {
     var options = this.props.options;
     if (options.transformer) {
       return options.transformer;
@@ -391,44 +399,44 @@ var Select = (function (_Component3) {
     if (this.isMultiple()) {
       return Select.multipleTransformer;
     }
-    return Select.defaultTransformer(this.getNullOption());
+    return Select.transformer(this.getNullOption());
   };
 
-  Select.prototype.getNullOption = function getNullOption() {
+  _Select.prototype.getNullOption = function getNullOption() {
     return this.props.options.nullOption || { value: '', text: '-' };
   };
 
-  Select.prototype.isMultiple = function isMultiple() {
+  _Select.prototype.isMultiple = function isMultiple() {
     return this.typeInfo.innerType.meta.kind === 'list';
   };
 
-  Select.prototype.getEnum = function getEnum() {
+  _Select.prototype.getEnum = function getEnum() {
     return this.isMultiple() ? _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
   };
 
-  Select.prototype.getOptions = function getOptions() {
+  _Select.prototype.getOptions = function getOptions() {
     var options = this.props.options;
     var items = options.options ? options.options.slice() : _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.getOptionsOfEnum(this.getEnum());
     if (options.order) {
       items.sort(getComparator(options.order));
     }
     var nullOption = this.getNullOption();
-    if (options.nullOption !== false) {
+    if (!this.isMultiple() && options.nullOption !== false) {
       items.unshift(nullOption);
     }
     return items;
   };
 
-  Select.prototype.getLocals = function getLocals() {
+  _Select.prototype.getLocals = function getLocals() {
     var locals = _Component3.prototype.getLocals.call(this);
+    locals.attrs = this.getAttrs();
     locals.options = this.getOptions();
     locals.isMultiple = this.isMultiple();
     return locals;
   };
 
-  _createClass(Select, null, [{
-    key: 'defaultTransformer',
-    enumerable: true,
+  _createClass(_Select, null, [{
+    key: 'transformer',
     value: function (nullOption) {
       return {
         format: function format(value) {
@@ -438,23 +446,23 @@ var Select = (function (_Component3) {
           return nullOption && nullOption.value === value ? null : value;
         }
       };
-    }
+    },
+    enumerable: true
   }, {
     key: 'multipleTransformer',
-    enumerable: true,
     value: {
       format: function format(value) {
-        return Nil.is(value) ? [] : value;
+        return Nil.is(value) ? noarr : value;
       },
       parse: function parse(value) {
         return value;
       }
-    }
+    },
+    enumerable: true
   }]);
 
-  var _Select = Select;
-  Select = annotations.attrs(Select) || Select;
-  Select = annotations.template('select')(Select) || Select;
+  Select = decorators.template('select')(Select) || Select;
+  Select = decorators.attrs(Select) || Select;
   return Select;
 })(Component);
 
@@ -471,7 +479,9 @@ var Radio = (function (_Component4) {
 
   _inherits(Radio, _Component4);
 
-  Radio.prototype.getOptions = function getOptions() {
+  var _Radio = Radio;
+
+  _Radio.prototype.getOptions = function getOptions() {
     var options = this.props.options;
     var items = options.options ? options.options.slice() : _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.getOptionsOfEnum(this.typeInfo.innerType);
     if (options.order) {
@@ -480,43 +490,87 @@ var Radio = (function (_Component4) {
     return items;
   };
 
-  Radio.prototype.getLocals = function getLocals() {
+  _Radio.prototype.getLocals = function getLocals() {
     var locals = _Component4.prototype.getLocals.call(this);
+    locals.attrs = this.getAttrs();
     locals.options = this.getOptions();
     return locals;
   };
 
-  var _Radio = Radio;
-  Radio = annotations.attrs(Radio) || Radio;
-  Radio = annotations.template('radio')(Radio) || Radio;
+  Radio = decorators.template('radio')(Radio) || Radio;
+  Radio = decorators.attrs(Radio) || Radio;
   return Radio;
 })(Component);
 
 exports.Radio = Radio;
 
-var Struct = (function (_Component5) {
-  function Struct() {
-    _classCallCheck(this, Struct);
+var Datetime = (function (_Component5) {
+  function Datetime() {
+    _classCallCheck(this, _Datetime);
 
     if (_Component5 != null) {
       _Component5.apply(this, arguments);
     }
   }
 
-  _inherits(Struct, _Component5);
+  _inherits(Datetime, _Component5);
 
-  Struct.prototype.validate = function validate() {
+  var _Datetime = Datetime;
 
+  _Datetime.prototype.getOrder = function getOrder() {
+    return this.props.options.order || ['M', 'D', 'YY'];
+  };
+
+  _Datetime.prototype.getLocals = function getLocals() {
+    var locals = _Component5.prototype.getLocals.call(this);
+    locals.order = this.getOrder();
+    return locals;
+  };
+
+  _createClass(_Datetime, null, [{
+    key: 'transformer',
+    value: {
+      format: function format(value) {
+        return _t2['default'].Arr.is(value) ? value : _t2['default'].Dat.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) : [null, null, null];
+      },
+      parse: function parse(value) {
+        value = value.map(parseNumber);
+        return value.every(_t2['default'].Num.is) ? new Date(value[0], value[1], value[2]) : value.every(Nil.is) ? null : value;
+      }
+    },
+    enumerable: true
+  }]);
+
+  Datetime = decorators.template('date')(Datetime) || Datetime;
+  return Datetime;
+})(Component);
+
+exports.Datetime = Datetime;
+
+var Struct = (function (_Component6) {
+  function Struct() {
+    _classCallCheck(this, _Struct);
+
+    if (_Component6 != null) {
+      _Component6.apply(this, arguments);
+    }
+  }
+
+  _inherits(Struct, _Component6);
+
+  var _Struct = Struct;
+
+  _Struct.prototype.validate = function validate() {
     var value = {};
     var errors = [];
     var hasError = false;
     var result = undefined;
 
-    for (var _ref3 in this.refs) {
-      if (this.refs.hasOwnProperty(_ref3)) {
-        result = this.refs[_ref3].validate();
+    for (var ref in this.refs) {
+      if (this.refs.hasOwnProperty(ref)) {
+        result = this.refs[ref].validate();
         errors = errors.concat(result.errors);
-        value[_ref3] = result.value;
+        value[ref] = result.value;
       }
     }
 
@@ -533,7 +587,7 @@ var Struct = (function (_Component5) {
     return new _t2['default'].ValidationResult({ errors: errors, value: value });
   };
 
-  Struct.prototype.onChange = function onChange(fieldName, fieldValue, path) {
+  _Struct.prototype.onChange = function onChange(fieldName, fieldValue, path) {
     var value = _t2['default'].mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.setState({ value: value }, (function () {
@@ -541,23 +595,19 @@ var Struct = (function (_Component5) {
     }).bind(this));
   };
 
-  Struct.prototype.getTemplates = function getTemplates() {
-    return _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.merge(this.props.ctx.templates, this.props.options.templates);
-  };
-
-  Struct.prototype.getTemplate = function getTemplate() {
+  _Struct.prototype.getTemplate = function getTemplate() {
     return this.props.options.template || this.getTemplates().struct;
   };
 
-  Struct.prototype.getTypeProps = function getTypeProps() {
+  _Struct.prototype.getTypeProps = function getTypeProps() {
     return this.typeInfo.innerType.meta.props;
   };
 
-  Struct.prototype.getOrder = function getOrder() {
+  _Struct.prototype.getOrder = function getOrder() {
     return this.props.options.order || Object.keys(this.getTypeProps());
   };
 
-  Struct.prototype.getInputs = function getInputs() {
+  _Struct.prototype.getInputs = function getInputs() {
     var _props = this.props;
     var options = _props.options;
     var ctx = _props.ctx;
@@ -573,7 +623,7 @@ var Struct = (function (_Component5) {
     for (var prop in props) {
       if (props.hasOwnProperty(prop)) {
         var propType = props[prop];
-        var propOptions = options.fields && options.fields[prop] ? options.fields[prop] : nooptions;
+        var propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj;
         inputs[prop] = _React2['default'].createElement(getComponent(propType, propOptions), {
           key: prop,
           ref: prop,
@@ -596,27 +646,28 @@ var Struct = (function (_Component5) {
     return inputs;
   };
 
-  Struct.prototype.getLocals = function getLocals() {
+  _Struct.prototype.getLocals = function getLocals() {
     var options = this.props.options;
-    var locals = _Component5.prototype.getLocals.call(this);
+    var locals = _Component6.prototype.getLocals.call(this);
     locals.order = this.getOrder();
     locals.inputs = this.getInputs();
     return locals;
   };
 
-  _createClass(Struct, null, [{
-    key: 'defaultTransformer',
-    enumerable: true,
+  _createClass(_Struct, null, [{
+    key: 'transformer',
     value: {
       format: function format(value) {
-        return Nil.is(value) ? {} : value;
+        return Nil.is(value) ? noobj : value;
       },
       parse: function parse(value) {
         return value;
       }
-    }
+    },
+    enumerable: true
   }]);
 
+  Struct = decorators.templates(Struct) || Struct;
   return Struct;
 })(Component);
 
@@ -633,17 +684,19 @@ function toSameLength(value, keys) {
   return ret;
 }
 
-var List = (function (_Component6) {
+var List = (function (_Component7) {
   function List(props) {
-    _classCallCheck(this, List);
+    _classCallCheck(this, _List);
 
-    _Component6.call(this, props);
+    _Component7.call(this, props);
     this.state.keys = this.state.value.map(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid);
   }
 
-  _inherits(List, _Component6);
+  _inherits(List, _Component7);
 
-  List.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
+  var _List = List;
+
+  _List.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
       this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.getTypeInfo(props.type);
     }
@@ -654,8 +707,7 @@ var List = (function (_Component6) {
     });
   };
 
-  List.prototype.validate = function validate() {
-
+  _List.prototype.validate = function validate() {
     var value = [];
     var errors = [];
     var hasError = false;
@@ -678,28 +730,28 @@ var List = (function (_Component6) {
     return new _t2['default'].ValidationResult({ errors: errors, value: value });
   };
 
-  List.prototype.onChange = function onChange(value, keys, path) {
-    var _this4 = this;
+  _List.prototype.onChange = function onChange(value, keys, path) {
+    var _this7 = this;
 
     this.setState({ value: value, keys: toSameLength(value, keys) }, function () {
-      _this4.props.onChange(value, path || _this4.props.ctx.path);
+      _this7.props.onChange(value, path || _this7.props.ctx.path);
     });
   };
 
-  List.prototype.addItem = function addItem(evt) {
+  _List.prototype.addItem = function addItem(evt) {
     evt.preventDefault();
     var value = this.state.value.concat(undefined);
     var keys = this.state.keys.concat(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid());
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1));
   };
 
-  List.prototype.onItemChange = function onItemChange(itemIndex, itemValue, path) {
+  _List.prototype.onItemChange = function onItemChange(itemIndex, itemValue, path) {
     var value = this.state.value.slice();
     value[itemIndex] = itemValue;
     this.onChange(value, this.state.keys, path);
   };
 
-  List.prototype.removeItem = function removeItem(i, evt) {
+  _List.prototype.removeItem = function removeItem(i, evt) {
     evt.preventDefault();
     var value = this.state.value.slice();
     value.splice(i, 1);
@@ -708,30 +760,26 @@ var List = (function (_Component6) {
     this.onChange(value, keys, this.props.ctx.path.concat(i));
   };
 
-  List.prototype.moveUpItem = function moveUpItem(i, evt) {
+  _List.prototype.moveUpItem = function moveUpItem(i, evt) {
     evt.preventDefault();
     if (i > 0) {
       this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.value.slice(), i, i - 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.keys.slice(), i, i - 1));
     }
   };
 
-  List.prototype.moveDownItem = function moveDownItem(i, evt) {
+  _List.prototype.moveDownItem = function moveDownItem(i, evt) {
     evt.preventDefault();
     if (i < this.state.value.length - 1) {
       this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.value.slice(), i, i + 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.keys.slice(), i, i + 1));
     }
   };
 
-  List.prototype.getTemplates = function getTemplates() {
-    return _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.merge(this.props.ctx.templates, this.props.options.templates);
-  };
-
-  List.prototype.getTemplate = function getTemplate() {
+  _List.prototype.getTemplate = function getTemplate() {
     return this.props.options.template || this.getTemplates().list;
   };
 
-  List.prototype.getItems = function getItems() {
-    var _this5 = this;
+  _List.prototype.getItems = function getItems() {
+    var _this8 = this;
 
     var _props2 = this.props;
     var options = _props2.options;
@@ -743,25 +791,25 @@ var List = (function (_Component6) {
     var templates = this.getTemplates();
     var value = this.state.value;
     var type = this.typeInfo.innerType.meta.type;
-    var Component = getComponent(type, options.item || nooptions);
+    var Component = getComponent(type, options.item || noobj);
     return value.map(function (value, i) {
       var buttons = [];
       if (!options.disableRemove) {
-        buttons.push({ label: i18n.remove, click: _this5.removeItem.bind(_this5, i) });
+        buttons.push({ label: i18n.remove, click: _this8.removeItem.bind(_this8, i) });
       }
       if (!options.disableOrder) {
-        buttons.push({ label: i18n.up, click: _this5.moveUpItem.bind(_this5, i) });
+        buttons.push({ label: i18n.up, click: _this8.moveUpItem.bind(_this8, i) });
       }
       if (!options.disableOrder) {
-        buttons.push({ label: i18n.down, click: _this5.moveDownItem.bind(_this5, i) });
+        buttons.push({ label: i18n.down, click: _this8.moveDownItem.bind(_this8, i) });
       }
       return {
         input: _React2['default'].createElement(Component, {
           ref: i,
           type: type,
-          options: options.item || nooptions,
+          options: options.item || noobj,
           value: value,
-          onChange: _this5.onItemChange.bind(_this5, i),
+          onChange: _this8.onItemChange.bind(_this8, i),
           ctx: {
             auto: auto,
             config: config,
@@ -771,17 +819,16 @@ var List = (function (_Component6) {
             path: ctx.path.concat(i)
           }
         }),
-        key: _this5.state.keys[i],
+        key: _this8.state.keys[i],
         buttons: buttons
       };
     });
   };
 
-  List.prototype.getLocals = function getLocals() {
-
+  _List.prototype.getLocals = function getLocals() {
     var options = this.props.options;
     var i18n = this.getI18n();
-    var locals = _Component6.prototype.getLocals.call(this);
+    var locals = _Component7.prototype.getLocals.call(this);
     locals.add = options.disableAdd ? null : {
       label: i18n.add,
       click: this.addItem.bind(this)
@@ -790,170 +837,24 @@ var List = (function (_Component6) {
     return locals;
   };
 
-  _createClass(List, null, [{
-    key: 'defaultTransformer',
-    enumerable: true,
+  _createClass(_List, null, [{
+    key: 'transformer',
     value: {
       format: function format(value) {
-        return Nil.is(value) ? [] : value;
+        return Nil.is(value) ? noarr : value;
       },
       parse: function parse(value) {
         return value;
       }
-    }
+    },
+    enumerable: true
   }]);
 
+  List = decorators.templates(List) || List;
   return List;
 })(Component);
 
 exports.List = List;
-
-var Dict = (function (_Component7) {
-  function Dict() {
-    _classCallCheck(this, Dict);
-
-    if (_Component7 != null) {
-      _Component7.apply(this, arguments);
-    }
-  }
-
-  _inherits(Dict, _Component7);
-
-  Dict.prototype.validate = function validate() {
-    var result = this.refs.form.validate();
-    if (!result.isValid()) {
-      return result;
-    }
-    return _Component7.prototype.validate.call(this);
-  };
-
-  Dict.prototype.getTemplate = function getTemplate() {
-    var _this6 = this;
-
-    return function () {
-      var Type = _t2['default'].list(_t2['default'].struct({
-        domain: _this6.typeInfo.innerType.meta.domain,
-        codomain: _this6.typeInfo.innerType.meta.codomain
-      }));
-      return _React2['default'].createElement(Form, {
-        ref: 'form',
-        type: Type,
-        options: _this6.props.options,
-        onChange: _this6.onChange.bind(_this6),
-        value: _this6.state.value,
-        ctx: _this6.props.ctx
-      });
-    };
-  };
-
-  Dict.prototype.getLocals = function getLocals() {};
-
-  _createClass(Dict, null, [{
-    key: 'defaultTransformer',
-    enumerable: true,
-    value: {
-      format: function format(value) {
-        if (_t2['default'].Arr.is(value)) {
-          return value;
-        }
-        value = value || {};
-        var result = [];
-        for (var key in value) {
-          if (value.hasOwnProperty(key)) {
-            result.push({ domain: key, codomain: value[key] });
-          }
-        }
-        return result;
-      },
-      parse: function parse(value) {
-        var result = {};
-        value.forEach(function (_ref2) {
-          var domain = _ref2.domain;
-          var codomain = _ref2.codomain;
-          return result[domain] = codomain;
-        });
-        return result;
-      }
-    }
-  }]);
-
-  return Dict;
-})(Component);
-
-exports.Dict = Dict;
-
-var Tuple = (function (_Component8) {
-  function Tuple() {
-    _classCallCheck(this, Tuple);
-
-    if (_Component8 != null) {
-      _Component8.apply(this, arguments);
-    }
-  }
-
-  _inherits(Tuple, _Component8);
-
-  Tuple.prototype.getTransformer = function getTransformer() {
-    var options = this.props.options;
-    if (options.transformer) {
-      return options.transformer;
-    }
-    return Tuple.defaultTransformer(this.typeInfo.innerType);
-  };
-
-  Tuple.prototype.validate = function validate() {
-    var result = this.refs.form.validate;
-    if (!result.isValid()) {
-      return result;
-    }
-    return _Component8.prototype.validate.call(this);
-  };
-
-  Tuple.prototype.getTemplate = function getTemplate() {
-    var _this7 = this;
-
-    return function () {
-      var props = {};
-      _this7.typeInfo.innerType.meta.types.forEach(function (type, i) {
-        props[i] = type;
-      });
-      var Type = _t2['default'].struct(props);
-      return _React2['default'].createElement(Form, {
-        ref: 'form',
-        type: Type,
-        options: _this7.props.options,
-        onChange: _this7.onChange.bind(_this7),
-        value: _this7.state.value,
-        ctx: _this7.props.ctx
-      });
-    };
-  };
-
-  Tuple.prototype.getLocals = function getLocals() {};
-
-  _createClass(Tuple, null, [{
-    key: 'defaultTransformer',
-    enumerable: true,
-    value: function (dict) {
-      return {
-        format: function format(value) {
-          return value;
-        },
-        parse: function parse(value) {
-          var result = [];
-          dict.meta.types.forEach(function (type, i) {
-            return result.push(value[i]);
-          });
-          return result;
-        }
-      };
-    }
-  }]);
-
-  return Tuple;
-})(Component);
-
-exports.Tuple = Tuple;
 
 var Form = (function () {
   function Form() {
@@ -977,13 +878,12 @@ var Form = (function () {
   };
 
   Form.prototype.render = function render() {
-
     var options = this.props.options;
     var type = this.props.type;
     var i18n = Form.i18n;
     var templates = Form.templates;
 
-    options = options || nooptions;
+    options = options || noobj;
 
     _t2['default'].assert(_t2['default'].Type.is(type), '[' + SOURCE + '] missing required prop type');
     _t2['default'].assert(_t2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
@@ -991,7 +891,6 @@ var Form = (function () {
     _t2['default'].assert(_t2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
 
     var Component = getComponent(type, options);
-
     return _React2['default'].createElement(Component, {
       ref: 'input',
       type: type,
@@ -1012,7 +911,7 @@ var Form = (function () {
 
 exports.Form = Form;
 
-},{"./util":3,"debug":4,"react":"react","tcomb-validation":20,"uvdom/react":45}],2:[function(require,module,exports){
+},{"./util":3,"classnames":4,"debug":5,"react":"react","tcomb-validation":21,"uvdom/react":45}],2:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -1022,6 +921,7 @@ exports.textbox = textbox;
 exports.checkbox = checkbox;
 exports.select = select;
 exports.radio = radio;
+exports.date = date;
 exports.struct = struct;
 exports.list = list;
 
@@ -1104,6 +1004,10 @@ var SelectConfig = _t2['default'].struct({
 var RadioConfig = _t2['default'].struct({
   horizontal: maybe(Breakpoints)
 }, 'RadioConfig');
+
+var DateConfig = _t2['default'].struct({
+  horizontal: maybe(Breakpoints)
+}, 'DateConfig');
 
 var StructConfig = _t2['default'].struct({
   horizontal: maybe(Breakpoints)
@@ -1205,7 +1109,6 @@ function textbox(locals) {
     attrs.className['form-control'] = true;
 
     attrs.disabled = locals.disabled;
-    attrs.placeholder = locals.placeholder;
     attrs.value = locals.value;
     attrs.onChange = function (evt) {
       return locals.onChange(evt.target.value);
@@ -1403,6 +1306,159 @@ function radio(locals) {
   });
 }
 
+function range(n) {
+  var result = [];
+  for (var i = 1; i <= n; i++) {
+    result.push(i);
+  }
+  return result;
+}
+
+function padLeft(x, len) {
+  var str = String(x);
+  var times = len - str.length;
+  for (var i = 0; i < times; i++) {
+    str = '0' + str;
+  }
+  return str;
+}
+
+function toOption(value, text) {
+  return {
+    tag: 'option',
+    attrs: { value: value + '' },
+    children: text
+  };
+}
+
+var nullOption = [toOption('', '-')];
+
+var days = nullOption.concat(range(31).map(function (i) {
+  return toOption(i, padLeft(i, 2));
+}));
+
+var months = nullOption.concat(range(12).map(function (i) {
+  return toOption(i - 1, padLeft(i, 2));
+}));
+
+function date(locals) {
+
+  var config = new DateConfig(locals.config || noobj);
+  var value = locals.value.slice();
+
+  function onDayChange(evt) {
+    value[2] = evt.target.value === '-' ? null : evt.target.value;
+    locals.onChange(value);
+  }
+
+  function onMonthChange(evt) {
+    value[1] = evt.target.value === '-' ? null : evt.target.value;
+    locals.onChange(value);
+  }
+
+  function onYearChange(evt) {
+    value[0] = evt.target.value.trim() === '' ? null : evt.target.value.trim();
+    locals.onChange(value);
+  }
+
+  var parts = {
+
+    D: {
+      tag: 'li',
+      key: 'D',
+      children: {
+        tag: 'select',
+        attrs: {
+          className: {
+            'form-control': true
+          },
+          value: value[2]
+        },
+        events: {
+          change: onDayChange
+        },
+        children: days
+      }
+    },
+
+    M: {
+      tag: 'li',
+      key: 'M',
+      children: {
+        tag: 'select',
+        attrs: {
+          className: {
+            'form-control': true
+          },
+          value: value[1]
+        },
+        events: {
+          change: onMonthChange
+        },
+        children: months
+      }
+    },
+
+    YY: {
+      tag: 'li',
+      key: 'YY',
+      children: {
+        tag: 'input',
+        attrs: {
+          type: 'text',
+          size: 5,
+          className: {
+            'form-control': true
+          },
+          value: value[0]
+        },
+        events: {
+          change: onYearChange
+        }
+      }
+    }
+
+  };
+
+  var control = {
+    tag: 'ul',
+    attrs: {
+      className: {
+        'nav nav-pills': true
+      }
+    },
+    children: locals.order.map(function (id) {
+      return parts[id];
+    })
+  };
+
+  var horizontal = config.horizontal;
+  var label = getLabel({
+    label: locals.label,
+    id: locals.id,
+    breakpoints: config.horizontal
+  });
+  var error = getError(locals);
+  var help = getHelp(locals);
+  var children = [label, control, error, help];
+
+  if (horizontal) {
+    children = [label, {
+      tag: 'div',
+      attrs: {
+        className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
+      },
+      children: [control, error, help]
+    }];
+  }
+
+  return _bootstrap2['default'].getFormGroup({
+    className: 'form-group-depth-' + locals.path.length,
+    hasError: locals.hasError,
+    children: children
+  });
+}
+
 function struct(locals) {
 
   var config = new StructConfig(locals.config || {});
@@ -1515,7 +1571,7 @@ function list(locals) {
   });
 }
 
-},{"tcomb-validation":20,"uvdom-bootstrap":22}],3:[function(require,module,exports){
+},{"tcomb-validation":21,"uvdom-bootstrap":23}],3:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1547,7 +1603,7 @@ function getTypeInfo(type) {
   var isSubtype = false;
   var kind;
 
-  while (true) {
+  while (innerType) {
     kind = innerType.meta.kind;
     if (kind === 'maybe') {
       isMaybe = true;
@@ -1603,7 +1659,39 @@ function uuid() {
   });
 }
 
-},{"tcomb-validation":20}],4:[function(require,module,exports){
+},{"tcomb-validation":21}],4:[function(require,module,exports){
+function classNames() {
+	var classes = '';
+	var arg;
+
+	for (var i = 0; i < arguments.length; i++) {
+		arg = arguments[i];
+		if (!arg) {
+			continue;
+		}
+
+		if ('string' === typeof arg || 'number' === typeof arg) {
+			classes += ' ' + arg;
+		} else if (Object.prototype.toString.call(arg) === '[object Array]') {
+			classes += ' ' + classNames.apply(null, arg);
+		} else if ('object' === typeof arg) {
+			for (var key in arg) {
+				if (!arg.hasOwnProperty(key) || !arg[key]) {
+					continue;
+				}
+				classes += ' ' + key;
+			}
+		}
+	}
+	return classes.substr(1);
+}
+
+// safely export classNames in case the script is included directly on a page
+if (typeof module !== 'undefined' && module.exports) {
+	module.exports = classNames;
+}
+
+},{}],5:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -1780,7 +1868,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":5}],5:[function(require,module,exports){
+},{"./debug":6}],6:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -1979,7 +2067,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":6}],6:[function(require,module,exports){
+},{"ms":7}],7:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -2104,7 +2192,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb');
@@ -2166,7 +2254,7 @@ function vdom(x, state) {
 }
 
 module.exports = vdom;
-},{"tcomb":21}],8:[function(require,module,exports){
+},{"tcomb":22}],9:[function(require,module,exports){
 (function (process){
 var defined = require('defined');
 var createDefaultStream = require('./lib/default_stream');
@@ -2310,7 +2398,7 @@ function createHarness (conf_) {
 }
 
 }).call(this,require('_process'))
-},{"./lib/default_stream":9,"./lib/results":10,"./lib/test":11,"_process":56,"defined":15,"through":19}],9:[function(require,module,exports){
+},{"./lib/default_stream":10,"./lib/results":11,"./lib/test":12,"_process":56,"defined":16,"through":20}],10:[function(require,module,exports){
 (function (process){
 var through = require('through');
 var fs = require('fs');
@@ -2345,7 +2433,7 @@ module.exports = function () {
 };
 
 }).call(this,require('_process'))
-},{"_process":56,"fs":46,"through":19}],10:[function(require,module,exports){
+},{"_process":56,"fs":46,"through":20}],11:[function(require,module,exports){
 (function (process){
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
@@ -2538,7 +2626,7 @@ function has (obj, prop) {
 }
 
 }).call(this,require('_process'))
-},{"_process":56,"events":52,"inherits":16,"object-inspect":17,"resumer":18,"through":19}],11:[function(require,module,exports){
+},{"_process":56,"events":52,"inherits":17,"object-inspect":18,"resumer":19,"through":20}],12:[function(require,module,exports){
 (function (process,__dirname){
 var deepEqual = require('deep-equal');
 var defined = require('defined');
@@ -2664,7 +2752,7 @@ Test.prototype.timeoutAfter = function(ms) {
 
 Test.prototype.end = function (err) { 
     var self = this;
-    if (arguments.length >= 1) {
+    if (arguments.length >= 1 && !!err) {
         this.ifError(err);
     }
     
@@ -2987,7 +3075,7 @@ Test.prototype['throws'] = function (fn, expected, msg, extra) {
         expected = String(expected);
     }
 
-    if (typeof expected === 'function') {
+    if (typeof expected === 'function' && caught) {
         passed = caught.error instanceof expected;
         caught.error = caught.error.constructor;
     }
@@ -3038,7 +3126,7 @@ Test.skip = function (name_, _opts, _cb) {
 
 
 }).call(this,require('_process'),"/node_modules/tape/lib")
-},{"_process":56,"deep-equal":12,"defined":15,"events":52,"inherits":16,"path":55}],12:[function(require,module,exports){
+},{"_process":56,"deep-equal":13,"defined":16,"events":52,"inherits":17,"path":55}],13:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -3134,7 +3222,7 @@ function objEquiv(a, b, opts) {
   return typeof a === typeof b;
 }
 
-},{"./lib/is_arguments.js":13,"./lib/keys.js":14}],13:[function(require,module,exports){
+},{"./lib/is_arguments.js":14,"./lib/keys.js":15}],14:[function(require,module,exports){
 var supportsArgumentsClass = (function(){
   return Object.prototype.toString.call(arguments)
 })() == '[object Arguments]';
@@ -3156,7 +3244,7 @@ function unsupported(object){
     false;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -3167,14 +3255,14 @@ function shim (obj) {
   return keys;
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function () {
     for (var i = 0; i < arguments.length; i++) {
         if (arguments[i] !== undefined) return arguments[i];
     }
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -3199,13 +3287,16 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = function inspect_ (obj, opts, depth, seen) {
     if (!opts) opts = {};
     
     var maxDepth = opts.depth === undefined ? 5 : opts.depth;
     if (depth === undefined) depth = 0;
-    if (depth > maxDepth && maxDepth > 0) return '...';
+    if (depth >= maxDepth && maxDepth > 0
+    && obj && typeof obj === 'object') {
+        return '[Object]';
+    }
     
     if (seen === undefined) seen = [];
     else if (indexOf(seen, obj) >= 0) {
@@ -3238,7 +3329,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         }
         s += '>';
         if (obj.childNodes && obj.childNodes.length) s += '...';
-        s += '</' + String(obj.tagName).toLowerCase() + '>';
+        s += '</' + String(obj.nodeName).toLowerCase() + '>';
         return s;
     }
     else if (isArray(obj)) {
@@ -3248,6 +3339,21 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
             xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
         }
         return '[ ' + xs.join(', ') + ' ]';
+    }
+    else if (isError(obj)) {
+        var parts = [];
+        for (var key in obj) {
+            if (!has(obj, key)) continue;
+            
+            if (/[^\w$]/.test(key)) {
+                parts.push(inspect(key) + ': ' + inspect(obj[key]));
+            }
+            else {
+                parts.push(key + ': ' + inspect(obj[key]));
+            }
+        }
+        if (parts.length === 0) return '[' + obj + ']';
+        return '{ [' + obj + '] ' + parts.join(', ') + ' }';
     }
     else if (typeof obj === 'object' && typeof obj.inspect === 'function') {
         return obj.inspect();
@@ -3275,21 +3381,18 @@ function quote (s) {
     return String(s).replace(/"/g, '&quot;');
 }
 
-function isArray (obj) {
-    return {}.toString.call(obj) === '[object Array]';
-}
-
-function isDate (obj) {
-    return {}.toString.call(obj) === '[object Date]';
-}
-
-function isRegExp (obj) {
-    return {}.toString.call(obj) === '[object RegExp]';
-}
+function isArray (obj) { return toStr(obj) === '[object Array]' }
+function isDate (obj) { return toStr(obj) === '[object Date]' }
+function isRegExp (obj) { return toStr(obj) === '[object RegExp]' }
+function isError (obj) { return toStr(obj) === '[object Error]' }
 
 function has (obj, key) {
     if (!{}.hasOwnProperty) return key in obj;
     return {}.hasOwnProperty.call(obj, key);
+}
+
+function toStr (obj) {
+    return Object.prototype.toString.call(obj);
 }
 
 function nameOf (f) {
@@ -3308,10 +3411,10 @@ function indexOf (xs, x) {
 
 function isElement (x) {
     if (!x || typeof x !== 'object') return false;
-    if (typeof HTMLElement !== 'undefined') {
-        return x instanceof HTMLElement;
+    if (typeof HTMLElement !== 'undefined' && x instanceof HTMLElement) {
+        return true;
     }
-    else return typeof x.nodeName === 'string'
+    return typeof x.nodeName === 'string'
         && typeof x.getAttribute === 'function'
     ;
 }
@@ -3328,7 +3431,7 @@ function inspectString (str) {
     }
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (process){
 var through = require('through');
 var nextTick = typeof setImmediate !== 'undefined'
@@ -3361,7 +3464,7 @@ module.exports = function (write, end) {
 };
 
 }).call(this,require('_process'))
-},{"_process":56,"through":19}],19:[function(require,module,exports){
+},{"_process":56,"through":20}],20:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -3473,7 +3576,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":56,"stream":68}],20:[function(require,module,exports){
+},{"_process":56,"stream":68}],21:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd && typeof __fbBatchedBridgeConfig === 'undefined') {
@@ -3691,7 +3794,7 @@ function through (write, end, opts) {
 
 }));
 
-},{"tcomb":21}],21:[function(require,module,exports){
+},{"tcomb":22}],22:[function(require,module,exports){
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd && typeof __fbBatchedBridgeConfig === 'undefined') {
@@ -4413,7 +4516,7 @@ function through (write, end, opts) {
 
 }));
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports = {
   getAddon: require('./lib/getAddon'),
   getAlert: require('./lib/getAlert'),
@@ -4422,6 +4525,7 @@ module.exports = {
   getButtonGroup: require('./lib/getButtonGroup'),
   getCheckbox: require('./lib/getCheckbox'),
   getCol: require('./lib/getCol'),
+  getErrorBlock: require('./lib/getErrorBlock'),
   getFieldset: require('./lib/getFieldset'),
   getFormGroup: require('./lib/getFormGroup'),
   getHelpBlock: require('./lib/getHelpBlock'),
@@ -4432,11 +4536,9 @@ module.exports = {
   getOption: require('./lib/getOption'),
   getRadio: require('./lib/getRadio'),
   getRow: require('./lib/getRow'),
-  getSelect: require('./lib/getSelect'),
-  getStatic: require('./lib/getStatic'),
-  getTextbox: require('./lib/getTextbox')
+  getStatic: require('./lib/getStatic')
 };
-},{"./lib/getAddon":23,"./lib/getAlert":24,"./lib/getBreakpoints":25,"./lib/getButton":26,"./lib/getButtonGroup":27,"./lib/getCheckbox":28,"./lib/getCol":29,"./lib/getFieldset":30,"./lib/getFormGroup":31,"./lib/getHelpBlock":32,"./lib/getInputGroup":33,"./lib/getLabel":34,"./lib/getOffsets":35,"./lib/getOptGroup":36,"./lib/getOption":37,"./lib/getRadio":38,"./lib/getRow":39,"./lib/getSelect":40,"./lib/getStatic":41,"./lib/getTextbox":42}],23:[function(require,module,exports){
+},{"./lib/getAddon":24,"./lib/getAlert":25,"./lib/getBreakpoints":26,"./lib/getButton":27,"./lib/getButtonGroup":28,"./lib/getCheckbox":29,"./lib/getCol":30,"./lib/getErrorBlock":31,"./lib/getFieldset":32,"./lib/getFormGroup":33,"./lib/getHelpBlock":34,"./lib/getInputGroup":35,"./lib/getLabel":36,"./lib/getOffsets":37,"./lib/getOptGroup":38,"./lib/getOption":39,"./lib/getRadio":40,"./lib/getRow":41,"./lib/getStatic":42}],24:[function(require,module,exports){
 'use strict';
 
 function getAddon(addon) {
@@ -4452,7 +4554,7 @@ function getAddon(addon) {
 }
 
 module.exports = getAddon;
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 function getAlert(opts) {
@@ -4473,7 +4575,7 @@ function getAlert(opts) {
 }
 
 module.exports = getAlert;
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 function getBreakpoints(breakpoints) {
@@ -4487,7 +4589,7 @@ function getBreakpoints(breakpoints) {
 }
 
 module.exports = getBreakpoints;
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4541,7 +4643,7 @@ function getButton(opts) {
 
 module.exports = getButton;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 function getButtonGroup(buttons) {
@@ -4559,76 +4661,37 @@ function getButtonGroup(buttons) {
 module.exports = getButtonGroup;
 
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
-/*
-
-  Example:
-
-  {
-    label: 'Remember me',
-    defaultChecked: true,
-    checked: true,
-    name: 'rememberMe',
-    disabled: false,
-    events: {
-      ...
-    },
-    autoFocus: true,
-    className: 'myClassName'
-  }
-
-*/
-
-function getCheckbox(opts) {
-
-  var events = opts.events || {
-    change: opts.onChange
-  };
-
-  var className = null;
-  if (opts.className) {
-    className = {};
-    className[opts.className] = true;
-  }
-
+function getCheckbox(attrs, label) {
   return {
     tag: 'div',
     attrs: {
       className: {
         'checkbox': true,
-        'disabled': opts.disabled
+        'disabled': attrs.disabled
       }
     },
     children: {
       tag: 'label',
       attrs: {
-        htmlFor: opts.id
+        htmlFor: attrs.id
       },
       children: [
         {
           tag: 'input',
-          attrs: {
-            checked: opts.checked,
-            disabled: opts.disabled,
-            id: opts.id,
-            name: opts.name,
-            type: 'checkbox',
-            autoFocus: opts.autoFocus,
-            className: className
-          },
-          events: events
+          attrs: attrs
         },
         ' ',
-        opts.label
+        label
       ]
     }
-  }
+  };
 }
 
 module.exports = getCheckbox;
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 var getBreakpoints = require('./getBreakpoints');
@@ -4647,7 +4710,26 @@ function getCol(opts) {
 }
 
 module.exports = getCol;
-},{"./getBreakpoints":25}],30:[function(require,module,exports){
+},{"./getBreakpoints":26}],31:[function(require,module,exports){
+'use strict';
+
+function getErrorBlock(opts) {
+  return {
+    tag: 'span',
+    attrs: {
+      className: {
+        'help-block': true,
+        'error-block': opts.hasError
+      }
+    },
+    children: opts.error
+  };
+}
+
+module.exports = getErrorBlock;
+
+
+},{}],32:[function(require,module,exports){
 'use strict';
 
 function getFieldset(opts) {
@@ -4674,24 +4756,30 @@ function getFieldset(opts) {
 module.exports = getFieldset;
 
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 function getFormGroup(opts) {
+
+  var className = {
+    'form-group': true,
+    'has-error': opts.hasError
+  };
+  if (opts.className) {
+    className[opts.className] = true;
+  }
+
   return {
     tag: 'div',
     attrs: {
-      className: {
-        'form-group': true,
-        'has-error': opts.hasError
-      }
+      className: className
     },
     children: opts.children
   };
 }
 
 module.exports = getFormGroup;
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4725,7 +4813,7 @@ function getHelpBlock(opts) {
 module.exports = getHelpBlock;
 
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 function getInputGroup(children) {
@@ -4741,7 +4829,7 @@ function getInputGroup(children) {
 }
 
 module.exports = getInputGroup;
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var mixin = require('./mixin');
@@ -4784,7 +4872,7 @@ function getLabel(opts) {
 module.exports = getLabel;
 
 
-},{"./mixin":43}],35:[function(require,module,exports){
+},{"./mixin":43}],37:[function(require,module,exports){
 'use strict';
 
 function getOffsets(breakpoints) {
@@ -4798,7 +4886,7 @@ function getOffsets(breakpoints) {
 }
 
 module.exports = getOffsets;
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var getOption = require('./getOption');
@@ -4832,7 +4920,7 @@ function getOptGroup(opts) {
 module.exports = getOptGroup;
 
 
-},{"./getOption":37}],37:[function(require,module,exports){
+},{"./getOption":39}],39:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4861,82 +4949,38 @@ function getOption(opts) {
 module.exports = getOption;
 
 
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
-/*
-
-  Example:
-
-  {
-    label: 'Option',
-    defaultChecked: true,
-    checked: true,
-    value: '1',
-    name: 'option',
-    disabled: false,
-    events: {
-      ...
-    },
-    autoFocus: true,
-    className: 'myClassName'
-  }
-
-*/
-
-function getRadio(opts) {
-
-  var events = opts.events || {
-    change: opts.onChange
-  };
-
-  var className = null;
-  if (opts.className) {
-    className = {};
-    className[opts.className] = true;
-  }
-
+function getRadio(attrs, text, key) {
   return {
     tag: 'div',
     attrs: {
       className: {
         'radio': true,
-        'disabled': opts.disabled
+        'disabled': attrs.disabled
       }
     },
     children: {
       tag: 'label',
       attrs: {
-        htmlFor: opts.id,
+        htmlFor: attrs.id,
       },
       children: [
         {
           tag: 'input',
-          attrs: {
-            type: 'radio',
-            checked: opts.checked,
-            defaultChecked: opts.defaultChecked,
-            disabled: opts.disabled,
-            name: opts.name,
-            value: opts.value,
-            id: opts.id,
-            // aria support
-            'aria-describedby': opts['aria-describedby'],
-            autoFocus: opts.autoFocus,
-            className: className
-          },
-          events: events
+          attrs: attrs
         },
         ' ',
-        opts.label
+        text
       ]
     },
-    key: opts.value
+    key: key
   };
 }
 
 module.exports = getRadio;
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 function getRow(opts) {
@@ -4953,66 +4997,7 @@ function getRow(opts) {
 }
 
 module.exports = getRow;
-},{}],40:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    defaultValue: 'hello',
-    value: 'hello',
-    name: 'myname',
-    disabled: false,
-    size: 'lg',
-    events: {
-      ...
-    },
-    'aria-describedby': 'password-tip',
-    autoFocus: false,
-    className: 'myClassName'
-  }
-
-*/
-
-function getSelect(opts) {
-
-  var events = opts.events || {
-    change: opts.onChange
-  };
-
-  var className = {
-    'form-control': true
-  };
-  if (opts.size) {
-    className['input-' + opts.size] = true;
-  }
-  if (opts.className) {
-    className[opts.className] = true;
-  }
-
-  return {
-    tag: 'select',
-    attrs: {
-      name: opts.name,
-      defaultValue: opts.defaultValue,
-      value: opts.value,
-      disabled: opts.disabled,
-      className: className,
-      multiple: opts.multiple,
-      id: opts.id,
-      // aria support
-      'aria-describedby': opts['aria-describedby'],
-      autoFocus: opts.autoFocus
-    },
-    children: opts.options,
-    events: events
-  };
-}
-
-module.exports = getSelect;
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 function getStatic(value) {
@@ -5028,69 +5013,6 @@ function getStatic(value) {
 }
 
 module.exports = getStatic;
-},{}],42:[function(require,module,exports){
-'use strict';
-
-/*
-
-  Example:
-
-  {
-    type: 'password',
-    defaultValue: 'hello',
-    value: 'hello',
-    name: 'myname',
-    disabled: false,
-    placeholder: 'insert your name',
-    readOnly: true,
-    size: 'lg',
-    events: {
-      ...
-    },
-    'aria-describedby': 'password-tip',
-    autoFocus: true,
-    className: 'myClassName'
-  }
-
-*/
-
-function getTextbox(opts) {
-
-  var events = opts.events || {
-    change: opts.onChange
-  };
-
-  var type = opts.type || 'text';
-  var className = {
-    'form-control': true
-  };
-  if (opts.size) {
-    className['input-' + opts.size] = true;
-  }
-  if (opts.className) {
-    className[opts.className] = true;
-  }
-
-  return {
-    tag: type === 'textarea' ? 'textarea' : 'input',
-    attrs: {
-      type: type === 'textarea' ? null : type,
-      name: opts.name,
-      defaultValue: opts.defaultValue,
-      value: opts.value,
-      disabled: opts.disabled,
-      placeholder: opts.placeholder,
-      readOnly: opts.readOnly,
-      className: className,
-      id: opts.id,
-      'aria-describedby': opts['aria-describedby'],
-      autoFocus: opts.autoFocus
-    },
-    events: events
-  };
-}
-
-module.exports = getTextbox;
 },{}],43:[function(require,module,exports){
 'use strict';
 
@@ -5106,38 +5028,8 @@ function mixin(a, b) {
 
 module.exports = mixin;
 },{}],44:[function(require,module,exports){
-function classNames() {
-	var classes = '';
-	var arg;
-
-	for (var i = 0; i < arguments.length; i++) {
-		arg = arguments[i];
-		if (!arg) {
-			continue;
-		}
-
-		if ('string' === typeof arg || 'number' === typeof arg) {
-			classes += ' ' + arg;
-		} else if (Object.prototype.toString.call(arg) === '[object Array]') {
-			classes += ' ' + classNames.apply(null, arg);
-		} else if ('object' === typeof arg) {
-			for (var key in arg) {
-				if (!arg.hasOwnProperty(key) || !arg[key]) {
-					continue;
-				}
-				classes += ' ' + key;
-			}
-		}
-	}
-	return classes.substr(1);
-}
-
-// safely export classNames in case the script is included directly on a page
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = classNames;
-}
-
-},{}],45:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],45:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -7094,8 +6986,8 @@ function isUndefined(arg) {
 }
 
 },{}],53:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-},{"dup":16}],54:[function(require,module,exports){
+arguments[4][17][0].apply(exports,arguments)
+},{"dup":17}],54:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
@@ -9922,7 +9814,7 @@ tape('Checkbox', function (tape) {
 
 
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],71:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],71:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10246,7 +10138,7 @@ tape('Radio', function (tape) {
 
 
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],72:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],72:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10673,7 +10565,7 @@ tape('Select', function (tape) {
 
 
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],73:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],73:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -11213,7 +11105,7 @@ tape('Textbox', function (tape) {
 
 
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":7,"tape":8,"tcomb":21}],74:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],74:[function(require,module,exports){
 require('./Textbox');
 require('./Checkbox');
 require('./Select');
@@ -11269,7 +11161,7 @@ module.exports = {
   getRenderComponent: getRenderComponent
 };
 
-},{"../../lib/templates/bootstrap":2,"react":"react","tcomb":21}],76:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"react":"react","tcomb":22}],76:[function(require,module,exports){
 require('./components');
 require('./templates');
 
@@ -11304,7 +11196,7 @@ tape('textbox', function (tape) {
 
 });
 
-},{"../../lib/templates/bootstrap":2,"tape":8}],78:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"tape":9}],78:[function(require,module,exports){
 require('./bootstrap');
 
 },{"./bootstrap":77}]},{},[76]);

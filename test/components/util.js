@@ -35,7 +35,7 @@ function getRenderComponent(Component) {
     var node = document.createElement('div');
     app.appendChild(node);
     return React.render(React.createElement(Component, props), node);
-  }
+  };
 }
 
 

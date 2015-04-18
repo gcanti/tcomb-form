@@ -19,7 +19,7 @@ export function getTypeInfo(type) {
   var isSubtype = false;
   var kind;
 
-  while (true) {
+  while (innerType) {
     kind = innerType.meta.kind;
     if (kind === 'maybe') {
       isMaybe = true;
@@ -39,7 +39,7 @@ export function getTypeInfo(type) {
     isSubtype: isSubtype,
     innerType: innerType
   };
-};
+}
 
 // thanks to https://github.com/epeli/underscore.string
 
@@ -52,7 +52,7 @@ function capitalize(s){
 }
 
 export function humanize(s){
-  return capitalize(underscored(s).replace(/_id$/,'').replace(/_/g, ' '));
+  return capitalize(underscored(s).replace(/_id$/, '').replace(/_/g, ' '));
 }
 
 export function merge(a, b) {
@@ -67,7 +67,7 @@ export function move(arr, fromIndex, toIndex) {
 
 export function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    var r = Math.random()*16|0, v = (c === 'x') ? r : (r&0x3|0x8);
+    var r = Math.random() * 16|0, v = (c === 'x') ? r : (r&0x3|0x8);
     return v.toString(16);
   });
 }

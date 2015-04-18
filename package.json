@@ -8,7 +8,8 @@
     "transpile": "./node_modules/.bin/babel ./src -d ./lib -w --stage 0 --playground --loose",
     "dist": "browserify -r ./index.js:tcomb-form -x react | uglifyjs -c > ./docs/js/tcomb-form.js",
     "dev": "watchify -t [reactify --harmony] dev/dev.jsx -o dev/dev.js -v -x react",
-    "start": "./node_modules/.bin/http-server ./dev -s -o"
+    "start": "./node_modules/.bin/http-server ./dev -s -o",
+    "lint": "eslint . --ext .js --ext .jsx"
   },
   "repository": {
     "type": "git",
@@ -25,12 +26,16 @@
     "tcomb-validation": "^1.0.3"
   },
   "dependencies": {
+    "classnames": "^1.2.0",
     "debug": "^2.1.1",
     "uvdom": "^0.1.2",
     "uvdom-bootstrap": "^0.2.3"
   },
   "devDependencies": {
-    "babel": "^5.0.10",
+    "babel": "^5.1.10",
+    "babel-eslint": "^3.0.1",
+    "eslint": "^0.19.0",
+    "eslint-plugin-react": "^2.1.1",
     "http-server": "^0.8.0",
     "react-vdom": "^0.2.3",
     "reactify": "^1.1.0",

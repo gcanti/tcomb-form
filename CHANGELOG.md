@@ -5,10 +5,25 @@ v0.5
 - Support attributes and input className customization, fix #76
 - Pass events to inputs, fix #53, #67
 - Set class on form-group div indicating its depth within form, fix #64
-- added Form.getComponent(path) API to access form components, fix #101
-- experimental support for dicts, fix #23
-- experimental support for tuples, fix #24
+- fix #101
+
+**BREAKING CHANGES**
+
+- drop support for React v0.12.x
+- moved `placeholder` option within `attrs` option
+
+v0.4.10
+
+- fix nullOption was incorrectly added to multiple selects
+- experimental semantic ui skin
+
+v0.4.9
+
+- code refactoring (backporting v0.5)
 - added `template` option to structs and lists
+- added `Component.extend` API
+- added `getComponent(path)` API
+- added basic date component
 
 v0.4.8
 

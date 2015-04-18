@@ -12,11 +12,14 @@ import {
   move
 } from './util';
 import debug from 'debug';
+import classnames from 'classnames';
 
 const Nil = t.Nil;
+const assert = t.assert;
 const SOURCE = 'tcomb-form';
 const log = debug(SOURCE);
-const nooptions = Object.freeze({});
+const noobj = Object.freeze({});
+const noarr = Object.freeze([]);
 const noop = () => {};
 
 export function getComponent(type, options) {
@@ -26,7 +29,11 @@ export function getComponent(type, options) {
   const name = t.getTypeName(type);
   switch (type.meta.kind) {
     case 'irreducible' :
-      return type === t.Bool ? Checkbox : Textbox;
+      return (
+        type === t.Bool ? Checkbox :
+        type === t.Dat ?  Datetime :
+                          Textbox
+      );
     case 'struct' :
       return Struct;
     case 'list' :
@@ -46,7 +53,11 @@ export function getComponent(type, options) {
 }
 
 function sortByText(a, b) {
-  return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
+  return (
+    a.text < b.text ? -1 :
+    a.text > b.text ? 1 :
+                      0
+  );
 }
 
 function getComparator(order) {
@@ -56,9 +67,9 @@ function getComparator(order) {
   }[order];
 }
 
-export const annotations = {
+export const decorators = {
 
-  template: function (name) {
+  template(name) {
     return function (Component) {
       Component.prototype.getTemplate = function getTemplate() {
         return this.props.options.template || this.props.ctx.templates[name];
@@ -66,26 +77,19 @@ export const annotations = {
     };
   },
 
-  attrs: function (Component) {
+  attrs(Component) {
     Component.prototype.getAttrs = function getAttrs() {
       const attrs = t.mixin({}, this.props.options.attrs);
-      attrs.id = attrs.id || this._rootNodeID || uuid();
-      attrs.name = attrs.name || this.props.ctx.name || attrs.id;
-      if (t.Str.is(attrs.className)) { attrs.className = [attrs.className]; }
-      if (t.Arr.is(attrs.className)) {
-        attrs.className = attrs.className.reduce((acc, x) => {
-          acc[x] = true;
-          return acc;
-        }, {});
-      }
+      attrs.id = this.getId();
+      attrs.name = this.getName();
+      attrs.className = {
+        [classnames(attrs.className)]: true
+      };
       return attrs;
     };
-    Component.locals = Component.locals.concat({
-      name: 'attrs', method: 'getAttrs'
-    });
   },
 
-  placeholder: function (Component) {
+  placeholder(Component) {
     Component.prototype.getPlaceholder = function getPlaceholder() {
       let placeholder = this.props.options.placeholder;
       if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
@@ -93,9 +97,12 @@ export const annotations = {
       }
       return placeholder;
     };
-    Component.locals = Component.locals.concat({
-      name: 'placeholder', method: 'getPlaceholder'
-    });
+  },
+
+  templates(Component) {
+    Component.prototype.getTemplates = function getTemplates() {
+      return merge(this.props.ctx.templates, this.props.options.templates);
+    };
   }
 
 };
@@ -104,7 +111,7 @@ export class Component extends React.Component {
 
   static locals = [];
 
-  static defaultTransformer = {
+  static transformer = {
     format: value => Nil.is(value) ? null : value,
     parse: value => value
   };
@@ -119,15 +126,18 @@ export class Component extends React.Component {
   }
 
   getTransformer() {
-    return this.props.options.transformer || this.constructor.defaultTransformer;
+    return this.props.options.transformer || this.constructor.transformer;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return nextState.value !== this.state.value ||
+    var should = (
+      nextState.value !== this.state.value ||
       nextState.hasError !== this.state.hasError ||
-      nextProps.value !== this.props.value ||
       nextProps.options !== this.props.options ||
-      nextProps.type !== this.props.type;
+      nextProps.type !== this.props.type
+    );
+    //log('updating %s', this.constructor.name);
+    return should;
   }
 
   componentWillReceiveProps(props) {
@@ -189,11 +199,18 @@ export class Component extends React.Component {
     return merge(this.props.ctx.config, this.props.options.config);
   }
 
-  getLocals() {
+  getId() {
+    return this.props.options.id || uuid();
+  }
 
+  getName() {
+    return this.props.options.name || this.props.ctx.name || this.getId();
+  }
+
+  getLocals() {
     const options = this.props.options;
     const value = this.state.value;
-    const locals = {
+    return {
       path: this.props.ctx.path,
       error: this.getError(),
       hasError: this.hasError(),
@@ -204,69 +221,69 @@ export class Component extends React.Component {
       disabled: options.disabled,
       help: options.help
     };
-
-    this.constructor.locals.forEach(({name, method}) => {
-      locals[name] = this[method].call(this);
-    });
-
-    return locals;
   }
 
   render() {
     log('rendering %s', this.constructor.name);
     const locals = this.getLocals();
-    t.assert(t.Func.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
+    // getTemplate is the only required implementation when extending Component
+    assert(t.Func.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
     const template = this.getTemplate();
     return compile(template(locals));
   }
 
 }
 
-@annotations.attrs
-@annotations.placeholder
-@annotations.template('textbox')
+function parseNumber(value) {
+  var n = parseFloat(value);
+  var isNumeric = (value - n + 1) >= 0;
+  return isNumeric ? n : value;
+}
+
+@decorators.attrs
+@decorators.placeholder
+@decorators.template('textbox')
 export class Textbox extends Component {
 
-  static defaultTransformer = {
+  static transformer = {
     format: value => Nil.is(value) ? null : value,
     parse: value => (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value
   };
 
   static numberTransformer = {
     format: value => Nil.is(value) ? null : String(value),
-    parse: value => {
-      const n = parseFloat(value);
-      const isNumeric = (value - n + 1) >= 0;
-      return isNumeric ? n : value;
-    }
+    parse: parseNumber
   };
 
   getTransformer() {
     const options = this.props.options;
     return options.transformer ? options.transformer :
       this.typeInfo.innerType === t.Num ? Textbox.numberTransformer :
-      Textbox.defaultTransformer
+      Textbox.transformer;
   }
 
   getLocals() {
     const locals = super.getLocals();
+    locals.attrs = this.getAttrs();
+    locals.attrs.placeholder = locals.attrs.placeholder || this.getPlaceholder();
     locals.type = this.props.options.type || 'text';
     return locals;
   }
 
 }
 
-@annotations.attrs
-@annotations.template('checkbox')
+@decorators.attrs
+@decorators.template('checkbox')
 export class Checkbox extends Component {
 
-  static defaultTransformer = {
+  static transformer = {
     format: value => Nil.is(value) ? false : value,
     parse: value => value
   };
 
   getLocals() {
     const locals = super.getLocals();
+    locals.attrs = this.getAttrs();
     // checkboxes must always have a label
     locals.label = locals.label || this.getDefaultLabel();
     return locals;
@@ -274,11 +291,11 @@ export class Checkbox extends Component {
 
 }
 
-@annotations.attrs
-@annotations.template('select')
+@decorators.attrs
+@decorators.template('select')
 export class Select extends Component {
 
-  static defaultTransformer = (nullOption) => {
+  static transformer = (nullOption) => {
     return {
       format: value => Nil.is(value) && nullOption ? nullOption.value : value,
       parse: value => nullOption && nullOption.value === value ? null : value
@@ -286,7 +303,7 @@ export class Select extends Component {
   };
 
   static multipleTransformer = {
-    format: value => Nil.is(value) ? [] : value,
+    format: value => Nil.is(value) ? noarr : value,
     parse: value => value
   };
 
@@ -298,7 +315,7 @@ export class Select extends Component {
     if (this.isMultiple()) {
       return Select.multipleTransformer;
     }
-    return Select.defaultTransformer(this.getNullOption());
+    return Select.transformer(this.getNullOption());
   }
 
   getNullOption() {
@@ -320,7 +337,7 @@ export class Select extends Component {
       items.sort(getComparator(options.order));
     }
     const nullOption = this.getNullOption();
-    if (options.nullOption !== false) {
+    if (!this.isMultiple() && options.nullOption !== false) {
       items.unshift(nullOption);
     }
     return items;
@@ -328,6 +345,7 @@ export class Select extends Component {
 
   getLocals() {
     const locals = super.getLocals();
+    locals.attrs = this.getAttrs();
     locals.options = this.getOptions();
     locals.isMultiple = this.isMultiple();
     return locals;
@@ -335,8 +353,8 @@ export class Select extends Component {
 
 }
 
-@annotations.attrs
-@annotations.template('radio')
+@decorators.attrs
+@decorators.template('radio')
 export class Radio extends Component {
 
   getOptions() {
@@ -350,21 +368,51 @@ export class Radio extends Component {
 
   getLocals() {
     const locals = super.getLocals();
+    locals.attrs = this.getAttrs();
     locals.options = this.getOptions();
     return locals;
   }
 
 }
 
+@decorators.template('date')
+export class Datetime extends Component {
+
+  static transformer = {
+    format: (value) => {
+      return t.Arr.is(value) ? value :
+        t.Dat.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) :
+        [null, null, null];
+    },
+    parse: (value) => {
+      value = value.map(parseNumber);
+      return value.every(t.Num.is) ? new Date(value[0], value[1], value[2]) :
+        value.every(Nil.is) ? null :
+        value;
+    }
+  };
+
+  getOrder() {
+    return this.props.options.order || ['M', 'D', 'YY'];
+  }
+
+  getLocals() {
+    const locals = super.getLocals();
+    locals.order = this.getOrder();
+    return locals;
+  }
+
+}
+
+@decorators.templates
 export class Struct extends Component {
 
-  static defaultTransformer = {
-    format: value => Nil.is(value) ? {} : value,
+  static transformer = {
+    format: value => Nil.is(value) ? noobj : value,
     parse: value => value
   };
 
   validate() {
-
     let value = {};
     let errors = [];
     let hasError = false;
@@ -379,7 +427,8 @@ export class Struct extends Component {
     }
 
     if (errors.length === 0) {
-      value = new this.typeInfo.innerType(value);
+      const InnerType = this.typeInfo.innerType;
+      value = new InnerType(value);
       if (this.typeInfo.isSubtype && errors.length === 0) {
         result = t.validate(value, this.props.type, this.props.ctx.path);
         hasError = !result.isValid();
@@ -399,10 +448,6 @@ export class Struct extends Component {
     }.bind(this));
   }
 
-  getTemplates() {
-    return merge(this.props.ctx.templates, this.props.options.templates);
-  }
-
   getTemplate() {
     return this.props.options.template || this.getTemplates().struct;
   }
@@ -416,7 +461,6 @@ export class Struct extends Component {
   }
 
   getInputs() {
-
     const { options, ctx } = this.props;
     const props = this.getTypeProps();
     const auto = this.getAuto();
@@ -429,7 +473,7 @@ export class Struct extends Component {
     for (let prop in props) {
       if (props.hasOwnProperty(prop)) {
         const propType = props[prop];
-        const propOptions = options.fields && options.fields[prop] ? options.fields[prop] : nooptions;
+        const propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj;
         inputs[prop] = React.createElement(getComponent(propType, propOptions), {
           key: prop,
           ref: prop,
@@ -465,16 +509,17 @@ export class Struct extends Component {
 function toSameLength(value, keys) {
   if (value.length === keys.length) { return keys; }
   const ret = [];
-  for (let i = 0, len = value.length ; i < len ; i++ ) {
+  for (let i = 0, len = value.length; i < len; i++ ) {
     ret[i] = keys[i] || uuid();
   }
   return ret;
 }
 
+@decorators.templates
 export class List extends Component {
 
-  static defaultTransformer = {
-    format: value => Nil.is(value) ? [] : value,
+  static transformer = {
+    format: value => Nil.is(value) ? noarr : value,
     parse: value => value
   };
 
@@ -495,13 +540,12 @@ export class List extends Component {
   }
 
   validate() {
-
     const value = [];
     let errors = [];
     let hasError = false;
     let result;
 
-    for (let i = 0, len = this.state.value.length ; i < len ; i++ ) {
+    for (let i = 0, len = this.state.value.length; i < len; i++ ) {
       result = this.refs[i].validate();
       errors = errors.concat(result.errors);
       value.push(result.value);
@@ -566,16 +610,11 @@ export class List extends Component {
     }
   }
 
-  getTemplates() {
-    return merge(this.props.ctx.templates, this.props.options.templates);
-  }
-
   getTemplate() {
     return this.props.options.template || this.getTemplates().list;
   }
 
   getItems() {
-
     const { options, ctx } = this.props;
     const auto = this.getAuto();
     const i18n = this.getI18n();
@@ -583,7 +622,7 @@ export class List extends Component {
     const templates = this.getTemplates();
     const value = this.state.value;
     const type = this.typeInfo.innerType.meta.type;
-    const Component = getComponent(type, options.item || nooptions);
+    const Component = getComponent(type, options.item || noobj);
     return value.map((value, i) => {
       const buttons = [];
       if (!options.disableRemove) { buttons.push({ label: i18n.remove, click: this.removeItem.bind(this, i) }); }
@@ -593,7 +632,7 @@ export class List extends Component {
         input: React.createElement(Component, {
           ref: i,
           type,
-          options: options.item || nooptions,
+          options: options.item || noobj,
           value,
           onChange: this.onItemChange.bind(this, i),
           ctx: {
@@ -612,7 +651,6 @@ export class List extends Component {
   }
 
   getLocals() {
-
     const options = this.props.options;
     const i18n = this.getI18n();
     const locals = super.getLocals();
@@ -623,103 +661,6 @@ export class List extends Component {
     locals.items = this.getItems();
     return locals;
   }
-
-}
-
-export class Dict extends Component {
-
-  static defaultTransformer = {
-    format: value => {
-      if (t.Arr.is(value)) { return value; }
-      value = value || {};
-      const result = [];
-      for (let key in value) {
-        if (value.hasOwnProperty(key)) {
-          result.push({domain: key, codomain: value[key]});
-        }
-      }
-      return result;
-    },
-    parse: value => {
-      const result = {};
-      value.forEach(({domain, codomain}) => result[domain] = codomain);
-      return result;
-    }
-  };
-
-  validate() {
-    const result = this.refs.form.validate();
-    if (!result.isValid()) { return result; }
-    return super.validate();
-  }
-
-  getTemplate() {
-    return () => {
-      const Type = t.list(t.struct({
-        domain: this.typeInfo.innerType.meta.domain,
-        codomain: this.typeInfo.innerType.meta.codomain
-      }));
-      return <Form
-        ref="form"
-        type={Type}
-        options={this.props.options}
-        onChange={this.onChange.bind(this)}
-        value={this.state.value}
-        ctx={this.props.ctx}
-      />;
-    };
-  }
-
-  getLocals() {}
-
-}
-
-export class Tuple extends Component {
-
-  static defaultTransformer = (dict) => {
-    return {
-      format: value => value,
-      parse: value => {
-        const result = [];
-        dict.meta.types.forEach((type, i) => result.push(value[i]));
-        return result;
-      }
-    };
-  };
-
-  getTransformer() {
-    const options = this.props.options;
-    if (options.transformer) {
-      return options.transformer;
-    }
-    return Tuple.defaultTransformer(this.typeInfo.innerType);
-  }
-
-  validate() {
-    const result = this.refs.form.validate;
-    if (!result.isValid()) { return result; }
-    return super.validate();
-  }
-
-  getTemplate() {
-    return () => {
-      const props = {};
-      this.typeInfo.innerType.meta.types.forEach((type, i) => {
-        props[i] = type;
-      });
-      const Type = t.struct(props);
-      return <Form
-        ref="form"
-        type={Type}
-        options={this.props.options}
-        onChange={this.onChange.bind(this)}
-        value={this.state.value}
-        ctx={this.props.ctx}
-      />;
-    };
-  }
-
-  getLocals() {}
 
 }
 
@@ -742,20 +683,18 @@ export class Form {
   }
 
   render() {
-
     let options = this.props.options;
     const type = this.props.type;
     const { i18n, templates } = Form;
 
-    options = options || nooptions;
+    options = options || noobj;
 
-    t.assert(t.Type.is(type), `[${SOURCE}] missing required prop type`);
-    t.assert(t.Obj.is(options), `[${SOURCE}] prop options must be an object`);
-    t.assert(t.Obj.is(templates), `[${SOURCE}] missing templates config`);
-    t.assert(t.Obj.is(i18n), `[${SOURCE}] missing i18n config`);
+    assert(t.Type.is(type), `[${SOURCE}] missing required prop type`);
+    assert(t.Obj.is(options), `[${SOURCE}] prop options must be an object`);
+    assert(t.Obj.is(templates), `[${SOURCE}] missing templates config`);
+    assert(t.Obj.is(i18n), `[${SOURCE}] missing i18n config`);
 
     const Component = getComponent(type, options);
-
     return React.createElement(Component, {
       ref: 'input',
       type: type,
