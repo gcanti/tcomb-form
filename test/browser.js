@@ -1,13 +1,31 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+var _interopRequireWildcard = function _interopRequireWildcard(obj) {
+  return obj && obj.__esModule ? obj : { 'default': obj };
+};
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+var _classCallCheck = function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError('Cannot call a class as a function');
+  }
+};
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = (function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ('value' in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+  };
+})();
 
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+var _inherits = function _inherits(subClass, superClass) {
+  if (typeof superClass !== 'function' && superClass !== null) {
+    throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass);
+  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) subClass.__proto__ = superClass;
+};
 
 exports.__esModule = true;
 exports.getComponent = getComponent;
@@ -35,6 +53,7 @@ var _classnames2 = _interopRequireWildcard(_classnames);
 'use strict';
 
 var Nil = _t2['default'].Nil;
+var assert = _t2['default'].assert;
 var SOURCE = 'tcomb-form';
 var log = _debug2['default'](SOURCE);
 var noobj = Object.freeze({});
@@ -105,19 +124,22 @@ var decorators = {
 
   attrs: function attrs(Component) {
     Component.prototype.getAttrs = function getAttrs() {
-      var _attrs$className;
-
       var attrs = _t2['default'].mixin({}, this.props.options.attrs);
       attrs.id = this.getId();
       attrs.name = this.getName();
-      attrs.className = (_attrs$className = {}, _attrs$className[_classnames2['default'](attrs.className)] = true, _attrs$className);
+      if (attrs.className) {
+        var _attrs$className;
+
+        attrs.className = (_attrs$className = {}, _attrs$className[_classnames2['default'](attrs.className)] = true, _attrs$className);
+      }
       return attrs;
     };
   },
 
   placeholder: function placeholder(Component) {
     Component.prototype.getPlaceholder = function getPlaceholder() {
-      var placeholder = this.props.options.placeholder;
+      var attrs = this.props.options.attrs || noobj;
+      var placeholder = attrs.placeholder;
       if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
         placeholder = this.getDefaultLabel();
       }
@@ -154,9 +176,7 @@ var Component = (function (_React$Component) {
   };
 
   Component.prototype.shouldComponentUpdate = function shouldComponentUpdate(nextProps, nextState) {
-    var should = nextState.value !== this.state.value || nextState.hasError !== this.state.hasError || nextProps.options !== this.props.options || nextProps.type !== this.props.type;
-    //log('updating %s', this.constructor.name);
-    return should;
+    return nextState.value !== this.state.value || nextState.hasError !== this.state.hasError || nextProps.options !== this.props.options || nextProps.type !== this.props.type;
   };
 
   Component.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
@@ -221,7 +241,8 @@ var Component = (function (_React$Component) {
   };
 
   Component.prototype.getId = function getId() {
-    return this.props.options.id || _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid();
+    var attrs = this.props.options.attrs || noobj;
+    return this.id || (this.id = attrs.id || _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid());
   };
 
   Component.prototype.getName = function getName() {
@@ -248,16 +269,12 @@ var Component = (function (_React$Component) {
     log('rendering %s', this.constructor.name);
     var locals = this.getLocals();
     // getTemplate is the only required implementation when extending Component
-    _t2['default'].assert(_t2['default'].Func.is(this.getTemplate), '[' + SOURCE + '] missing getTemplate method of component ' + this.constructor.name);
+    assert(_t2['default'].Func.is(this.getTemplate), '[' + SOURCE + '] missing getTemplate method of component ' + this.constructor.name);
     var template = this.getTemplate();
     return _compile.compile(template(locals));
   };
 
   _createClass(Component, null, [{
-    key: 'locals',
-    value: [],
-    enumerable: true
-  }, {
     key: 'transformer',
     value: {
       format: function format(value) {
@@ -302,7 +319,7 @@ var Textbox = (function (_Component) {
   _Textbox.prototype.getLocals = function getLocals() {
     var locals = _Component.prototype.getLocals.call(this);
     locals.attrs = this.getAttrs();
-    locals.attrs.placeholder = locals.attrs.placeholder || this.getPlaceholder();
+    locals.attrs.placeholder = this.getPlaceholder();
     locals.type = this.props.options.type || 'text';
     return locals;
   };
@@ -437,7 +454,7 @@ var Select = (function (_Component3) {
 
   _createClass(_Select, null, [{
     key: 'transformer',
-    value: function (nullOption) {
+    value: function value(nullOption) {
       return {
         format: function format(value) {
           return Nil.is(value) && nullOption ? nullOption.value : value;
@@ -575,7 +592,8 @@ var Struct = (function (_Component6) {
     }
 
     if (errors.length === 0) {
-      value = new this.typeInfo.innerType(value);
+      var InnerType = this.typeInfo.innerType;
+      value = new InnerType(value);
       if (this.typeInfo.isSubtype && errors.length === 0) {
         result = _t2['default'].validate(value, this.props.type, this.props.ctx.path);
         hasError = !result.isValid();
@@ -587,11 +605,11 @@ var Struct = (function (_Component6) {
     return new _t2['default'].ValidationResult({ errors: errors, value: value });
   };
 
-  _Struct.prototype.onChange = function onChange(fieldName, fieldValue, path) {
+  _Struct.prototype.onChange = function onChange(fieldName, fieldValue, path, kind) {
     var value = _t2['default'].mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.setState({ value: value }, (function () {
-      this.props.onChange(value, path);
+      this.props.onChange(value, path, kind);
     }).bind(this));
   };
 
@@ -730,11 +748,11 @@ var List = (function (_Component7) {
     return new _t2['default'].ValidationResult({ errors: errors, value: value });
   };
 
-  _List.prototype.onChange = function onChange(value, keys, path) {
+  _List.prototype.onChange = function onChange(value, keys, path, kind) {
     var _this7 = this;
 
     this.setState({ value: value, keys: toSameLength(value, keys) }, function () {
-      _this7.props.onChange(value, path || _this7.props.ctx.path);
+      _this7.props.onChange(value, path, kind);
     });
   };
 
@@ -742,7 +760,7 @@ var List = (function (_Component7) {
     evt.preventDefault();
     var value = this.state.value.concat(undefined);
     var keys = this.state.keys.concat(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid());
-    this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1));
+    this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   };
 
   _List.prototype.onItemChange = function onItemChange(itemIndex, itemValue, path) {
@@ -757,20 +775,20 @@ var List = (function (_Component7) {
     value.splice(i, 1);
     var keys = this.state.keys.slice();
     keys.splice(i, 1);
-    this.onChange(value, keys, this.props.ctx.path.concat(i));
+    this.onChange(value, keys, this.props.ctx.path.concat(i), 'remove');
   };
 
   _List.prototype.moveUpItem = function moveUpItem(i, evt) {
     evt.preventDefault();
     if (i > 0) {
-      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.value.slice(), i, i - 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.keys.slice(), i, i - 1));
+      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.value.slice(), i, i - 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
     }
   };
 
   _List.prototype.moveDownItem = function moveDownItem(i, evt) {
     evt.preventDefault();
     if (i < this.state.value.length - 1) {
-      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.value.slice(), i, i + 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.keys.slice(), i, i + 1));
+      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.value.slice(), i, i + 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.move(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
     }
   };
 
@@ -878,17 +896,17 @@ var Form = (function () {
   };
 
   Form.prototype.render = function render() {
-    var options = this.props.options;
-    var type = this.props.type;
+    var _props3 = this.props;
+    var type = _props3.type;
+    var _props3$options = _props3.options;
+    var options = _props3$options === undefined ? noobj : _props3$options;
     var i18n = Form.i18n;
     var templates = Form.templates;
 
-    options = options || noobj;
-
-    _t2['default'].assert(_t2['default'].Type.is(type), '[' + SOURCE + '] missing required prop type');
-    _t2['default'].assert(_t2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
-    _t2['default'].assert(_t2['default'].Obj.is(templates), '[' + SOURCE + '] missing templates config');
-    _t2['default'].assert(_t2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
+    assert(_t2['default'].Type.is(type), '[' + SOURCE + '] missing required prop type');
+    assert(_t2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
+    assert(_t2['default'].Obj.is(templates), '[' + SOURCE + '] missing templates config');
+    assert(_t2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
 
     var Component = getComponent(type, options);
     return _React2['default'].createElement(Component, {
@@ -914,7 +932,9 @@ exports.Form = Form;
 },{"./util":3,"classnames":4,"debug":5,"react":"react","tcomb-validation":21,"uvdom/react":45}],2:[function(require,module,exports){
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+var _interopRequireWildcard = function _interopRequireWildcard(obj) {
+  return obj && obj.__esModule ? obj : { 'default': obj };
+};
 
 exports.__esModule = true;
 exports.textbox = textbox;
@@ -937,6 +957,7 @@ var _bootstrap2 = _interopRequireWildcard(_bootstrap);
 
 var Any = _t2['default'].Any;
 var maybe = _t2['default'].maybe;
+var noobj = {};
 
 var Positive = _t2['default'].subtype(_t2['default'].Num, function (n) {
   return n % 1 === 0 && n >= 0;
@@ -1086,7 +1107,7 @@ function getHiddenTextbox(_ref4) {
 
 function textbox(locals) {
 
-  var config = new TextboxConfig(locals.config || {});
+  var config = new TextboxConfig(locals.config || noobj);
 
   if (locals.type === 'hidden') {
     return getHiddenTextbox(locals);
@@ -1157,7 +1178,7 @@ function textbox(locals) {
 
 function checkbox(locals) {
 
-  var config = new CheckboxConfig(locals.config || {});
+  var config = new CheckboxConfig(locals.config || noobj);
 
   var attrs = _t2['default'].mixin({}, locals.attrs);
   attrs.type = 'checkbox';
@@ -1196,7 +1217,7 @@ function checkbox(locals) {
 
 function select(locals) {
 
-  var config = new SelectConfig(locals.config || {});
+  var config = new SelectConfig(locals.config || noobj);
 
   var attrs = _t2['default'].mixin({}, locals.attrs);
 
@@ -1258,7 +1279,7 @@ function select(locals) {
 
 function radio(locals) {
 
-  var config = new RadioConfig(locals.config || {});
+  var config = new RadioConfig(locals.config || noobj);
 
   var id = locals.attrs.id;
   var onChange = function onChange(evt) {
@@ -1272,7 +1293,8 @@ function radio(locals) {
     attrs.checked = option.value === locals.value;
     attrs.disabled = locals.disabled;
     attrs.value = option.value;
-    attrs.autoFocus = attrs.autoFocus && i === 0, attrs.id = '' + id + '_' + i;
+    attrs.autoFocus = attrs.autoFocus && i === 0;
+    attrs.id = '' + id + '_' + i;
     attrs['aria-describedby'] = attrs['aria-describedby'] || (locals.label ? id : null);
     attrs.onChange = onChange;
 
@@ -1461,7 +1483,7 @@ function date(locals) {
 
 function struct(locals) {
 
-  var config = new StructConfig(locals.config || {});
+  var config = new StructConfig(locals.config || noobj);
   var children = [];
 
   if (locals.help) {
@@ -1503,7 +1525,7 @@ function struct(locals) {
 
 function list(locals) {
 
-  var config = new ListConfig(locals.config || {});
+  var config = new ListConfig(locals.config || noobj);
   var children = [];
 
   if (locals.help) {
@@ -1523,7 +1545,7 @@ function list(locals) {
     if (item.buttons.length === 0) {
       return _bootstrap2['default'].getRow({
         key: item.key,
-        children: [getCol({
+        children: [_bootstrap2['default'].getCol({
           breakpoints: { xs: 12 },
           children: item.input
         })]
@@ -1624,8 +1646,6 @@ function getTypeInfo(type) {
     innerType: innerType
   };
 }
-
-;
 
 // thanks to https://github.com/epeli/underscore.string
 
@@ -9552,6 +9572,67 @@ function base64DetectIncompleteChar(buffer) {
 }
 
 },{"buffer":48}],70:[function(require,module,exports){
+module.exports={
+  "name": "tcomb-form",
+  "version": "0.5.0",
+  "description": "React.js powered UI library for developing forms writing less code",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Compiling tests. Once finished open ./test/index.html in your browser...\" && watchify -t [babelify --stage 0 --loose] test/index.js -o test/browser.js  -v -x react",
+    "start": "echo \"Compiling src -> lib...\" && babel ./src -d ./lib -w --stage 0 --loose",
+    "dist": "browserify -r ./index.js:tcomb-form -x react | uglifyjs -c > ./dist/tcomb-form.js",
+    "dev": "watchify -t [babelify --stage 0 --loose] dev/dev.jsx -o dev/dev.js -v -x react",
+    "lint": "eslint . --ext .js --ext .jsx"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gcanti/tcomb-form.git"
+  },
+  "author": "Giulio Canti <giulio.canti@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gcanti/tcomb-form/issues"
+  },
+  "homepage": "https://github.com/gcanti/tcomb-form",
+  "peerDependencies": {
+    "react": "^0.13.0",
+    "tcomb-validation": "^1.0.3"
+  },
+  "dependencies": {
+    "classnames": "^1.2.0",
+    "debug": "^2.1.1",
+    "uvdom": "^0.1.2",
+    "uvdom-bootstrap": "^0.2.3"
+  },
+  "devDependencies": {
+    "babel": "^5.1.10",
+    "babel-eslint": "^3.0.1",
+    "babelify": "^6.0.2",
+    "eslint": "^0.19.0",
+    "eslint-plugin-react": "^2.1.1",
+    "react-vdom": "^0.2.3",
+    "tape": "^4.0.0",
+    "watchify": "^3.1.0"
+  },
+  "tags": [
+    "form",
+    "forms",
+    "validation",
+    "generation",
+    "react",
+    "react-component"
+  ],
+  "keywords": [
+    "form",
+    "forms",
+    "validation",
+    "generation",
+    "react",
+    "react-component"
+  ]
+}
+
+},{}],71:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -9567,10 +9648,10 @@ var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Checkbox);
 
 var transformer = {
-  format: function (value) {
+  format: function format(value) {
     return t.Str.is(value) ? value : value === true ? '1' : '0';
   },
-  parse: function (value) {
+  parse: function parse(value) {
     return value === '1';
   }
 };
@@ -9580,196 +9661,143 @@ tape('Checkbox', function (tape) {
   tape.test('label', function (tape) {
     tape.plan(4);
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {},
-        ctx: ctx
-      }).getLocals().label,
-      'Default label',
-      'should have a default label');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label', 'should have a default label');
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {},
-        ctx: ctxPlaceholders
-      }).getLocals().label,
-      'Default label',
-      'should have a default label even if auto !== labels');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: {},
+      ctx: ctxPlaceholders
+    }).getLocals().label, 'Default label', 'should have a default label even if auto !== labels');
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {label: 'mylabel'},
-        ctx: ctx
-      }).getLocals().label,
-      'mylabel',
-      'should handle label option as string');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: { label: 'mylabel' },
+      ctx: ctx
+    }).getLocals().label, 'mylabel', 'should handle label option as string');
 
-    tape.deepEqual(
-      vdom(new Checkbox({
-        type: t.Bool,
-        options: {label: React.DOM.i(null, 'JSX label')},
-        ctx: ctx
-      }).getLocals().label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label option as JSX');
-
+    tape.deepEqual(vdom(new Checkbox({
+      type: t.Bool,
+      options: { label: React.DOM.i(null, 'JSX label') },
+      ctx: ctx
+    }).getLocals().label), { tag: 'i', attrs: {}, children: 'JSX label' }, 'should handle label option as JSX');
   });
 
   tape.test('help', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {help: 'myhelp'},
-        ctx: ctx
-      }).getLocals().help,
-      'myhelp',
-      'should handle help option as string');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: { help: 'myhelp' },
+      ctx: ctx
+    }).getLocals().help, 'myhelp', 'should handle help option as string');
 
-    tape.deepEqual(
-      vdom(new Checkbox({
-        type: t.Bool,
-        options: {help: React.DOM.i(null, 'JSX help')},
-        ctx: ctx
-      }).getLocals().help),
-      {tag: 'i', attrs: {}, children: 'JSX help'},
-      'should handle help option as JSX');
-
+    tape.deepEqual(vdom(new Checkbox({
+      type: t.Bool,
+      options: { help: React.DOM.i(null, 'JSX help') },
+      ctx: ctx
+    }).getLocals().help), { tag: 'i', attrs: {}, children: 'JSX help' }, 'should handle help option as JSX');
   });
 
   tape.test('value', function (tape) {
     tape.plan(3);
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {},
-        ctx: ctx
-      }).getLocals().value,
-      false,
-      'default value should be false');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: {},
+      ctx: ctx
+    }).getLocals().value, false, 'default value should be false');
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {},
-        ctx: ctx,
-        value: false
-      }).getLocals().value,
-      false,
-      'should handle value option');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: {},
+      ctx: ctx,
+      value: false
+    }).getLocals().value, false, 'should handle value option');
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {},
-        ctx: ctx,
-        value: true
-      }).getLocals().value,
-      true,
-      'should handle value option');
-
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: {},
+      ctx: ctx,
+      value: true
+    }).getLocals().value, true, 'should handle value option');
   });
 
   tape.test('transformer', function (tape) {
     tape.plan(1);
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {transformer: transformer},
-        ctx: ctx,
-        value: true
-      }).getLocals().value,
-      '1',
-      'should handle transformer option (format)');
-
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: { transformer: transformer },
+      ctx: ctx,
+      value: true
+    }).getLocals().value, '1', 'should handle transformer option (format)');
   });
 
   tape.test('hasError', function (tape) {
     tape.plan(2);
 
-    var True = t.subtype(t.Bool, function (value) { return value === true; });
+    var True = t.subtype(t.Bool, function (value) {
+      return value === true;
+    });
 
-    tape.strictEqual(
-      new Checkbox({
-        type: True,
-        options: {},
-        ctx: ctx
-      }).getLocals().hasError,
-      false,
-      'default hasError should be false');
+    tape.strictEqual(new Checkbox({
+      type: True,
+      options: {},
+      ctx: ctx
+    }).getLocals().hasError, false, 'default hasError should be false');
 
-    tape.strictEqual(
-      new Checkbox({
-        type: True,
-        options: {hasError: true},
-        ctx: ctx
-      }).getLocals().hasError,
-      true,
-      'should handle hasError option');
-
+    tape.strictEqual(new Checkbox({
+      type: True,
+      options: { hasError: true },
+      ctx: ctx
+    }).getLocals().hasError, true, 'should handle hasError option');
   });
 
   tape.test('error', function (tape) {
     tape.plan(3);
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {},
-        ctx: ctx
-      }).getLocals().error,
-      undefined,
-      'default error should be undefined');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: {},
+      ctx: ctx
+    }).getLocals().error, undefined, 'default error should be undefined');
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {error: 'myerror'},
-        ctx: ctx
-      }).getLocals().error,
-      'myerror',
-      'should handle error option');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: { error: 'myerror' },
+      ctx: ctx
+    }).getLocals().error, 'myerror', 'should handle error option');
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {error: function (value) { return 'error: ' + value; }},
-        ctx: ctx,
-        value: 'a'
-      }).getLocals().error,
-      'error: a',
-      'should handle error option as a function');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: { error: function error(value) {
+          return 'error: ' + value;
+        } },
+      ctx: ctx,
+      value: 'a'
+    }).getLocals().error, 'error: a', 'should handle error option as a function');
   });
 
   tape.test('template', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {},
-        ctx: ctx
-      }).getTemplate(),
-      bootstrap.checkbox,
-      'default template should be bootstrap.checkbox');
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: {},
+      ctx: ctx
+    }).getTemplate(), bootstrap.checkbox, 'default template should be bootstrap.checkbox');
 
-    var template = function () {};
+    var template = function template() {};
 
-    tape.strictEqual(
-      new Checkbox({
-        type: t.Bool,
-        options: {template: template},
-        ctx: ctx
-      }).getTemplate(),
-      template,
-      'should handle template option');
-
+    tape.strictEqual(new Checkbox({
+      type: t.Bool,
+      options: { template: template },
+      ctx: ctx
+    }).getTemplate(), template, 'should handle template option');
   });
 
   if (typeof window !== 'undefined') {
@@ -9798,23 +9826,18 @@ tape('Checkbox', function (tape) {
 
       result = renderComponent({
         type: t.Bool,
-        options: {transformer: transformer},
+        options: { transformer: transformer },
         value: true
       }).validate();
 
       // 'should handle transformer option (parse)'
       tape.strictEqual(result.isValid(), true);
       tape.strictEqual(result.value, true);
-
     });
-
   }
-
 });
 
-
-
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],71:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":76,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],72:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -9830,10 +9853,10 @@ var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Radio);
 
 var transformer = {
-  format: function (value) {
+  format: function format(value) {
     return t.Str.is(value) ? value : value === true ? '1' : '0';
   },
-  parse: function (value) {
+  parse: function parse(value) {
     return value === '1';
   }
 };
@@ -9841,246 +9864,167 @@ var transformer = {
 tape('Radio', function (tape) {
 
   var Country = t.enums({
-    'IT': 'Italy',
-    'FR': 'France',
-    'US': 'United States'
+    IT: 'Italy',
+    FR: 'France',
+    US: 'United States'
   });
 
   tape.test('label', function (tape) {
     tape.plan(4);
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getLocals().label,
-      'Default label',
-      'should have a default label');
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label', 'should have a default label');
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {label: 'mylabel'},
-        ctx: ctx
-      }).getLocals().label,
-      'mylabel',
-      'should handle label option as string');
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: { label: 'mylabel' },
+      ctx: ctx
+    }).getLocals().label, 'mylabel', 'should handle label option as string');
 
-    tape.deepEqual(
-      vdom(new Radio({
-        type: Country,
-        options: {label: React.DOM.i(null, 'JSX label')},
-        ctx: ctx
-      }).getLocals().label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label option as JSX');
+    tape.deepEqual(vdom(new Radio({
+      type: Country,
+      options: { label: React.DOM.i(null, 'JSX label') },
+      ctx: ctx
+    }).getLocals().label), { tag: 'i', attrs: {}, children: 'JSX label' }, 'should handle label option as JSX');
 
-    tape.strictEqual(
-      new Radio({
-        type: t.maybe(Country),
-        options: {},
-        ctx: ctx
-      }).getLocals().label,
-      'Default label (optional)',
-      'should handle optional types');
-
+    tape.strictEqual(new Radio({
+      type: t.maybe(Country),
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label (optional)', 'should handle optional types');
   });
 
   tape.test('help', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {help: 'myhelp'},
-        ctx: ctx
-      }).getLocals().help,
-      'myhelp',
-      'should handle help option as string');
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: { help: 'myhelp' },
+      ctx: ctx
+    }).getLocals().help, 'myhelp', 'should handle help option as string');
 
-    tape.deepEqual(
-      vdom(new Radio({
-        type: Country,
-        options: {help: React.DOM.i(null, 'JSX help')},
-        ctx: ctx
-      }).getLocals().help),
-      {tag: 'i', attrs: {}, children: 'JSX help'},
-      'should handle help option as JSX');
-
+    tape.deepEqual(vdom(new Radio({
+      type: Country,
+      options: { help: React.DOM.i(null, 'JSX help') },
+      ctx: ctx
+    }).getLocals().help), { tag: 'i', attrs: {}, children: 'JSX help' }, 'should handle help option as JSX');
   });
 
   tape.test('value', function (tape) {
     tape.plan(1);
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {},
-        ctx: ctx,
-        value: 'a'
-      }).getLocals().value,
-      'a',
-      'should handle value option');
-
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: {},
+      ctx: ctx,
+      value: 'a'
+    }).getLocals().value, 'a', 'should handle value option');
   });
 
   tape.test('transformer', function (tape) {
     tape.plan(1);
 
-    tape.strictEqual(
-      new Radio({
-        type: t.maybe(t.Bool),
-        options: {
-          transformer: transformer,
-          options: [
-            {value: '0', text: 'No'},
-            {value: '1', text: 'Yes'}
-          ]
-        },
-        ctx: ctx,
-        value: true
-      }).getLocals().value,
-      '1',
-      'should handle transformer option (format)');
-
+    tape.strictEqual(new Radio({
+      type: t.maybe(t.Bool),
+      options: {
+        transformer: transformer,
+        options: [{ value: '0', text: 'No' }, { value: '1', text: 'Yes' }]
+      },
+      ctx: ctx,
+      value: true
+    }).getLocals().value, '1', 'should handle transformer option (format)');
   });
 
   tape.test('hasError', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getLocals().hasError,
-      false,
-      'default hasError should be false');
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getLocals().hasError, false, 'default hasError should be false');
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {hasError: true},
-        ctx: ctx
-      }).getLocals().hasError,
-      true,
-      'should handle hasError option');
-
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: { hasError: true },
+      ctx: ctx
+    }).getLocals().hasError, true, 'should handle hasError option');
   });
 
   tape.test('error', function (tape) {
     tape.plan(3);
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getLocals().error,
-      undefined,
-      'default error should be undefined');
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getLocals().error, undefined, 'default error should be undefined');
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {error: 'myerror'},
-        ctx: ctx
-      }).getLocals().error,
-      'myerror',
-      'should handle error option');
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: { error: 'myerror' },
+      ctx: ctx
+    }).getLocals().error, 'myerror', 'should handle error option');
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {
-            error: function (value) {
-              return 'error: ' + value;
-            }
-        },
-        ctx: ctx,
-        value: 'a'
-      }).getLocals().error,
-      'error: a',
-      'should handle error option as a function');
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: {
+        error: function error(value) {
+          return 'error: ' + value;
+        }
+      },
+      ctx: ctx,
+      value: 'a'
+    }).getLocals().error, 'error: a', 'should handle error option as a function');
   });
 
   tape.test('template', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getTemplate(),
-      bootstrap.radio,
-      'default template should be bootstrap.eadio');
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getTemplate(), bootstrap.radio, 'default template should be bootstrap.eadio');
 
-    var template = function () {};
+    var template = function template() {};
 
-    tape.strictEqual(
-      new Radio({
-        type: Country,
-        options: {template: template},
-        ctx: ctx
-      }).getTemplate(),
-      template,
-      'should handle template option');
-
+    tape.strictEqual(new Radio({
+      type: Country,
+      options: { template: template },
+      ctx: ctx
+    }).getTemplate(), template, 'should handle template option');
   });
 
   tape.test('options', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(
-      new Radio({
-        type: Country,
-        options: {
-          options: [
-            {value: 'IT', text: 'Italia'},
-            {value: 'US', text: 'Stati Uniti'}
-          ]
-        },
-        ctx: ctx
-      }).getLocals().options,
-      [
-        { text: 'Italia', value: 'IT' },
-        { text: 'Stati Uniti', value: 'US' }
-      ],
-      'should handle options option');
-
+    tape.deepEqual(new Radio({
+      type: Country,
+      options: {
+        options: [{ value: 'IT', text: 'Italia' }, { value: 'US', text: 'Stati Uniti' }]
+      },
+      ctx: ctx
+    }).getLocals().options, [{ text: 'Italia', value: 'IT' }, { text: 'Stati Uniti', value: 'US' }], 'should handle options option');
   });
 
   tape.test('order', function (tape) {
     tape.plan(2);
 
-    tape.deepEqual(
-      new Radio({
-        type: Country,
-        options: {order: 'asc'},
-        ctx: ctx
-      }).getLocals().options,
-      [
-        { text: 'France', value: 'FR' },
-        { text: 'Italy', value: 'IT' },
-        { text: 'United States', value: 'US' }
-      ],
-      'should handle order = asc option');
+    tape.deepEqual(new Radio({
+      type: Country,
+      options: { order: 'asc' },
+      ctx: ctx
+    }).getLocals().options, [{ text: 'France', value: 'FR' }, { text: 'Italy', value: 'IT' }, { text: 'United States', value: 'US' }], 'should handle order = asc option');
 
-    tape.deepEqual(
-      new Radio({
-        type: Country,
-        options: {order: 'desc'},
-        ctx: ctx
-      }).getLocals().options,
-      [
-        { text: 'United States', value: 'US' },
-        { text: 'Italy', value: 'IT' },
-        { text: 'France', value: 'FR' }
-      ],
-      'should handle order = desc option');
-
+    tape.deepEqual(new Radio({
+      type: Country,
+      options: { order: 'desc' },
+      ctx: ctx
+    }).getLocals().options, [{ text: 'United States', value: 'US' }, { text: 'Italy', value: 'IT' }, { text: 'France', value: 'FR' }], 'should handle order = desc option');
   });
 
   if (typeof window !== 'undefined') {
@@ -10119,26 +10063,18 @@ tape('Radio', function (tape) {
         type: t.maybe(t.Bool),
         options: {
           transformer: transformer,
-          options: [
-            {value: '0', text: 'No'},
-            {value: '1', text: 'Yes'}
-          ]
+          options: [{ value: '0', text: 'No' }, { value: '1', text: 'Yes' }]
         },
         value: true
       }).validate();
 
       tape.strictEqual(result.isValid(), true);
       tape.strictEqual(result.value, true);
-
     });
-
   }
-
 });
 
-
-
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],72:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":76,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],73:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10154,10 +10090,10 @@ var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Select);
 
 var transformer = {
-  format: function (value) {
+  format: function format(value) {
     return t.Str.is(value) ? value : value === true ? '1' : '0';
   },
-  parse: function (value) {
+  parse: function parse(value) {
     return value === '1';
   }
 };
@@ -10165,295 +10101,194 @@ var transformer = {
 tape('Select', function (tape) {
 
   var Country = t.enums({
-    'IT': 'Italy',
-    'FR': 'France',
-    'US': 'United States'
+    IT: 'Italy',
+    FR: 'France',
+    US: 'United States'
   });
 
   tape.test('label', function (tape) {
     tape.plan(4);
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getLocals().label,
-      'Default label',
-      'should have a default label');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label', 'should have a default label');
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {label: 'mylabel'},
-        ctx: ctx
-      }).getLocals().label,
-      'mylabel',
-      'should handle label option as string');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: { label: 'mylabel' },
+      ctx: ctx
+    }).getLocals().label, 'mylabel', 'should handle label option as string');
 
-    tape.deepEqual(
-      vdom(new Select({
-        type: Country,
-        options: {label: React.DOM.i(null, 'JSX label')},
-        ctx: ctx
-      }).getLocals().label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label option as JSX');
+    tape.deepEqual(vdom(new Select({
+      type: Country,
+      options: { label: React.DOM.i(null, 'JSX label') },
+      ctx: ctx
+    }).getLocals().label), { tag: 'i', attrs: {}, children: 'JSX label' }, 'should handle label option as JSX');
 
-    tape.strictEqual(
-      new Select({
-        type: t.maybe(Country),
-        options: {},
-        ctx: ctx
-      }).getLocals().label,
-      'Default label (optional)',
-      'should handle optional types');
-
+    tape.strictEqual(new Select({
+      type: t.maybe(Country),
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label (optional)', 'should handle optional types');
   });
 
   tape.test('help', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {help: 'myhelp'},
-        ctx: ctx
-      }).getLocals().help,
-      'myhelp',
-      'should handle help option as string');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: { help: 'myhelp' },
+      ctx: ctx
+    }).getLocals().help, 'myhelp', 'should handle help option as string');
 
-    tape.deepEqual(
-      vdom(new Select({
-        type: Country,
-        options: {help: React.DOM.i(null, 'JSX help')},
-        ctx: ctx
-      }).getLocals().help),
-      {tag: 'i', attrs: {}, children: 'JSX help'},
-      'should handle help option as JSX');
-
+    tape.deepEqual(vdom(new Select({
+      type: Country,
+      options: { help: React.DOM.i(null, 'JSX help') },
+      ctx: ctx
+    }).getLocals().help), { tag: 'i', attrs: {}, children: 'JSX help' }, 'should handle help option as JSX');
   });
 
   tape.test('value', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getLocals().value,
-      '',
-      'default value should be nullOption.value');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getLocals().value, '', 'default value should be nullOption.value');
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {},
-        ctx: ctx,
-        value: 'a'
-      }).getLocals().value,
-      'a',
-      'should handle value option');
-
+    tape.strictEqual(new Select({
+      type: Country,
+      options: {},
+      ctx: ctx,
+      value: 'a'
+    }).getLocals().value, 'a', 'should handle value option');
   });
 
   tape.test('transformer', function (tape) {
     tape.plan(1);
 
-    tape.strictEqual(
-      new Select({
-        type: t.maybe(t.Bool),
-        options: {
-          transformer: transformer,
-          options: [
-            {value: '0', text: 'No'},
-            {value: '1', text: 'Yes'}
-          ]
-        },
-        ctx: ctx,
-        value: true
-      }).getLocals().value,
-      '1',
-      'should handle transformer option (format)');
-
+    tape.strictEqual(new Select({
+      type: t.maybe(t.Bool),
+      options: {
+        transformer: transformer,
+        options: [{ value: '0', text: 'No' }, { value: '1', text: 'Yes' }]
+      },
+      ctx: ctx,
+      value: true
+    }).getLocals().value, '1', 'should handle transformer option (format)');
   });
 
   tape.test('hasError', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getLocals().hasError,
-      false,
-      'default hasError should be false');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getLocals().hasError, false, 'default hasError should be false');
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {hasError: true},
-        ctx: ctx
-      }).getLocals().hasError,
-      true,
-      'should handle hasError option');
-
+    tape.strictEqual(new Select({
+      type: Country,
+      options: { hasError: true },
+      ctx: ctx
+    }).getLocals().hasError, true, 'should handle hasError option');
   });
 
   tape.test('error', function (tape) {
     tape.plan(3);
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getLocals().error,
-      undefined,
-      'default error should be undefined');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getLocals().error, undefined, 'default error should be undefined');
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {error: 'myerror'},
-        ctx: ctx
-      }).getLocals().error,
-      'myerror',
-      'should handle error option');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: { error: 'myerror' },
+      ctx: ctx
+    }).getLocals().error, 'myerror', 'should handle error option');
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {
-            error: function (value) {
-              return 'error: ' + value;
-            }
-        },
-        ctx: ctx,
-        value: 'a'
-      }).getLocals().error,
-      'error: a',
-      'should handle error option as a function');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: {
+        error: function error(value) {
+          return 'error: ' + value;
+        }
+      },
+      ctx: ctx,
+      value: 'a'
+    }).getLocals().error, 'error: a', 'should handle error option as a function');
   });
 
   tape.test('template', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {},
-        ctx: ctx
-      }).getTemplate(),
-      bootstrap.select,
-      'default template should be bootstrap.select');
+    tape.strictEqual(new Select({
+      type: Country,
+      options: {},
+      ctx: ctx
+    }).getTemplate(), bootstrap.select, 'default template should be bootstrap.select');
 
-    var template = function () {};
+    var template = function template() {};
 
-    tape.strictEqual(
-      new Select({
-        type: Country,
-        options: {template: template},
-        ctx: ctx
-      }).getTemplate(),
-      template,
-      'should handle template option');
-
+    tape.strictEqual(new Select({
+      type: Country,
+      options: { template: template },
+      ctx: ctx
+    }).getTemplate(), template, 'should handle template option');
   });
 
   tape.test('options', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(
-      new Select({
-        type: Country,
-        options: {
-          options: [
-            {value: 'IT', text: 'Italia'},
-            {value: 'US', text: 'Stati Uniti'}
-          ]
-        },
-        ctx: ctx
-      }).getLocals().options,
-      [
-        { text: '-', value: '' },
-        { text: 'Italia', value: 'IT' },
-        { text: 'Stati Uniti', value: 'US' }
-      ],
-      'should handle options option');
-
+    tape.deepEqual(new Select({
+      type: Country,
+      options: {
+        options: [{ value: 'IT', text: 'Italia' }, { value: 'US', text: 'Stati Uniti' }]
+      },
+      ctx: ctx
+    }).getLocals().options, [{ text: '-', value: '' }, { text: 'Italia', value: 'IT' }, { text: 'Stati Uniti', value: 'US' }], 'should handle options option');
   });
 
   tape.test('order', function (tape) {
     tape.plan(2);
 
-    tape.deepEqual(
-      new Select({
-        type: Country,
-        options: {order: 'asc'},
-        ctx: ctx
-      }).getLocals().options,
-      [
-        { text: '-', value: '' },
-        { text: 'France', value: 'FR' },
-        { text: 'Italy', value: 'IT' },
-        { text: 'United States', value: 'US' }
-      ],
-      'should handle order = asc option');
+    tape.deepEqual(new Select({
+      type: Country,
+      options: { order: 'asc' },
+      ctx: ctx
+    }).getLocals().options, [{ text: '-', value: '' }, { text: 'France', value: 'FR' }, { text: 'Italy', value: 'IT' }, { text: 'United States', value: 'US' }], 'should handle order = asc option');
 
-    tape.deepEqual(
-      new Select({
-        type: Country,
-        options: {order: 'desc'},
-        ctx: ctx
-      }).getLocals().options,
-      [
-        { text: '-', value: '' },
-        { text: 'United States', value: 'US' },
-        { text: 'Italy', value: 'IT' },
-        { text: 'France', value: 'FR' }
-      ],
-      'should handle order = desc option');
-
+    tape.deepEqual(new Select({
+      type: Country,
+      options: { order: 'desc' },
+      ctx: ctx
+    }).getLocals().options, [{ text: '-', value: '' }, { text: 'United States', value: 'US' }, { text: 'Italy', value: 'IT' }, { text: 'France', value: 'FR' }], 'should handle order = desc option');
   });
 
   tape.test('nullOption', function (tape) {
     tape.plan(2);
 
-    tape.deepEqual(
-      new Select({
-        type: Country,
-        options: {
-          nullOption: {value: '', text: 'Select a country'}
-        },
-        ctx: ctx
-      }).getLocals().options,
-      [
-        { value: '', text: 'Select a country' },
-        { text: 'Italy', value: 'IT' },
-        { text: 'France', value: 'FR' },
-        { text: 'United States', value: 'US' }
-      ],
-      'should handle nullOption option');
+    tape.deepEqual(new Select({
+      type: Country,
+      options: {
+        nullOption: { value: '', text: 'Select a country' }
+      },
+      ctx: ctx
+    }).getLocals().options, [{ value: '', text: 'Select a country' }, { text: 'Italy', value: 'IT' }, { text: 'France', value: 'FR' }, { text: 'United States', value: 'US' }], 'should handle nullOption option');
 
-    tape.deepEqual(
-      new Select({
-        type: Country,
-        options: {
-          nullOption: false
-        },
-        ctx: ctx,
-        value: 'US'
-      }).getLocals().options,
-      [
-        { text: 'Italy', value: 'IT' },
-        { text: 'France', value: 'FR' },
-        { text: 'United States', value: 'US' }
-      ],
-      'should skip the nullOption if nullOption = false');
-
+    tape.deepEqual(new Select({
+      type: Country,
+      options: {
+        nullOption: false
+      },
+      ctx: ctx,
+      value: 'US'
+    }).getLocals().options, [{ text: 'Italy', value: 'IT' }, { text: 'France', value: 'FR' }, { text: 'United States', value: 'US' }], 'should skip the nullOption if nullOption = false');
   });
 
   if (typeof window !== 'undefined') {
@@ -10493,16 +10328,10 @@ tape('Select', function (tape) {
       result = renderComponent({
         type: Car,
         options: {
-          options: [
-            {value: 'Audi', text: 'Audi'}, // an option
-            {label: 'US', options: [ // a group of options
-              {value: 'Chrysler', text: 'Chrysler'},
-              {value: 'Ford', text: 'Ford'}
-            ]},
-            {label: 'France', options: [ // another group of options
-              {value: 'Renault', text: 'Renault'},
-              {value: 'Peugeot', text: 'Peugeot'}
-            ], disabled: true} // use `disabled: true` to disable an optgroup
+          options: [{ value: 'Audi', text: 'Audi' }, // an option
+          { label: 'US', options: [// a group of options
+            { value: 'Chrysler', text: 'Chrysler' }, { value: 'Ford', text: 'Ford' }] }, { label: 'France', options: [// another group of options
+            { value: 'Renault', text: 'Renault' }, { value: 'Peugeot', text: 'Peugeot' }], disabled: true } // use `disabled: true` to disable an optgroup
           ]
         },
         value: 'Ford'
@@ -10534,7 +10363,9 @@ tape('Select', function (tape) {
 
       // subtyped multiple select
       result = renderComponent({
-        type: t.subtype(t.list(Country), function (x) { return x.length >= 2; }),
+        type: t.subtype(t.list(Country), function (x) {
+          return x.length >= 2;
+        }),
         value: ['IT']
       }).validate();
 
@@ -10546,26 +10377,18 @@ tape('Select', function (tape) {
         type: t.maybe(t.Bool),
         options: {
           transformer: transformer,
-          options: [
-            {value: '0', text: 'No'},
-            {value: '1', text: 'Yes'}
-          ]
+          options: [{ value: '0', text: 'No' }, { value: '1', text: 'Yes' }]
         },
         value: true
       }).validate();
 
       tape.strictEqual(result.isValid(), true);
       tape.deepEqual(result.value, true);
-
     });
-
   }
-
 });
 
-
-
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],73:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":76,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],74:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10581,10 +10404,10 @@ var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Textbox);
 
 var transformer = {
-  format: function (value) {
+  format: function format(value) {
     return Array.isArray(value) ? value : value.split(' ');
   },
-  parse: function (value) {
+  parse: function parse(value) {
     return value.join(' ');
   }
 };
@@ -10594,41 +10417,34 @@ tape('Textbox', function (tape) {
   tape.test('path', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getLocals().path,
-      [ 'defaultPath' ],
-      'should handle the path');
-
+    tape.deepEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getLocals().path, ['defaultPath'], 'should handle the path');
   });
 
   tape.test('attrs', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(
-      new Textbox({
-        type: t.Num,
-        options: {
-          type: 'number',
-          attrs: {
-            id: 'myid',
-            min: 0,
-            max: 5
-          }
-        },
-        ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        min: 0,
-        max: 5
+    tape.deepEqual(new Textbox({
+      type: t.Num,
+      options: {
+        type: 'number',
+        attrs: {
+          id: 'myid',
+          min: 0,
+          max: 5
+        }
       },
-      'should handle attrs option');
-
+      ctx: ctx
+    }).getLocals().attrs, {
+      name: 'defaultName',
+      id: 'myid',
+      min: 0,
+      max: 5,
+      placeholder: undefined
+    }, 'should handle attrs option');
   });
 
   tape.test('attrs.events', function (tape) {
@@ -10636,387 +10452,290 @@ tape('Textbox', function (tape) {
 
     function onBlur() {}
 
-    tape.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {
-          attrs: {
-            id: 'myid',
-            onBlur: onBlur
-          }
-        },
-        ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        onBlur: onBlur
+    tape.deepEqual(new Textbox({
+      type: t.Str,
+      options: {
+        attrs: {
+          id: 'myid',
+          onBlur: onBlur
+        }
       },
-      'should handle events');
-
+      ctx: ctx
+    }).getLocals().attrs, {
+      name: 'defaultName',
+      id: 'myid',
+      onBlur: onBlur,
+      placeholder: undefined
+    }, 'should handle events');
   });
 
   tape.test('attrs.className', function (tape) {
     tape.plan(3);
 
-    tape.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {
-          attrs: {
-            id: 'myid',
-            className: 'myclass'
-          }
-        },
-        ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        className: {
-          myclass: true
+    tape.deepEqual(new Textbox({
+      type: t.Str,
+      options: {
+        attrs: {
+          id: 'myid',
+          className: 'myclass'
         }
       },
-      'should handle classNames as strings');
+      ctx: ctx
+    }).getLocals().attrs, {
+      name: 'defaultName',
+      id: 'myid',
+      className: {
+        myclass: true
+      },
+      placeholder: undefined
+    }, 'should handle classNames as strings');
 
-    tape.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {
-          attrs: {
-            id: 'myid',
-            className: ['myclass1', 'myclass2']
-          }
-        },
-        ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        className: {
-          myclass1: true,
-          myclass2: true
+    tape.deepEqual(new Textbox({
+      type: t.Str,
+      options: {
+        attrs: {
+          id: 'myid',
+          className: ['myclass1', 'myclass2']
         }
       },
-      'should handle classNames as arrays');
+      ctx: ctx
+    }).getLocals().attrs, {
+      name: 'defaultName',
+      id: 'myid',
+      className: {
+        'myclass1 myclass2': true
+      },
+      placeholder: undefined
+    }, 'should handle classNames as arrays');
 
-    tape.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {
-          attrs: {
-            id: 'myid',
-            className: {
-              myclass1: true,
-              myclass2: true
-            }
+    tape.deepEqual(new Textbox({
+      type: t.Str,
+      options: {
+        attrs: {
+          id: 'myid',
+          className: {
+            myclass1: true,
+            myclass2: true
           }
-        },
-        ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        className: {
-          myclass1: true,
-          myclass2: true
         }
       },
-      'should handle classNames as object');
-
+      ctx: ctx
+    }).getLocals().attrs, {
+      name: 'defaultName',
+      id: 'myid',
+      className: {
+        'myclass1 myclass2': true
+      },
+      placeholder: undefined
+    }, 'should handle classNames as object');
   });
 
   tape.test('label', function (tape) {
     tape.plan(4);
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getLocals().label,
-      'Default label',
-      'should have a default label');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label', 'should have a default label');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {label: 'mylabel'},
-        ctx: ctx
-      }).getLocals().label,
-      'mylabel',
-      'should handle label option as string');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { label: 'mylabel' },
+      ctx: ctx
+    }).getLocals().label, 'mylabel', 'should handle label option as string');
 
-    tape.deepEqual(
-      vdom(new Textbox({
-        type: t.Str,
-        options: {label: React.DOM.i(null, 'JSX label')},
-        ctx: ctx
-      }).getLocals().label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
-      'should handle label option as JSX');
+    tape.deepEqual(vdom(new Textbox({
+      type: t.Str,
+      options: { label: React.DOM.i(null, 'JSX label') },
+      ctx: ctx
+    }).getLocals().label), { tag: 'i', attrs: {}, children: 'JSX label' }, 'should handle label option as JSX');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.maybe(t.Str),
-        options: {},
-        ctx: ctx
-      }).getLocals().label,
-      'Default label (optional)',
-      'should handle optional types');
-
+    tape.strictEqual(new Textbox({
+      type: t.maybe(t.Str),
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label (optional)', 'should handle optional types');
   });
 
-  tape.test('placeholder', function (tape) {
+  tape.test('attrs.placeholder', function (tape) {
     tape.plan(6);
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getLocals().placeholder,
-      undefined,
-      'default placeholder should be undefined');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getLocals().attrs.placeholder, undefined, 'default placeholder should be undefined');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {placeholder: 'myplaceholder'},
-        ctx: ctx
-      }).getLocals().placeholder,
-      'myplaceholder',
-      'should handle placeholder option');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { attrs: { placeholder: 'myplaceholder' } },
+      ctx: ctx
+    }).getLocals().attrs.placeholder, 'myplaceholder', 'should handle placeholder option');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {label: 'mylabel', placeholder: 'myplaceholder'},
-        ctx: ctx
-      }).getLocals().placeholder,
-      'myplaceholder',
-      'should handle placeholder option even if a label is specified');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { label: 'mylabel', attrs: { placeholder: 'myplaceholder' } },
+      ctx: ctx
+    }).getLocals().attrs.placeholder, 'myplaceholder', 'should handle placeholder option even if a label is specified');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctxPlaceholders
-      }).getLocals().placeholder,
-      'Default label',
-      'should have a default placeholder if auto = placeholders');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctxPlaceholders
+    }).getLocals().attrs.placeholder, 'Default label', 'should have a default placeholder if auto = placeholders');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.maybe(t.Str),
-        options: {},
-        ctx: ctxPlaceholders
-      }).getLocals().placeholder,
-      'Default label (optional)',
-      'should handle optional types if auto = placeholders');
+    tape.strictEqual(new Textbox({
+      type: t.maybe(t.Str),
+      options: {},
+      ctx: ctxPlaceholders
+    }).getLocals().attrs.placeholder, 'Default label (optional)', 'should handle optional types if auto = placeholders');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {placeholder: 'myplaceholder'},
-        ctx: ctxNone
-      }).getLocals().placeholder,
-      'myplaceholder',
-      'should handle placeholder option even if auto === none');
-
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { attrs: { placeholder: 'myplaceholder' } },
+      ctx: ctxNone
+    }).getLocals().attrs.placeholder, 'myplaceholder', 'should handle placeholder option even if auto === none');
   });
 
   tape.test('disabled', function (tape) {
     tape.plan(3);
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getLocals().disabled,
-      undefined,
-      'default disabled should be undefined');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getLocals().disabled, undefined, 'default disabled should be undefined');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {disabled: true},
-        ctx: ctx
-      }).getLocals().disabled,
-      true,
-      'should handle disabled = true');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { disabled: true },
+      ctx: ctx
+    }).getLocals().disabled, true, 'should handle disabled = true');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {disabled: false},
-        ctx: ctx
-      }).getLocals().disabled,
-      false,
-      'should handle disabled = false');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { disabled: false },
+      ctx: ctx
+    }).getLocals().disabled, false, 'should handle disabled = false');
   });
 
   tape.test('help', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {help: 'myhelp'},
-        ctx: ctx
-      }).getLocals().help,
-      'myhelp',
-      'should handle help option as string');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { help: 'myhelp' },
+      ctx: ctx
+    }).getLocals().help, 'myhelp', 'should handle help option as string');
 
-    tape.deepEqual(
-      vdom(new Textbox({
-        type: t.Str,
-        options: {help: React.DOM.i(null, 'JSX help')},
-        ctx: ctx
-      }).getLocals().help),
-      {tag: 'i', attrs: {}, children: 'JSX help'},
-      'should handle help option as JSX');
-
+    tape.deepEqual(vdom(new Textbox({
+      type: t.Str,
+      options: { help: React.DOM.i(null, 'JSX help') },
+      ctx: ctx
+    }).getLocals().help), { tag: 'i', attrs: {}, children: 'JSX help' }, 'should handle help option as JSX');
   });
 
   tape.test('value', function (tape) {
     tape.plan(3);
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getLocals().value,
-      null,
-      'default value should be null');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getLocals().value, null, 'default value should be null');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx,
-        value: 'a'
-      }).getLocals().value,
-      'a',
-      'should handle value option');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx,
+      value: 'a'
+    }).getLocals().value, 'a', 'should handle value option');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Num,
-        options: {},
-        ctx: ctx,
-        value: 1.1
-      }).getLocals().value,
-      '1.1',
-      'should handle numeric values');
-
+    tape.strictEqual(new Textbox({
+      type: t.Num,
+      options: {},
+      ctx: ctx,
+      value: 1.1
+    }).getLocals().value, '1.1', 'should handle numeric values');
   });
 
   tape.test('transformer', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {transformer: transformer},
-        ctx: ctx,
-        value: 'a b'
-      }).getLocals().value,
-      ['a', 'b'],
-      'should handle transformer option (format)');
-
+    tape.deepEqual(new Textbox({
+      type: t.Str,
+      options: { transformer: transformer },
+      ctx: ctx,
+      value: 'a b'
+    }).getLocals().value, ['a', 'b'], 'should handle transformer option (format)');
   });
 
   tape.test('hasError', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getLocals().hasError,
-      false,
-      'default hasError should be false');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getLocals().hasError, false, 'default hasError should be false');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {hasError: true},
-        ctx: ctx
-      }).getLocals().hasError,
-      true,
-      'should handle hasError option');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { hasError: true },
+      ctx: ctx
+    }).getLocals().hasError, true, 'should handle hasError option');
 
     var textbox = new Textbox({
       type: t.Str,
       options: {},
       ctx: ctx
     });
-
   });
 
   tape.test('error', function (tape) {
     tape.plan(3);
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getLocals().error,
-      undefined,
-      'default error should be undefined');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getLocals().error, undefined, 'default error should be undefined');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {error: 'myerror'},
-        ctx: ctx
-      }).getLocals().error,
-      'myerror',
-      'should handle error option');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { error: 'myerror' },
+      ctx: ctx
+    }).getLocals().error, 'myerror', 'should handle error option');
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {
-          error: function (value) {
-            return 'error: ' + value;
-          }
-        },
-        ctx: ctx,
-        value: 'a'
-      }).getLocals().error,
-      'error: a',
-      'should handle error option as a function');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {
+        error: function error(value) {
+          return 'error: ' + value;
+        }
+      },
+      ctx: ctx,
+      value: 'a'
+    }).getLocals().error, 'error: a', 'should handle error option as a function');
   });
 
   tape.test('template', function (tape) {
     tape.plan(2);
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getTemplate(),
-      bootstrap.textbox,
-      'default template should be bootstrap.textbox');
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getTemplate(), bootstrap.textbox, 'default template should be bootstrap.textbox');
 
-    var template = function () {};
+    var template = function template() {};
 
-    tape.strictEqual(
-      new Textbox({
-        type: t.Str,
-        options: {template: template},
-        ctx: ctx
-      }).getTemplate(),
-      template,
-      'should handle template option');
-
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: { template: template },
+      ctx: ctx
+    }).getTemplate(), template, 'should handle template option');
   });
 
   if (typeof window !== 'undefined') {
@@ -11071,7 +10790,9 @@ tape('Textbox', function (tape) {
 
       // subtype, setting a valid value
       result = renderComponent({
-        type: t.subtype(t.Num, function (n) { return n >= 0; }),
+        type: t.subtype(t.Num, function (n) {
+          return n >= 0;
+        }),
         value: 1
       }).validate();
 
@@ -11080,7 +10801,9 @@ tape('Textbox', function (tape) {
 
       // subtype, setting an invalid value
       result = renderComponent({
-        type: t.subtype(t.Num, function (n) { return n >= 0; }),
+        type: t.subtype(t.Num, function (n) {
+          return n >= 0;
+        }),
         value: -1
       }).validate();
 
@@ -11090,29 +10813,25 @@ tape('Textbox', function (tape) {
       // should handle transformer option (parse)
       result = renderComponent({
         type: t.Str,
-        options: {transformer: transformer},
+        options: { transformer: transformer },
         value: ['a', 'b']
       }).validate();
 
       tape.strictEqual(result.isValid(), true);
       tape.deepEqual(result.value, 'a b');
-
     });
-
   }
-
 });
 
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":76,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],75:[function(require,module,exports){
+'use strict';
 
-
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":75,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],74:[function(require,module,exports){
 require('./Textbox');
 require('./Checkbox');
 require('./Select');
 require('./Radio');
 
-
-},{"./Checkbox":70,"./Radio":71,"./Select":72,"./Textbox":73}],75:[function(require,module,exports){
+},{"./Checkbox":71,"./Radio":72,"./Select":73,"./Textbox":74}],76:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb');
@@ -11139,8 +10858,8 @@ function getContext(options) {
   return t.mixin(t.mixin({}, ctx), options, true);
 }
 
-var ctxPlaceholders = getContext({auto: 'placeholders'});
-var ctxNone = getContext({auto: 'none'});
+var ctxPlaceholders = getContext({ auto: 'placeholders' });
+var ctxNone = getContext({ auto: 'none' });
 
 function getRenderComponent(Component) {
   return function renderComponent(props) {
@@ -11150,9 +10869,8 @@ function getRenderComponent(Component) {
     var node = document.createElement('div');
     app.appendChild(node);
     return React.render(React.createElement(Component, props), node);
-  }
+  };
 }
-
 
 module.exports = {
   ctx: ctx,
@@ -11161,12 +10879,20 @@ module.exports = {
   getRenderComponent: getRenderComponent
 };
 
-},{"../../lib/templates/bootstrap":2,"react":"react","tcomb":22}],76:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"react":"react","tcomb":22}],77:[function(require,module,exports){
+// setup runner title
+'use strict';
+
+var pkg = require('../package.json');
+var title = 'tcomb-form v' + pkg.version + ' tests runner';
+document.title = title;
+document.getElementById('title').innerHTML = title;
+
+// load tests
 require('./components');
 require('./templates');
 
-
-},{"./components":74,"./templates":78}],77:[function(require,module,exports){
+},{"../package.json":70,"./components":75,"./templates":79}],78:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -11179,24 +10905,19 @@ tape('textbox', function (tape) {
   tape.test('static', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(
-      textbox({type: 'static', attrs: {}, path: []}).children[1].attrs.className,
-      { 'form-control-static': true },
-      'should handle static type');
+    tape.deepEqual(textbox({ type: 'static', attrs: {}, path: [] }).children[1].attrs.className, { 'form-control-static': true }, 'should handle static type');
   });
 
   tape.test('depth', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(
-      textbox({type: 'static', attrs: {}, path: []}).attrs.className,
-      {'form-group': true, 'form-group-depth-0': true, 'has-error': undefined},
-      'should handle form depth');
+    tape.deepEqual(textbox({ type: 'static', attrs: {}, path: [] }).attrs.className, { 'form-group': true, 'form-group-depth-0': true, 'has-error': undefined }, 'should handle form depth');
   });
-
 });
 
-},{"../../lib/templates/bootstrap":2,"tape":9}],78:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"tape":9}],79:[function(require,module,exports){
+'use strict';
+
 require('./bootstrap');
 
-},{"./bootstrap":77}]},{},[76]);
+},{"./bootstrap":78}]},{},[77]);

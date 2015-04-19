@@ -70,7 +70,7 @@ function getComparator(order) {
 export const decorators = {
 
   template(name) {
-    return function (Component) {
+    return (Component) => {
       Component.prototype.getTemplate = function getTemplate() {
         return this.props.options.template || this.props.ctx.templates[name];
       };
@@ -82,16 +82,19 @@ export const decorators = {
       const attrs = t.mixin({}, this.props.options.attrs);
       attrs.id = this.getId();
       attrs.name = this.getName();
-      attrs.className = {
-        [classnames(attrs.className)]: true
-      };
+      if (attrs.className) {
+        attrs.className = {
+          [classnames(attrs.className)]: true
+        };
+      }
       return attrs;
     };
   },
 
   placeholder(Component) {
     Component.prototype.getPlaceholder = function getPlaceholder() {
-      let placeholder = this.props.options.placeholder;
+      const attrs = this.props.options.attrs || noobj;
+      let placeholder = attrs.placeholder;
       if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
         placeholder = this.getDefaultLabel();
       }
@@ -108,8 +111,6 @@ export const decorators = {
 };
 
 export class Component extends React.Component {
-
-  static locals = [];
 
   static transformer = {
     format: value => Nil.is(value) ? null : value,
@@ -130,14 +131,12 @@ export class Component extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    var should = (
+    return (
       nextState.value !== this.state.value ||
       nextState.hasError !== this.state.hasError ||
       nextProps.options !== this.props.options ||
       nextProps.type !== this.props.type
     );
-    //log('updating %s', this.constructor.name);
-    return should;
   }
 
   componentWillReceiveProps(props) {
@@ -200,7 +199,8 @@ export class Component extends React.Component {
   }
 
   getId() {
-    return this.props.options.id || uuid();
+    const attrs = this.props.options.attrs || noobj;
+    return this.id || (this.id = attrs.id || uuid());
   }
 
   getName() {
@@ -265,7 +265,7 @@ export class Textbox extends Component {
   getLocals() {
     const locals = super.getLocals();
     locals.attrs = this.getAttrs();
-    locals.attrs.placeholder = locals.attrs.placeholder || this.getPlaceholder();
+    locals.attrs.placeholder = this.getPlaceholder();
     locals.type = this.props.options.type || 'text';
     return locals;
   }
@@ -440,11 +440,11 @@ export class Struct extends Component {
     return new t.ValidationResult({errors, value});
   }
 
-  onChange(fieldName, fieldValue, path) {
+  onChange(fieldName, fieldValue, path, kind) {
     const value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.setState({value}, function () {
-      this.props.onChange(value, path);
+      this.props.onChange(value, path, kind);
     }.bind(this));
   }
 
@@ -562,9 +562,9 @@ export class List extends Component {
     return new t.ValidationResult({errors: errors, value: value});
   }
 
-  onChange(value, keys, path) {
+  onChange(value, keys, path, kind) {
     this.setState({value, keys: toSameLength(value, keys)}, () => {
-      this.props.onChange(value, path || this.props.ctx.path);
+      this.props.onChange(value, path, kind);
     });
   }
 
@@ -572,7 +572,7 @@ export class List extends Component {
     evt.preventDefault();
     const value = this.state.value.concat(undefined);
     const keys = this.state.keys.concat(uuid());
-    this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1));
+    this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   }
 
   onItemChange(itemIndex, itemValue, path) {
@@ -587,7 +587,7 @@ export class List extends Component {
     value.splice(i, 1);
     const keys = this.state.keys.slice();
     keys.splice(i, 1);
-    this.onChange(value, keys, this.props.ctx.path.concat(i));
+    this.onChange(value, keys, this.props.ctx.path.concat(i), 'remove');
   }
 
   moveUpItem(i, evt) {
@@ -595,7 +595,9 @@ export class List extends Component {
     if (i > 0) {
       this.onChange(
         move(this.state.value.slice(), i, i - 1),
-        move(this.state.keys.slice(), i, i - 1)
+        move(this.state.keys.slice(), i, i - 1),
+        this.props.ctx.path.concat(i),
+        'moveUp'
       );
     }
   }
@@ -605,7 +607,9 @@ export class List extends Component {
     if (i < this.state.value.length - 1) {
       this.onChange(
         move(this.state.value.slice(), i, i + 1),
-        move(this.state.keys.slice(), i, i + 1)
+        move(this.state.keys.slice(), i, i + 1),
+        this.props.ctx.path.concat(i),
+        'moveDown'
       );
     }
   }
@@ -683,11 +687,8 @@ export class Form {
   }
 
   render() {
-    let options = this.props.options;
-    const type = this.props.type;
+    const { type, options = noobj } = this.props;
     const { i18n, templates } = Form;
-
-    options = options || noobj;
 
     assert(t.Type.is(type), `[${SOURCE}] missing required prop type`);
     assert(t.Obj.is(options), `[${SOURCE}] prop options must be an object`);
@@ -711,5 +712,3 @@ export class Form {
   }
 
 }
-
-

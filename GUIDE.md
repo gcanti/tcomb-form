@@ -2,8 +2,8 @@
 
 ## Setup
 
-```
-npm install tcomb-form
+```sh
+$ npm install tcomb-form
 ```
 
 ## Working example
@@ -33,7 +33,6 @@ var App = React.createClass({
   },
 
   render() {
-
     return (
       <div>
         <Form
@@ -50,17 +49,23 @@ var App = React.createClass({
 React.render(<App />, document.getElementById('app'));
 ```
 
-> **Note**. Labels are **automatically** generated.
+> **Note**. Labels are automatically generated.
 
-`getValue(raw)` returns `null` if the validation failed or an object containing the form values if validation succeded.
+## API
 
-If the optional parameter `raw` is set to `true` then `getValue` returns a `ValidationResult` (see [tcomb-validation](https://github.com/gcanti/tcomb-validation) for a reference documentation)
+### `getValue()`
 
-> **Note**. Calling the `getValue` method will cause the validation of all the fields in the form, included some side effects like highlighting the errors in the UI.
+Returns `null` if the validation failed, an instance of your model otherwise.
 
-## Adding a default value
+> **Note**. Calling `getValue` will cause the validation of all the fields of the form, including some side effects like highlighting the errors.
 
-The `Form` component behaves like a [controlled component](https://facebook.github.io/react/docs/forms.html)
+### `validate()`
+
+Returns a `ValidationResult` (see [tcomb-validation](https://github.com/gcanti/tcomb-validation) for a reference documentation).
+
+### Adding a default value and listen to changes
+
+The `Form` component behaves like a [controlled component](https://facebook.github.io/react/docs/forms.html):
 
 ```js
 var App = React.createClass({
@@ -86,7 +91,6 @@ var App = React.createClass({
   },
 
   render() {
-
     return (
       <div>
         <Form
@@ -103,7 +107,54 @@ var App = React.createClass({
 });
 ```
 
-## Submitting the form
+The `onChange` handler has the following signature:
+
+```
+(raw: any, path: Array<string | number>, kind?) => void
+```
+
+where
+
+- `raw` contains the current raw value of the form (can be an invalid value for your model)
+- `path` is the path to the field triggering the change
+- `kind` specify the kind of change (when `undefined` means a value change)
+  + `'add'` list item added
+  + `'remove'` list item removed
+  + `'moveUp'` list item moved up
+  + `'moveDown'` list item moved down
+
+### How to get access to a field
+
+You can get access to a field with the `getComponent(path)` API:
+
+```js
+var Person = t.struct({
+  name: t.Str,
+  surname: t.Str
+});
+
+var App = React.createClass({
+
+  onChange(value, path) {
+    // validate a field on every change
+    this.refs.form.getComponent(path).validate();
+  },
+
+  render() {
+    return (
+      <div>
+        <Form ref="form"
+          type={Person}
+          onChange={this.onChange}
+        />
+      </div>
+    );
+  }
+
+});
+```
+
+### Submitting the form
 
 The output of the `Form` component is a `fieldset` tag containing your fields. You can submit the form wrapping the output with a `form` tag:
 
@@ -123,7 +174,6 @@ var App = React.createClass({
   },
 
   render() {
-
     return (
       <form onSubmit={this.onSubmit}>
         <Form
@@ -375,7 +425,7 @@ var options = {
 `error` can also be a function with the following signature:
 
 ```
-function (value) -> ?error
+(value: any) => ?(string | ReactElement)
 ```
 
 where `value` is an object containing the current form value.
@@ -712,7 +762,7 @@ var options = {
 To customize the "skin" of tcomb-form you have to write a *template*. A template is simply a function with the following signature:
 
 ```
-function(locals) -> UVDOM | ReactElement
+(locals: any) => UVDOM | ReactElement
 ```
 
 where `locals` is an object contaning the "recipe" for rendering the input and is built by tcomb-form for you. The returned value can be a [UVDOM](https://github.com/gcanti/uvdom) or a `ReactElement`.

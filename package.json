@@ -4,11 +4,10 @@
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Open test/index.html in a browser...\" && watchify -t [reactify --harmony] test/index.js -o test/browser.js  -v -x react",
-    "transpile": "./node_modules/.bin/babel ./src -d ./lib -w --stage 0 --playground --loose",
-    "dist": "browserify -r ./index.js:tcomb-form -x react | uglifyjs -c > ./docs/js/tcomb-form.js",
-    "dev": "watchify -t [reactify --harmony] dev/dev.jsx -o dev/dev.js -v -x react",
-    "start": "./node_modules/.bin/http-server ./dev -s -o",
+    "test": "echo \"Compiling tests. Once finished open ./test/index.html in your browser...\" && watchify -t [babelify --stage 0 --loose] test/index.js -o test/browser.js  -v -x react",
+    "start": "echo \"Compiling src -> lib...\" && babel ./src -d ./lib -w --stage 0 --loose",
+    "dist": "browserify -r ./index.js:tcomb-form -x react | uglifyjs -c > ./dist/tcomb-form.js",
+    "dev": "watchify -t [babelify --stage 0 --loose] dev/dev.jsx -o dev/dev.js -v -x react",
     "lint": "eslint . --ext .js --ext .jsx"
   },
   "repository": {
@@ -22,7 +21,7 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "peerDependencies": {
-    "react": "^0.13.1",
+    "react": "^0.13.0",
     "tcomb-validation": "^1.0.3"
   },
   "dependencies": {
@@ -34,16 +33,16 @@
   "devDependencies": {
     "babel": "^5.1.10",
     "babel-eslint": "^3.0.1",
+    "babelify": "^6.0.2",
     "eslint": "^0.19.0",
     "eslint-plugin-react": "^2.1.1",
-    "http-server": "^0.8.0",
     "react-vdom": "^0.2.3",
-    "reactify": "^1.1.0",
     "tape": "^4.0.0",
     "watchify": "^3.1.0"
   },
   "tags": [
     "form",
+    "forms",
     "validation",
     "generation",
     "react",
@@ -51,6 +50,7 @@
   ],
   "keywords": [
     "form",
+    "forms",
     "validation",
     "generation",
     "react",

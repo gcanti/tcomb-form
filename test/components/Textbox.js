@@ -57,7 +57,8 @@ tape('Textbox', function (tape) {
         name: 'defaultName',
         id: 'myid',
         min: 0,
-        max: 5
+        max: 5,
+        placeholder: undefined
       },
       'should handle attrs option');
 
@@ -82,7 +83,8 @@ tape('Textbox', function (tape) {
       {
         name: 'defaultName',
         id: 'myid',
-        onBlur: onBlur
+        onBlur: onBlur,
+        placeholder: undefined
       },
       'should handle events');
 
@@ -107,7 +109,8 @@ tape('Textbox', function (tape) {
         id: 'myid',
         className: {
           myclass: true
-        }
+        },
+        placeholder: undefined
       },
       'should handle classNames as strings');
 
@@ -126,9 +129,9 @@ tape('Textbox', function (tape) {
         name: 'defaultName',
         id: 'myid',
         className: {
-          myclass1: true,
-          myclass2: true
-        }
+          'myclass1 myclass2': true
+        },
+        placeholder: undefined
       },
       'should handle classNames as arrays');
 
@@ -150,9 +153,9 @@ tape('Textbox', function (tape) {
         name: 'defaultName',
         id: 'myid',
         className: {
-          myclass1: true,
-          myclass2: true
-        }
+          'myclass1 myclass2': true
+        },
+        placeholder: undefined
       },
       'should handle classNames as object');
 
@@ -199,7 +202,7 @@ tape('Textbox', function (tape) {
 
   });
 
-  tape.test('placeholder', function (tape) {
+  tape.test('attrs.placeholder', function (tape) {
     tape.plan(6);
 
     tape.strictEqual(
@@ -207,25 +210,25 @@ tape('Textbox', function (tape) {
         type: t.Str,
         options: {},
         ctx: ctx
-      }).getLocals().placeholder,
+      }).getLocals().attrs.placeholder,
       undefined,
       'default placeholder should be undefined');
 
     tape.strictEqual(
       new Textbox({
         type: t.Str,
-        options: {placeholder: 'myplaceholder'},
+        options: {attrs: {placeholder: 'myplaceholder'}},
         ctx: ctx
-      }).getLocals().placeholder,
+      }).getLocals().attrs.placeholder,
       'myplaceholder',
       'should handle placeholder option');
 
     tape.strictEqual(
       new Textbox({
         type: t.Str,
-        options: {label: 'mylabel', placeholder: 'myplaceholder'},
+        options: {label: 'mylabel', attrs: {placeholder: 'myplaceholder'}},
         ctx: ctx
-      }).getLocals().placeholder,
+      }).getLocals().attrs.placeholder,
       'myplaceholder',
       'should handle placeholder option even if a label is specified');
 
@@ -234,7 +237,7 @@ tape('Textbox', function (tape) {
         type: t.Str,
         options: {},
         ctx: ctxPlaceholders
-      }).getLocals().placeholder,
+      }).getLocals().attrs.placeholder,
       'Default label',
       'should have a default placeholder if auto = placeholders');
 
@@ -243,16 +246,16 @@ tape('Textbox', function (tape) {
         type: t.maybe(t.Str),
         options: {},
         ctx: ctxPlaceholders
-      }).getLocals().placeholder,
+      }).getLocals().attrs.placeholder,
       'Default label (optional)',
       'should handle optional types if auto = placeholders');
 
     tape.strictEqual(
       new Textbox({
         type: t.Str,
-        options: {placeholder: 'myplaceholder'},
+        options: {attrs: {placeholder: 'myplaceholder'}},
         ctx: ctxNone
-      }).getLocals().placeholder,
+      }).getLocals().attrs.placeholder,
       'myplaceholder',
       'should handle placeholder option even if auto === none');
 
