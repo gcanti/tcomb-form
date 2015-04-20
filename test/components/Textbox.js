@@ -40,26 +40,18 @@ tape('Textbox', function (tape) {
   tape.test('attrs', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(
+    tape.strictEqual(
       new Textbox({
         type: t.Num,
         options: {
           type: 'number',
           attrs: {
-            id: 'myid',
-            min: 0,
-            max: 5
+            min: 0
           }
         },
         ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        min: 0,
-        max: 5,
-        placeholder: undefined
-      },
+      }).getLocals().attrs.min,
+      0,
       'should handle attrs option');
 
   });
@@ -530,7 +522,7 @@ tape('Textbox', function (tape) {
       }).validate();
 
       tape.strictEqual(result.isValid(), true);
-      tape.deepEqual(result.value, 'a b');
+      tape.strictEqual(result.value, 'a b');
 
     });
 

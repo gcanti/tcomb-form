@@ -9,7 +9,6 @@ var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
 var ctxPlaceholders = util.ctxPlaceholders;
-var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Checkbox);
 
 var transformer = {

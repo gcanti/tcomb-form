@@ -1,3 +1,4 @@
+require('./Component');
 require('./Textbox');
 require('./Checkbox');
 require('./Select');

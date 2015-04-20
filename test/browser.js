@@ -242,7 +242,7 @@ var Component = (function (_React$Component) {
 
   Component.prototype.getId = function getId() {
     var attrs = this.props.options.attrs || noobj;
-    return this.id || (this.id = attrs.id || _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid());
+    return attrs.id || _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move.uuid();
   };
 
   Component.prototype.getName = function getName() {
@@ -9644,7 +9644,6 @@ var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
 var ctxPlaceholders = util.ctxPlaceholders;
-var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Checkbox);
 
 var transformer = {
@@ -9837,7 +9836,80 @@ tape('Checkbox', function (tape) {
   }
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":76,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],72:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":77,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],72:[function(require,module,exports){
+'use strict';
+
+var tape = require('tape');
+var t = require('tcomb');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Component = require('../../lib/components').Component;
+var React = require('react');
+var vdom = require('react-vdom');
+var util = require('./util');
+var ctx = util.ctx;
+
+tape('Component', function (tape) {
+
+  tape.test('typeInfo', function (tape) {
+    tape.plan(3);
+
+    var component = new Component({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    });
+
+    tape.deepEqual(component.typeInfo, {
+      isMaybe: false,
+      isSubtype: false,
+      innerType: t.Str
+    });
+
+    component = new Component({
+      type: t.maybe(t.Str),
+      options: {},
+      ctx: ctx
+    });
+
+    tape.deepEqual(component.typeInfo, {
+      isMaybe: true,
+      isSubtype: false,
+      innerType: t.Str
+    });
+
+    component = new Component({
+      type: t.subtype(t.Str, function () {
+        return true;
+      }),
+      options: {},
+      ctx: ctx
+    });
+
+    tape.deepEqual(component.typeInfo, {
+      isMaybe: false,
+      isSubtype: true,
+      innerType: t.Str
+    });
+  });
+
+  tape.test('getId()', function (tape) {
+    tape.plan(2);
+
+    tape.strictEqual(t.Str.is(new Component({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getId()), true, 'should return a random uuid');
+
+    tape.strictEqual(new Component({
+      type: t.Str,
+      options: { attrs: { id: 'myid' } },
+      ctx: ctx
+    }).getId(), 'myid', 'should return a random uuid');
+  });
+});
+
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":77,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],73:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -9848,8 +9920,6 @@ var React = require('react');
 var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
-var ctxPlaceholders = util.ctxPlaceholders;
-var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Radio);
 
 var transformer = {
@@ -10074,7 +10144,7 @@ tape('Radio', function (tape) {
   }
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":76,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],73:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":77,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],74:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10085,8 +10155,6 @@ var React = require('react');
 var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
-var ctxPlaceholders = util.ctxPlaceholders;
-var ctxNone = util.ctxNone;
 var renderComponent = util.getRenderComponent(Select);
 
 var transformer = {
@@ -10388,7 +10456,7 @@ tape('Select', function (tape) {
   }
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":76,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],74:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":77,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],75:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10427,24 +10495,16 @@ tape('Textbox', function (tape) {
   tape.test('attrs', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(new Textbox({
+    tape.strictEqual(new Textbox({
       type: t.Num,
       options: {
         type: 'number',
         attrs: {
-          id: 'myid',
-          min: 0,
-          max: 5
+          min: 0
         }
       },
       ctx: ctx
-    }).getLocals().attrs, {
-      name: 'defaultName',
-      id: 'myid',
-      min: 0,
-      max: 5,
-      placeholder: undefined
-    }, 'should handle attrs option');
+    }).getLocals().attrs.min, 0, 'should handle attrs option');
   });
 
   tape.test('attrs.events', function (tape) {
@@ -10818,20 +10878,21 @@ tape('Textbox', function (tape) {
       }).validate();
 
       tape.strictEqual(result.isValid(), true);
-      tape.deepEqual(result.value, 'a b');
+      tape.strictEqual(result.value, 'a b');
     });
   }
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":76,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],75:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":77,"react":"react","react-vdom":8,"tape":9,"tcomb":22}],76:[function(require,module,exports){
 'use strict';
 
+require('./Component');
 require('./Textbox');
 require('./Checkbox');
 require('./Select');
 require('./Radio');
 
-},{"./Checkbox":71,"./Radio":72,"./Select":73,"./Textbox":74}],76:[function(require,module,exports){
+},{"./Checkbox":71,"./Component":72,"./Radio":73,"./Select":74,"./Textbox":75}],77:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb');
@@ -10879,7 +10940,7 @@ module.exports = {
   getRenderComponent: getRenderComponent
 };
 
-},{"../../lib/templates/bootstrap":2,"react":"react","tcomb":22}],77:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"react":"react","tcomb":22}],78:[function(require,module,exports){
 // setup runner title
 'use strict';
 
@@ -10892,7 +10953,7 @@ document.getElementById('title').innerHTML = title;
 require('./components');
 require('./templates');
 
-},{"../package.json":70,"./components":75,"./templates":79}],78:[function(require,module,exports){
+},{"../package.json":70,"./components":76,"./templates":80}],79:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -10915,9 +10976,9 @@ tape('textbox', function (tape) {
   });
 });
 
-},{"../../lib/templates/bootstrap":2,"tape":9}],79:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"tape":9}],80:[function(require,module,exports){
 'use strict';
 
 require('./bootstrap');
 
-},{"./bootstrap":78}]},{},[77]);
+},{"./bootstrap":79}]},{},[78]);

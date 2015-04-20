@@ -1,6 +1,6 @@
 .*
 *.log
-.jshintrc
+CONTRIBUTING.md
 dev
 node_modules
 src

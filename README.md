@@ -25,7 +25,7 @@ With tcomb-form you simply call `<Form type={Model} />` to generate a form based
 
 [tcomb-form site](http://gcanti.github.io/tcomb-form/).
 
-**Browser compatibility**: same as React >=0.12.0
+**Browser compatibility**: same as React >=0.13.0
 
 # Contributions
 
@@ -38,25 +38,6 @@ Thanks to [Esa-Matti Suuronen](https://github.com/epeli) for the excellent `huma
 
 Thanks to [Andrey Popp](https://github.com/andreypopp) for writing [react-forms](https://github.com/prometheusresearch/react-forms), great inspiration for list management.
 
-# Development
+# Contributing
 
-```
-npm install
-gulp watch
-```
-
-## Linting
-
-```
-gulp lint
-```
-
-## Tests
-
-```
-npm test
-```
-
-# License
-
-MIT
+[CONTRIBUTING.md](CONTRIBUTING.md)

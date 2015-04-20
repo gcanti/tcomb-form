@@ -200,7 +200,7 @@ export class Component extends React.Component {
 
   getId() {
     const attrs = this.props.options.attrs || noobj;
-    return this.id || (this.id = attrs.id || uuid());
+    return attrs.id || uuid();
   }
 
   getName() {
