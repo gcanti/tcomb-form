@@ -1,11 +1,12 @@
 {
   "name": "tcomb-form",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Open test/index.html in a browser...\" && watchify -t [reactify --harmony] test/index.js -o test/browser.js  -v -x react",
-    "lint": "jshint ./lib"
+    "lint": "jshint ./lib",
+    "dev": "watchify -t [babelify --stage 0 --loose] dev/dev.jsx -o dev/dev.js -v -x react"
   },
   "repository": {
     "type": "git",

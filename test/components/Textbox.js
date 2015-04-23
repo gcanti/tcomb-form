@@ -16,7 +16,6 @@ var transformer = {
     return value.join(',');
   },
   parse: function (value) {
-    console.log(value);
     return value.split(',');
   }
 };
@@ -305,7 +304,7 @@ test('Textbox', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('getValue', function (tape) {
-        tape.plan(20);
+        tape.plan(22);
 
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
@@ -337,6 +336,17 @@ test('Textbox', function (tape) {
               tape.strictEqual(locals.value, '1');
             }
         }, {type: t.Num}, null, 1);
+
+        // should handle maybe numeric values
+        getValue(function (result) {
+          tape.strictEqual(result.isValid(), true);
+          tape.strictEqual(result.value, null);
+        }, function (locals, rendered) {
+            if (rendered) {
+              tape.strictEqual(locals.hasError, false);
+              tape.strictEqual(locals.value, null);
+            }
+        }, {type: t.maybe(t.Num)}, null, '');
 
         // should handle transformer option
         getValue(function (result) {

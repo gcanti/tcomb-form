@@ -1,3 +1,7 @@
+v0.4.11
+
+- Remove class "has-error" from empty optional field, fix #113
+
 v0.4.10
 
 - fix nullOption was incorrectly added to multiple selects

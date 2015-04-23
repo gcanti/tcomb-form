@@ -170,10 +170,14 @@ var Component = {
 
 Component.extend = createExtend(Component);
 
+function toNull(value) {
+  return (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
+}
+
 function parseNumber(value) {
   var n = parseFloat(value);
   var isNumeric = (value - n + 1) >= 0;
-  return isNumeric ? n : value;
+  return isNumeric ? n : toNull(value);
 }
 
 var Textbox = Component.extend({
@@ -185,17 +189,13 @@ var Textbox = Component.extend({
       format: function (value) {
         return Nil.is(value) ? null : value;
       },
-      parse: parseNumber
+      parse: toNull
     }),
     numberTransformer: Object.freeze({
       format: function (value) {
         return Nil.is(value) ? value : String(value);
       },
-      parse: function (value) {
-        var n = parseFloat(value);
-        var isNumeric = (value - n + 1) >= 0;
-        return isNumeric ? n : value;
-      }
+      parse: parseNumber
     })
   },
 
@@ -4146,12 +4146,6 @@ function through (write, end, opts) {
   'use strict';
 
   function fail(message) {
-    // start debugger only once
-    if (!fail.failed) {
-      /*jshint debug: true*/
-      debugger;
-    }
-    fail.failed = true;
     throw new TypeError(message);
   }
 
@@ -13555,7 +13549,6 @@ var transformer = {
     return value.join(',');
   },
   parse: function (value) {
-    console.log(value);
     return value.split(',');
   }
 };
@@ -13844,7 +13837,7 @@ test('Textbox', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('getValue', function (tape) {
-        tape.plan(20);
+        tape.plan(22);
 
         getValue(function (result) {
           tape.strictEqual(result.isValid(), true);
@@ -13876,6 +13869,17 @@ test('Textbox', function (tape) {
               tape.strictEqual(locals.value, '1');
             }
         }, {type: t.Num}, null, 1);
+
+        // should handle maybe numeric values
+        getValue(function (result) {
+          tape.strictEqual(result.isValid(), true);
+          tape.strictEqual(result.value, null);
+        }, function (locals, rendered) {
+            if (rendered) {
+              tape.strictEqual(locals.hasError, false);
+              tape.strictEqual(locals.value, null);
+            }
+        }, {type: t.maybe(t.Num)}, null, '');
 
         // should handle transformer option
         getValue(function (result) {
