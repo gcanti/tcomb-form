@@ -158,8 +158,12 @@ export function textbox(locals) {
     attrs.className['form-control'] = true;
 
     attrs.disabled = locals.disabled;
-    attrs.value = locals.value;
-    attrs.onChange = evt => locals.onChange(evt.target.value);
+    if (locals.type !== 'file') {
+      attrs.value = locals.value;
+    }
+    attrs.onChange = locals.type === 'file' ?
+      evt => locals.onChange(evt.target.files[0]) :
+      evt => locals.onChange(evt.target.value);
 
     if (locals.help) {
       attrs['aria-describedby'] = attrs['aria-describedby'] || attrs.id + '-tip';
