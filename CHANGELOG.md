@@ -18,13 +18,15 @@
     + Set class on form-group div indicating its depth within form, #64
     + Added `kind` param to `onChange` handler
 - **Breaking Change**
-    + drop support for React v0.12.x
-    + moved `placeholder` option within `attrs` option
-    + moved `id` option within `attrs` option
+    + Drop support for React v0.12.x
+    + Moved `placeholder` option within `attrs` option
+    + Moved `id` option within `attrs` option
+- **Bug Fix**
+    + Remove class "has-error" from empty optional numeric field #113
 - **Documentation**
     + Add GUIDE.md
 - **Internal**
-    + complete code refactoring
+    + Complete code refactoring
 
 ## v0.4.10
 

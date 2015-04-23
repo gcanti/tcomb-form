@@ -234,10 +234,14 @@ export class Component extends React.Component {
 
 }
 
+function toNull(value) {
+  return (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
+}
+
 function parseNumber(value) {
   var n = parseFloat(value);
   var isNumeric = (value - n + 1) >= 0;
-  return isNumeric ? n : value;
+  return isNumeric ? n : toNull(value);
 }
 
 @decorators.attrs
@@ -247,7 +251,7 @@ export class Textbox extends Component {
 
   static transformer = {
     format: value => Nil.is(value) ? null : value,
-    parse: value => (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value
+    parse: toNull
   };
 
   static numberTransformer = {

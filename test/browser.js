@@ -292,10 +292,14 @@ var Component = (function (_React$Component) {
 
 exports.Component = Component;
 
+function toNull(value) {
+  return _t2['default'].Str.is(value) && value.trim() === '' || Nil.is(value) ? null : value;
+}
+
 function parseNumber(value) {
   var n = parseFloat(value);
   var isNumeric = value - n + 1 >= 0;
-  return isNumeric ? n : value;
+  return isNumeric ? n : toNull(value);
 }
 
 var Textbox = (function (_Component) {
@@ -330,9 +334,7 @@ var Textbox = (function (_Component) {
       format: function format(value) {
         return Nil.is(value) ? null : value;
       },
-      parse: function parse(value) {
-        return _t2['default'].Str.is(value) && value.trim() === '' || Nil.is(value) ? null : value;
-      }
+      parse: toNull
     },
     enumerable: true
   }, {
@@ -3829,12 +3831,6 @@ function through (write, end, opts) {
   'use strict';
 
   function fail(message) {
-    // start debugger only once
-    if (!fail.failed) {
-      /*jshint debug: true*/
-      debugger;
-    }
-    fail.failed = true;
     throw new TypeError(message);
   }
 
@@ -10801,7 +10797,7 @@ tape('Textbox', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(16);
+      tape.plan(18);
 
       var result;
 
@@ -10838,6 +10834,15 @@ tape('Textbox', function (tape) {
 
       tape.strictEqual(result.isValid(), true);
       tape.strictEqual(result.value, 1);
+
+      // optional numeric type
+      result = renderComponent({
+        type: t.maybe(t.Num),
+        value: ''
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, null);
 
       // numeric type with stringy value
       result = renderComponent({

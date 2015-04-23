@@ -449,7 +449,7 @@ tape('Textbox', function (tape) {
   if (typeof window !== 'undefined') {
 
     tape.test('validate', function (tape) {
-      tape.plan(16);
+      tape.plan(18);
 
       var result;
 
@@ -486,6 +486,15 @@ tape('Textbox', function (tape) {
 
       tape.strictEqual(result.isValid(), true);
       tape.strictEqual(result.value, 1);
+
+      // optional numeric type
+      result = renderComponent({
+        type: t.maybe(t.Num),
+        value: ''
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value, null);
 
       // numeric type with stringy value
       result = renderComponent({
