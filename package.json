@@ -39,6 +39,7 @@
     "eslint-plugin-react": "^2.1.1",
     "karma": "^0.12.31",
     "karma-chrome-launcher": "^0.1.8",
+    "karma-firefox-launcher": "^0.1.4",
     "karma-tap": "^1.0.3",
     "react-vdom": "^0.2.3",
     "tape": "^4.0.0"
