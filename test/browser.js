@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var _interopRequireWildcard = function _interopRequireWildcard(obj) {
+var _interopRequireDefault = function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : { 'default': obj };
 };
 
@@ -32,11 +32,11 @@ exports.getComponent = getComponent;
 
 var _React = require('react');
 
-var _React2 = _interopRequireWildcard(_React);
+var _React2 = _interopRequireDefault(_React);
 
 var _t = require('tcomb-validation');
 
-var _t2 = _interopRequireWildcard(_t);
+var _t2 = _interopRequireDefault(_t);
 
 var _compile = require('uvdom/react');
 
@@ -44,11 +44,11 @@ var _humanize$merge$getTypeInfo$getOptionsOfEnum$uuid$move = require('./util');
 
 var _debug = require('debug');
 
-var _debug2 = _interopRequireWildcard(_debug);
+var _debug2 = _interopRequireDefault(_debug);
 
 var _classnames = require('classnames');
 
-var _classnames2 = _interopRequireWildcard(_classnames);
+var _classnames2 = _interopRequireDefault(_classnames);
 
 'use strict';
 
@@ -934,7 +934,7 @@ exports.Form = Form;
 },{"./util":3,"classnames":28,"debug":29,"react":187,"tcomb-validation":200,"uvdom/react":223}],2:[function(require,module,exports){
 'use strict';
 
-var _interopRequireWildcard = function _interopRequireWildcard(obj) {
+var _interopRequireDefault = function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : { 'default': obj };
 };
 
@@ -949,11 +949,11 @@ exports.list = list;
 
 var _t = require('tcomb-validation');
 
-var _t2 = _interopRequireWildcard(_t);
+var _t2 = _interopRequireDefault(_t);
 
 var _bootstrap = require('uvdom-bootstrap');
 
-var _bootstrap2 = _interopRequireWildcard(_bootstrap);
+var _bootstrap2 = _interopRequireDefault(_bootstrap);
 
 'use strict';
 

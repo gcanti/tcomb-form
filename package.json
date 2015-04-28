@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint src",
-    "build-test": "browserify -t [babelify --stage=0 --loose] test/index.js -o test/browser.js",
-    "test": "./node_modules/karma/bin/karma start",
+    "build-test": "node_modules/.bin/browserify -t [babelify --stage=0 --loose] test/index.js -o test/browser.js",
+    "test": "npm run build-test && ./node_modules/karma/bin/karma start",
     "build": "node_modules/.bin/babel src -d lib --stage=0 --loose",
     "dev": "watchify -t [babelify --stage=0 --loose] dev/dev.jsx -o dev/dev.js -v -x react"
   },
