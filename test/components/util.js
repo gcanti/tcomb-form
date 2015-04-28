@@ -31,9 +31,8 @@ function getRenderComponent(Component) {
   return function renderComponent(props) {
     props.options = props.options || {};
     props.ctx = props.ctx || ctx;
-    var app = document.getElementById('app');
     var node = document.createElement('div');
-    app.appendChild(node);
+    document.body.appendChild(node);
     return React.render(React.createElement(Component, props), node);
   };
 }

@@ -4,11 +4,11 @@
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Compiling tests. Once finished open ./test/index.html in your browser...\" && watchify -t [babelify --stage 0 --loose] test/index.js -o test/browser.js  -v -x react",
-    "start": "echo \"Compiling src -> lib...\" && babel ./src -d ./lib -w --stage 0 --loose",
-    "dist": "browserify -r ./index.js:tcomb-form -x react | uglifyjs -c > ./dist/tcomb-form.js",
-    "dev": "watchify -t [babelify --stage 0 --loose] dev/dev.jsx -o dev/dev.js -v -x react",
-    "lint": "eslint . --ext .js --ext .jsx"
+    "lint": "eslint src",
+    "build-test": "browserify -t [babelify --stage=0 --loose] test/index.js -o test/browser.js",
+    "test": "./node_modules/karma/bin/karma start",
+    "build": "node_modules/.bin/babel src -d lib --stage=0 --loose",
+    "dev": "watchify -t [babelify --stage=0 --loose] dev/dev.jsx -o dev/dev.js -v -x react"
   },
   "repository": {
     "type": "git",
@@ -34,11 +34,14 @@
     "babel": "^5.1.10",
     "babel-eslint": "^3.0.1",
     "babelify": "^6.0.2",
+    "browserify": "^9.0.8",
     "eslint": "^0.19.0",
     "eslint-plugin-react": "^2.1.1",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.8",
+    "karma-tap": "^1.0.3",
     "react-vdom": "^0.2.3",
-    "tape": "^4.0.0",
-    "watchify": "^3.1.0"
+    "tape": "^4.0.0"
   },
   "tags": [
     "form",

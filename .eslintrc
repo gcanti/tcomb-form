@@ -13,12 +13,12 @@
     "jsx": true
   },
   "rules": {
-    "no-undef": false,
-    "no-unused-vars": false,
-    "no-shadow": false,
-    "no-multi-spaces": false,
-    "consistent-return": false,
-    "no-use-before-define": false,
+    "no-undef": 0,
+    "no-unused-vars": 0,
+    "no-shadow": 0,
+    "no-multi-spaces": 0,
+    "consistent-return": 0,
+    "no-use-before-define": 0,
     "quotes": [2, "single"],
     "comma-dangle": "always",
     "react/jsx-boolean-value": 1,
