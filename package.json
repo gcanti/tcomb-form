@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src",
     "build-test": "node_modules/.bin/browserify -t [babelify --stage=0 --loose] test/index.js -o test/browser.js",
-    "test": "npm run build-test && ./node_modules/karma/bin/karma start",
+    "test": "npm run lint && npm run build-test && ./node_modules/karma/bin/karma start",
     "build": "node_modules/.bin/babel src -d lib --stage=0 --loose",
     "dev": "watchify -t [babelify --stage=0 --loose] dev/dev.jsx -o dev/dev.js -v -x react"
   },
@@ -35,7 +35,7 @@
     "babel-eslint": "^3.0.1",
     "babelify": "^6.0.2",
     "browserify": "^9.0.8",
-    "eslint": "^0.19.0",
+    "eslint": "^0.20.0",
     "eslint-plugin-react": "^2.1.1",
     "karma": "^0.12.31",
     "karma-chrome-launcher": "^0.1.8",

@@ -1,3 +1,6 @@
+[![build status](https://img.shields.io/travis/gcanti/tcomb-form/master.svg?style=flat-square)](https://travis-ci.org/gcanti/tcomb-form)
+[![dependency status](https://img.shields.io/david/gcanti/tcomb-form.svg?style=flat-square)](https://david-dm.org/gcanti/tcomb-form)
+
 > "Simplicity is the ultimate sophistication" (Leonardo da Vinci)
 
 # Domain Driven Forms
