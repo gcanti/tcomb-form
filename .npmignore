@@ -2,6 +2,7 @@
 *.log
 CONTRIBUTING.md
 dev
+dist
 node_modules
 src
 test

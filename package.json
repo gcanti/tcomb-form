@@ -8,7 +8,8 @@
     "build-test": "node_modules/.bin/browserify -t [babelify --stage=0 --loose] test/index.js -o test/browser.js",
     "test": "npm run lint && npm run build-test && ./node_modules/karma/bin/karma start",
     "build": "node_modules/.bin/babel src -d lib --stage=0 --loose",
-    "dev": "watchify -t [babelify --stage=0 --loose] dev/dev.jsx -o dev/dev.js -v -x react"
+    "dev": "watchify -t [babelify --stage=0 --loose] dev/dev.jsx -o dev/dev.js -v -x react",
+    "dist": "browserify -t [babelify --stage=0 --loose] -o ./dist/tcomb-form.js -r .:tcomb-form -r react"
   },
   "repository": {
     "type": "git",
@@ -41,7 +42,7 @@
     "karma-chrome-launcher": "^0.1.8",
     "karma-firefox-launcher": "^0.1.4",
     "karma-tap": "^1.0.3",
-    "react-vdom": "^0.2.3",
+    "react-vdom": "^0.2.4",
     "tape": "^4.0.0"
   },
   "tags": [

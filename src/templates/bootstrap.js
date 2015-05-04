@@ -528,7 +528,7 @@ export function date(locals) {
   const horizontal = config.horizontal;
   const label = getLabel({
     label: locals.label,
-    id: locals.id,
+    id: locals.attrs.id,
     breakpoints: config.horizontal
   });
   const error = getError(locals);
