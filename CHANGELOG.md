@@ -10,6 +10,11 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.5.1
+
+- **Bug Fix**
+    + Remove wrong label id attribute in date template (bootstrap skin)
+
 ## v0.5
 
 - **New Feature**

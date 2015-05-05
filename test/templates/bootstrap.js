@@ -26,3 +26,18 @@ tape('textbox', function (tape) {
   });
 
 });
+
+tape('date', function (tape) {
+
+  var date = bootstrap.date;
+
+  tape.test('base execution', function (tape) {
+    tape.plan(1);
+
+    tape.deepEqual(
+      typeof date({value: [], order: ['M', 'D', 'YY'], path: []}),
+      'object',
+      'should execute');
+  });
+
+});

@@ -1045,18 +1045,13 @@ function getLabel(_ref) {
   var breakpoints = _ref.breakpoints;
   var htmlFor = _ref.htmlFor;
   var id = _ref.id;
+  var align = _ref.align;
 
   if (!label) {
     return;
   }
 
-  var align = null;
-  var className = null;
-
-  if (breakpoints) {
-    align = 'right';
-    className = breakpoints.getLabelClassName();
-  }
+  var className = breakpoints ? breakpoints.getLabelClassName() : null;
 
   return _bootstrap2['default'].getLabel({
     align: align,
@@ -1463,7 +1458,6 @@ function date(locals) {
   var horizontal = config.horizontal;
   var label = getLabel({
     label: locals.label,
-    id: locals.attrs.id,
     breakpoints: config.horizontal
   });
   var error = getError(locals);
@@ -30710,6 +30704,17 @@ tape('textbox', function (tape) {
     tape.plan(1);
 
     tape.deepEqual(textbox({ type: 'static', attrs: {}, path: [] }).attrs.className, { 'form-group': true, 'form-group-depth-0': true, 'has-error': undefined }, 'should handle form depth');
+  });
+});
+
+tape('date', function (tape) {
+
+  var date = bootstrap.date;
+
+  tape.test('base execution', function (tape) {
+    tape.plan(1);
+
+    tape.deepEqual(typeof date({ value: [], order: ['M', 'D', 'YY'], path: [] }), 'object', 'should execute');
   });
 });
 

@@ -86,16 +86,10 @@ const ListConfig = t.struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
 
-function getLabel({label, breakpoints, htmlFor, id}) {
+function getLabel({label, breakpoints, htmlFor, id, align}) {
   if (!label) { return; }
 
-  let align = null;
-  let className = null;
-
-  if (breakpoints) {
-    align = 'right';
-    className = breakpoints.getLabelClassName();
-  }
+  const className = breakpoints ? breakpoints.getLabelClassName() : null;
 
   return bootstrap.getLabel({
     align,
@@ -528,7 +522,6 @@ export function date(locals) {
   const horizontal = config.horizontal;
   const label = getLabel({
     label: locals.label,
-    id: locals.attrs.id,
     breakpoints: config.horizontal
   });
   const error = getError(locals);
