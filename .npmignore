@@ -1,5 +1,6 @@
 .*
 *.log
+karma.conf.js
 CONTRIBUTING.md
 dev
 dist

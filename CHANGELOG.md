@@ -10,6 +10,16 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.5.2
+
+- **Documentation**
+    + Add `attrs` option
+    + Add Date input
+    + Fix wrong imports in Customizations section
+- **Internal**
+    + Optimise stuct and list re-rendering on value change
+    + server-side rendering markup differences #124
+
 ## v0.5.1
 
 - **Bug Fix**

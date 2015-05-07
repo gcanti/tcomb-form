@@ -8,7 +8,7 @@ import {
   merge,
   getTypeInfo,
   getOptionsOfEnum,
-  uuid,
+  uid,
   move
 } from './util';
 import debug from 'debug';
@@ -131,12 +131,14 @@ export class Component extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (
+    const should = (
       nextState.value !== this.state.value ||
       nextState.hasError !== this.state.hasError ||
       nextProps.options !== this.props.options ||
       nextProps.type !== this.props.type
     );
+    //log('shouldComponentUpdate', this.constructor.name, should);
+    return should;
   }
 
   componentWillReceiveProps(props) {
@@ -200,7 +202,7 @@ export class Component extends React.Component {
 
   getId() {
     const attrs = this.props.options.attrs || noobj;
-    return attrs.id || uuid();
+    return attrs.id || uid();
   }
 
   getName() {
@@ -224,7 +226,7 @@ export class Component extends React.Component {
   }
 
   render() {
-    log('rendering %s', this.constructor.name);
+    //log('rendering %s', this.constructor.name);
     const locals = this.getLocals();
     // getTemplate is the only required implementation when extending Component
     assert(t.Func.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
@@ -445,11 +447,18 @@ export class Struct extends Component {
   }
 
   onChange(fieldName, fieldValue, path, kind) {
+    // optimise re-rendering
+    const value = t.mixin({}, this.state.value);
+    value[fieldName] = fieldValue;
+    this.state.value = value;
+    this.props.onChange(value, path, kind);
+    /*
     const value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.setState({value}, function () {
       this.props.onChange(value, path, kind);
     }.bind(this));
+    */
   }
 
   getTemplate() {
@@ -514,7 +523,7 @@ function toSameLength(value, keys) {
   if (value.length === keys.length) { return keys; }
   const ret = [];
   for (let i = 0, len = value.length; i < len; i++ ) {
-    ret[i] = keys[i] || uuid();
+    ret[i] = keys[i] || uid();
   }
   return ret;
 }
@@ -529,7 +538,7 @@ export class List extends Component {
 
   constructor(props) {
     super(props);
-    this.state.keys = this.state.value.map(uuid);
+    this.state.keys = this.state.value.map(uid);
   }
 
   componentWillReceiveProps(props) {
@@ -567,15 +576,23 @@ export class List extends Component {
   }
 
   onChange(value, keys, path, kind) {
-    this.setState({value, keys: toSameLength(value, keys)}, () => {
+    keys = toSameLength(value, keys);
+    if (!kind) {
+      // optimise re-rendering
+      this.state.value = value;
+      this.state.keys = keys;
       this.props.onChange(value, path, kind);
-    });
+    } else {
+      this.setState({value, keys}, () => {
+        this.props.onChange(value, path, kind);
+      });
+    }
   }
 
   addItem(evt) {
     evt.preventDefault();
     const value = this.state.value.concat(undefined);
-    const keys = this.state.keys.concat(uuid());
+    const keys = this.state.keys.concat(uid());
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   }
 

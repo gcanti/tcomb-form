@@ -560,20 +560,6 @@ You can set the type attribute with the `type` option. The following values are 
 - 'static' (outputs a static value)
 - all the HTML5 type values
 
-### Placeholder
-
-You can add a placeholder with the `placeholder` option:
-
-```js
-var options = {
-  fields: {
-    name: {
-      placeholder: 'Type your name here'
-    }
-  }
-};
-```
-
 ### Label
 
 You can override the default label with the `label` option:
@@ -589,58 +575,67 @@ var options = {
 };
 ```
 
-### Auto focus
+### Attributes and events
 
-You can add focus on this field (on load) with the `autoFocus` option:
+You can add attributes and events with the `attrs` option:
 
 ```js
 var options = {
   fields: {
     name: {
-      autoFocus: true
+      attrs: {
+        autoFocus: true,
+        placeholder: 'Type your name here',
+        onBlur: function () {
+          console.log('onBlur');
+        }
+      }
     }
   }
 };
 ```
+
 
 ### Styling
 
-You can a style class with the `className` option:
+You can a style class with the `className` or the `style` attribute:
 
 ```js
 var options = {
   fields: {
     name: {
-      className: 'myClassName'
+      attrs: {
+        className: 'myClassName'
+      }
     }
   }
 };
 ```
+
+`className` can be a string, an array of strings or a dictionary `string -> boolean`.
 
 ## Checkbox options
 
 The following options are similar to the textbox ones:
 
+- `attrs`
 - `label`
 - `help`
 - `disabled`
 - `hasError`
 - `error`
-- `autoFocus`
-- `className`
 - `template`
 
 ## Select options
 
 The following options are similar to the textbox ones:
 
+- `attrs`
 - `label`
 - `help`
 - `disabled`
 - `hasError`
 - `error`
-- `autoFocus`
-- `className`
 - `template`
 
 ### Null option
@@ -755,6 +750,17 @@ var options = {
 };
 ```
 
+## Date options
+
+The following options are similar to the textbox ones:
+
+- `label`
+- `help`
+- `disabled`
+- `hasError`
+- `error`
+- `template`
+
 # Customizations
 
 ## Templates
@@ -771,19 +777,15 @@ For example this is the recipe for a textbox:
 
 ```js
 {
-  autoFocus: maybe(Bool),   // should receive the focus on start
-  className: maybe(Str),    // should use this style class
+  attrs: maybe(Obj),        // should render attributes and events
   config: maybe(Obj),       // custom options, see Template addons section
   disabled: maybe(Bool),    // should be disabled
   error: maybe(Label),      // should show an error
   hasError: maybe(Bool),    // if true should show an error state
   help: maybe(Label),       // should show an help message
-  id: Str,                  // should use this as id attribute and as htmlFor label attribute
   label: maybe(Label),      // should show a label
-  name: Str,                // should use this as name attribute
   onChange: Func,           // should call this function with the changed value
   path: Arr,                // the path of this field with respect to the form root
-  placeholder: maybe(Str),  // should show a placeholder
   type: Str,                // should use this as type attribute
   value: Any                // the current value of the textbox
 }
@@ -966,7 +968,7 @@ tcomb-form uses the following default settings:
 ```js
 // load tcomb-form without templates and i18n
 var t = require('tcomb-form/lib');
-var bootstrap = require('tcomb-form/lib/skins/bootstrap');
+var bootstrap = require('tcomb-form/lib/templates/bootstrap');
 t.form.Form.templates = bootstrap;
 t.form.Form.i18n = {
   optional: ' (opzionale)',
@@ -983,7 +985,7 @@ t.form.Form.i18n = {
 // load tcomb-form without templates and i18n
 var t = require('tcomb-form/lib');
 var en = require('tcomb-form/lib/i18n/en');
-var semantic = require('tcomb-form/lib/skins/semantic');
+var semantic = require('tcomb-form/lib/templates/semantic');
 
 t.form.Form.i18n = en;
 t.form.Form.templates = semantic;
