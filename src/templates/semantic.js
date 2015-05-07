@@ -1,16 +1,6 @@
 'use strict';
 
-//==================
-// WORK IN PROGRESS:
-// contributions and PR are welcome
-//==================
-
-/*
-
-  - no fieldset tag for forms
-  - font: Lato from google font
-
-*/
+import t from 'tcomb-validation';
 
 function getAlert(type, children) {
   var className = {
@@ -37,23 +27,25 @@ function getLabel(opts) {
   };
 }
 
-// TODO: idiomatic?
 function getHelp(locals) {
   if (!locals.help) { return; }
   return {
     tag: 'div',
     attrs: {
+      className: 'ui pointing label visible',
       id: locals.id + '-tip'
     },
     children: locals.help
   };
 }
 
-// TODO: idiomatic?
 function getError(locals) {
   if (!locals.hasError || !locals.error) { return; }
   return {
     tag: 'div',
+    attrs: {
+      className: 'ui pointing label visible red'
+    },
     children: locals.error
   };
 }
@@ -160,33 +152,40 @@ export function textbox(locals) {
     return getHiddenTextbox(locals);
   }
 
-  var tag = locals.type === 'textarea' ? 'textarea' : 'input';
-  var control = {
-    tag: tag,
-    attrs: {
-      autoFocus: locals.autoFocus,
-      type: locals.type !== 'textarea' ? locals.type : null,
-      value: locals.value,
-      disabled: locals.disabled,
-      'aria-describedby': locals.help ? locals.id + '-tip' : null,
-      id: locals.label ? locals.id : null,
-      placeholder: locals.placeholder,
-      name: locals.name,
-      className: locals.className
-    },
-    events: {
-      change: function (evt) {
-        locals.onChange(evt.target.value);
-      }
-    }
+  const attrs = t.mixin({}, locals.attrs);
+
+  let tag = 'textarea';
+  if (locals.type !== 'textarea') {
+    tag = 'input';
+    attrs.type = locals.type;
+  }
+
+  attrs.className = t.mixin({}, attrs.className);
+  attrs.className['form-control'] = true;
+
+  attrs.disabled = locals.disabled;
+  if (locals.type !== 'file') {
+    attrs.value = locals.value;
+  }
+  attrs.onChange = locals.type === 'file' ?
+    evt => locals.onChange(evt.target.files[0]) :
+    evt => locals.onChange(evt.target.value);
+
+  if (locals.help) {
+    attrs['aria-describedby'] = attrs['aria-describedby'] || attrs.id + '-tip';
+  }
+
+  const control = {
+    tag,
+    attrs: attrs
   };
 
-  var label = getLabel({
+  const label = getLabel({
     label: locals.label,
-    htmlFor: locals.id
+    htmlFor: attrs.id
   });
-  var help = getHelp(locals);
-  var error = getError(locals);
+  const help = getHelp(locals);
+  const error = getError(locals);
 
   return {
     tag: 'div',
@@ -207,31 +206,27 @@ export function textbox(locals) {
 }
 
 export function checkbox(locals) {
-  var control = {
-    tag: 'input',
-    attrs: {
-      autoFocus: locals.autoFocus,
-      type: 'checkbox',
-      value: locals.value,
-      disabled: locals.disabled,
-      'aria-describedby': locals.help ? locals.id + '-tip' : null,
-      id: locals.label ? locals.id : null,
-      name: locals.name,
-      className: locals.className
-    },
-    events: {
-      change: function (evt) {
-        locals.onChange(evt.target.checked);
-      }
-    }
-  };
 
-  var label = getLabel({
+  const attrs = t.mixin({}, locals.attrs);
+  attrs.type = 'checkbox';
+  attrs.disabled = locals.disabled;
+  attrs.checked = locals.value;
+  attrs.onChange = evt => locals.onChange(evt.target.checked);
+
+  if (locals.help) {
+    attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
+  }
+
+  const control = {
+    tag: 'input',
+    attrs: attrs
+  };
+  const label = getLabel({
     label: locals.label,
-    htmlFor: locals.id
+    htmlFor: attrs.id
   });
-  var help = getHelp(locals);
-  var error = getError(locals);
+  const help = getHelp(locals);
+  const error = getError(locals);
 
   return {
     tag: 'div',
@@ -262,43 +257,45 @@ export function checkbox(locals) {
 }
 
 export function select(locals) {
-  var options = locals.options.map(function (x) {
-    return x.label ? getOptGroup(x) : getOption(x);
-  });
 
-  function onChange(evt) {
-    var value = locals.multiple ?
+  const attrs = t.mixin({}, locals.attrs);
+
+  attrs.className = t.mixin({}, attrs.className);
+  attrs.className['form-control'] = true;
+
+  attrs.multiple = locals.isMultiple;
+  attrs.disabled = locals.disabled;
+  attrs.value = locals.value;
+  attrs.onChange = evt => {
+    const value = locals.isMultiple ?
       Array.prototype.slice.call(evt.target.options)
-        .filter(function (option) { return option.selected; })
-        .map(function (option) { return option.value; }) :
+        .filter(option => option.selected)
+        .map(option => option.value) :
       evt.target.value;
     locals.onChange(value);
+  };
+
+  if (locals.help) {
+    attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
   }
 
-  var control = {
+  const options = locals.options.map(x => x.label ?
+    getOptGroup(x) :
+    getOption(x)
+  );
+
+  const control = {
     tag: 'select',
-    attrs: {
-      autoFocus: locals.autoFocus,
-      value: locals.value,
-      disabled: locals.disabled,
-      'aria-describedby': locals.help ? locals.id + '-tip' : null,
-      id: locals.label ? locals.id : null,
-      name: locals.name,
-      multiple: locals.multiple,
-      className: locals.className
-    },
-    events: {
-      change: onChange
-    },
+    attrs,
     children: options
   };
 
-  var label = getLabel({
+  const label = getLabel({
     label: locals.label,
-    htmlFor: locals.id
+    htmlFor: attrs.id
   });
-  var help = getHelp(locals);
-  var error = getError(locals);
+  const help = getHelp(locals);
+  const error = getError(locals);
 
   return {
     tag: 'div',
@@ -320,6 +317,9 @@ export function select(locals) {
 
 export function radio(locals) {
 
+  const id = locals.attrs.id;
+  const onChange = evt => locals.onChange(evt.target.value);
+
   var control = {
     tag: 'div',
     attrs: {
@@ -329,6 +329,17 @@ export function radio(locals) {
       }
     },
     children: locals.options.map(function (option, i) {
+
+      const attrs = t.mixin({}, locals.attrs);
+      attrs.type = 'radio';
+      attrs.checked = (option.value === locals.value);
+      attrs.disabled = locals.disabled;
+      attrs.value = option.value;
+      attrs.autoFocus = attrs.autoFocus && (i === 0);
+      attrs.id = `${id}_${i}`;
+      attrs['aria-describedby'] = attrs['aria-describedby'] || (locals.label ? id : null);
+      attrs.onChange = onChange;
+
       return {
         tag: 'div',
         attrs: {
@@ -348,29 +359,14 @@ export function radio(locals) {
           children: [
             {
               tag: 'input',
-              attrs: {
-                autoFocus: locals.autoFocus && (i === 0),
-                type: 'radio',
-                'aria-describedby': locals.label ? locals.id : null,
-                id: locals.id + '-' + option.value,
-                checked: (option.value === locals.value),
-                disabled: option.disabled || locals.disabled,
-                name: locals.name,
-                value: option.value,
-                className: locals.className
-              },
-              events: {
-                change: function (evt) {
-                  locals.onChange(evt.target.value);
-                }
-              }
+              attrs: attrs
             },
             {
               tag: 'label',
               children: option.text,
               events: {
                 click: function () {
-                  document.getElementById(locals.id + '-' + option.value).click();
+                  document.getElementById(attrs.id).click();
                 }
               }
             }
@@ -381,12 +377,12 @@ export function radio(locals) {
     })
   };
 
-  var label = getLabel({
+  const label = getLabel({
     label: locals.label,
-    htmlFor: locals.id
+    htmlFor: id
   });
-  var help = getHelp(locals);
-  var error = getError(locals);
+  const help = getHelp(locals);
+  const error = getError(locals);
 
   return {
     tag: 'div',
@@ -414,8 +410,21 @@ export function struct(locals) {
 
   var rows = [];
 
+  if (locals.label) {
+    rows.push({
+      tag: 'legend',
+      attrs: {
+        className: {
+          ui: true,
+          header: true
+        }
+      },
+      children: locals.label
+    });
+  }
+
   if (locals.help) {
-    rows.push(getAlert('warning', locals.help));
+    rows.push(getAlert('info', locals.help));
   }
 
   rows = rows.concat(locals.order.map(function (name) {
@@ -426,16 +435,19 @@ export function struct(locals) {
     rows.push(getAlert('error', locals.error));
   }
 
-  // FIXME missing legend handling
-  // FIXME missing disabled handling
   return {
-    tag: 'div', // TODO why fieldset is not used here?
+    tag: 'fieldset',
     attrs: {
+      disabled: locals.disabled,
+      style: {
+        border: 0,
+        margin: 0,
+        padding: 0
+      },
       className: {
         ui: true,
         form: true,
         segment: locals.path.length > 0,
-        warning: !!locals.help,
         error: locals.hasError
       }
     },
@@ -448,8 +460,21 @@ export function list(locals) {
 
   var rows = [];
 
+  if (locals.label) {
+    rows.push({
+      tag: 'legend',
+      attrs: {
+        className: {
+          ui: true,
+          header: true
+        }
+      },
+      children: locals.label
+    });
+  }
+
   if (locals.help) {
-    rows.push(getAlert('warning', locals.help));
+    rows.push(getAlert('info', locals.help));
   }
 
   rows = rows.concat(locals.items.map(function (item) {
@@ -505,16 +530,19 @@ export function list(locals) {
     rows.push(getButton(locals.add));
   }
 
-  // FIXME missing legend handling
-  // FIXME missing disabled handling
   return {
-    tag: 'div', // TODO why fieldset is not used here?
+    tag: 'fieldset',
     attrs: {
+      disabled: locals.disabled,
+      style: {
+        border: 0,
+        margin: 0,
+        padding: 0
+      },
       className: {
         ui: true,
         form: true,
         segment: locals.path.length > 0,
-        warning: !!locals.help,
         error: locals.hasError
       }
     },
