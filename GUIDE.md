@@ -906,6 +906,22 @@ var options = {
 <Form type={Textbox} options={options} />
 ```
 
+You can set a button after with the `config.buttonAfter` option:
+
+```js
+var options = {
+  fields: {
+    mytext: {
+      config: {
+        buttonAfter: <button className="btn btn-default">Click me</button>
+      }
+    }
+  }
+};
+
+<Form type={Textbox} options={options} />
+```
+
 ### Size
 
 You can set the textbox size with the `config.size` option:

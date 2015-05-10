@@ -177,7 +177,7 @@ var Component = (function (_React$Component) {
 
   Component.prototype.shouldComponentUpdate = function shouldComponentUpdate(nextProps, nextState) {
     var should = nextState.value !== this.state.value || nextState.hasError !== this.state.hasError || nextProps.options !== this.props.options || nextProps.type !== this.props.type;
-    log('shouldComponentUpdate', this.constructor.name, should);
+    //log('shouldComponentUpdate', this.constructor.name, should);
     return should;
   };
 
@@ -268,7 +268,7 @@ var Component = (function (_React$Component) {
   };
 
   Component.prototype.render = function render() {
-    log('rendering %s', this.constructor.name);
+    //log('rendering %s', this.constructor.name);
     var locals = this.getLocals();
     // getTemplate is the only required implementation when extending Component
     assert(_t2['default'].Func.is(this.getTemplate), '[' + SOURCE + '] missing getTemplate method of component ' + this.constructor.name);
@@ -1027,7 +1027,8 @@ var TextboxConfig = _t2['default'].struct({
   addonBefore: Any,
   addonAfter: Any,
   horizontal: maybe(Breakpoints),
-  size: maybe(Size)
+  size: maybe(Size),
+  buttonAfter: Any
 }, 'TextboxConfig');
 
 var CheckboxConfig = _t2['default'].struct({
@@ -1119,6 +1120,18 @@ function getHiddenTextbox(_ref4) {
   };
 }
 
+function getInputGroupButton(buttonAfter) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'input-group-btn': true
+      }
+    },
+    children: buttonAfter
+  };
+}
+
 function textbox(locals) {
 
   var config = new TextboxConfig(locals.config || noobj);
@@ -1161,8 +1174,8 @@ function textbox(locals) {
       tag: tag,
       attrs: attrs
     };
-    if (config.addonBefore || config.addonAfter) {
-      control = _bootstrap2['default'].getInputGroup([config.addonBefore ? _bootstrap2['default'].getAddon(config.addonBefore) : null, control, config.addonAfter ? _bootstrap2['default'].getAddon(config.addonAfter) : null]);
+    if (config.addonBefore || config.addonAfter || config.buttonAfter) {
+      control = _bootstrap2['default'].getInputGroup([config.addonBefore ? _bootstrap2['default'].getAddon(config.addonBefore) : null, control, config.addonAfter ? _bootstrap2['default'].getAddon(config.addonAfter) : null, config.buttonAfter ? getInputGroupButton(config.buttonAfter) : null]);
     }
   }
 

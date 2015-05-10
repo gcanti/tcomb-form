@@ -56,7 +56,8 @@ const TextboxConfig = t.struct({
   addonBefore: Any,
   addonAfter: Any,
   horizontal: maybe(Breakpoints),
-  size: maybe(Size)
+  size: maybe(Size),
+  buttonAfter: Any
 }, 'TextboxConfig');
 
 const CheckboxConfig = t.struct({
@@ -127,6 +128,18 @@ function getHiddenTextbox({value, name}) {
   };
 }
 
+function getInputGroupButton(buttonAfter) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: {
+        'input-group-btn': true
+      }
+    },
+    children: buttonAfter
+  };
+}
+
 export function textbox(locals) {
 
   const config = new TextboxConfig(locals.config || noobj);
@@ -167,11 +180,12 @@ export function textbox(locals) {
       tag,
       attrs: attrs
     };
-    if (config.addonBefore || config.addonAfter) {
+    if (config.addonBefore || config.addonAfter || config.buttonAfter) {
       control = bootstrap.getInputGroup([
         config.addonBefore ? bootstrap.getAddon(config.addonBefore) : null,
         control,
-        config.addonAfter ? bootstrap.getAddon(config.addonAfter) : null
+        config.addonAfter ? bootstrap.getAddon(config.addonAfter) : null,
+        config.buttonAfter ? getInputGroupButton(config.buttonAfter) : null
       ]);
     }
   }
