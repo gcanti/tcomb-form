@@ -893,10 +893,16 @@ var List = (function (_Component7) {
 
 exports.List = List;
 
-var Form = (function () {
+var Form = (function (_React$Component2) {
   function Form() {
     _classCallCheck(this, Form);
+
+    if (_React$Component2 != null) {
+      _React$Component2.apply(this, arguments);
+    }
   }
+
+  _inherits(Form, _React$Component2);
 
   Form.prototype.validate = function validate() {
     return this.refs.input.validate();
@@ -944,7 +950,7 @@ var Form = (function () {
   };
 
   return Form;
-})();
+})(_React2['default'].Component);
 
 exports.Form = Form;
 
