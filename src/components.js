@@ -689,7 +689,7 @@ export class List extends Component {
 
 }
 
-export class Form {
+export class Form extends React.Component {
 
   validate() {
     return this.refs.input.validate();
