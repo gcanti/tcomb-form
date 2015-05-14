@@ -40,7 +40,7 @@ var _t2 = _interopRequireDefault(_t);
 
 var _compile = require('uvdom/react');
 
-var _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move = require('./util');
+var _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator = require('./util');
 
 var _debug = require('debug');
 
@@ -149,7 +149,7 @@ var decorators = {
 
   templates: function templates(Component) {
     Component.prototype.getTemplates = function getTemplates() {
-      return _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.merge(this.props.ctx.templates, this.props.options.templates);
+      return _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.merge(this.props.ctx.templates, this.props.options.templates);
     };
   }
 
@@ -162,7 +162,7 @@ var Component = (function (_React$Component) {
     _classCallCheck(this, Component);
 
     _React$Component.call(this, props);
-    this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.getTypeInfo(props.type);
+    this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getTypeInfo(props.type);
     this.state = {
       hasError: false,
       value: this.getTransformer().format(props.value)
@@ -183,7 +183,7 @@ var Component = (function (_React$Component) {
 
   Component.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.getTypeInfo(props.type);
+      this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getTypeInfo(props.type);
     }
     this.setState({ value: this.getTransformer().format(props.value) });
   };
@@ -239,12 +239,12 @@ var Component = (function (_React$Component) {
   };
 
   Component.prototype.getConfig = function getConfig() {
-    return _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.merge(this.props.ctx.config, this.props.options.config);
+    return _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.merge(this.props.ctx.config, this.props.options.config);
   };
 
   Component.prototype.getId = function getId() {
     var attrs = this.props.options.attrs || noobj;
-    return attrs.id || _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.uid();
+    return attrs.id || (this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : null);
   };
 
   Component.prototype.getName = function getName() {
@@ -432,12 +432,12 @@ var Select = (function (_Component3) {
   };
 
   _Select.prototype.getEnum = function getEnum() {
-    return this.isMultiple() ? _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
+    return this.isMultiple() ? _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
   };
 
   _Select.prototype.getOptions = function getOptions() {
     var options = this.props.options;
-    var items = options.options ? options.options.slice() : _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.getOptionsOfEnum(this.getEnum());
+    var items = options.options ? options.options.slice() : _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getOptionsOfEnum(this.getEnum());
     if (options.order) {
       items.sort(getComparator(options.order));
     }
@@ -504,7 +504,7 @@ var Radio = (function (_Component4) {
 
   _Radio.prototype.getOptions = function getOptions() {
     var options = this.props.options;
-    var items = options.options ? options.options.slice() : _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.getOptionsOfEnum(this.typeInfo.innerType);
+    var items = options.options ? options.options.slice() : _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getOptionsOfEnum(this.typeInfo.innerType);
     if (options.order) {
       items.sort(getComparator(options.order));
     }
@@ -661,10 +661,11 @@ var Struct = (function (_Component6) {
           value: value[prop],
           onChange: this.onChange.bind(this, prop),
           ctx: {
+            uid: ctx.uid,
             auto: auto,
             config: config,
             name: ctx.name ? '' + ctx.name + '[' + prop + ']' : prop,
-            label: _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.humanize(prop),
+            label: _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.humanize(prop),
             i18n: i18n,
             templates: templates,
             path: ctx.path.concat(prop)
@@ -702,13 +703,13 @@ var Struct = (function (_Component6) {
 
 exports.Struct = Struct;
 
-function toSameLength(value, keys) {
+function toSameLength(value, keys, uid) {
   if (value.length === keys.length) {
     return keys;
   }
   var ret = [];
   for (var i = 0, len = value.length; i < len; i++) {
-    ret[i] = keys[i] || _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.uid();
+    ret[i] = keys[i] || uid.next();
   }
   return ret;
 }
@@ -718,7 +719,9 @@ var List = (function (_Component7) {
     _classCallCheck(this, _List);
 
     _Component7.call(this, props);
-    this.state.keys = this.state.value.map(_humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.uid);
+    this.state.keys = this.state.value.map(function () {
+      return props.ctx.uid.next();
+    });
   }
 
   _inherits(List, _Component7);
@@ -727,12 +730,12 @@ var List = (function (_Component7) {
 
   _List.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.getTypeInfo(props.type);
+      this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getTypeInfo(props.type);
     }
     var value = this.getTransformer().format(props.value);
     this.setState({
       value: value,
-      keys: toSameLength(value, this.state.keys)
+      keys: toSameLength(value, this.state.keys, props.ctx.uid)
     });
   };
 
@@ -762,7 +765,7 @@ var List = (function (_Component7) {
   _List.prototype.onChange = function onChange(value, keys, path, kind) {
     var _this7 = this;
 
-    keys = toSameLength(value, keys);
+    keys = toSameLength(value, keys, this.props.ctx.uid);
     if (!kind) {
       // optimise re-rendering
       this.state.value = value;
@@ -778,7 +781,7 @@ var List = (function (_Component7) {
   _List.prototype.addItem = function addItem(evt) {
     evt.preventDefault();
     var value = this.state.value.concat(undefined);
-    var keys = this.state.keys.concat(_humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.uid());
+    var keys = this.state.keys.concat(this.props.ctx.uid.next());
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   };
 
@@ -800,14 +803,14 @@ var List = (function (_Component7) {
   _List.prototype.moveUpItem = function moveUpItem(i, evt) {
     evt.preventDefault();
     if (i > 0) {
-      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.move(this.state.value.slice(), i, i - 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.move(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
+      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.move(this.state.value.slice(), i, i - 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.move(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
     }
   };
 
   _List.prototype.moveDownItem = function moveDownItem(i, evt) {
     evt.preventDefault();
     if (i < this.state.value.length - 1) {
-      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.move(this.state.value.slice(), i, i + 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$uid$move.move(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
+      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.move(this.state.value.slice(), i, i + 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.move(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
     }
   };
 
@@ -848,6 +851,7 @@ var List = (function (_Component7) {
           value: value,
           onChange: _this8.onItemChange.bind(_this8, i),
           ctx: {
+            uid: ctx.uid,
             auto: auto,
             config: config,
             i18n: i18n,
@@ -941,6 +945,7 @@ var Form = (function (_React$Component2) {
       value: this.props.value,
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
+        uid: new _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : ''),
         auto: 'labels',
         templates: templates,
         i18n: i18n,
@@ -1632,13 +1637,18 @@ function list(locals) {
 },{"tcomb-validation":200,"uvdom-bootstrap":202}],3:[function(require,module,exports){
 'use strict';
 
+var _classCallCheck = function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError('Cannot call a class as a function');
+  }
+};
+
 exports.__esModule = true;
 exports.getOptionsOfEnum = getOptionsOfEnum;
 exports.getTypeInfo = getTypeInfo;
 exports.humanize = humanize;
 exports.merge = merge;
 exports.move = move;
-exports.uid = uid;
 
 var _mixin = require('tcomb-validation');
 
@@ -1707,20 +1717,22 @@ function move(arr, fromIndex, toIndex) {
   return arr;
 }
 
-/*
-export function uuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    var r = Math.random() * 16|0, v = (c === 'x') ? r : (r&0x3|0x8);
-    return v.toString(16);
-  });
-}
-*/
+var UIDGenerator = (function () {
+  function UIDGenerator(seed) {
+    _classCallCheck(this, UIDGenerator);
 
-var counter = 0;
+    this.seed = seed;
+    this.counter = 0;
+  }
 
-function uid() {
-  return '__ID' + counter++;
-}
+  UIDGenerator.prototype.next = function next() {
+    return this.seed + this.counter++;
+  };
+
+  return UIDGenerator;
+})();
+
+exports.UIDGenerator = UIDGenerator;
 
 },{"tcomb-validation":200}],4:[function(require,module,exports){
 
@@ -29657,19 +29669,13 @@ tape('Component', function (tape) {
   });
 
   tape.test('getId()', function (tape) {
-    tape.plan(2);
-
-    tape.strictEqual(t.Str.is(new Component({
-      type: t.Str,
-      options: {},
-      ctx: ctx
-    }).getId()), true, 'should return a random uuid');
+    tape.plan(1);
 
     tape.strictEqual(new Component({
       type: t.Str,
       options: { attrs: { id: 'myid' } },
       ctx: ctx
-    }).getId(), 'myid', 'should return a random uuid');
+    }).getId(), 'myid', 'should return the provided id');
   });
 });
 

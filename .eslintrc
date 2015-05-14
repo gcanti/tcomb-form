@@ -13,6 +13,7 @@
     "jsx": true
   },
   "rules": {
+    "no-underscore-dangle": 0,
     "no-undef": 0,
     "no-unused-vars": 0,
     "no-shadow": 0,

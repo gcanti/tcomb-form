@@ -53,16 +53,7 @@ tape('Component', (tape) => {
   });
 
   tape.test('getId()', (tape) => {
-    tape.plan(2);
-
-    tape.strictEqual(
-      t.Str.is(new Component({
-        type: t.Str,
-        options: {},
-        ctx: ctx
-      }).getId()),
-      true,
-      'should return a random uuid');
+    tape.plan(1);
 
     tape.strictEqual(
       new Component({
@@ -71,7 +62,7 @@ tape('Component', (tape) => {
         ctx: ctx
       }).getId(),
       'myid',
-      'should return a random uuid');
+      'should return the provided id');
 
   });
 
