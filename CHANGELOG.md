@@ -10,6 +10,15 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.5.3
+
+- **New Feature**
+    + Add buttonBefore support (bootstrap skin) #126
+- **Bug Fix**
+    + fix server-side rendering markup differences #124
+- **Internal**
+    + tcomb-validation: upgrade to latest version
+
 ## v0.5.2
 
 - **New Feature**

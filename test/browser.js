@@ -1039,6 +1039,7 @@ var TextboxConfig = _t2['default'].struct({
   addonAfter: Any,
   horizontal: maybe(Breakpoints),
   size: maybe(Size),
+  buttonBefore: Any,
   buttonAfter: Any
 }, 'TextboxConfig');
 
@@ -1131,7 +1132,7 @@ function getHiddenTextbox(_ref4) {
   };
 }
 
-function getInputGroupButton(buttonAfter) {
+function getInputGroupButton(button) {
   return {
     tag: 'div',
     attrs: {
@@ -1139,7 +1140,7 @@ function getInputGroupButton(buttonAfter) {
         'input-group-btn': true
       }
     },
-    children: buttonAfter
+    children: button
   };
 }
 
@@ -1185,8 +1186,8 @@ function textbox(locals) {
       tag: tag,
       attrs: attrs
     };
-    if (config.addonBefore || config.addonAfter || config.buttonAfter) {
-      control = _bootstrap2['default'].getInputGroup([config.addonBefore ? _bootstrap2['default'].getAddon(config.addonBefore) : null, control, config.addonAfter ? _bootstrap2['default'].getAddon(config.addonAfter) : null, config.buttonAfter ? getInputGroupButton(config.buttonAfter) : null]);
+    if (config.addonBefore || config.addonAfter || config.buttonBefore || config.buttonAfter) {
+      control = _bootstrap2['default'].getInputGroup([config.buttonBefore ? getInputGroupButton(config.buttonBefore) : null, config.addonBefore ? _bootstrap2['default'].getAddon(config.addonBefore) : null, control, config.addonAfter ? _bootstrap2['default'].getAddon(config.addonAfter) : null, config.buttonAfter ? getInputGroupButton(config.buttonAfter) : null]);
     }
   }
 
@@ -28084,9 +28085,9 @@ function through (write, end, opts) {
     // every value should be of type `codomain`
     for (var k in x) {
       if (x.hasOwnProperty(k)) {
-        path = path.concat(k);
-        var key = recurse(k, type.meta.domain, path);
-        var item = recurse(x[k], type.meta.codomain, path);
+        var subpath = path.concat(k);
+        var key = recurse(k, type.meta.domain, subpath);
+        var item = recurse(x[k], type.meta.codomain, subpath);
         ret.value[k] = item.value;
         ret.errors = ret.errors.concat(key.errors, item.errors);
       }

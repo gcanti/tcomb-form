@@ -906,7 +906,7 @@ var options = {
 <Form type={Textbox} options={options} />
 ```
 
-You can set a button after with the `config.buttonAfter` option:
+You can set a button after (before) with the `config.buttonAfter` (`config.buttonBefore`) option:
 
 ```js
 var options = {

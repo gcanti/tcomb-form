@@ -23,7 +23,7 @@
   "homepage": "https://github.com/gcanti/tcomb-form",
   "peerDependencies": {
     "react": "^0.13.0",
-    "tcomb-validation": "^1.0.3"
+    "tcomb-validation": "^1.0.4"
   },
   "dependencies": {
     "classnames": "^1.2.0",

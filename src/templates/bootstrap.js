@@ -57,6 +57,7 @@ const TextboxConfig = t.struct({
   addonAfter: Any,
   horizontal: maybe(Breakpoints),
   size: maybe(Size),
+  buttonBefore: Any,
   buttonAfter: Any
 }, 'TextboxConfig');
 
@@ -128,7 +129,7 @@ function getHiddenTextbox({value, name}) {
   };
 }
 
-function getInputGroupButton(buttonAfter) {
+function getInputGroupButton(button) {
   return {
     tag: 'div',
     attrs: {
@@ -136,7 +137,7 @@ function getInputGroupButton(buttonAfter) {
         'input-group-btn': true
       }
     },
-    children: buttonAfter
+    children: button
   };
 }
 
@@ -180,8 +181,9 @@ export function textbox(locals) {
       tag,
       attrs: attrs
     };
-    if (config.addonBefore || config.addonAfter || config.buttonAfter) {
+    if (config.addonBefore || config.addonAfter || config.buttonBefore || config.buttonAfter) {
       control = bootstrap.getInputGroup([
+        config.buttonBefore ? getInputGroupButton(config.buttonBefore) : null,
         config.addonBefore ? bootstrap.getAddon(config.addonBefore) : null,
         control,
         config.addonAfter ? bootstrap.getAddon(config.addonAfter) : null,
