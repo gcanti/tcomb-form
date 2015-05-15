@@ -244,7 +244,7 @@ var Component = (function (_React$Component) {
 
   Component.prototype.getId = function getId() {
     var attrs = this.props.options.attrs || noobj;
-    return attrs.id || (this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : null);
+    return attrs.id || this.props.ctx.uid.next();
   };
 
   Component.prototype.getName = function getName() {
@@ -30686,8 +30686,10 @@ require('./Radio');
 var t = require('tcomb');
 var React = require('react');
 var bootstrap = require('../../lib/templates/bootstrap');
+var UIDGenerator = require('../../lib/util').UIDGenerator;
 
 var ctx = {
+  uid: new UIDGenerator('root'),
   auto: 'labels',
   config: {},
   name: 'defaultName',
@@ -30727,7 +30729,7 @@ module.exports = {
   getRenderComponent: getRenderComponent
 };
 
-},{"../../lib/templates/bootstrap":2,"react":187,"tcomb":201}],231:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"../../lib/util":3,"react":187,"tcomb":201}],231:[function(require,module,exports){
 'use strict';
 
 require('./components');

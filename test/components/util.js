@@ -3,8 +3,10 @@
 var t = require('tcomb');
 var React = require('react');
 var bootstrap = require('../../lib/templates/bootstrap');
+var UIDGenerator = require('../../lib/util').UIDGenerator;
 
 var ctx = {
+  uid: new UIDGenerator('root'),
   auto: 'labels',
   config: {},
   name: 'defaultName',

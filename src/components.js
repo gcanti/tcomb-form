@@ -202,7 +202,7 @@ export class Component extends React.Component {
 
   getId() {
     const attrs = this.props.options.attrs || noobj;
-    return attrs.id || (this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : null);
+    return attrs.id || this.props.ctx.uid.next();
   }
 
   getName() {
