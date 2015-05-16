@@ -969,7 +969,12 @@ var options = {
   }
 };
 
-<Form type={Person} options={options} />
+// remember to add the proper bootstrap style class
+// to a wrapping div (or form) tag in order
+// to get a nice layout
+<div className="form-horizontal"> 
+  <Form type={Person} options={options} />
+</div>
 ```
 
 # General configuration
