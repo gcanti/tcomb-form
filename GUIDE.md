@@ -745,8 +745,16 @@ You can turn the select in a multiple select passing a `list` as type and using 
 ```js
 var Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
 
+var Select = t.struct({
+  car: t.list(Car)
+});
+
 var options = {
-  factory: t.form.select
+  fields: {
+    car: {
+      factory: t.form.Select
+    }
+  }
 };
 ```
 
