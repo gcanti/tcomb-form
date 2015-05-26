@@ -10,6 +10,11 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.5.4
+
+- **Bug Fix**
+    + Unable to disable t.Dat field #137
+
 ## v0.5.3
 
 - **New Feature**

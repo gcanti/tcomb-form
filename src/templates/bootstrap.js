@@ -472,6 +472,7 @@ export function date(locals) {
       children: {
         tag: 'select',
         attrs: {
+          disabled: locals.disabled,
           className: {
             'form-control': true
           },
@@ -490,6 +491,7 @@ export function date(locals) {
       children: {
         tag: 'select',
         attrs: {
+          disabled: locals.disabled,
           className: {
             'form-control': true
           },
@@ -508,6 +510,7 @@ export function date(locals) {
       children: {
         tag: 'input',
         attrs: {
+          disabled: locals.disabled,
           type: 'text',
           size: 5,
           className: {
