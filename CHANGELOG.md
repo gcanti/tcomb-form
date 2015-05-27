@@ -14,6 +14,8 @@
 
 - **Bug Fix**
     + Unable to disable t.Dat field #137
+- **New Feature**
+    + t.Dat basic template (semantic skin)
 
 ## v0.5.3
 
