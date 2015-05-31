@@ -1,7 +1,7 @@
 'use strict';
 
 var tape = require('tape');
-var t = require('tcomb');
+var t = require('tcomb-validation');
 var bootstrap = require('../../lib/templates/bootstrap');
 var Component = require('../../lib/components').Component;
 var React = require('react');
@@ -9,9 +9,9 @@ var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
 
-tape('Component', (tape) => {
+tape('Component', function (tape) {
 
-  tape.test('typeInfo', (tape) => {
+  tape.test('typeInfo', function (tape) {
     tape.plan(3);
 
     var component = new Component({
@@ -39,7 +39,7 @@ tape('Component', (tape) => {
     });
 
     component = new Component({
-      type: t.subtype(t.Str, () => true),
+      type: t.subtype(t.Str, function() { return true; }),
       options: {},
       ctx: ctx
     });
@@ -52,7 +52,7 @@ tape('Component', (tape) => {
 
   });
 
-  tape.test('getId()', (tape) => {
+  tape.test('getId()', function (tape) {
     tape.plan(1);
 
     tape.strictEqual(

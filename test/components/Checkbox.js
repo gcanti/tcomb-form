@@ -1,7 +1,7 @@
 'use strict';
 
 var tape = require('tape');
-var t = require('tcomb');
+var t = require('tcomb-validation');
 var bootstrap = require('../../lib/templates/bootstrap');
 var Checkbox = require('../../lib/components').Checkbox;
 var React = require('react');
@@ -58,7 +58,7 @@ tape('Checkbox', function (tape) {
         options: {label: React.DOM.i(null, 'JSX label')},
         ctx: ctx
       }).getLocals().label),
-      {tag: 'i', attrs: {}, children: 'JSX label'},
+      {tag: 'i', children: 'JSX label'},
       'should handle label option as JSX');
 
   });
@@ -81,7 +81,7 @@ tape('Checkbox', function (tape) {
         options: {help: React.DOM.i(null, 'JSX help')},
         ctx: ctx
       }).getLocals().help),
-      {tag: 'i', attrs: {}, children: 'JSX help'},
+      {tag: 'i', children: 'JSX help'},
       'should handle help option as JSX');
 
   });

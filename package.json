@@ -1,6 +1,6 @@
 {
   "name": "tcomb-form",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
@@ -21,11 +21,9 @@
     "url": "https://github.com/gcanti/tcomb-form/issues"
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
-  "peerDependencies": {
-    "react": "^0.13.0",
-    "tcomb-validation": "^1.0.4"
-  },
   "dependencies": {
+    "react": "^0.13.0",
+    "tcomb-validation": "^2.0.0-beta",
     "classnames": "^1.2.0",
     "debug": "^2.1.1",
     "uvdom": "^0.1.2",
@@ -42,7 +40,7 @@
     "karma-chrome-launcher": "^0.1.8",
     "karma-firefox-launcher": "^0.1.4",
     "karma-tap": "^1.0.3",
-    "react-vdom": "^0.2.4",
+    "react-vdom": "^0.4.0",
     "tape": "^4.0.0"
   },
   "tags": [

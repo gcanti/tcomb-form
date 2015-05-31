@@ -713,7 +713,7 @@ export class Form extends React.Component {
     const { type, options = noobj } = this.props;
     const { i18n, templates } = Form;
 
-    assert(t.Type.is(type), `[${SOURCE}] missing required prop type`);
+    assert(t.isType(type), `[${SOURCE}] missing required prop type`);
     assert(t.Obj.is(options), `[${SOURCE}] prop options must be an object`);
     assert(t.Obj.is(templates), `[${SOURCE}] missing templates config`);
     assert(t.Obj.is(i18n), `[${SOURCE}] missing i18n config`);

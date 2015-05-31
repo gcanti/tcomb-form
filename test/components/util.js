@@ -1,6 +1,6 @@
 'use strict';
 
-var t = require('tcomb');
+var t = require('tcomb-validation');
 var React = require('react');
 var bootstrap = require('../../lib/templates/bootstrap');
 var UIDGenerator = require('../../lib/util').UIDGenerator;
