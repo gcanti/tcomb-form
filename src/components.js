@@ -40,10 +40,6 @@ export function getComponent(type, options) {
       return List;
     case 'enums' :
       return Select;
-    case 'dict' :
-      return Dict;
-    case 'tuple' :
-      return Tuple;
     case 'maybe' :
     case 'subtype' :
       return getComponent(type.meta.type, options);
