@@ -10,6 +10,16 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.6.0
+
+- **Breaking Change**
+    + upgrade to tcomb-validation v2.0.0-beta
+
+## v0.5.5
+
+- **Internal**
+    + Relax Bootstrap columns constraint #149
+
 ## v0.5.4
 
 - **Bug Fix**
