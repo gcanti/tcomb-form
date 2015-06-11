@@ -357,6 +357,69 @@ In order to customize the look and feel, use an `options` prop:
 <Form type={Model} options={options} />
 ```
 
+> **Warning**. tcomb-form uses shouldComponentUpdate aggressively. In order to ensure that tcomb-form detect any change to `type`, `options` or `value` props you have to change references:
+
+Example: disable a field based on another field's value
+
+```js
+var Type = t.struct({
+  disable: t.Bool, // if true, name field will be disabled
+  name: t.Str
+});
+
+var options = {
+  fields: {
+    name: {}
+  }
+};
+
+var App = React.createClass({
+
+  getInitialState() {
+    return {
+      options: options,
+      value: null
+    };
+  },
+
+  onSubmit(evt) {
+    evt.preventDefault();
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+    }
+  },
+
+  onChange(value) {
+    // tcomb immutability helpers
+    // https://github.com/gcanti/tcomb/blob/master/GUIDE.md#updating-immutable-instances
+    var options = t.update(this.state.options, {
+      fields: {
+        name: {
+          disabled: {'$set': value.disable}
+        }
+      }
+    });
+    this.setState({options: options, value: value});
+  },
+
+  render() {
+    return (
+      <form onSubmit={this.onSubmit}>
+        <Form ref="form"
+          type={Type}
+          options={this.state.options}
+          value={this.state.value}
+          onChange={this.onChange}
+        />
+        <button className="btn btn-primary">Save</button>
+      </form>
+    );
+  }
+
+});
+```
+
 ## Struct options
 
 ### Automatically generated placeholders
@@ -381,7 +444,7 @@ var options = {
 
 ### Fields order
 
-You can sort the fields with the order option:
+You can sort the fields with the `order` option:
 
 ```js
 var options = {
