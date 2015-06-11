@@ -11,9 +11,7 @@ const Positive = t.subtype(t.Num, function (n) {
   return n % 1 === 0 && n >= 0;
 }, 'Positive');
 
-const Cols = t.subtype(t.tuple([Positive, Positive]), function (cols) {
-  return cols[0] + cols[1] === 12;
-}, 'Cols');
+const Cols = t.tuple([Positive, Positive], 'Cols');
 
 const Breakpoints = t.struct({
   xs: maybe(Cols),

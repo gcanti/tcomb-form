@@ -1,15 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var _interopRequireDefault = function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { 'default': obj };
-};
-
-var _classCallCheck = function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError('Cannot call a class as a function');
-  }
-};
+exports.__esModule = true;
 
 var _createClass = (function () {
   function defineProperties(target, props) {
@@ -21,26 +13,35 @@ var _createClass = (function () {
   };
 })();
 
-var _inherits = function _inherits(subClass, superClass) {
+exports.getComponent = getComponent;
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { 'default': obj };
+}
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError('Cannot call a class as a function');
+  }
+}
+
+function _inherits(subClass, superClass) {
   if (typeof superClass !== 'function' && superClass !== null) {
     throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass);
   }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) subClass.__proto__ = superClass;
-};
+}
 
-exports.__esModule = true;
-exports.getComponent = getComponent;
+var _react = require('react');
 
-var _React = require('react');
+var _react2 = _interopRequireDefault(_react);
 
-var _React2 = _interopRequireDefault(_React);
+var _tcombValidation = require('tcomb-validation');
 
-var _t = require('tcomb-validation');
+var _tcombValidation2 = _interopRequireDefault(_tcombValidation);
 
-var _t2 = _interopRequireDefault(_t);
+var _uvdomReact = require('uvdom/react');
 
-var _compile = require('uvdom/react');
-
-var _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator = require('./util');
+var _util = require('./util');
 
 var _debug = require('debug');
 
@@ -50,12 +51,10 @@ var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-'use strict';
-
-var Nil = _t2['default'].Nil;
-var assert = _t2['default'].assert;
+var Nil = _tcombValidation2['default'].Nil;
+var assert = _tcombValidation2['default'].assert;
 var SOURCE = 'tcomb-form';
-var log = _debug2['default'](SOURCE);
+var log = (0, _debug2['default'])(SOURCE);
 var noobj = Object.freeze({});
 var noarr = Object.freeze([]);
 var noop = function noop() {};
@@ -64,18 +63,18 @@ function getComponent(_x, _x2) {
   var _again = true;
 
   _function: while (_again) {
-    name = undefined;
-    _again = false;
     var type = _x,
         options = _x2;
+    name = undefined;
+    _again = false;
 
     if (options.factory) {
       return options.factory;
     }
-    var name = _t2['default'].getTypeName(type);
+    var name = _tcombValidation2['default'].getTypeName(type);
     switch (type.meta.kind) {
       case 'irreducible':
-        return type === _t2['default'].Bool ? Checkbox : type === _t2['default'].Dat ? Datetime : Textbox;
+        return type === _tcombValidation2['default'].Bool ? Checkbox : type === _tcombValidation2['default'].Dat ? Datetime : Textbox;
       case 'struct':
         return Struct;
       case 'list':
@@ -94,7 +93,7 @@ function getComponent(_x, _x2) {
         continue _function;
 
       default:
-        _t2['default'].fail('[' + SOURCE + '] unsupported type ' + name);
+        _tcombValidation2['default'].fail('[' + SOURCE + '] unsupported type ' + name);
     }
   }
 }
@@ -124,13 +123,13 @@ var decorators = {
 
   attrs: function attrs(Component) {
     Component.prototype.getAttrs = function getAttrs() {
-      var attrs = _t2['default'].mixin({}, this.props.options.attrs);
+      var attrs = _tcombValidation2['default'].mixin({}, this.props.options.attrs);
       attrs.id = this.getId();
       attrs.name = this.getName();
       if (attrs.className) {
         var _attrs$className;
 
-        attrs.className = (_attrs$className = {}, _attrs$className[_classnames2['default'](attrs.className)] = true, _attrs$className);
+        attrs.className = (_attrs$className = {}, _attrs$className[(0, _classnames2['default'])(attrs.className)] = true, _attrs$className);
       }
       return attrs;
     };
@@ -149,7 +148,7 @@ var decorators = {
 
   templates: function templates(Component) {
     Component.prototype.getTemplates = function getTemplates() {
-      return _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.merge(this.props.ctx.templates, this.props.options.templates);
+      return (0, _util.merge)(this.props.ctx.templates, this.props.options.templates);
     };
   }
 
@@ -162,7 +161,7 @@ var Component = (function (_React$Component) {
     _classCallCheck(this, Component);
 
     _React$Component.call(this, props);
-    this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getTypeInfo(props.type);
+    this.typeInfo = (0, _util.getTypeInfo)(props.type);
     this.state = {
       hasError: false,
       value: this.getTransformer().format(props.value)
@@ -183,22 +182,22 @@ var Component = (function (_React$Component) {
 
   Component.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getTypeInfo(props.type);
+      this.typeInfo = (0, _util.getTypeInfo)(props.type);
     }
     this.setState({ value: this.getTransformer().format(props.value) });
   };
 
   Component.prototype.onChange = function onChange(value) {
-    var _this6 = this;
+    var _this = this;
 
     this.setState({ value: value }, function () {
-      _this6.props.onChange(value, _this6.props.ctx.path);
+      _this.props.onChange(value, _this.props.ctx.path);
     });
   };
 
   Component.prototype.validate = function validate() {
     var value = this.getTransformer().parse(this.state.value);
-    var result = _t2['default'].validate(value, this.props.type, this.props.ctx.path);
+    var result = _tcombValidation2['default'].validate(value, this.props.type, this.props.ctx.path);
     this.setState({ hasError: !result.isValid() });
     return result;
   };
@@ -231,7 +230,7 @@ var Component = (function (_React$Component) {
 
   Component.prototype.getError = function getError() {
     var error = this.props.options.error;
-    return _t2['default'].Func.is(error) ? error(this.state.value) : error;
+    return _tcombValidation2['default'].Func.is(error) ? error(this.state.value) : error;
   };
 
   Component.prototype.hasError = function hasError() {
@@ -239,7 +238,7 @@ var Component = (function (_React$Component) {
   };
 
   Component.prototype.getConfig = function getConfig() {
-    return _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.merge(this.props.ctx.config, this.props.options.config);
+    return (0, _util.merge)(this.props.ctx.config, this.props.options.config);
   };
 
   Component.prototype.getId = function getId() {
@@ -271,9 +270,9 @@ var Component = (function (_React$Component) {
     //log('rendering %s', this.constructor.name);
     var locals = this.getLocals();
     // getTemplate is the only required implementation when extending Component
-    assert(_t2['default'].Func.is(this.getTemplate), '[' + SOURCE + '] missing getTemplate method of component ' + this.constructor.name);
+    assert(_tcombValidation2['default'].Func.is(this.getTemplate), '[' + SOURCE + '] missing getTemplate method of component ' + this.constructor.name);
     var template = this.getTemplate();
-    return _compile.compile(template(locals));
+    return (0, _uvdomReact.compile)(template(locals));
   };
 
   _createClass(Component, null, [{
@@ -290,12 +289,12 @@ var Component = (function (_React$Component) {
   }]);
 
   return Component;
-})(_React2['default'].Component);
+})(_react2['default'].Component);
 
 exports.Component = Component;
 
 function toNull(value) {
-  return _t2['default'].Str.is(value) && value.trim() === '' || Nil.is(value) ? null : value;
+  return _tcombValidation2['default'].Str.is(value) && value.trim() === '' || Nil.is(value) ? null : value;
 }
 
 function parseNumber(value) {
@@ -319,7 +318,7 @@ var Textbox = (function (_Component) {
 
   _Textbox.prototype.getTransformer = function getTransformer() {
     var options = this.props.options;
-    return options.transformer ? options.transformer : this.typeInfo.innerType === _t2['default'].Num ? Textbox.numberTransformer : Textbox.transformer;
+    return options.transformer ? options.transformer : this.typeInfo.innerType === _tcombValidation2['default'].Num ? Textbox.numberTransformer : Textbox.transformer;
   };
 
   _Textbox.prototype.getLocals = function getLocals() {
@@ -432,12 +431,12 @@ var Select = (function (_Component3) {
   };
 
   _Select.prototype.getEnum = function getEnum() {
-    return this.isMultiple() ? _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
+    return this.isMultiple() ? (0, _util.getTypeInfo)(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
   };
 
   _Select.prototype.getOptions = function getOptions() {
     var options = this.props.options;
-    var items = options.options ? options.options.slice() : _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getOptionsOfEnum(this.getEnum());
+    var items = options.options ? options.options.slice() : (0, _util.getOptionsOfEnum)(this.getEnum());
     if (options.order) {
       items.sort(getComparator(options.order));
     }
@@ -504,7 +503,7 @@ var Radio = (function (_Component4) {
 
   _Radio.prototype.getOptions = function getOptions() {
     var options = this.props.options;
-    var items = options.options ? options.options.slice() : _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getOptionsOfEnum(this.typeInfo.innerType);
+    var items = options.options ? options.options.slice() : (0, _util.getOptionsOfEnum)(this.typeInfo.innerType);
     if (options.order) {
       items.sort(getComparator(options.order));
     }
@@ -552,11 +551,11 @@ var Datetime = (function (_Component5) {
     key: 'transformer',
     value: {
       format: function format(value) {
-        return _t2['default'].Arr.is(value) ? value : _t2['default'].Dat.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) : [null, null, null];
+        return _tcombValidation2['default'].Arr.is(value) ? value : _tcombValidation2['default'].Dat.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) : [null, null, null];
       },
       parse: function parse(value) {
         value = value.map(parseNumber);
-        return value.every(_t2['default'].Num.is) ? new Date(value[0], value[1], value[2]) : value.every(Nil.is) ? null : value;
+        return value.every(_tcombValidation2['default'].Num.is) ? new Date(value[0], value[1], value[2]) : value.every(Nil.is) ? null : value;
       }
     },
     enumerable: true
@@ -599,19 +598,19 @@ var Struct = (function (_Component6) {
       var InnerType = this.typeInfo.innerType;
       value = new InnerType(value);
       if (this.typeInfo.isSubtype && errors.length === 0) {
-        result = _t2['default'].validate(value, this.props.type, this.props.ctx.path);
+        result = _tcombValidation2['default'].validate(value, this.props.type, this.props.ctx.path);
         hasError = !result.isValid();
         errors = errors.concat(result.errors);
       }
     }
 
     this.setState({ hasError: hasError });
-    return new _t2['default'].ValidationResult({ errors: errors, value: value });
+    return new _tcombValidation2['default'].ValidationResult({ errors: errors, value: value });
   };
 
   _Struct.prototype.onChange = function onChange(fieldName, fieldValue, path, kind) {
     // optimise re-rendering
-    var value = _t2['default'].mixin({}, this.state.value);
+    var value = _tcombValidation2['default'].mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.state.value = value;
     this.props.onChange(value, path, kind);
@@ -653,7 +652,7 @@ var Struct = (function (_Component6) {
       if (props.hasOwnProperty(prop)) {
         var propType = props[prop];
         var propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj;
-        inputs[prop] = _React2['default'].createElement(getComponent(propType, propOptions), {
+        inputs[prop] = _react2['default'].createElement(getComponent(propType, propOptions), {
           key: prop,
           ref: prop,
           type: propType,
@@ -665,7 +664,7 @@ var Struct = (function (_Component6) {
             auto: auto,
             config: config,
             name: ctx.name ? '' + ctx.name + '[' + prop + ']' : prop,
-            label: _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.humanize(prop),
+            label: (0, _util.humanize)(prop),
             i18n: i18n,
             templates: templates,
             path: ctx.path.concat(prop)
@@ -730,7 +729,7 @@ var List = (function (_Component7) {
 
   _List.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.getTypeInfo(props.type);
+      this.typeInfo = (0, _util.getTypeInfo)(props.type);
     }
     var value = this.getTransformer().format(props.value);
     this.setState({
@@ -753,17 +752,17 @@ var List = (function (_Component7) {
 
     // handle subtype
     if (this.typeInfo.isSubtype && errors.length === 0) {
-      result = _t2['default'].validate(value, this.props.type, this.props.ctx.path);
+      result = _tcombValidation2['default'].validate(value, this.props.type, this.props.ctx.path);
       hasError = !result.isValid();
       errors = errors.concat(result.errors);
     }
 
     this.setState({ hasError: hasError });
-    return new _t2['default'].ValidationResult({ errors: errors, value: value });
+    return new _tcombValidation2['default'].ValidationResult({ errors: errors, value: value });
   };
 
   _List.prototype.onChange = function onChange(value, keys, path, kind) {
-    var _this7 = this;
+    var _this2 = this;
 
     keys = toSameLength(value, keys, this.props.ctx.uid);
     if (!kind) {
@@ -773,7 +772,7 @@ var List = (function (_Component7) {
       this.props.onChange(value, path, kind);
     } else {
       this.setState({ value: value, keys: keys }, function () {
-        _this7.props.onChange(value, path, kind);
+        _this2.props.onChange(value, path, kind);
       });
     }
   };
@@ -803,14 +802,14 @@ var List = (function (_Component7) {
   _List.prototype.moveUpItem = function moveUpItem(i, evt) {
     evt.preventDefault();
     if (i > 0) {
-      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.move(this.state.value.slice(), i, i - 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.move(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
+      this.onChange((0, _util.move)(this.state.value.slice(), i, i - 1), (0, _util.move)(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
     }
   };
 
   _List.prototype.moveDownItem = function moveDownItem(i, evt) {
     evt.preventDefault();
     if (i < this.state.value.length - 1) {
-      this.onChange(_humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.move(this.state.value.slice(), i, i + 1), _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.move(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
+      this.onChange((0, _util.move)(this.state.value.slice(), i, i + 1), (0, _util.move)(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
     }
   };
 
@@ -819,7 +818,7 @@ var List = (function (_Component7) {
   };
 
   _List.prototype.getItems = function getItems() {
-    var _this8 = this;
+    var _this3 = this;
 
     var _props2 = this.props;
     var options = _props2.options;
@@ -835,21 +834,21 @@ var List = (function (_Component7) {
     return value.map(function (value, i) {
       var buttons = [];
       if (!options.disableRemove) {
-        buttons.push({ label: i18n.remove, click: _this8.removeItem.bind(_this8, i) });
+        buttons.push({ label: i18n.remove, click: _this3.removeItem.bind(_this3, i) });
       }
       if (!options.disableOrder) {
-        buttons.push({ label: i18n.up, click: _this8.moveUpItem.bind(_this8, i) });
+        buttons.push({ label: i18n.up, click: _this3.moveUpItem.bind(_this3, i) });
       }
       if (!options.disableOrder) {
-        buttons.push({ label: i18n.down, click: _this8.moveDownItem.bind(_this8, i) });
+        buttons.push({ label: i18n.down, click: _this3.moveDownItem.bind(_this3, i) });
       }
       return {
-        input: _React2['default'].createElement(Component, {
+        input: _react2['default'].createElement(Component, {
           ref: i,
           type: type,
           options: options.item || noobj,
           value: value,
-          onChange: _this8.onItemChange.bind(_this8, i),
+          onChange: _this3.onItemChange.bind(_this3, i),
           ctx: {
             uid: ctx.uid,
             auto: auto,
@@ -860,7 +859,7 @@ var List = (function (_Component7) {
             path: ctx.path.concat(i)
           }
         }),
-        key: _this8.state.keys[i],
+        key: _this3.state.keys[i],
         buttons: buttons
       };
     });
@@ -918,7 +917,7 @@ var Form = (function (_React$Component2) {
   };
 
   Form.prototype.getComponent = function getComponent(path) {
-    path = _t2['default'].Str.is(path) ? path.split('.') : path;
+    path = _tcombValidation2['default'].Str.is(path) ? path.split('.') : path;
     return path.reduce(function (input, name) {
       return input.refs[name];
     }, this.refs.input);
@@ -932,20 +931,20 @@ var Form = (function (_React$Component2) {
     var i18n = Form.i18n;
     var templates = Form.templates;
 
-    assert(_t2['default'].Type.is(type), '[' + SOURCE + '] missing required prop type');
-    assert(_t2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
-    assert(_t2['default'].Obj.is(templates), '[' + SOURCE + '] missing templates config');
-    assert(_t2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
+    assert(_tcombValidation2['default'].Type.is(type), '[' + SOURCE + '] missing required prop type');
+    assert(_tcombValidation2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
+    assert(_tcombValidation2['default'].Obj.is(templates), '[' + SOURCE + '] missing templates config');
+    assert(_tcombValidation2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
 
     var Component = getComponent(type, options);
-    return _React2['default'].createElement(Component, {
+    return _react2['default'].createElement(Component, {
       ref: 'input',
       type: type,
       options: options,
       value: this.props.value,
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
-        uid: new _humanize$merge$getTypeInfo$getOptionsOfEnum$move$UIDGenerator.UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : ''),
+        uid: new _util.UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : ''),
         auto: 'labels',
         templates: templates,
         i18n: i18n,
@@ -955,16 +954,12 @@ var Form = (function (_React$Component2) {
   };
 
   return Form;
-})(_React2['default'].Component);
+})(_react2['default'].Component);
 
 exports.Form = Form;
 
 },{"./util":3,"classnames":28,"debug":29,"react":187,"tcomb-validation":200,"uvdom/react":223}],2:[function(require,module,exports){
 'use strict';
-
-var _interopRequireDefault = function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { 'default': obj };
-};
 
 exports.__esModule = true;
 exports.textbox = textbox;
@@ -975,29 +970,29 @@ exports.date = date;
 exports.struct = struct;
 exports.list = list;
 
-var _t = require('tcomb-validation');
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { 'default': obj };
+}
 
-var _t2 = _interopRequireDefault(_t);
+var _tcombValidation = require('tcomb-validation');
 
-var _bootstrap = require('uvdom-bootstrap');
+var _tcombValidation2 = _interopRequireDefault(_tcombValidation);
 
-var _bootstrap2 = _interopRequireDefault(_bootstrap);
+var _uvdomBootstrap = require('uvdom-bootstrap');
 
-'use strict';
+var _uvdomBootstrap2 = _interopRequireDefault(_uvdomBootstrap);
 
-var Any = _t2['default'].Any;
-var maybe = _t2['default'].maybe;
+var Any = _tcombValidation2['default'].Any;
+var maybe = _tcombValidation2['default'].maybe;
 var noobj = {};
 
-var Positive = _t2['default'].subtype(_t2['default'].Num, function (n) {
+var Positive = _tcombValidation2['default'].subtype(_tcombValidation2['default'].Num, function (n) {
   return n % 1 === 0 && n >= 0;
 }, 'Positive');
 
-var Cols = _t2['default'].subtype(_t2['default'].tuple([Positive, Positive]), function (cols) {
-  return cols[0] + cols[1] === 12;
-}, 'Cols');
+var Cols = _tcombValidation2['default'].tuple([Positive, Positive], 'Cols');
 
-var Breakpoints = _t2['default'].struct({
+var Breakpoints = _tcombValidation2['default'].struct({
   xs: maybe(Cols),
   sm: maybe(Cols),
   md: maybe(Cols),
@@ -1007,7 +1002,7 @@ var Breakpoints = _t2['default'].struct({
 Breakpoints.prototype.getBreakpoints = function (index) {
   var breakpoints = {};
   for (var size in this) {
-    if (this.hasOwnProperty(size) && !_t2['default'].Nil.is(this[size])) {
+    if (this.hasOwnProperty(size) && !_tcombValidation2['default'].Nil.is(this[size])) {
       breakpoints[size] = this[size][index];
     }
   }
@@ -1015,15 +1010,15 @@ Breakpoints.prototype.getBreakpoints = function (index) {
 };
 
 Breakpoints.prototype.getLabelClassName = function () {
-  return _bootstrap2['default'].getBreakpoints(this.getBreakpoints(0));
+  return _uvdomBootstrap2['default'].getBreakpoints(this.getBreakpoints(0));
 };
 
 Breakpoints.prototype.getInputClassName = function () {
-  return _bootstrap2['default'].getBreakpoints(this.getBreakpoints(1));
+  return _uvdomBootstrap2['default'].getBreakpoints(this.getBreakpoints(1));
 };
 
 Breakpoints.prototype.getOffsetClassName = function () {
-  return _t2['default'].mixin(_bootstrap2['default'].getOffsets(this.getBreakpoints(1)), _bootstrap2['default'].getBreakpoints(this.getBreakpoints(1)));
+  return _tcombValidation2['default'].mixin(_uvdomBootstrap2['default'].getOffsets(this.getBreakpoints(1)), _uvdomBootstrap2['default'].getBreakpoints(this.getBreakpoints(1)));
 };
 
 Breakpoints.prototype.getFieldsetClassName = function () {
@@ -1032,9 +1027,9 @@ Breakpoints.prototype.getFieldsetClassName = function () {
   };
 };
 
-var Size = _t2['default'].enums.of('xs sm md lg', 'Size');
+var Size = _tcombValidation2['default'].enums.of('xs sm md lg', 'Size');
 
-var TextboxConfig = _t2['default'].struct({
+var TextboxConfig = _tcombValidation2['default'].struct({
   addonBefore: Any,
   addonAfter: Any,
   horizontal: maybe(Breakpoints),
@@ -1043,30 +1038,30 @@ var TextboxConfig = _t2['default'].struct({
   buttonAfter: Any
 }, 'TextboxConfig');
 
-var CheckboxConfig = _t2['default'].struct({
+var CheckboxConfig = _tcombValidation2['default'].struct({
   horizontal: maybe(Breakpoints)
 }, 'CheckboxConfig');
 
-var SelectConfig = _t2['default'].struct({
+var SelectConfig = _tcombValidation2['default'].struct({
   addonBefore: Any,
   addonAfter: Any,
   horizontal: maybe(Breakpoints),
   size: maybe(Size)
 }, 'SelectConfig');
 
-var RadioConfig = _t2['default'].struct({
+var RadioConfig = _tcombValidation2['default'].struct({
   horizontal: maybe(Breakpoints)
 }, 'RadioConfig');
 
-var DateConfig = _t2['default'].struct({
+var DateConfig = _tcombValidation2['default'].struct({
   horizontal: maybe(Breakpoints)
 }, 'DateConfig');
 
-var StructConfig = _t2['default'].struct({
+var StructConfig = _tcombValidation2['default'].struct({
   horizontal: maybe(Breakpoints)
 }, 'StructConfig');
 
-var ListConfig = _t2['default'].struct({
+var ListConfig = _tcombValidation2['default'].struct({
   horizontal: maybe(Breakpoints)
 }, 'ListConfig');
 
@@ -1083,7 +1078,7 @@ function getLabel(_ref) {
 
   var className = breakpoints ? breakpoints.getLabelClassName() : null;
 
-  return _bootstrap2['default'].getLabel({
+  return _uvdomBootstrap2['default'].getLabel({
     align: align,
     className: className,
     htmlFor: htmlFor,
@@ -1099,7 +1094,7 @@ function getHelp(_ref2) {
   if (!help) {
     return;
   }
-  return _bootstrap2['default'].getHelpBlock({
+  return _uvdomBootstrap2['default'].getHelpBlock({
     help: help,
     id: attrs.id + '-tip'
   });
@@ -1112,7 +1107,7 @@ function getError(_ref3) {
   if (!hasError || !error) {
     return;
   }
-  return _bootstrap2['default'].getErrorBlock({
+  return _uvdomBootstrap2['default'].getErrorBlock({
     error: error,
     hasError: hasError
   });
@@ -1152,11 +1147,11 @@ function textbox(locals) {
     return getHiddenTextbox(locals);
   }
 
-  var attrs = _t2['default'].mixin({}, locals.attrs);
+  var attrs = _tcombValidation2['default'].mixin({}, locals.attrs);
   var control = undefined;
 
   if (locals.type === 'static') {
-    control = _bootstrap2['default'].getStatic(locals.value);
+    control = _uvdomBootstrap2['default'].getStatic(locals.value);
   } else {
 
     var tag = 'textarea';
@@ -1165,7 +1160,7 @@ function textbox(locals) {
       attrs.type = locals.type;
     }
 
-    attrs.className = _t2['default'].mixin({}, attrs.className);
+    attrs.className = _tcombValidation2['default'].mixin({}, attrs.className);
     attrs.className['form-control'] = true;
 
     attrs.disabled = locals.disabled;
@@ -1187,7 +1182,7 @@ function textbox(locals) {
       attrs: attrs
     };
     if (config.addonBefore || config.addonAfter || config.buttonBefore || config.buttonAfter) {
-      control = _bootstrap2['default'].getInputGroup([config.buttonBefore ? getInputGroupButton(config.buttonBefore) : null, config.addonBefore ? _bootstrap2['default'].getAddon(config.addonBefore) : null, control, config.addonAfter ? _bootstrap2['default'].getAddon(config.addonAfter) : null, config.buttonAfter ? getInputGroupButton(config.buttonAfter) : null]);
+      control = _uvdomBootstrap2['default'].getInputGroup([config.buttonBefore ? getInputGroupButton(config.buttonBefore) : null, config.addonBefore ? _uvdomBootstrap2['default'].getAddon(config.addonBefore) : null, control, config.addonAfter ? _uvdomBootstrap2['default'].getAddon(config.addonAfter) : null, config.buttonAfter ? getInputGroupButton(config.buttonAfter) : null]);
     }
   }
 
@@ -1212,7 +1207,7 @@ function textbox(locals) {
     }];
   }
 
-  return _bootstrap2['default'].getFormGroup({
+  return _uvdomBootstrap2['default'].getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children: children
@@ -1223,7 +1218,7 @@ function checkbox(locals) {
 
   var config = new CheckboxConfig(locals.config || noobj);
 
-  var attrs = _t2['default'].mixin({}, locals.attrs);
+  var attrs = _tcombValidation2['default'].mixin({}, locals.attrs);
   attrs.type = 'checkbox';
   attrs.disabled = locals.disabled;
   attrs.checked = locals.value;
@@ -1235,7 +1230,7 @@ function checkbox(locals) {
     attrs['aria-describedby'] = attrs['aria-describedby'] || attrs.id + '-tip';
   }
 
-  var control = _bootstrap2['default'].getCheckbox(attrs, locals.label);
+  var control = _uvdomBootstrap2['default'].getCheckbox(attrs, locals.label);
 
   var error = getError(locals);
   var help = getHelp(locals);
@@ -1251,7 +1246,7 @@ function checkbox(locals) {
     };
   }
 
-  return _bootstrap2['default'].getFormGroup({
+  return _uvdomBootstrap2['default'].getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children: children
@@ -1262,9 +1257,9 @@ function select(locals) {
 
   var config = new SelectConfig(locals.config || noobj);
 
-  var attrs = _t2['default'].mixin({}, locals.attrs);
+  var attrs = _tcombValidation2['default'].mixin({}, locals.attrs);
 
-  attrs.className = _t2['default'].mixin({}, attrs.className);
+  attrs.className = _tcombValidation2['default'].mixin({}, attrs.className);
   attrs.className['form-control'] = true;
 
   attrs.multiple = locals.isMultiple;
@@ -1284,7 +1279,7 @@ function select(locals) {
   }
 
   var options = locals.options.map(function (x) {
-    return x.label ? _bootstrap2['default'].getOptGroup(x) : _bootstrap2['default'].getOption(x);
+    return x.label ? _uvdomBootstrap2['default'].getOptGroup(x) : _uvdomBootstrap2['default'].getOption(x);
   });
 
   var control = {
@@ -1313,7 +1308,7 @@ function select(locals) {
     }];
   }
 
-  return _bootstrap2['default'].getFormGroup({
+  return _uvdomBootstrap2['default'].getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children: children
@@ -1331,7 +1326,7 @@ function radio(locals) {
 
   var controls = locals.options.map(function (option, i) {
 
-    var attrs = _t2['default'].mixin({}, locals.attrs);
+    var attrs = _tcombValidation2['default'].mixin({}, locals.attrs);
     attrs.type = 'radio';
     attrs.checked = option.value === locals.value;
     attrs.disabled = locals.disabled;
@@ -1341,7 +1336,7 @@ function radio(locals) {
     attrs['aria-describedby'] = attrs['aria-describedby'] || (locals.label ? id : null);
     attrs.onChange = onChange;
 
-    return _bootstrap2['default'].getRadio(attrs, option.text, option.value);
+    return _uvdomBootstrap2['default'].getRadio(attrs, option.text, option.value);
   });
 
   var horizontal = config.horizontal;
@@ -1364,7 +1359,7 @@ function radio(locals) {
     }];
   }
 
-  return _bootstrap2['default'].getFormGroup({
+  return _uvdomBootstrap2['default'].getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children: children
@@ -1519,7 +1514,7 @@ function date(locals) {
     }];
   }
 
-  return _bootstrap2['default'].getFormGroup({
+  return _uvdomBootstrap2['default'].getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children: children
@@ -1532,13 +1527,13 @@ function struct(locals) {
   var children = [];
 
   if (locals.help) {
-    children.push(_bootstrap2['default'].getAlert({
+    children.push(_uvdomBootstrap2['default'].getAlert({
       children: locals.help
     }));
   }
 
   if (locals.error && locals.hasError) {
-    children.push(_bootstrap2['default'].getAlert({
+    children.push(_uvdomBootstrap2['default'].getAlert({
       type: 'danger',
       children: locals.error
     }));
@@ -1557,9 +1552,9 @@ function struct(locals) {
     className[locals.className] = true;
   }
 
-  return _bootstrap2['default'].getFormGroup({
+  return _uvdomBootstrap2['default'].getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
-    children: _bootstrap2['default'].getFieldset({
+    children: _uvdomBootstrap2['default'].getFieldset({
       className: className,
       disabled: locals.disabled,
       legend: locals.label,
@@ -1574,13 +1569,13 @@ function list(locals) {
   var children = [];
 
   if (locals.help) {
-    children.push(_bootstrap2['default'].getAlert({
+    children.push(_uvdomBootstrap2['default'].getAlert({
       children: locals.help
     }));
   }
 
   if (locals.error && locals.hasError) {
-    children.push(_bootstrap2['default'].getAlert({
+    children.push(_uvdomBootstrap2['default'].getAlert({
       type: 'danger',
       children: locals.error
     }));
@@ -1588,23 +1583,23 @@ function list(locals) {
 
   children = children.concat(locals.items.map(function (item) {
     if (item.buttons.length === 0) {
-      return _bootstrap2['default'].getRow({
+      return _uvdomBootstrap2['default'].getRow({
         key: item.key,
-        children: [_bootstrap2['default'].getCol({
+        children: [_uvdomBootstrap2['default'].getCol({
           breakpoints: { xs: 12 },
           children: item.input
         })]
       });
     }
-    return _bootstrap2['default'].getRow({
+    return _uvdomBootstrap2['default'].getRow({
       key: item.key,
-      children: [_bootstrap2['default'].getCol({
+      children: [_uvdomBootstrap2['default'].getCol({
         breakpoints: { sm: 8, xs: 6 },
         children: item.input
-      }), _bootstrap2['default'].getCol({
+      }), _uvdomBootstrap2['default'].getCol({
         breakpoints: { sm: 4, xs: 6 },
-        children: _bootstrap2['default'].getButtonGroup(item.buttons.map(function (button, i) {
-          return _bootstrap2['default'].getButton({
+        children: _uvdomBootstrap2['default'].getButtonGroup(item.buttons.map(function (button, i) {
+          return _uvdomBootstrap2['default'].getButton({
             click: button.click,
             key: i,
             label: button.label
@@ -1615,7 +1610,7 @@ function list(locals) {
   }));
 
   if (locals.add) {
-    children.push(_bootstrap2['default'].getButton(locals.add));
+    children.push(_uvdomBootstrap2['default'].getButton(locals.add));
   }
 
   var fieldsetClassName = null;
@@ -1627,9 +1622,9 @@ function list(locals) {
     fieldsetClassName[locals.className] = true;
   }
 
-  return _bootstrap2['default'].getFormGroup({
+  return _uvdomBootstrap2['default'].getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
-    children: _bootstrap2['default'].getFieldset({
+    children: _uvdomBootstrap2['default'].getFieldset({
       className: fieldsetClassName,
       disabled: locals.disabled,
       legend: locals.label,
@@ -1641,12 +1636,6 @@ function list(locals) {
 },{"tcomb-validation":200,"uvdom-bootstrap":202}],3:[function(require,module,exports){
 'use strict';
 
-var _classCallCheck = function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError('Cannot call a class as a function');
-  }
-};
-
 exports.__esModule = true;
 exports.getOptionsOfEnum = getOptionsOfEnum;
 exports.getTypeInfo = getTypeInfo;
@@ -1654,9 +1643,13 @@ exports.humanize = humanize;
 exports.merge = merge;
 exports.move = move;
 
-var _mixin = require('tcomb-validation');
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError('Cannot call a class as a function');
+  }
+}
 
-'use strict';
+var _tcombValidation = require('tcomb-validation');
 
 function getOptionsOfEnum(type) {
   var enums = type.meta.map;
@@ -1712,7 +1705,7 @@ function humanize(s) {
 }
 
 function merge(a, b) {
-  return _mixin.mixin(_mixin.mixin({}, a), b, true);
+  return (0, _tcombValidation.mixin)((0, _tcombValidation.mixin)({}, a), b, true);
 }
 
 function move(arr, fromIndex, toIndex) {
@@ -3285,7 +3278,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
 },{}],8:[function(require,module,exports){
-exports.read = function(buffer, offset, isLE, mLen, nBytes) {
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
       eMax = (1 << eLen) - 1,
@@ -3293,32 +3286,32 @@ exports.read = function(buffer, offset, isLE, mLen, nBytes) {
       nBits = -7,
       i = isLE ? (nBytes - 1) : 0,
       d = isLE ? -1 : 1,
-      s = buffer[offset + i];
+      s = buffer[offset + i]
 
-  i += d;
+  i += d
 
-  e = s & ((1 << (-nBits)) - 1);
-  s >>= (-nBits);
-  nBits += eLen;
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8);
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
-  m = e & ((1 << (-nBits)) - 1);
-  e >>= (-nBits);
-  nBits += mLen;
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8);
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
-    e = 1 - eBias;
+    e = 1 - eBias
   } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity);
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
   } else {
-    m = m + Math.pow(2, mLen);
-    e = e - eBias;
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
   }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
-};
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
 
-exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   var e, m, c,
       eLen = nBytes * 8 - mLen - 1,
       eMax = (1 << eLen) - 1,
@@ -3326,49 +3319,49 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
       rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
       i = isLE ? 0 : (nBytes - 1),
       d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
-  value = Math.abs(value);
+  value = Math.abs(value)
 
   if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0;
-    e = eMax;
+    m = isNaN(value) ? 1 : 0
+    e = eMax
   } else {
-    e = Math.floor(Math.log(value) / Math.LN2);
+    e = Math.floor(Math.log(value) / Math.LN2)
     if (value * (c = Math.pow(2, -e)) < 1) {
-      e--;
-      c *= 2;
+      e--
+      c *= 2
     }
     if (e + eBias >= 1) {
-      value += rt / c;
+      value += rt / c
     } else {
-      value += rt * Math.pow(2, 1 - eBias);
+      value += rt * Math.pow(2, 1 - eBias)
     }
     if (value * c >= 2) {
-      e++;
-      c /= 2;
+      e++
+      c /= 2
     }
 
     if (e + eBias >= eMax) {
-      m = 0;
-      e = eMax;
+      m = 0
+      e = eMax
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen);
-      e = e + eBias;
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
     } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
-      e = 0;
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
     }
   }
 
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8);
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
 
-  e = (e << mLen) | m;
-  eLen += mLen;
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8);
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
 
-  buffer[offset + i - d] |= s * 128;
-};
+  buffer[offset + i - d] |= s * 128
+}
 
 },{}],9:[function(require,module,exports){
 
@@ -6356,17 +6349,10 @@ exports.formatArgs = formatArgs;
 exports.save = save;
 exports.load = load;
 exports.useColors = useColors;
-
-/**
- * Use chrome.storage.local if we are in an app
- */
-
-var storage;
-
-if (typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined')
-  storage = chrome.storage.local;
-else
-  storage = localstorage();
+exports.storage = 'undefined' != typeof chrome
+               && 'undefined' != typeof chrome.storage
+                  ? chrome.storage.local
+                  : localstorage();
 
 /**
  * Colors.
@@ -6474,9 +6460,9 @@ function log() {
 function save(namespaces) {
   try {
     if (null == namespaces) {
-      storage.removeItem('debug');
+      exports.storage.removeItem('debug');
     } else {
-      storage.debug = namespaces;
+      exports.storage.debug = namespaces;
     }
   } catch(e) {}
 }
@@ -6491,7 +6477,7 @@ function save(namespaces) {
 function load() {
   var r;
   try {
-    r = storage.debug;
+    r = exports.storage.debug;
   } catch(e) {}
   return r;
 }
@@ -6759,6 +6745,8 @@ module.exports = function(val, options){
  */
 
 function parse(str) {
+  str = '' + str;
+  if (str.length > 10000) return;
   var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
   if (!match) return;
   var n = parseFloat(match[1]);
@@ -11229,7 +11217,7 @@ if ("production" !== process.env.NODE_ENV) {
       if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ === 'undefined') {
         console.debug(
           'Download the React DevTools for a better development experience: ' +
-          'http://fb.me/react-devtools'
+          'https://fb.me/react-devtools'
         );
       }
     }
@@ -11256,7 +11244,7 @@ if ("production" !== process.env.NODE_ENV) {
       if (!expectedFeatures[i]) {
         console.error(
           'One or more ES5 shim/shams expected by React are not available: ' +
-          'http://fb.me/react-warning-polyfills'
+          'https://fb.me/react-warning-polyfills'
         );
         break;
       }
@@ -11264,7 +11252,7 @@ if ("production" !== process.env.NODE_ENV) {
   }
 }
 
-React.version = '0.13.2';
+React.version = '0.13.3';
 
 module.exports = React;
 
@@ -12771,7 +12759,7 @@ var ReactClass = {
         ("production" !== process.env.NODE_ENV ? warning(
           this instanceof Constructor,
           'Something is calling a React component directly. Use a factory or ' +
-          'JSX instead. See: http://fb.me/react-legacyfactory'
+          'JSX instead. See: https://fb.me/react-legacyfactory'
         ) : null);
       }
 
@@ -12983,20 +12971,38 @@ ReactComponent.prototype.forceUpdate = function(callback) {
  */
 if ("production" !== process.env.NODE_ENV) {
   var deprecatedAPIs = {
-    getDOMNode: 'getDOMNode',
-    isMounted: 'isMounted',
-    replaceProps: 'replaceProps',
-    replaceState: 'replaceState',
-    setProps: 'setProps'
+    getDOMNode: [
+      'getDOMNode',
+      'Use React.findDOMNode(component) instead.'
+    ],
+    isMounted: [
+      'isMounted',
+      'Instead, make sure to clean up subscriptions and pending requests in ' +
+      'componentWillUnmount to prevent memory leaks.'
+    ],
+    replaceProps: [
+      'replaceProps',
+      'Instead, call React.render again at the top level.'
+    ],
+    replaceState: [
+      'replaceState',
+      'Refactor your code to use setState instead (see ' +
+      'https://github.com/facebook/react/issues/3236).'
+    ],
+    setProps: [
+      'setProps',
+      'Instead, call React.render again at the top level.'
+    ]
   };
-  var defineDeprecationWarning = function(methodName, displayName) {
+  var defineDeprecationWarning = function(methodName, info) {
     try {
       Object.defineProperty(ReactComponent.prototype, methodName, {
         get: function() {
           ("production" !== process.env.NODE_ENV ? warning(
             false,
-            '%s(...) is deprecated in plain JavaScript React classes.',
-            displayName
+            '%s(...) is deprecated in plain JavaScript React classes. %s',
+            info[0],
+            info[1]
           ) : null);
           return undefined;
         }
@@ -13345,6 +13351,7 @@ var ReactCompositeComponentMixin = {
     this._pendingReplaceState = false;
     this._pendingForceUpdate = false;
 
+    var childContext;
     var renderedElement;
 
     var previouslyMounting = ReactLifeCycle.currentlyMountingInstance;
@@ -13359,7 +13366,8 @@ var ReactCompositeComponentMixin = {
         }
       }
 
-      renderedElement = this._renderValidatedComponent();
+      childContext = this._getValidatedChildContext(context);
+      renderedElement = this._renderValidatedComponent(childContext);
     } finally {
       ReactLifeCycle.currentlyMountingInstance = previouslyMounting;
     }
@@ -13373,7 +13381,7 @@ var ReactCompositeComponentMixin = {
       this._renderedComponent,
       rootID,
       transaction,
-      this._processChildContext(context)
+      this._mergeChildContext(context, childContext)
     );
     if (inst.componentDidMount) {
       transaction.getReactMountReady().enqueue(inst.componentDidMount, inst);
@@ -13503,7 +13511,7 @@ var ReactCompositeComponentMixin = {
    * @return {object}
    * @private
    */
-  _processChildContext: function(currentContext) {
+  _getValidatedChildContext: function(currentContext) {
     var inst = this._instance;
     var childContext = inst.getChildContext && inst.getChildContext();
     if (childContext) {
@@ -13528,6 +13536,13 @@ var ReactCompositeComponentMixin = {
           name
         ) : invariant(name in inst.constructor.childContextTypes));
       }
+      return childContext;
+    }
+    return null;
+  },
+
+  _mergeChildContext: function(currentContext, childContext) {
+    if (childContext) {
       return assign({}, currentContext, childContext);
     }
     return currentContext;
@@ -13787,6 +13802,10 @@ var ReactCompositeComponentMixin = {
       return inst.state;
     }
 
+    if (replace && queue.length === 1) {
+      return queue[0];
+    }
+
     var nextState = assign({}, replace ? queue[0] : inst.state);
     for (var i = replace ? 1 : 0; i < queue.length; i++) {
       var partial = queue[i];
@@ -13856,13 +13875,14 @@ var ReactCompositeComponentMixin = {
   _updateRenderedComponent: function(transaction, context) {
     var prevComponentInstance = this._renderedComponent;
     var prevRenderedElement = prevComponentInstance._currentElement;
-    var nextRenderedElement = this._renderValidatedComponent();
+    var childContext = this._getValidatedChildContext();
+    var nextRenderedElement = this._renderValidatedComponent(childContext);
     if (shouldUpdateReactComponent(prevRenderedElement, nextRenderedElement)) {
       ReactReconciler.receiveComponent(
         prevComponentInstance,
         nextRenderedElement,
         transaction,
-        this._processChildContext(context)
+        this._mergeChildContext(context, childContext)
       );
     } else {
       // These two IDs are actually the same! But nothing should rely on that.
@@ -13878,7 +13898,7 @@ var ReactCompositeComponentMixin = {
         this._renderedComponent,
         thisID,
         transaction,
-        this._processChildContext(context)
+        this._mergeChildContext(context, childContext)
       );
       this._replaceNodeWithMarkupByID(prevComponentID, nextMarkup);
     }
@@ -13916,11 +13936,12 @@ var ReactCompositeComponentMixin = {
   /**
    * @private
    */
-  _renderValidatedComponent: function() {
+  _renderValidatedComponent: function(childContext) {
     var renderedComponent;
     var previousContext = ReactContext.current;
-    ReactContext.current = this._processChildContext(
-      this._currentElement._context
+    ReactContext.current = this._mergeChildContext(
+      this._currentElement._context,
+      childContext
     );
     ReactCurrentOwner.current = this;
     try {
@@ -14289,6 +14310,7 @@ var ReactDOM = mapObject({
 
   // SVG
   circle: 'circle',
+  clipPath: 'clipPath',
   defs: 'defs',
   ellipse: 'ellipse',
   g: 'g',
@@ -14440,11 +14462,13 @@ function assertValidProps(props) {
       'Can only set one of `children` or `props.dangerouslySetInnerHTML`.'
     ) : invariant(props.children == null));
     ("production" !== process.env.NODE_ENV ? invariant(
-      props.dangerouslySetInnerHTML.__html != null,
+      typeof props.dangerouslySetInnerHTML === 'object' &&
+      '__html' in props.dangerouslySetInnerHTML,
       '`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. ' +
-      'Please visit http://fb.me/react-invariant-dangerously-set-inner-html ' +
+      'Please visit https://fb.me/react-invariant-dangerously-set-inner-html ' +
       'for more information.'
-    ) : invariant(props.dangerouslySetInnerHTML.__html != null));
+    ) : invariant(typeof props.dangerouslySetInnerHTML === 'object' &&
+    '__html' in props.dangerouslySetInnerHTML));
   }
   if ("production" !== process.env.NODE_ENV) {
     ("production" !== process.env.NODE_ENV ? warning(
@@ -17250,7 +17274,7 @@ function warnAndMonitorForKeyUse(message, element, parentType) {
 
   ("production" !== process.env.NODE_ENV ? warning(
     false,
-    message + '%s%s See http://fb.me/react-warning-keys for more information.',
+    message + '%s%s See https://fb.me/react-warning-keys for more information.',
     parentOrOwnerAddendum,
     childOwnerAddendum
   ) : null);
@@ -22071,6 +22095,7 @@ var MUST_USE_ATTRIBUTE = DOMProperty.injection.MUST_USE_ATTRIBUTE;
 
 var SVGDOMPropertyConfig = {
   Properties: {
+    clipPath: MUST_USE_ATTRIBUTE,
     cx: MUST_USE_ATTRIBUTE,
     cy: MUST_USE_ATTRIBUTE,
     d: MUST_USE_ATTRIBUTE,
@@ -22116,6 +22141,7 @@ var SVGDOMPropertyConfig = {
     y: MUST_USE_ATTRIBUTE
   },
   DOMAttributeNames: {
+    clipPath: 'clip-path',
     fillOpacity: 'fill-opacity',
     fontFamily: 'font-family',
     fontSize: 'font-size',
@@ -24928,6 +24954,7 @@ var shouldWrap = {
   // Force wrapping for SVG elements because if they get created inside a <div>,
   // they will be initialized in the wrong namespace (and will not display).
   'circle': true,
+  'clipPath': true,
   'defs': true,
   'ellipse': true,
   'g': true,
@@ -24970,6 +24997,7 @@ var markupWrap = {
   'th': trWrap,
 
   'circle': svgWrap,
+  'clipPath': svgWrap,
   'defs': svgWrap,
   'ellipse': svgWrap,
   'g': svgWrap,
@@ -28279,6 +28307,10 @@ function through (write, end, opts) {
     }
   };
 
+  function create(type, value, mut) {
+    return type.meta.kind === 'struct' ? new type(value, mut) : type(value, mut);
+  }
+
   //
   // irreducibles
   //
@@ -28376,7 +28408,7 @@ function through (write, end, opts) {
         if (props.hasOwnProperty(k)) {
           var expected = props[k];
           var actual = value[k];
-          this[k] = expected(actual, mut);
+          this[k] = create(expected, actual, mut);
         }
       }
       if (mut !== true) {
@@ -28427,7 +28459,7 @@ function through (write, end, opts) {
       assert(Func.is(Union.dispatch), 'Unimplemented `dispatch()` function for union type `%s`', name);
       var type = Union.dispatch(value);
       assert(Type.is(type), 'The `dispatch()` function of union type `%s` returns no type constructor', name);
-      return type(value, mut);
+      return create(type, value, mut);
     }
 
     Union.meta = {
@@ -28468,7 +28500,7 @@ function through (write, end, opts) {
 
     function Maybe(value, mut) {
       blockNew(this, Maybe);
-      return Nil.is(value) ? null : type(value, mut);
+      return Nil.is(value) ? null : create(type, value, mut);
     }
 
     Maybe.meta = {
@@ -28547,7 +28579,7 @@ function through (write, end, opts) {
       for (var i = 0 ; i < len ; i++) {
         var expected = types[i];
         var actual = value[i];
-        arr.push(expected(actual, mut));
+        arr.push(create(expected, actual, mut));
       }
       if (frozen) {
         Object.freeze(arr);
@@ -28584,7 +28616,7 @@ function through (write, end, opts) {
 
     function Subtype(value, mut) {
       blockNew(this, Subtype);
-      var x = type(value, mut);
+      var x = create(type, value, mut);
       assert(predicate(x), 'Invalid argument `value` = `%s` supplied to subtype type `%s`', value, name);
       return x;
     }
@@ -28629,7 +28661,7 @@ function through (write, end, opts) {
       var arr = [];
       for (var i = 0, len = value.length ; i < len ; i++ ) {
         var actual = value[i];
-        arr.push(type(actual, mut));
+        arr.push(create(type, actual, mut));
       }
       if (frozen) {
         Object.freeze(arr);
@@ -28682,9 +28714,9 @@ function through (write, end, opts) {
       var obj = {};
       for (var k in value) {
         if (value.hasOwnProperty(k)) {
-          k = domain(k);
+          k = create(domain, k);
           var actual = value[k];
-          obj[k] = codomain(actual, mut);
+          obj[k] = create(codomain, actual, mut);
         }
       }
       if (frozen) {
@@ -28770,7 +28802,7 @@ function through (write, end, opts) {
         args = argsType(args);
         if (len === domainLen) {
           /* jshint validthis: true */
-          return codomain(f.apply(this, args));
+          return create(codomain, f.apply(this, args));
         } else {
           var curried = Function.prototype.bind.apply(f, [this].concat(args));
           var newdomain = func(domain.slice(len), codomain);
@@ -29708,9 +29740,9 @@ var transformer = {
 tape('Radio', function (tape) {
 
   var Country = t.enums({
-    IT: 'Italy',
-    FR: 'France',
-    US: 'United States'
+    'IT': 'Italy',
+    'FR': 'France',
+    'US': 'United States'
   });
 
   tape.test('label', function (tape) {
@@ -29943,9 +29975,9 @@ var transformer = {
 tape('Select', function (tape) {
 
   var Country = t.enums({
-    IT: 'Italy',
-    FR: 'France',
-    US: 'United States'
+    'IT': 'Italy',
+    'FR': 'France',
+    'US': 'United States'
   });
 
   tape.test('label', function (tape) {
