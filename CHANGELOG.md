@@ -10,6 +10,11 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.5.5
+
+- **Internal**
+    + Relax Bootstrap columns constraint #149
+
 ## v0.5.4
 
 - **Bug Fix**
