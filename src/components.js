@@ -168,7 +168,7 @@ export class Component extends React.Component {
   getDefaultLabel() {
     const ctx = this.props.ctx;
     if (ctx.label) {
-      return ctx.label + (this.typeInfo.isMaybe ? ctx.i18n.optional : '');
+      return ctx.label + (this.typeInfo.isMaybe ? this.getI18n().optional : '');
     }
   }
 
