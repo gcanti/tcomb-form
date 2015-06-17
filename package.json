@@ -7,7 +7,7 @@
     "lint": "eslint src",
     "build-test": "node_modules/.bin/browserify -t [babelify --stage=0 --loose] test/index.js -o test/browser.js",
     "test": "npm run lint && npm run build-test && ./node_modules/karma/bin/karma start",
-    "build": "node_modules/.bin/babel src -d lib --stage=0 --loose -w",
+    "build": "rm -rf lib/* && node_modules/.bin/babel src -d lib --stage=0 --loose -w",
     "dev": "watchify -t [babelify --stage=0 --loose] dev/dev.jsx -o dev/dev.js -v -x react",
     "dist": "browserify -t [babelify --stage=0 --loose] -o ./dist/tcomb-form.js -r .:tcomb-form -r react"
   },
