@@ -443,18 +443,10 @@ export class Struct extends Component {
   }
 
   onChange(fieldName, fieldValue, path, kind) {
-    // optimise re-rendering
     const value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.state.value = value;
     this.props.onChange(value, path, kind);
-    /*
-    const value = t.mixin({}, this.state.value);
-    value[fieldName] = fieldValue;
-    this.setState({value}, function () {
-      this.props.onChange(value, path, kind);
-    }.bind(this));
-    */
   }
 
   getTemplate() {
