@@ -186,6 +186,7 @@ export function textbox(locals) {
   });
   const help = getHelp(locals);
   const error = getError(locals);
+  const config = locals.config || {};
 
   return {
     tag: 'div',
@@ -193,7 +194,8 @@ export function textbox(locals) {
       className: {
         field: true,
         error: locals.hasError,
-        disabled: locals.disabled
+        disabled: locals.disabled,
+        [`${config.wide} wide`]: !t.Nil.is(config.wide)
       }
     },
     children: [
@@ -227,6 +229,7 @@ export function checkbox(locals) {
   });
   const help = getHelp(locals);
   const error = getError(locals);
+  const config = locals.config || {};
 
   return {
     tag: 'div',
@@ -235,7 +238,8 @@ export function checkbox(locals) {
         field: true,
         inline: true,
         error: locals.hasError,
-        disabled: locals.disabled
+        disabled: locals.disabled,
+        [`${config.wide} wide`]: !t.Nil.is(config.wide)
       }
     },
     children: {
@@ -296,6 +300,7 @@ export function select(locals) {
   });
   const help = getHelp(locals);
   const error = getError(locals);
+  const config = locals.config || {};
 
   return {
     tag: 'div',
@@ -303,7 +308,8 @@ export function select(locals) {
       className: {
         field: true,
         error: locals.hasError,
-        disabled: locals.disabled
+        disabled: locals.disabled,
+        [`${config.wide} wide`]: !t.Nil.is(config.wide)
       }
     },
     children: [
@@ -383,6 +389,7 @@ export function radio(locals) {
   });
   const help = getHelp(locals);
   const error = getError(locals);
+  const config = locals.config || {};
 
   return {
     tag: 'div',
@@ -390,7 +397,8 @@ export function radio(locals) {
       className: {
         field: true,
         error: locals.hasError,
-        disabled: locals.disabled
+        disabled: locals.disabled,
+        [`${config.wide} wide`]: !t.Nil.is(config.wide)
       }
     },
     children: [
@@ -540,6 +548,7 @@ export function date(locals) {
   });
   const help = getHelp(locals);
   const error = getError(locals);
+  const config = locals.config || {};
 
   return {
     tag: 'div',
@@ -547,7 +556,8 @@ export function date(locals) {
       className: {
         field: true,
         error: locals.hasError,
-        disabled: locals.disabled
+        disabled: locals.disabled,
+        [`${config.wide} wide`]: !t.Nil.is(config.wide)
       }
     },
     children: [
