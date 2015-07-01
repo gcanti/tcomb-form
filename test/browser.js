@@ -54,7 +54,7 @@ var _classnames2 = _interopRequireDefault(_classnames);
 var Nil = _tcombValidation2['default'].Nil;
 var assert = _tcombValidation2['default'].assert;
 var SOURCE = 'tcomb-form';
-var log = (0, _debug2['default'])(SOURCE);
+var log = _debug2['default'](SOURCE);
 var noobj = Object.freeze({});
 var noarr = Object.freeze([]);
 var noop = function noop() {};
@@ -125,7 +125,7 @@ var decorators = {
       if (attrs.className) {
         var _attrs$className;
 
-        attrs.className = (_attrs$className = {}, _attrs$className[(0, _classnames2['default'])(attrs.className)] = true, _attrs$className);
+        attrs.className = (_attrs$className = {}, _attrs$className[_classnames2['default'](attrs.className)] = true, _attrs$className);
       }
       return attrs;
     };
@@ -144,7 +144,7 @@ var decorators = {
 
   templates: function templates(Component) {
     Component.prototype.getTemplates = function getTemplates() {
-      return (0, _util.merge)(this.props.ctx.templates, this.props.options.templates);
+      return _util.merge(this.props.ctx.templates, this.props.options.templates);
     };
   }
 
@@ -157,7 +157,7 @@ var Component = (function (_React$Component) {
     _classCallCheck(this, Component);
 
     _React$Component.call(this, props);
-    this.typeInfo = (0, _util.getTypeInfo)(props.type);
+    this.typeInfo = _util.getTypeInfo(props.type);
     this.state = {
       hasError: false,
       value: this.getTransformer().format(props.value)
@@ -178,7 +178,7 @@ var Component = (function (_React$Component) {
 
   Component.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = (0, _util.getTypeInfo)(props.type);
+      this.typeInfo = _util.getTypeInfo(props.type);
     }
     this.setState({ value: this.getTransformer().format(props.value) });
   };
@@ -209,7 +209,7 @@ var Component = (function (_React$Component) {
   Component.prototype.getDefaultLabel = function getDefaultLabel() {
     var ctx = this.props.ctx;
     if (ctx.label) {
-      return ctx.label + (this.typeInfo.isMaybe ? ctx.i18n.optional : '');
+      return ctx.label + (this.typeInfo.isMaybe ? this.getI18n().optional : '');
     }
   };
 
@@ -234,7 +234,7 @@ var Component = (function (_React$Component) {
   };
 
   Component.prototype.getConfig = function getConfig() {
-    return (0, _util.merge)(this.props.ctx.config, this.props.options.config);
+    return _util.merge(this.props.ctx.config, this.props.options.config);
   };
 
   Component.prototype.getId = function getId() {
@@ -268,7 +268,7 @@ var Component = (function (_React$Component) {
     // getTemplate is the only required implementation when extending Component
     assert(_tcombValidation2['default'].Func.is(this.getTemplate), '[' + SOURCE + '] missing getTemplate method of component ' + this.constructor.name);
     var template = this.getTemplate();
-    return (0, _uvdomReact.compile)(template(locals));
+    return _uvdomReact.compile(template(locals));
   };
 
   _createClass(Component, null, [{
@@ -303,9 +303,7 @@ var Textbox = (function (_Component) {
   function Textbox() {
     _classCallCheck(this, _Textbox);
 
-    if (_Component != null) {
-      _Component.apply(this, arguments);
-    }
+    _Component.apply(this, arguments);
   }
 
   _inherits(Textbox, _Component);
@@ -357,9 +355,7 @@ var Checkbox = (function (_Component2) {
   function Checkbox() {
     _classCallCheck(this, _Checkbox);
 
-    if (_Component2 != null) {
-      _Component2.apply(this, arguments);
-    }
+    _Component2.apply(this, arguments);
   }
 
   _inherits(Checkbox, _Component2);
@@ -398,9 +394,7 @@ var Select = (function (_Component3) {
   function Select() {
     _classCallCheck(this, _Select);
 
-    if (_Component3 != null) {
-      _Component3.apply(this, arguments);
-    }
+    _Component3.apply(this, arguments);
   }
 
   _inherits(Select, _Component3);
@@ -427,12 +421,12 @@ var Select = (function (_Component3) {
   };
 
   _Select.prototype.getEnum = function getEnum() {
-    return this.isMultiple() ? (0, _util.getTypeInfo)(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
+    return this.isMultiple() ? _util.getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
   };
 
   _Select.prototype.getOptions = function getOptions() {
     var options = this.props.options;
-    var items = options.options ? options.options.slice() : (0, _util.getOptionsOfEnum)(this.getEnum());
+    var items = options.options ? options.options.slice() : _util.getOptionsOfEnum(this.getEnum());
     if (options.order) {
       items.sort(getComparator(options.order));
     }
@@ -488,9 +482,7 @@ var Radio = (function (_Component4) {
   function Radio() {
     _classCallCheck(this, _Radio);
 
-    if (_Component4 != null) {
-      _Component4.apply(this, arguments);
-    }
+    _Component4.apply(this, arguments);
   }
 
   _inherits(Radio, _Component4);
@@ -499,7 +491,7 @@ var Radio = (function (_Component4) {
 
   _Radio.prototype.getOptions = function getOptions() {
     var options = this.props.options;
-    var items = options.options ? options.options.slice() : (0, _util.getOptionsOfEnum)(this.typeInfo.innerType);
+    var items = options.options ? options.options.slice() : _util.getOptionsOfEnum(this.typeInfo.innerType);
     if (options.order) {
       items.sort(getComparator(options.order));
     }
@@ -524,9 +516,7 @@ var Datetime = (function (_Component5) {
   function Datetime() {
     _classCallCheck(this, _Datetime);
 
-    if (_Component5 != null) {
-      _Component5.apply(this, arguments);
-    }
+    _Component5.apply(this, arguments);
   }
 
   _inherits(Datetime, _Component5);
@@ -567,9 +557,7 @@ var Struct = (function (_Component6) {
   function Struct() {
     _classCallCheck(this, _Struct);
 
-    if (_Component6 != null) {
-      _Component6.apply(this, arguments);
-    }
+    _Component6.apply(this, arguments);
   }
 
   _inherits(Struct, _Component6);
@@ -605,18 +593,10 @@ var Struct = (function (_Component6) {
   };
 
   _Struct.prototype.onChange = function onChange(fieldName, fieldValue, path, kind) {
-    // optimise re-rendering
     var value = _tcombValidation2['default'].mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.state.value = value;
     this.props.onChange(value, path, kind);
-    /*
-    const value = t.mixin({}, this.state.value);
-    value[fieldName] = fieldValue;
-    this.setState({value}, function () {
-      this.props.onChange(value, path, kind);
-    }.bind(this));
-    */
   };
 
   _Struct.prototype.getTemplate = function getTemplate() {
@@ -659,8 +639,8 @@ var Struct = (function (_Component6) {
             uid: ctx.uid,
             auto: auto,
             config: config,
-            name: ctx.name ? '' + ctx.name + '[' + prop + ']' : prop,
-            label: (0, _util.humanize)(prop),
+            name: ctx.name ? ctx.name + '[' + prop + ']' : prop,
+            label: _util.humanize(prop),
             i18n: i18n,
             templates: templates,
             path: ctx.path.concat(prop)
@@ -725,7 +705,7 @@ var List = (function (_Component7) {
 
   _List.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = (0, _util.getTypeInfo)(props.type);
+      this.typeInfo = _util.getTypeInfo(props.type);
     }
     var value = this.getTransformer().format(props.value);
     this.setState({
@@ -798,14 +778,14 @@ var List = (function (_Component7) {
   _List.prototype.moveUpItem = function moveUpItem(i, evt) {
     evt.preventDefault();
     if (i > 0) {
-      this.onChange((0, _util.move)(this.state.value.slice(), i, i - 1), (0, _util.move)(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
+      this.onChange(_util.move(this.state.value.slice(), i, i - 1), _util.move(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
     }
   };
 
   _List.prototype.moveDownItem = function moveDownItem(i, evt) {
     evt.preventDefault();
     if (i < this.state.value.length - 1) {
-      this.onChange((0, _util.move)(this.state.value.slice(), i, i + 1), (0, _util.move)(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
+      this.onChange(_util.move(this.state.value.slice(), i, i + 1), _util.move(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
     }
   };
 
@@ -850,7 +830,7 @@ var List = (function (_Component7) {
             auto: auto,
             config: config,
             i18n: i18n,
-            name: ctx.name ? '' + ctx.name + '[' + i + ']' : String(i),
+            name: ctx.name ? ctx.name + '[' + i + ']' : String(i),
             templates: templates,
             path: ctx.path.concat(i)
           }
@@ -896,9 +876,7 @@ var Form = (function (_React$Component2) {
   function Form() {
     _classCallCheck(this, Form);
 
-    if (_React$Component2 != null) {
-      _React$Component2.apply(this, arguments);
-    }
+    _React$Component2.apply(this, arguments);
   }
 
   _inherits(Form, _React$Component2);
@@ -986,9 +964,7 @@ var Positive = _tcombValidation2['default'].subtype(_tcombValidation2['default']
   return n % 1 === 0 && n >= 0;
 }, 'Positive');
 
-var Cols = _tcombValidation2['default'].subtype(_tcombValidation2['default'].tuple([Positive, Positive]), function (cols) {
-  return cols[0] + cols[1] === 12;
-}, 'Cols');
+var Cols = _tcombValidation2['default'].tuple([Positive, Positive], 'Cols');
 
 var Breakpoints = _tcombValidation2['default'].struct({
   xs: maybe(Cols),
@@ -1330,7 +1306,7 @@ function radio(locals) {
     attrs.disabled = locals.disabled;
     attrs.value = option.value;
     attrs.autoFocus = attrs.autoFocus && i === 0;
-    attrs.id = '' + id + '_' + i;
+    attrs.id = id + '_' + i;
     attrs['aria-describedby'] = attrs['aria-describedby'] || (locals.label ? id : null);
     attrs.onChange = onChange;
 
@@ -1703,7 +1679,7 @@ function humanize(s) {
 }
 
 function merge(a, b) {
-  return (0, _tcombValidation.mixin)((0, _tcombValidation.mixin)({}, a), b, true);
+  return _tcombValidation.mixin(_tcombValidation.mixin({}, a), b, true);
 }
 
 function move(arr, fromIndex, toIndex) {
@@ -3277,14 +3253,14 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 },{}],8:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = isLE ? (nBytes - 1) : 0,
-      d = isLE ? -1 : 1,
-      s = buffer[offset + i]
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
   i += d
 
@@ -3310,14 +3286,14 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 }
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = isLE ? 0 : (nBytes - 1),
-      d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
   value = Math.abs(value)
 

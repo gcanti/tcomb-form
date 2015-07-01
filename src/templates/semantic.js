@@ -161,7 +161,6 @@ export function textbox(locals) {
   }
 
   attrs.className = t.mixin({}, attrs.className);
-  attrs.className['form-control'] = true;
 
   attrs.disabled = locals.disabled;
   if (locals.type !== 'file') {
@@ -265,7 +264,6 @@ export function select(locals) {
   const attrs = t.mixin({}, locals.attrs);
 
   attrs.className = t.mixin({}, attrs.className);
-  attrs.className['form-control'] = true;
 
   attrs.multiple = locals.isMultiple;
   attrs.disabled = locals.disabled;
