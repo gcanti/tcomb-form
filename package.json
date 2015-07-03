@@ -37,6 +37,7 @@
     "browserify": "^9.0.8",
     "eslint": "^0.20.0",
     "eslint-plugin-react": "^2.1.1",
+    "express": "^4.13.0",
     "karma": "^0.12.31",
     "karma-chrome-launcher": "^0.1.8",
     "karma-firefox-launcher": "^0.1.4",
