@@ -8,9 +8,10 @@
     "build-test": "node_modules/.bin/browserify -t [babelify --stage=0 --loose] test/index.js -o test/browser.js",
     "test": "npm run lint && npm run build-test && ./node_modules/karma/bin/karma start",
     "build": "node_modules/.bin/babel src -d lib --stage=0 --loose -w",
-    "dev": "watchify -t [babelify --stage=0 --loose] dev/dev.jsx -o dev/dev.js -v -x react",
     "dist": "browserify -t [babelify --stage=0 --loose] -o ./dist/tcomb-form.js -r .:tcomb-form -r react",
-    "build-react": "browserify -o ./dev/react.js -r react"
+    "build-react": "browserify -o ./dev/react.js -r react",
+    "client": "watchify -t [babelify --stage=0 --loose] dev/client/client.js -o dev/client/bundle.js -v -x react",
+    "server": "node dev/server/index.js"
   },
   "repository": {
     "type": "git",
@@ -39,6 +40,7 @@
     "browserify": "^9.0.8",
     "eslint": "^0.20.0",
     "eslint-plugin-react": "^2.1.1",
+    "express": "^4.13.0",
     "karma": "^0.12.31",
     "karma-chrome-launcher": "^0.1.8",
     "karma-firefox-launcher": "^0.1.4",

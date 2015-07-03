@@ -73,7 +73,8 @@ export class UIDGenerator {
   }
 
   next() {
-    return this.seed + (this.counter++);
+    const id = this.seed + (this.counter++);
+    return id;
   }
 
 }

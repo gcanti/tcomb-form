@@ -54,7 +54,7 @@ var _classnames2 = _interopRequireDefault(_classnames);
 var Nil = _tcombValidation2['default'].Nil;
 var assert = _tcombValidation2['default'].assert;
 var SOURCE = 'tcomb-form';
-var log = (0, _debug2['default'])(SOURCE);
+var log = _debug2['default'](SOURCE);
 var noobj = Object.freeze({});
 var noarr = Object.freeze([]);
 var noop = function noop() {};
@@ -81,10 +81,6 @@ function getComponent(_x, _x2) {
         return List;
       case 'enums':
         return Select;
-      case 'dict':
-        return Dict;
-      case 'tuple':
-        return Tuple;
       case 'maybe':
       case 'subtype':
         _x = type.meta.type;
@@ -129,7 +125,7 @@ var decorators = {
       if (attrs.className) {
         var _attrs$className;
 
-        attrs.className = (_attrs$className = {}, _attrs$className[(0, _classnames2['default'])(attrs.className)] = true, _attrs$className);
+        attrs.className = (_attrs$className = {}, _attrs$className[_classnames2['default'](attrs.className)] = true, _attrs$className);
       }
       return attrs;
     };
@@ -148,7 +144,7 @@ var decorators = {
 
   templates: function templates(Component) {
     Component.prototype.getTemplates = function getTemplates() {
-      return (0, _util.merge)(this.props.ctx.templates, this.props.options.templates);
+      return _util.merge(this.props.ctx.templates, this.props.options.templates);
     };
   }
 
@@ -161,7 +157,7 @@ var Component = (function (_React$Component) {
     _classCallCheck(this, Component);
 
     _React$Component.call(this, props);
-    this.typeInfo = (0, _util.getTypeInfo)(props.type);
+    this.typeInfo = _util.getTypeInfo(props.type);
     this.state = {
       hasError: false,
       value: this.getTransformer().format(props.value)
@@ -182,7 +178,7 @@ var Component = (function (_React$Component) {
 
   Component.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = (0, _util.getTypeInfo)(props.type);
+      this.typeInfo = _util.getTypeInfo(props.type);
     }
     this.setState({ value: this.getTransformer().format(props.value) });
   };
@@ -213,7 +209,7 @@ var Component = (function (_React$Component) {
   Component.prototype.getDefaultLabel = function getDefaultLabel() {
     var ctx = this.props.ctx;
     if (ctx.label) {
-      return ctx.label + (this.typeInfo.isMaybe ? ctx.i18n.optional : '');
+      return ctx.label + (this.typeInfo.isMaybe ? this.getI18n().optional : '');
     }
   };
 
@@ -238,12 +234,18 @@ var Component = (function (_React$Component) {
   };
 
   Component.prototype.getConfig = function getConfig() {
-    return (0, _util.merge)(this.props.ctx.config, this.props.options.config);
+    return _util.merge(this.props.ctx.config, this.props.options.config);
   };
 
   Component.prototype.getId = function getId() {
     var attrs = this.props.options.attrs || noobj;
-    return attrs.id || this.props.ctx.uid.next();
+    if (attrs.id) {
+      return attrs.id;
+    }
+    if (!this.uid) {
+      this.uid = this.props.ctx.uidGenerator.next();
+    }
+    return this.uid;
   };
 
   Component.prototype.getName = function getName() {
@@ -272,7 +274,7 @@ var Component = (function (_React$Component) {
     // getTemplate is the only required implementation when extending Component
     assert(_tcombValidation2['default'].Func.is(this.getTemplate), '[' + SOURCE + '] missing getTemplate method of component ' + this.constructor.name);
     var template = this.getTemplate();
-    return (0, _uvdomReact.compile)(template(locals));
+    return _uvdomReact.compile(template(locals));
   };
 
   _createClass(Component, null, [{
@@ -307,9 +309,7 @@ var Textbox = (function (_Component) {
   function Textbox() {
     _classCallCheck(this, _Textbox);
 
-    if (_Component != null) {
-      _Component.apply(this, arguments);
-    }
+    _Component.apply(this, arguments);
   }
 
   _inherits(Textbox, _Component);
@@ -361,9 +361,7 @@ var Checkbox = (function (_Component2) {
   function Checkbox() {
     _classCallCheck(this, _Checkbox);
 
-    if (_Component2 != null) {
-      _Component2.apply(this, arguments);
-    }
+    _Component2.apply(this, arguments);
   }
 
   _inherits(Checkbox, _Component2);
@@ -402,9 +400,7 @@ var Select = (function (_Component3) {
   function Select() {
     _classCallCheck(this, _Select);
 
-    if (_Component3 != null) {
-      _Component3.apply(this, arguments);
-    }
+    _Component3.apply(this, arguments);
   }
 
   _inherits(Select, _Component3);
@@ -431,12 +427,12 @@ var Select = (function (_Component3) {
   };
 
   _Select.prototype.getEnum = function getEnum() {
-    return this.isMultiple() ? (0, _util.getTypeInfo)(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
+    return this.isMultiple() ? _util.getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
   };
 
   _Select.prototype.getOptions = function getOptions() {
     var options = this.props.options;
-    var items = options.options ? options.options.slice() : (0, _util.getOptionsOfEnum)(this.getEnum());
+    var items = options.options ? options.options.slice() : _util.getOptionsOfEnum(this.getEnum());
     if (options.order) {
       items.sort(getComparator(options.order));
     }
@@ -492,9 +488,7 @@ var Radio = (function (_Component4) {
   function Radio() {
     _classCallCheck(this, _Radio);
 
-    if (_Component4 != null) {
-      _Component4.apply(this, arguments);
-    }
+    _Component4.apply(this, arguments);
   }
 
   _inherits(Radio, _Component4);
@@ -503,7 +497,7 @@ var Radio = (function (_Component4) {
 
   _Radio.prototype.getOptions = function getOptions() {
     var options = this.props.options;
-    var items = options.options ? options.options.slice() : (0, _util.getOptionsOfEnum)(this.typeInfo.innerType);
+    var items = options.options ? options.options.slice() : _util.getOptionsOfEnum(this.typeInfo.innerType);
     if (options.order) {
       items.sort(getComparator(options.order));
     }
@@ -528,9 +522,7 @@ var Datetime = (function (_Component5) {
   function Datetime() {
     _classCallCheck(this, _Datetime);
 
-    if (_Component5 != null) {
-      _Component5.apply(this, arguments);
-    }
+    _Component5.apply(this, arguments);
   }
 
   _inherits(Datetime, _Component5);
@@ -571,9 +563,7 @@ var Struct = (function (_Component6) {
   function Struct() {
     _classCallCheck(this, _Struct);
 
-    if (_Component6 != null) {
-      _Component6.apply(this, arguments);
-    }
+    _Component6.apply(this, arguments);
   }
 
   _inherits(Struct, _Component6);
@@ -660,11 +650,11 @@ var Struct = (function (_Component6) {
           value: value[prop],
           onChange: this.onChange.bind(this, prop),
           ctx: {
-            uid: ctx.uid,
+            uidGenerator: ctx.uidGenerator,
             auto: auto,
             config: config,
-            name: ctx.name ? '' + ctx.name + '[' + prop + ']' : prop,
-            label: (0, _util.humanize)(prop),
+            name: ctx.name ? ctx.name + '[' + prop + ']' : prop,
+            label: _util.humanize(prop),
             i18n: i18n,
             templates: templates,
             path: ctx.path.concat(prop)
@@ -702,13 +692,13 @@ var Struct = (function (_Component6) {
 
 exports.Struct = Struct;
 
-function toSameLength(value, keys, uid) {
+function toSameLength(value, keys, uidGenerator) {
   if (value.length === keys.length) {
     return keys;
   }
   var ret = [];
   for (var i = 0, len = value.length; i < len; i++) {
-    ret[i] = keys[i] || uid.next();
+    ret[i] = keys[i] || uidGenerator.next();
   }
   return ret;
 }
@@ -719,7 +709,7 @@ var List = (function (_Component7) {
 
     _Component7.call(this, props);
     this.state.keys = this.state.value.map(function () {
-      return props.ctx.uid.next();
+      return props.ctx.uidGenerator.next();
     });
   }
 
@@ -729,12 +719,12 @@ var List = (function (_Component7) {
 
   _List.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = (0, _util.getTypeInfo)(props.type);
+      this.typeInfo = _util.getTypeInfo(props.type);
     }
     var value = this.getTransformer().format(props.value);
     this.setState({
       value: value,
-      keys: toSameLength(value, this.state.keys, props.ctx.uid)
+      keys: toSameLength(value, this.state.keys, props.ctx.uidGenerator)
     });
   };
 
@@ -764,7 +754,7 @@ var List = (function (_Component7) {
   _List.prototype.onChange = function onChange(value, keys, path, kind) {
     var _this2 = this;
 
-    keys = toSameLength(value, keys, this.props.ctx.uid);
+    keys = toSameLength(value, keys, this.props.ctx.uidGenerator);
     if (!kind) {
       // optimise re-rendering
       this.state.value = value;
@@ -780,7 +770,7 @@ var List = (function (_Component7) {
   _List.prototype.addItem = function addItem(evt) {
     evt.preventDefault();
     var value = this.state.value.concat(undefined);
-    var keys = this.state.keys.concat(this.props.ctx.uid.next());
+    var keys = this.state.keys.concat(this.props.ctx.uidGenerator.next());
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   };
 
@@ -802,14 +792,14 @@ var List = (function (_Component7) {
   _List.prototype.moveUpItem = function moveUpItem(i, evt) {
     evt.preventDefault();
     if (i > 0) {
-      this.onChange((0, _util.move)(this.state.value.slice(), i, i - 1), (0, _util.move)(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
+      this.onChange(_util.move(this.state.value.slice(), i, i - 1), _util.move(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
     }
   };
 
   _List.prototype.moveDownItem = function moveDownItem(i, evt) {
     evt.preventDefault();
     if (i < this.state.value.length - 1) {
-      this.onChange((0, _util.move)(this.state.value.slice(), i, i + 1), (0, _util.move)(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
+      this.onChange(_util.move(this.state.value.slice(), i, i + 1), _util.move(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
     }
   };
 
@@ -850,11 +840,11 @@ var List = (function (_Component7) {
           value: value,
           onChange: _this3.onItemChange.bind(_this3, i),
           ctx: {
-            uid: ctx.uid,
+            uidGenerator: ctx.uidGenerator,
             auto: auto,
             config: config,
             i18n: i18n,
-            name: ctx.name ? '' + ctx.name + '[' + i + ']' : String(i),
+            name: ctx.name ? ctx.name + '[' + i + ']' : String(i),
             templates: templates,
             path: ctx.path.concat(i)
           }
@@ -900,9 +890,7 @@ var Form = (function (_React$Component2) {
   function Form() {
     _classCallCheck(this, Form);
 
-    if (_React$Component2 != null) {
-      _React$Component2.apply(this, arguments);
-    }
+    _React$Component2.apply(this, arguments);
   }
 
   _inherits(Form, _React$Component2);
@@ -924,10 +912,8 @@ var Form = (function (_React$Component2) {
   };
 
   Form.prototype.render = function render() {
-    var _props3 = this.props;
-    var type = _props3.type;
-    var _props3$options = _props3.options;
-    var options = _props3$options === undefined ? noobj : _props3$options;
+    var type = this.props.type;
+    var options = this.props.options || noobj;
     var i18n = Form.i18n;
     var templates = Form.templates;
 
@@ -935,6 +921,9 @@ var Form = (function (_React$Component2) {
     assert(_tcombValidation2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
     assert(_tcombValidation2['default'].Obj.is(templates), '[' + SOURCE + '] missing templates config');
     assert(_tcombValidation2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
+
+    // this is in the render method because I need this._reactInternalInstance
+    this.uidGenerator = this.uidGenerator || new _util.UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '');
 
     var Component = getComponent(type, options);
     return _react2['default'].createElement(Component, {
@@ -944,7 +933,7 @@ var Form = (function (_React$Component2) {
       value: this.props.value,
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
-        uid: new _util.UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : ''),
+        uidGenerator: this.uidGenerator,
         auto: 'labels',
         templates: templates,
         i18n: i18n,
@@ -1332,7 +1321,7 @@ function radio(locals) {
     attrs.disabled = locals.disabled;
     attrs.value = option.value;
     attrs.autoFocus = attrs.autoFocus && i === 0;
-    attrs.id = '' + id + '_' + i;
+    attrs.id = id + '_' + i;
     attrs['aria-describedby'] = attrs['aria-describedby'] || (locals.label ? id : null);
     attrs.onChange = onChange;
 
@@ -1705,7 +1694,7 @@ function humanize(s) {
 }
 
 function merge(a, b) {
-  return (0, _tcombValidation.mixin)((0, _tcombValidation.mixin)({}, a), b, true);
+  return _tcombValidation.mixin(_tcombValidation.mixin({}, a), b, true);
 }
 
 function move(arr, fromIndex, toIndex) {
@@ -1723,7 +1712,8 @@ var UIDGenerator = (function () {
   }
 
   UIDGenerator.prototype.next = function next() {
-    return this.seed + this.counter++;
+    var id = this.seed + this.counter++;
+    return id;
   };
 
   return UIDGenerator;
@@ -1752,7 +1742,6 @@ exports.SlowBuffer = SlowBuffer
 exports.INSPECT_MAX_BYTES = 50
 Buffer.poolSize = 8192 // not used by this implementation
 
-var kMaxLength = 0x3fffffff
 var rootParent = {}
 
 /**
@@ -1789,6 +1778,12 @@ Buffer.TYPED_ARRAY_SUPPORT = (function () {
     return false
   }
 })()
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
 
 /**
  * Class: Buffer
@@ -1940,9 +1935,9 @@ function allocate (that, length) {
 function checked (length) {
   // Note: cannot use `length < kMaxLength` here because that fails when
   // length is NaN (which is otherwise coerced to zero.)
-  if (length >= kMaxLength) {
+  if (length >= kMaxLength()) {
     throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                         'size: 0x' + kMaxLength.toString(16) + ' bytes')
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
   }
   return length | 0
 }
@@ -2034,29 +2029,38 @@ Buffer.concat = function concat (list, length) {
 }
 
 function byteLength (string, encoding) {
-  if (typeof string !== 'string') string = String(string)
+  if (typeof string !== 'string') string = '' + string
 
-  if (string.length === 0) return 0
+  var len = string.length
+  if (len === 0) return 0
 
-  switch (encoding || 'utf8') {
-    case 'ascii':
-    case 'binary':
-    case 'raw':
-      return string.length
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      return string.length * 2
-    case 'hex':
-      return string.length >>> 1
-    case 'utf8':
-    case 'utf-8':
-      return utf8ToBytes(string).length
-    case 'base64':
-      return base64ToBytes(string).length
-    default:
-      return string.length
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'binary':
+      // Deprecated
+      case 'raw':
+      case 'raws':
+        return len
+      case 'utf8':
+      case 'utf-8':
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
   }
 }
 Buffer.byteLength = byteLength
@@ -2065,8 +2069,7 @@ Buffer.byteLength = byteLength
 Buffer.prototype.length = undefined
 Buffer.prototype.parent = undefined
 
-// toString(encoding, start=0, end=buffer.length)
-Buffer.prototype.toString = function toString (encoding, start, end) {
+function slowToString (encoding, start, end) {
   var loweredCase = false
 
   start = start | 0
@@ -2107,6 +2110,13 @@ Buffer.prototype.toString = function toString (encoding, start, end) {
         loweredCase = true
     }
   }
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
 }
 
 Buffer.prototype.equals = function equals (b) {
@@ -3279,14 +3289,14 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 },{}],8:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = isLE ? (nBytes - 1) : 0,
-      d = isLE ? -1 : 1,
-      s = buffer[offset + i]
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
   i += d
 
@@ -3312,14 +3322,14 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 }
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = isLE ? 0 : (nBytes - 1),
-      d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
   value = Math.abs(value)
 
@@ -30725,7 +30735,7 @@ var bootstrap = require('../../lib/templates/bootstrap');
 var UIDGenerator = require('../../lib/util').UIDGenerator;
 
 var ctx = {
-  uid: new UIDGenerator('root'),
+  uidGenerator: new UIDGenerator('root'),
   auto: 'labels',
   config: {},
   name: 'defaultName',
