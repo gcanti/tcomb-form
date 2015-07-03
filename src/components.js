@@ -198,7 +198,13 @@ export class Component extends React.Component {
 
   getId() {
     const attrs = this.props.options.attrs || noobj;
-    return attrs.id || this.props.ctx.uid.next();
+    if (attrs.id) {
+      return attrs.id;
+    }
+    if (!this.uid) {
+      this.uid = this.props.ctx.uidGenerator.next();
+    }
+    return this.uid;
   }
 
   getName() {
@@ -483,7 +489,7 @@ export class Struct extends Component {
           value: value[prop],
           onChange: this.onChange.bind(this, prop),
           ctx: {
-            uid: ctx.uid,
+            uidGenerator: ctx.uidGenerator,
             auto,
             config,
             name: ctx.name ? `${ctx.name}[${prop}]` : prop,
@@ -508,11 +514,13 @@ export class Struct extends Component {
 
 }
 
-function toSameLength(value, keys, uid) {
-  if (value.length === keys.length) { return keys; }
+function toSameLength(value, keys, uidGenerator) {
+  if (value.length === keys.length) {
+    return keys;
+  }
   const ret = [];
   for (let i = 0, len = value.length; i < len; i++ ) {
-    ret[i] = keys[i] || uid.next();
+    ret[i] = keys[i] || uidGenerator.next();
   }
   return ret;
 }
@@ -527,7 +535,7 @@ export class List extends Component {
 
   constructor(props) {
     super(props);
-    this.state.keys = this.state.value.map(() => props.ctx.uid.next());
+    this.state.keys = this.state.value.map(() => props.ctx.uidGenerator.next());
   }
 
   componentWillReceiveProps(props) {
@@ -537,7 +545,7 @@ export class List extends Component {
     const value = this.getTransformer().format(props.value);
     this.setState({
       value,
-      keys: toSameLength(value, this.state.keys, props.ctx.uid)
+      keys: toSameLength(value, this.state.keys, props.ctx.uidGenerator)
     });
   }
 
@@ -565,7 +573,7 @@ export class List extends Component {
   }
 
   onChange(value, keys, path, kind) {
-    keys = toSameLength(value, keys, this.props.ctx.uid);
+    keys = toSameLength(value, keys, this.props.ctx.uidGenerator);
     if (!kind) {
       // optimise re-rendering
       this.state.value = value;
@@ -581,7 +589,7 @@ export class List extends Component {
   addItem(evt) {
     evt.preventDefault();
     const value = this.state.value.concat(undefined);
-    const keys = this.state.keys.concat(this.props.ctx.uid.next());
+    const keys = this.state.keys.concat(this.props.ctx.uidGenerator.next());
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   }
 
@@ -650,7 +658,7 @@ export class List extends Component {
           value,
           onChange: this.onItemChange.bind(this, i),
           ctx: {
-            uid: ctx.uid,
+            uidGenerator: ctx.uidGenerator,
             auto,
             config,
             i18n,
@@ -698,7 +706,9 @@ export class Form extends React.Component {
   }
 
   render() {
-    const { type, options = noobj } = this.props;
+
+    const type = this.props.type;
+    const options = this.props.options || noobj;
     const { i18n, templates } = Form;
 
     assert(t.isType(type), `[${SOURCE}] missing required prop type`);
@@ -706,15 +716,18 @@ export class Form extends React.Component {
     assert(t.Obj.is(templates), `[${SOURCE}] missing templates config`);
     assert(t.Obj.is(i18n), `[${SOURCE}] missing i18n config`);
 
+    // this is in the render method because I need this._reactInternalInstance
+    this.uidGenerator = this.uidGenerator || new UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '');
+
     const Component = getComponent(type, options);
     return React.createElement(Component, {
       ref: 'input',
       type: type,
-      options: options,
+      options,
       value: this.props.value,
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
-        uid: new UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : ''),
+        uidGenerator: this.uidGenerator,
         auto: 'labels',
         templates,
         i18n,

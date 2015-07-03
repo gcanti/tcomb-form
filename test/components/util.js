@@ -6,7 +6,7 @@ var bootstrap = require('../../lib/templates/bootstrap');
 var UIDGenerator = require('../../lib/util').UIDGenerator;
 
 var ctx = {
-  uid: new UIDGenerator('root'),
+  uidGenerator: new UIDGenerator('root'),
   auto: 'labels',
   config: {},
   name: 'defaultName',

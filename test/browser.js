@@ -239,7 +239,13 @@ var Component = (function (_React$Component) {
 
   Component.prototype.getId = function getId() {
     var attrs = this.props.options.attrs || noobj;
-    return attrs.id || this.props.ctx.uid.next();
+    if (attrs.id) {
+      return attrs.id;
+    }
+    if (!this.uid) {
+      this.uid = this.props.ctx.uidGenerator.next();
+    }
+    return this.uid;
   };
 
   Component.prototype.getName = function getName() {
@@ -636,7 +642,7 @@ var Struct = (function (_Component6) {
           value: value[prop],
           onChange: this.onChange.bind(this, prop),
           ctx: {
-            uid: ctx.uid,
+            uidGenerator: ctx.uidGenerator,
             auto: auto,
             config: config,
             name: ctx.name ? ctx.name + '[' + prop + ']' : prop,
@@ -678,13 +684,13 @@ var Struct = (function (_Component6) {
 
 exports.Struct = Struct;
 
-function toSameLength(value, keys, uid) {
+function toSameLength(value, keys, uidGenerator) {
   if (value.length === keys.length) {
     return keys;
   }
   var ret = [];
   for (var i = 0, len = value.length; i < len; i++) {
-    ret[i] = keys[i] || uid.next();
+    ret[i] = keys[i] || uidGenerator.next();
   }
   return ret;
 }
@@ -695,7 +701,7 @@ var List = (function (_Component7) {
 
     _Component7.call(this, props);
     this.state.keys = this.state.value.map(function () {
-      return props.ctx.uid.next();
+      return props.ctx.uidGenerator.next();
     });
   }
 
@@ -710,7 +716,7 @@ var List = (function (_Component7) {
     var value = this.getTransformer().format(props.value);
     this.setState({
       value: value,
-      keys: toSameLength(value, this.state.keys, props.ctx.uid)
+      keys: toSameLength(value, this.state.keys, props.ctx.uidGenerator)
     });
   };
 
@@ -740,7 +746,7 @@ var List = (function (_Component7) {
   _List.prototype.onChange = function onChange(value, keys, path, kind) {
     var _this2 = this;
 
-    keys = toSameLength(value, keys, this.props.ctx.uid);
+    keys = toSameLength(value, keys, this.props.ctx.uidGenerator);
     if (!kind) {
       // optimise re-rendering
       this.state.value = value;
@@ -756,7 +762,7 @@ var List = (function (_Component7) {
   _List.prototype.addItem = function addItem(evt) {
     evt.preventDefault();
     var value = this.state.value.concat(undefined);
-    var keys = this.state.keys.concat(this.props.ctx.uid.next());
+    var keys = this.state.keys.concat(this.props.ctx.uidGenerator.next());
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   };
 
@@ -826,7 +832,7 @@ var List = (function (_Component7) {
           value: value,
           onChange: _this3.onItemChange.bind(_this3, i),
           ctx: {
-            uid: ctx.uid,
+            uidGenerator: ctx.uidGenerator,
             auto: auto,
             config: config,
             i18n: i18n,
@@ -898,10 +904,9 @@ var Form = (function (_React$Component2) {
   };
 
   Form.prototype.render = function render() {
-    var _props3 = this.props;
-    var type = _props3.type;
-    var _props3$options = _props3.options;
-    var options = _props3$options === undefined ? noobj : _props3$options;
+
+    var type = this.props.type;
+    var options = this.props.options || noobj;
     var i18n = Form.i18n;
     var templates = Form.templates;
 
@@ -909,6 +914,9 @@ var Form = (function (_React$Component2) {
     assert(_tcombValidation2['default'].Obj.is(options), '[' + SOURCE + '] prop options must be an object');
     assert(_tcombValidation2['default'].Obj.is(templates), '[' + SOURCE + '] missing templates config');
     assert(_tcombValidation2['default'].Obj.is(i18n), '[' + SOURCE + '] missing i18n config');
+
+    // this is in the render method because I need this._reactInternalInstance
+    this.uidGenerator = this.uidGenerator || new _util.UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '');
 
     var Component = getComponent(type, options);
     return _react2['default'].createElement(Component, {
@@ -918,7 +926,7 @@ var Form = (function (_React$Component2) {
       value: this.props.value,
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
-        uid: new _util.UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : ''),
+        uidGenerator: this.uidGenerator,
         auto: 'labels',
         templates: templates,
         i18n: i18n,
@@ -1697,7 +1705,8 @@ var UIDGenerator = (function () {
   }
 
   UIDGenerator.prototype.next = function next() {
-    return this.seed + this.counter++;
+    var id = this.seed + this.counter++;
+    return id;
   };
 
   return UIDGenerator;
@@ -30835,7 +30844,7 @@ var bootstrap = require('../../lib/templates/bootstrap');
 var UIDGenerator = require('../../lib/util').UIDGenerator;
 
 var ctx = {
-  uid: new UIDGenerator('root'),
+  uidGenerator: new UIDGenerator('root'),
   auto: 'labels',
   config: {},
   name: 'defaultName',

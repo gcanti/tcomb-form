@@ -10,6 +10,13 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.6.1
+
+- **Internal**
+    + memoise `t.form.Component::getId()`
+- **Bug Fix**
+    + Encountered two children with the same key fix #152
+
 ## v0.6.0
 
 - **Breaking Change**
