@@ -1,5 +1,6 @@
 [![build status](https://img.shields.io/travis/gcanti/tcomb-form/master.svg?style=flat-square)](https://travis-ci.org/gcanti/tcomb-form)
 [![dependency status](https://img.shields.io/david/gcanti/tcomb-form.svg?style=flat-square)](https://david-dm.org/gcanti/tcomb-form)
+![npm downloads](https://img.shields.io/npm/dm/tcomb-form.svg)
 
 > "Simplicity is the ultimate sophistication" (Leonardo da Vinci)
 
@@ -26,7 +27,7 @@ With tcomb-form you simply call `<Form type={Model} />` to generate a form based
 
 # Documentation
 
-[GUIDE.md](GUIDE.md) 
+[GUIDE.md](GUIDE.md)
 
 **Browser compatibility**: same as React >=0.13.0
 
