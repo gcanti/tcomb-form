@@ -383,6 +383,7 @@ export class Radio extends Component {
 
 }
 
+@decorators.attrs
 @decorators.template('date')
 export class Datetime extends Component {
 
@@ -406,6 +407,7 @@ export class Datetime extends Component {
 
   getLocals() {
     const locals = super.getLocals();
+    locals.attrs = this.getAttrs();
     locals.order = this.getOrder();
     return locals;
   }

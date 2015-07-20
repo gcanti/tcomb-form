@@ -535,6 +535,7 @@ var Datetime = (function (_Component5) {
 
   _Datetime.prototype.getLocals = function getLocals() {
     var locals = _Component5.prototype.getLocals.call(this);
+    locals.attrs = this.getAttrs();
     locals.order = this.getOrder();
     return locals;
   };
@@ -554,6 +555,7 @@ var Datetime = (function (_Component5) {
   }]);
 
   Datetime = decorators.template('date')(Datetime) || Datetime;
+  Datetime = decorators.attrs(Datetime) || Datetime;
   return Datetime;
 })(Component);
 
@@ -29787,7 +29789,7 @@ tape('Checkbox', function (tape) {
   }
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":230,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],225:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":231,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],225:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -29854,7 +29856,184 @@ tape('Component', function (tape) {
   });
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":230,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],226:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":231,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],226:[function(require,module,exports){
+'use strict';
+
+var tape = require('tape');
+var t = require('tcomb-validation');
+var bootstrap = require('../../lib/templates/bootstrap');
+var Datetime = require('../../lib/components').Datetime;
+var React = require('react');
+var vdom = require('react-vdom');
+var util = require('./util');
+var ctx = util.ctx;
+var ctxPlaceholders = util.ctxPlaceholders;
+var renderComponent = util.getRenderComponent(Datetime);
+
+var transformer = {
+  format: function format(value) {
+    return t.Dat.is(value) ? value.toISOString() : null;
+  },
+  parse: function parse(value) {
+    return new Date(value);
+  }
+};
+
+tape('Datetime', function (tape) {
+
+  tape.test('label', function (tape) {
+    tape.plan(3);
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label', 'should have a default label');
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: { label: 'mylabel' },
+      ctx: ctx
+    }).getLocals().label, 'mylabel', 'should handle label option as string');
+
+    tape.deepEqual(vdom(new Datetime({
+      type: t.Dat,
+      options: { label: React.DOM.i(null, 'JSX label') },
+      ctx: ctx
+    }).getLocals().label), { tag: 'i', children: 'JSX label' }, 'should handle label option as JSX');
+  });
+
+  tape.test('help', function (tape) {
+    tape.plan(2);
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: { help: 'myhelp' },
+      ctx: ctx
+    }).getLocals().help, 'myhelp', 'should handle help option as string');
+
+    tape.deepEqual(vdom(new Datetime({
+      type: t.Dat,
+      options: { help: React.DOM.i(null, 'JSX help') },
+      ctx: ctx
+    }).getLocals().help), { tag: 'i', children: 'JSX help' }, 'should handle help option as JSX');
+  });
+
+  tape.test('value', function (tape) {
+    tape.plan(2);
+
+    tape.deepEqual(new Datetime({
+      type: t.Dat,
+      options: {},
+      ctx: ctx
+    }).getLocals().value, [null, null, null], 'default value should be [null, null, null]');
+
+    tape.deepEqual(new Datetime({
+      type: t.Dat,
+      options: {},
+      ctx: ctx,
+      value: new Date(1973, 10, 30)
+    }).getLocals().value, ['1973', '10', '30'], 'should handle value option');
+  });
+
+  tape.test('transformer', function (tape) {
+    tape.plan(1);
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: { transformer: transformer },
+      ctx: ctx,
+      value: new Date(1973, 10, 30)
+    }).getLocals().value, '1973-11-29T23:00:00.000Z', 'should handle transformer option (format)');
+  });
+
+  tape.test('hasError', function (tape) {
+    tape.plan(2);
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: {},
+      ctx: ctx
+    }).getLocals().hasError, false, 'default hasError should be false');
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: { hasError: true },
+      ctx: ctx
+    }).getLocals().hasError, true, 'should handle hasError option');
+  });
+
+  tape.test('error', function (tape) {
+    tape.plan(3);
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: {},
+      ctx: ctx
+    }).getLocals().error, undefined, 'default error should be undefined');
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: { error: 'myerror' },
+      ctx: ctx
+    }).getLocals().error, 'myerror', 'should handle error option');
+
+    tape.deepEqual(new Datetime({
+      type: t.Dat,
+      options: { error: function error(value) {
+          return 'error: ' + value;
+        } },
+      ctx: ctx,
+      value: new Date(1973, 10, 30)
+    }).getLocals().error, 'error: 1973,10,30', 'should handle error option as a function');
+  });
+
+  tape.test('template', function (tape) {
+    tape.plan(2);
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: {},
+      ctx: ctx
+    }).getTemplate(), bootstrap.date, 'default template should be bootstrap.date');
+
+    var template = function template() {};
+
+    tape.strictEqual(new Datetime({
+      type: t.Dat,
+      options: { template: template },
+      ctx: ctx
+    }).getTemplate(), template, 'should handle template option');
+  });
+
+  if (typeof window !== 'undefined') {
+
+    tape.test('validate', function (tape) {
+      tape.plan(4);
+
+      var result;
+
+      // required type, default value
+      result = renderComponent({
+        type: t.Dat
+      }).validate();
+
+      tape.strictEqual(result.isValid(), false);
+      tape.deepEqual(result.value, null);
+
+      // required type, setting a value
+      result = renderComponent({
+        type: t.Dat,
+        value: new Date(1973, 10, 30)
+      }).validate();
+
+      tape.strictEqual(result.isValid(), true);
+      tape.strictEqual(result.value.getTime(), 123462000000);
+    });
+  }
+});
+
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":231,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],227:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -30089,7 +30268,7 @@ tape('Radio', function (tape) {
   }
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":230,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],227:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":231,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],228:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -30401,7 +30580,7 @@ tape('Select', function (tape) {
   }
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":230,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],228:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":231,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],229:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -30846,7 +31025,7 @@ tape('Textbox', function (tape) {
   }
 });
 
-},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":230,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],229:[function(require,module,exports){
+},{"../../lib/components":1,"../../lib/templates/bootstrap":2,"./util":231,"react":187,"react-vdom":32,"tape":188,"tcomb-validation":200}],230:[function(require,module,exports){
 'use strict';
 
 require('./Component');
@@ -30854,8 +31033,9 @@ require('./Textbox');
 require('./Checkbox');
 require('./Select');
 require('./Radio');
+require('./Datetime');
 
-},{"./Checkbox":224,"./Component":225,"./Radio":226,"./Select":227,"./Textbox":228}],230:[function(require,module,exports){
+},{"./Checkbox":224,"./Component":225,"./Datetime":226,"./Radio":227,"./Select":228,"./Textbox":229}],231:[function(require,module,exports){
 'use strict';
 
 var t = require('tcomb-validation');
@@ -30904,13 +31084,13 @@ module.exports = {
   getRenderComponent: getRenderComponent
 };
 
-},{"../../lib/templates/bootstrap":2,"../../lib/util":3,"react":187,"tcomb-validation":200}],231:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"../../lib/util":3,"react":187,"tcomb-validation":200}],232:[function(require,module,exports){
 'use strict';
 
 require('./components');
 require('./templates');
 
-},{"./components":229,"./templates":233}],232:[function(require,module,exports){
+},{"./components":230,"./templates":234}],233:[function(require,module,exports){
 'use strict';
 
 var tape = require('tape');
@@ -30937,16 +31117,16 @@ tape('date', function (tape) {
 
   var date = bootstrap.date;
 
-  tape.test('base execution', function (tape) {
+  tape.test('should handle help option', function (tape) {
     tape.plan(1);
 
-    tape.deepEqual(typeof date({ value: [], order: ['M', 'D', 'YY'], path: [] }), 'object', 'should execute');
+    tape.deepEqual(date({ value: [1973, 10, 30], order: ['M', 'D', 'YY'], path: [], help: 'my help', attrs: { id: 'myId' } }).children[3].tag, 'span');
   });
 });
 
-},{"../../lib/templates/bootstrap":2,"tape":188}],233:[function(require,module,exports){
+},{"../../lib/templates/bootstrap":2,"tape":188}],234:[function(require,module,exports){
 'use strict';
 
 require('./bootstrap');
 
-},{"./bootstrap":232}]},{},[231]);
+},{"./bootstrap":233}]},{},[232]);

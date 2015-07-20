@@ -10,6 +10,11 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.6.3
+
+- **Bug Fix**
+    - `help` option for `t.Dat` gives bootstrap error #164
+
 ## v0.6.2
 
 - **Internal**

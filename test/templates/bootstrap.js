@@ -31,13 +31,12 @@ tape('date', function (tape) {
 
   var date = bootstrap.date;
 
-  tape.test('base execution', function (tape) {
+  tape.test('should handle help option', function (tape) {
     tape.plan(1);
 
     tape.deepEqual(
-      typeof date({value: [], order: ['M', 'D', 'YY'], path: []}),
-      'object',
-      'should execute');
+      date({value: [1973, 10, 30], order: ['M', 'D', 'YY'], path: [], help: 'my help', attrs: {id: 'myId'}}).children[3].tag,
+      'span');
   });
 
 });
