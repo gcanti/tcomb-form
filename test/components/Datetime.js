@@ -101,21 +101,6 @@ tape('Datetime', function (tape) {
 
   });
 
-  tape.test('transformer', function (tape) {
-    tape.plan(1);
-
-    tape.strictEqual(
-      new Datetime({
-        type: t.Dat,
-        options: {transformer: transformer},
-        ctx: ctx,
-        value: new Date(1973, 10, 30)
-      }).getLocals().value,
-      '1973-11-29T23:00:00.000Z',
-      'should handle transformer option (format)');
-
-  });
-
   tape.test('hasError', function (tape) {
     tape.plan(2);
 

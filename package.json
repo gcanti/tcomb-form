@@ -10,7 +10,7 @@
     "build": "rm -rf lib/* && node_modules/.bin/babel src -d lib --stage=0 --loose -w",
     "dist": "browserify -t [babelify --stage=0 --loose] -o ./dist/tcomb-form.js -r .:tcomb-form -r react",
     "client": "watchify -t [babelify --stage=0 --loose] dev/client/client.js -o dev/client/bundle.js -v -x react",
-    "server": "node dev/server/index.js"
+    "start": "node dev/server/index.js"
   },
   "repository": {
     "type": "git",
