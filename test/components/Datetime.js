@@ -218,7 +218,7 @@ tape('Datetime', function (tape) {
       }).validate();
 
       tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value.getTime(), 123462000000);
+      tape.strictEqual(result.value.getFullYear(), 1973);
 
     });
 
