@@ -28,7 +28,7 @@ function _classCallCheck(instance, Constructor) {
 function _inherits(subClass, superClass) {
   if (typeof superClass !== 'function' && superClass !== null) {
     throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass);
-  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) subClass.__proto__ = superClass;
+  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 }
 
 var _react = require('react');
@@ -153,6 +153,21 @@ var decorators = {
 exports.decorators = decorators;
 
 var Component = (function (_React$Component) {
+  _inherits(Component, _React$Component);
+
+  _createClass(Component, null, [{
+    key: 'transformer',
+    value: {
+      format: function format(value) {
+        return Nil.is(value) ? null : value;
+      },
+      parse: function parse(value) {
+        return value;
+      }
+    },
+    enumerable: true
+  }]);
+
   function Component(props) {
     _classCallCheck(this, Component);
 
@@ -163,8 +178,6 @@ var Component = (function (_React$Component) {
       value: this.getTransformer().format(props.value)
     };
   }
-
-  _inherits(Component, _React$Component);
 
   Component.prototype.getTransformer = function getTransformer() {
     return this.props.options.transformer || this.constructor.transformer;
@@ -277,19 +290,6 @@ var Component = (function (_React$Component) {
     return _uvdomReact.compile(template(locals));
   };
 
-  _createClass(Component, null, [{
-    key: 'transformer',
-    value: {
-      format: function format(value) {
-        return Nil.is(value) ? null : value;
-      },
-      parse: function parse(value) {
-        return value;
-      }
-    },
-    enumerable: true
-  }]);
-
   return Component;
 })(_react2['default'].Component);
 
@@ -306,22 +306,20 @@ function parseNumber(value) {
 }
 
 var Textbox = (function (_Component) {
+  _inherits(Textbox, _Component);
+
   function Textbox() {
     _classCallCheck(this, _Textbox);
 
     _Component.apply(this, arguments);
   }
 
-  _inherits(Textbox, _Component);
-
-  var _Textbox = Textbox;
-
-  _Textbox.prototype.getTransformer = function getTransformer() {
+  Textbox.prototype.getTransformer = function getTransformer() {
     var options = this.props.options;
     return options.transformer ? options.transformer : this.typeInfo.innerType === _tcombValidation2['default'].Num ? Textbox.numberTransformer : Textbox.transformer;
   };
 
-  _Textbox.prototype.getLocals = function getLocals() {
+  Textbox.prototype.getLocals = function getLocals() {
     var locals = _Component.prototype.getLocals.call(this);
     locals.attrs = this.getAttrs();
     locals.attrs.placeholder = this.getPlaceholder();
@@ -329,7 +327,7 @@ var Textbox = (function (_Component) {
     return locals;
   };
 
-  _createClass(_Textbox, null, [{
+  _createClass(Textbox, null, [{
     key: 'transformer',
     value: {
       format: function format(value) {
@@ -349,6 +347,7 @@ var Textbox = (function (_Component) {
     enumerable: true
   }]);
 
+  var _Textbox = Textbox;
   Textbox = decorators.template('textbox')(Textbox) || Textbox;
   Textbox = decorators.placeholder(Textbox) || Textbox;
   Textbox = decorators.attrs(Textbox) || Textbox;
@@ -358,17 +357,15 @@ var Textbox = (function (_Component) {
 exports.Textbox = Textbox;
 
 var Checkbox = (function (_Component2) {
+  _inherits(Checkbox, _Component2);
+
   function Checkbox() {
     _classCallCheck(this, _Checkbox);
 
     _Component2.apply(this, arguments);
   }
 
-  _inherits(Checkbox, _Component2);
-
-  var _Checkbox = Checkbox;
-
-  _Checkbox.prototype.getLocals = function getLocals() {
+  Checkbox.prototype.getLocals = function getLocals() {
     var locals = _Component2.prototype.getLocals.call(this);
     locals.attrs = this.getAttrs();
     // checkboxes must always have a label
@@ -376,7 +373,7 @@ var Checkbox = (function (_Component2) {
     return locals;
   };
 
-  _createClass(_Checkbox, null, [{
+  _createClass(Checkbox, null, [{
     key: 'transformer',
     value: {
       format: function format(value) {
@@ -389,6 +386,7 @@ var Checkbox = (function (_Component2) {
     enumerable: true
   }]);
 
+  var _Checkbox = Checkbox;
   Checkbox = decorators.template('checkbox')(Checkbox) || Checkbox;
   Checkbox = decorators.attrs(Checkbox) || Checkbox;
   return Checkbox;
@@ -397,17 +395,15 @@ var Checkbox = (function (_Component2) {
 exports.Checkbox = Checkbox;
 
 var Select = (function (_Component3) {
+  _inherits(Select, _Component3);
+
   function Select() {
     _classCallCheck(this, _Select);
 
     _Component3.apply(this, arguments);
   }
 
-  _inherits(Select, _Component3);
-
-  var _Select = Select;
-
-  _Select.prototype.getTransformer = function getTransformer() {
+  Select.prototype.getTransformer = function getTransformer() {
     var options = this.props.options;
     if (options.transformer) {
       return options.transformer;
@@ -418,19 +414,19 @@ var Select = (function (_Component3) {
     return Select.transformer(this.getNullOption());
   };
 
-  _Select.prototype.getNullOption = function getNullOption() {
+  Select.prototype.getNullOption = function getNullOption() {
     return this.props.options.nullOption || { value: '', text: '-' };
   };
 
-  _Select.prototype.isMultiple = function isMultiple() {
+  Select.prototype.isMultiple = function isMultiple() {
     return this.typeInfo.innerType.meta.kind === 'list';
   };
 
-  _Select.prototype.getEnum = function getEnum() {
+  Select.prototype.getEnum = function getEnum() {
     return this.isMultiple() ? _util.getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
   };
 
-  _Select.prototype.getOptions = function getOptions() {
+  Select.prototype.getOptions = function getOptions() {
     var options = this.props.options;
     var items = options.options ? options.options.slice() : _util.getOptionsOfEnum(this.getEnum());
     if (options.order) {
@@ -443,7 +439,7 @@ var Select = (function (_Component3) {
     return items;
   };
 
-  _Select.prototype.getLocals = function getLocals() {
+  Select.prototype.getLocals = function getLocals() {
     var locals = _Component3.prototype.getLocals.call(this);
     locals.attrs = this.getAttrs();
     locals.options = this.getOptions();
@@ -451,7 +447,7 @@ var Select = (function (_Component3) {
     return locals;
   };
 
-  _createClass(_Select, null, [{
+  _createClass(Select, null, [{
     key: 'transformer',
     value: function value(nullOption) {
       return {
@@ -477,6 +473,7 @@ var Select = (function (_Component3) {
     enumerable: true
   }]);
 
+  var _Select = Select;
   Select = decorators.template('select')(Select) || Select;
   Select = decorators.attrs(Select) || Select;
   return Select;
@@ -485,17 +482,15 @@ var Select = (function (_Component3) {
 exports.Select = Select;
 
 var Radio = (function (_Component4) {
+  _inherits(Radio, _Component4);
+
   function Radio() {
     _classCallCheck(this, _Radio);
 
     _Component4.apply(this, arguments);
   }
 
-  _inherits(Radio, _Component4);
-
-  var _Radio = Radio;
-
-  _Radio.prototype.getOptions = function getOptions() {
+  Radio.prototype.getOptions = function getOptions() {
     var options = this.props.options;
     var items = options.options ? options.options.slice() : _util.getOptionsOfEnum(this.typeInfo.innerType);
     if (options.order) {
@@ -504,13 +499,14 @@ var Radio = (function (_Component4) {
     return items;
   };
 
-  _Radio.prototype.getLocals = function getLocals() {
+  Radio.prototype.getLocals = function getLocals() {
     var locals = _Component4.prototype.getLocals.call(this);
     locals.attrs = this.getAttrs();
     locals.options = this.getOptions();
     return locals;
   };
 
+  var _Radio = Radio;
   Radio = decorators.template('radio')(Radio) || Radio;
   Radio = decorators.attrs(Radio) || Radio;
   return Radio;
@@ -519,28 +515,26 @@ var Radio = (function (_Component4) {
 exports.Radio = Radio;
 
 var Datetime = (function (_Component5) {
+  _inherits(Datetime, _Component5);
+
   function Datetime() {
     _classCallCheck(this, _Datetime);
 
     _Component5.apply(this, arguments);
   }
 
-  _inherits(Datetime, _Component5);
-
-  var _Datetime = Datetime;
-
-  _Datetime.prototype.getOrder = function getOrder() {
+  Datetime.prototype.getOrder = function getOrder() {
     return this.props.options.order || ['M', 'D', 'YY'];
   };
 
-  _Datetime.prototype.getLocals = function getLocals() {
+  Datetime.prototype.getLocals = function getLocals() {
     var locals = _Component5.prototype.getLocals.call(this);
     locals.attrs = this.getAttrs();
     locals.order = this.getOrder();
     return locals;
   };
 
-  _createClass(_Datetime, null, [{
+  _createClass(Datetime, null, [{
     key: 'transformer',
     value: {
       format: function format(value) {
@@ -554,6 +548,7 @@ var Datetime = (function (_Component5) {
     enumerable: true
   }]);
 
+  var _Datetime = Datetime;
   Datetime = decorators.template('date')(Datetime) || Datetime;
   Datetime = decorators.attrs(Datetime) || Datetime;
   return Datetime;
@@ -562,17 +557,15 @@ var Datetime = (function (_Component5) {
 exports.Datetime = Datetime;
 
 var Struct = (function (_Component6) {
+  _inherits(Struct, _Component6);
+
   function Struct() {
     _classCallCheck(this, _Struct);
 
     _Component6.apply(this, arguments);
   }
 
-  _inherits(Struct, _Component6);
-
-  var _Struct = Struct;
-
-  _Struct.prototype.validate = function validate() {
+  Struct.prototype.validate = function validate() {
     var value = {};
     var errors = [];
     var hasError = false;
@@ -600,26 +593,26 @@ var Struct = (function (_Component6) {
     return new _tcombValidation2['default'].ValidationResult({ errors: errors, value: value });
   };
 
-  _Struct.prototype.onChange = function onChange(fieldName, fieldValue, path, kind) {
+  Struct.prototype.onChange = function onChange(fieldName, fieldValue, path, kind) {
     var value = _tcombValidation2['default'].mixin({}, this.state.value);
     value[fieldName] = fieldValue;
     this.state.value = value;
     this.props.onChange(value, path, kind);
   };
 
-  _Struct.prototype.getTemplate = function getTemplate() {
+  Struct.prototype.getTemplate = function getTemplate() {
     return this.props.options.template || this.getTemplates().struct;
   };
 
-  _Struct.prototype.getTypeProps = function getTypeProps() {
+  Struct.prototype.getTypeProps = function getTypeProps() {
     return this.typeInfo.innerType.meta.props;
   };
 
-  _Struct.prototype.getOrder = function getOrder() {
+  Struct.prototype.getOrder = function getOrder() {
     return this.props.options.order || Object.keys(this.getTypeProps());
   };
 
-  _Struct.prototype.getInputs = function getInputs() {
+  Struct.prototype.getInputs = function getInputs() {
     var _props = this.props;
     var options = _props.options;
     var ctx = _props.ctx;
@@ -659,7 +652,7 @@ var Struct = (function (_Component6) {
     return inputs;
   };
 
-  _Struct.prototype.getLocals = function getLocals() {
+  Struct.prototype.getLocals = function getLocals() {
     var options = this.props.options;
     var locals = _Component6.prototype.getLocals.call(this);
     locals.order = this.getOrder();
@@ -667,7 +660,7 @@ var Struct = (function (_Component6) {
     return locals;
   };
 
-  _createClass(_Struct, null, [{
+  _createClass(Struct, null, [{
     key: 'transformer',
     value: {
       format: function format(value) {
@@ -680,6 +673,7 @@ var Struct = (function (_Component6) {
     enumerable: true
   }]);
 
+  var _Struct = Struct;
   Struct = decorators.templates(Struct) || Struct;
   return Struct;
 })(Component);
@@ -698,6 +692,21 @@ function toSameLength(value, keys, uidGenerator) {
 }
 
 var List = (function (_Component7) {
+  _inherits(List, _Component7);
+
+  _createClass(List, null, [{
+    key: 'transformer',
+    value: {
+      format: function format(value) {
+        return Nil.is(value) ? noarr : value;
+      },
+      parse: function parse(value) {
+        return value;
+      }
+    },
+    enumerable: true
+  }]);
+
   function List(props) {
     _classCallCheck(this, _List);
 
@@ -707,11 +716,7 @@ var List = (function (_Component7) {
     });
   }
 
-  _inherits(List, _Component7);
-
-  var _List = List;
-
-  _List.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
+  List.prototype.componentWillReceiveProps = function componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
       this.typeInfo = _util.getTypeInfo(props.type);
     }
@@ -722,7 +727,7 @@ var List = (function (_Component7) {
     });
   };
 
-  _List.prototype.validate = function validate() {
+  List.prototype.validate = function validate() {
     var value = [];
     var errors = [];
     var hasError = false;
@@ -745,7 +750,7 @@ var List = (function (_Component7) {
     return new _tcombValidation2['default'].ValidationResult({ errors: errors, value: value });
   };
 
-  _List.prototype.onChange = function onChange(value, keys, path, kind) {
+  List.prototype.onChange = function onChange(value, keys, path, kind) {
     var _this2 = this;
 
     keys = toSameLength(value, keys, this.props.ctx.uidGenerator);
@@ -761,20 +766,20 @@ var List = (function (_Component7) {
     }
   };
 
-  _List.prototype.addItem = function addItem(evt) {
+  List.prototype.addItem = function addItem(evt) {
     evt.preventDefault();
     var value = this.state.value.concat(undefined);
     var keys = this.state.keys.concat(this.props.ctx.uidGenerator.next());
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   };
 
-  _List.prototype.onItemChange = function onItemChange(itemIndex, itemValue, path) {
+  List.prototype.onItemChange = function onItemChange(itemIndex, itemValue, path) {
     var value = this.state.value.slice();
     value[itemIndex] = itemValue;
     this.onChange(value, this.state.keys, path);
   };
 
-  _List.prototype.removeItem = function removeItem(i, evt) {
+  List.prototype.removeItem = function removeItem(i, evt) {
     evt.preventDefault();
     var value = this.state.value.slice();
     value.splice(i, 1);
@@ -783,25 +788,25 @@ var List = (function (_Component7) {
     this.onChange(value, keys, this.props.ctx.path.concat(i), 'remove');
   };
 
-  _List.prototype.moveUpItem = function moveUpItem(i, evt) {
+  List.prototype.moveUpItem = function moveUpItem(i, evt) {
     evt.preventDefault();
     if (i > 0) {
       this.onChange(_util.move(this.state.value.slice(), i, i - 1), _util.move(this.state.keys.slice(), i, i - 1), this.props.ctx.path.concat(i), 'moveUp');
     }
   };
 
-  _List.prototype.moveDownItem = function moveDownItem(i, evt) {
+  List.prototype.moveDownItem = function moveDownItem(i, evt) {
     evt.preventDefault();
     if (i < this.state.value.length - 1) {
       this.onChange(_util.move(this.state.value.slice(), i, i + 1), _util.move(this.state.keys.slice(), i, i + 1), this.props.ctx.path.concat(i), 'moveDown');
     }
   };
 
-  _List.prototype.getTemplate = function getTemplate() {
+  List.prototype.getTemplate = function getTemplate() {
     return this.props.options.template || this.getTemplates().list;
   };
 
-  _List.prototype.getItems = function getItems() {
+  List.prototype.getItems = function getItems() {
     var _this3 = this;
 
     var _props2 = this.props;
@@ -849,7 +854,7 @@ var List = (function (_Component7) {
     });
   };
 
-  _List.prototype.getLocals = function getLocals() {
+  List.prototype.getLocals = function getLocals() {
     var options = this.props.options;
     var i18n = this.getI18n();
     var locals = _Component7.prototype.getLocals.call(this);
@@ -861,19 +866,7 @@ var List = (function (_Component7) {
     return locals;
   };
 
-  _createClass(_List, null, [{
-    key: 'transformer',
-    value: {
-      format: function format(value) {
-        return Nil.is(value) ? noarr : value;
-      },
-      parse: function parse(value) {
-        return value;
-      }
-    },
-    enumerable: true
-  }]);
-
+  var _List = List;
   List = decorators.templates(List) || List;
   return List;
 })(Component);
@@ -881,13 +874,13 @@ var List = (function (_Component7) {
 exports.List = List;
 
 var Form = (function (_React$Component2) {
+  _inherits(Form, _React$Component2);
+
   function Form() {
     _classCallCheck(this, Form);
 
     _React$Component2.apply(this, arguments);
   }
-
-  _inherits(Form, _React$Component2);
 
   Form.prototype.validate = function validate() {
     return this.refs.input.validate();
@@ -1762,11 +1755,14 @@ var rootParent = {}
  * get the Object implementation, which is slower but will work correctly.
  */
 Buffer.TYPED_ARRAY_SUPPORT = (function () {
+  function Foo () {}
   try {
     var buf = new ArrayBuffer(0)
     var arr = new Uint8Array(buf)
     arr.foo = function () { return 42 }
+    arr.constructor = Foo
     return arr.foo() === 42 && // typed array instances can be augmented
+        arr.constructor === Foo && // constructor can be set
         typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
         new Uint8Array(1).subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
   } catch (e) {
@@ -26825,6 +26821,7 @@ var inherits = require('inherits');
 var through = require('through');
 var resumer = require('resumer');
 var inspect = require('object-inspect');
+var hasOwn = Object.prototype.hasOwnProperty;
 var nextTick = typeof setImmediate !== 'undefined'
     ? setImmediate
     : process.nextTick
@@ -27007,7 +27004,7 @@ function getNextTest (results) {
 }
 
 function has (obj, prop) {
-    return Object.prototype.hasOwnProperty.call(obj, prop);
+    return hasOwn.call(obj, prop);
 }
 
 }).call(this,require('_process'))
@@ -27683,6 +27680,10 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     else if (obj === null) {
         return 'null';
     }
+    else if (isSymbol(obj)) {
+        var symString = Symbol.prototype.toString.call(obj);
+        return typeof obj === 'object' ? 'Object(' + symString + ')' : symString;
+    }
     else if (isElement(obj)) {
         var s = '<' + String(obj.nodeName).toLowerCase();
         var attrs = obj.attributes || [];
@@ -27747,6 +27748,7 @@ function isArray (obj) { return toStr(obj) === '[object Array]' }
 function isDate (obj) { return toStr(obj) === '[object Date]' }
 function isRegExp (obj) { return toStr(obj) === '[object RegExp]' }
 function isError (obj) { return toStr(obj) === '[object Error]' }
+function isSymbol (obj) { return toStr(obj) === '[object Symbol]' }
 
 function has (obj, key) {
     if (!{}.hasOwnProperty) return key in obj;
@@ -27950,8 +27952,16 @@ var ValidationError = t.struct({
   path: t.list(t.union([t.Str, t.Num]))
 }, 'ValidationError');
 
+function stringify(x) {
+  try { // handle "Converting circular structure to JSON" error
+    return JSON.stringify(x);
+  } catch (e) {
+    return String(x);
+  }
+}
+
 function getDefaultMessage(actual, expected, path) {
-  return '/' + path.join('/') + ' is ' + JSON.stringify(actual) + ' should be a ' + t.getTypeName(expected);
+  return '/' + path.join('/') + ' is ' + stringify(actual) + ' should be a ' + t.getTypeName(expected);
 }
 
 ValidationError.of = function of(actual, expected, path) {
@@ -27978,7 +27988,7 @@ ValidationResult.prototype.firstError = function firstError() {
 
 ValidationResult.prototype.toString = function toString() {
   return this.isValid() ?
-    '[ValidationResult, true, ' + JSON.stringify(this.value) + ']' :
+    '[ValidationResult, true, ' + stringify(this.value) + ']' :
     '[ValidationResult, false, (' + this.errors.map(function errorToString(err) {
       return err.message;
     }).join(', ') + ')]';
@@ -28142,6 +28152,16 @@ module.exports = t;
 (function (process){
 'use strict';
 
+function stringify(x) {
+  try { // handle "Converting circular structure to JSON" error
+    return JSON.stringify(x, null, 2);
+  } catch (e) {
+    return String(x);
+  }
+}
+
+exports.stringify = stringify;
+
 function isInstanceOf(x, constructor) {
   return x instanceof constructor;
 }
@@ -28197,17 +28217,17 @@ function is(x, type) {
     isInstanceOf(x, type); // type should be a class constructor
 }
 
-function create(type, value, mut) {
+function create(type, value) {
   if (isType(type)) {
     return isStruct(type) ?
       // for structs the new operator is allowed
-      new type(value, mut) :
-      type(value, mut);
+      new type(value) :
+      type(value);
   }
 
   if (process.env.NODE_ENV !== 'production') {
     // type should be a class constructor and value some instance, just check membership and return the value
-    assert(isInstanceOf(value, type), 'Invalid argument value supplied to constructor ' + getFunctionName(type));
+    assert(isInstanceOf(value, type), 'The value ' + exports.stringify(value) + ' is not an instance of ' + getFunctionName(type));
   }
 
   return value;
@@ -28225,16 +28245,14 @@ function getTypeName(constructor) {
 
 // configurable
 exports.fail = function fail(message) {
-  throw new TypeError(message);
+  throw new TypeError('[tcomb] ' + message);
 };
 
 function assert(guard, message) {
   if (guard !== true) {
-    exports.fail(message || 'assert failed');
+    exports.fail(message || 'Assert failed');
   }
 }
-
-var slice = Array.prototype.slice;
 
 // safe mixin: cannot override props unless specified
 function mixin(target, source, overwrite) {
@@ -28243,7 +28261,7 @@ function mixin(target, source, overwrite) {
     if (source.hasOwnProperty(k)) {
       if (overwrite !== true) {
         if (process.env.NODE_ENV !== 'production') {
-          assert(!target.hasOwnProperty(k), 'Cannot overwrite property ' + k);
+          assert(!target.hasOwnProperty(k), 'Invalid call to mixin(): cannot overwrite property ' + exports.stringify(k) + ' of target object');
         }
       }
       target[k] = source[k];
@@ -28268,16 +28286,13 @@ function shallowCopy(x) {
 function update(instance, spec) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isObject(spec), 'Invalid argument spec supplied to update()');
+    assert(isObject(spec), 'Invalid argument spec = ' + exports.stringify(spec) + ' supplied to function update(instance, spec): expected an object containing commands');
   }
 
   var value = shallowCopy(instance);
   for (var k in spec) {
     if (spec.hasOwnProperty(k)) {
       if (update.commands.hasOwnProperty(k)) {
-        if (process.env.NODE_ENV !== 'production') {
-          assert(Object.keys(spec).length === 1, 'Invalid argument spec supplied to `update()`');
-        }
         return update.commands[k](spec[k], value);
       }
       else {
@@ -28292,7 +28307,7 @@ update.commands = {
   '$apply': function (f, value) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isFunction(f), 'Invalid argument f supplied to $apply command');
+      assert(isFunction(f), 'Invalid argument f supplied to immutability helper {"$apply": f}: expected a function');
     }
 
     return f(value);
@@ -28300,8 +28315,8 @@ update.commands = {
   '$push': function (elements, arr) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isArray(elements), 'Invalid argument elements supplied to $push command');
-      assert(isArray(arr), 'Invalid argument arr supplied to $push command');
+      assert(isArray(elements), 'Invalid argument elements supplied to immutability helper {"$push": elements}: expected an array');
+      assert(isArray(arr), 'Invalid value supplied to immutability helper "$push": expected an array');
     }
 
     return arr.concat(elements);
@@ -28309,8 +28324,8 @@ update.commands = {
   '$remove': function (keys, obj) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isArray(keys), 'Invalid argument keys supplied to $remove command');
-      assert(isObject(obj), 'Invalid argument obj supplied to $remove command');
+      assert(isArray(keys), 'Invalid argument keys supplied to immutability helper {"$remove": keys}: expected an array');
+      assert(isObject(obj), 'Invalid value supplied to immutability helper $remove: expected an object');
     }
 
     for (var i = 0, len = keys.length; i < len; i++ ) {
@@ -28324,8 +28339,8 @@ update.commands = {
   '$splice': function (splices, arr) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(list(Arr).is(splices), 'Invalid argument splices supplied to $splice command');
-      assert(isArray(arr), 'Invalid argument arr supplied to $splice command');
+      assert(list(Arr).is(splices), 'Invalid argument splices supplied to immutability helper {"$splice": splices}: expected an array of arrays');
+      assert(isArray(arr), 'Invalid value supplied to immutability helper $splice: expected an array');
     }
 
     return splices.reduce(function (acc, splice) {
@@ -28336,10 +28351,10 @@ update.commands = {
   '$swap': function (config, arr) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isObject(config), 'Invalid argument config supplied to $swap command');
-      assert(isNumber(config.from), 'Invalid argument config.from supplied to $swap command');
-      assert(isNumber(config.to), 'Invalid argument config.to supplied to $swap command');
-      assert(isArray(arr), 'Invalid argument arr supplied to $swap command');
+      assert(isObject(config), 'Invalid argument config supplied to immutability helper {"$swap": config}: expected an object');
+      assert(isNumber(config.from), 'Invalid argument config.from supplied to immutability helper {"$swap": config}: expected a number');
+      assert(isNumber(config.to), 'Invalid argument config.to supplied to immutability helper {"$swap": config}: expected a number');
+      assert(isArray(arr), 'Invalid value supplied to immutability helper $swap');
     }
 
     var element = arr[config.to];
@@ -28350,8 +28365,8 @@ update.commands = {
   '$unshift': function (elements, arr) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isArray(elements), 'Invalid argument elements supplied to $unshift command');
-      assert(isArray(arr), 'Invalid argument arr supplied to $unshift command');
+      assert(isArray(elements), 'Invalid argument elements supplied to immutability helper {"$unshift": elements}');
+      assert(isArray(arr), 'Invalid value supplied to immutability helper $unshift');
     }
 
     return elements.concat(arr);
@@ -28364,15 +28379,15 @@ update.commands = {
 function irreducible(name, predicate) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isString(name), 'Invalid argument name supplied to irreducible combinator');
-    assert(isFunction(predicate), 'Invalid argument predicate supplied to irreducible combinator');
+    assert(isString(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to irreducible(name, predicate)');
+    assert(isFunction(predicate), 'Invalid argument predicate supplied to irreducible(name, predicate)');
   }
 
   function Irreducible(value) {
 
     if (process.env.NODE_ENV !== 'production') {
       forbidNewOperator(this, Irreducible);
-      assert(predicate(value), 'Invalid argument value supplied to irreducible ' + name);
+      assert(predicate(value), 'Invalid argument value = ' + exports.stringify(value) + ' supplied to irreducible type ' + name);
     }
 
     return value;
@@ -28396,35 +28411,35 @@ var Any = irreducible('Any', function () {
 
 var Nil = irreducible('Nil', isNil);
 
-var Str = irreducible('Str', isString);
+var Str = irreducible('String', isString);
 
-var Num = irreducible('Num', isNumber);
+var Num = irreducible('Number', isNumber);
 
-var Bool = irreducible('Bool', isBoolean);
+var Bool = irreducible('Boolean', isBoolean);
 
-var Arr = irreducible('Arr', isArray);
+var Arr = irreducible('Array', isArray);
 
-var Obj = irreducible('Obj', isObject);
+var Obj = irreducible('Object', isObject);
 
-var Func = irreducible('Func', isFunction);
+var Func = irreducible('Function', isFunction);
 
-var Err = irreducible('Err', function (x) {
+var Err = irreducible('Error', function (x) {
   return isInstanceOf(x, Error);
 });
 
-var Re = irreducible('Re', function (x) {
+var Re = irreducible('RegExp', function (x) {
   return isInstanceOf(x, RegExp);
 });
 
-var Dat = irreducible('Dat', function (x) {
+var Dat = irreducible('Date', function (x) {
   return isInstanceOf(x, Date);
 });
 
 function struct(props, name) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(dict(Str, Func).is(props), 'Invalid argument props supplied to struct combinator');
-    assert(isTypeName(name), 'Invalid argument name supplied to struct combinator');
+    assert(dict(Str, Func).is(props), 'Invalid argument props = ' + exports.stringify(props) + ' supplied to struct(props, name): expected a dictionary of tcomb types');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to struct(props, name): expected a string');
   }
 
   var defaultName = '{' + Object.keys(props).map(function (prop) {
@@ -28440,7 +28455,7 @@ function struct(props, name) {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isObject(value), 'Invalid argument value supplied to struct ' + displayName);
+      assert(isObject(value), 'Invalid argument value = ' + exports.stringify(value) + ' supplied to struct ' + displayName + ': expected an object');
     }
 
     if (!isInstanceOf(this, Struct)) { // makes `new` optional
@@ -28483,7 +28498,7 @@ function struct(props, name) {
         return x;
       }
       if (process.env.NODE_ENV !== 'production') {
-        assert(isStruct(x), 'Invalid argument structs[' + i + '] supplied to ' + displayName + '.extend()');
+        assert(isStruct(x), 'Invalid argument structs[' + i + '] = ' + exports.stringify(structs[i]) + ' supplied to ' + displayName + '.extend(structs, name)');
       }
       return x.meta.props;
     });
@@ -28499,17 +28514,15 @@ function struct(props, name) {
 function union(types, name) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isArray(types), 'Invalid argument types supplied to union combinator: must be an array');
-    assert(types.every(isFunction), 'Invalid argument types supplied to union combinator: at least one element is not a type not a constructor');
-    assert(types.length >= 2, 'Invalid argument types supplied to union combinator: provide at least two types');
-    assert(isTypeName(name), 'Invalid argument name supplied to union combinator');
+    assert(isArray(types) && types.every(isFunction) && types.length >= 2, 'Invalid argument types = ' + exports.stringify(types) + ' supplied to union(types, name): expected an array of at least 2 types');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to union(types, name): expected a string');
   }
 
   var defaultName = types.map(getTypeName).join(' | ');
 
   var displayName = name || defaultName;
 
-  function Union(value, mut) {
+  function Union(value) {
 
     if (process.env.NODE_ENV !== 'production') {
       forbidNewOperator(this, Union);
@@ -28522,7 +28535,7 @@ function union(types, name) {
       assert(isType(type), 'The dispatch() function of union ' + displayName + ' returns no type');
     }
 
-    return create(type, value, mut);
+    return create(type, value);
   }
 
   Union.meta = {
@@ -28553,7 +28566,7 @@ function union(types, name) {
 function maybe(type, name) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isFunction(type), 'Invalid argument type supplied to maybe combinator');
+    assert(isFunction(type), 'Invalid argument type = ' + exports.stringify(type) + ' supplied to maybe(type, name): expected a type');
   }
 
   if (isMaybe(type) || type === Any || type === Nil) { // makes the combinator idempotent and handle Any, Nil
@@ -28561,16 +28574,16 @@ function maybe(type, name) {
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isTypeName(name), 'Invalid argument name supplied to maybe combinator');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to maybe(type, name): expected a string');
   }
 
   name = name || ('?' + getTypeName(type));
 
-  function Maybe(value, mut) {
+  function Maybe(value) {
     if (process.env.NODE_ENV !== 'production') {
       forbidNewOperator(this, Maybe);
     }
-    return isNil(value) ? null : create(type, value, mut);
+    return isNil(value) ? null : create(type, value);
   }
 
   Maybe.meta = {
@@ -28591,18 +28604,18 @@ function maybe(type, name) {
 function enums(map, name) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isObject(map), 'Invalid argument map supplied to enums combinator');
-    assert(isTypeName(name), 'Invalid argument name supplied to enums combinator');
+    assert(isObject(map), 'Invalid argument map = ' + exports.stringify(map) + ' supplied to enums(map, name): expected a hash of strings / numbers');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to enums(map, name): expected a string');
   }
 
-  var defaultName = Object.keys(map).map(function (k) { return JSON.stringify(k); }).join(' | ');
+  var defaultName = Object.keys(map).map(function (k) { return exports.stringify(k); }).join(' | ');
 
   var displayName = name || defaultName;
 
   function Enums(value) {
     if (process.env.NODE_ENV !== 'production') {
       forbidNewOperator(this, Enums);
-      assert(Enums.is(value), 'Invalid argument value supplied to enums ' + displayName + ', expected one of ' + JSON.stringify(Object.keys(map)));
+      assert(Enums.is(value), 'Invalid argument value = ' + exports.stringify(value) + ' supplied to enums ' + displayName + ': expected one of ' + exports.stringify(Object.keys(map)));
     }
     return value;
   }
@@ -28634,9 +28647,8 @@ enums.of = function (keys, name) {
 function tuple(types, name) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isArray(types), 'Invalid argument types supplied to tuple combinator: must be an array');
-    assert(types.every(isFunction), 'Invalid argument types supplied to tuple combinator: at least one element is not a type not a constructor');
-    assert(isTypeName(name), 'Invalid argument name supplied to tuple combinator');
+    assert(isArray(types) && types.every(isFunction), 'Invalid argument types = ' + exports.stringify(types) + ' supplied to tuple(types, name): expected an array of types');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to tuple(types, name): expected a string');
   }
 
   var defaultName = '[' + types.map(getTypeName).join(', ') + ']';
@@ -28652,7 +28664,7 @@ function tuple(types, name) {
   function Tuple(value) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isArray(value) && value.length === types.length, 'Invalid argument value supplied to tuple ' + displayName + ', expected an array of length ' + types.length);
+      assert(isArray(value) && value.length === types.length, 'Invalid argument value = ' + exports.stringify(value) + ' supplied to tuple ' + displayName + ': expected an array of length ' + types.length);
     }
 
     if (isTuple(value)) { // makes Tuple idempotent
@@ -28701,25 +28713,25 @@ function tuple(types, name) {
 function subtype(type, predicate, name) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isFunction(type), 'Invalid argument type subtype combinator');
-    assert(isFunction(predicate), 'Invalid argument predicate supplied to subtype combinator');
-    assert(isTypeName(name), 'Invalid argument name supplied to subtype combinator');
+    assert(isFunction(type), 'Invalid argument type = ' + exports.stringify(type) + ' supplied to subtype(type, predicate, name): expected a type');
+    assert(isFunction(predicate), 'Invalid argument predicate supplied to subtype(type, predicate, name): expected a function');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to subtype(type, predicate, name): expected a string');
   }
 
   var defaultName = '{' + getTypeName(type) + ' | ' + getFunctionName(predicate) + '}';
 
   var displayName = name || defaultName;
 
-  function Subtype(value, mut) {
+  function Subtype(value) {
 
     if (process.env.NODE_ENV !== 'production') {
       forbidNewOperator(this, Subtype);
     }
 
-    var x = create(type, value, mut);
+    var x = create(type, value);
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(predicate(x), 'Invalid argument value supplied to subtype ' + displayName);
+      assert(predicate(x), 'Invalid argument value = ' + exports.stringify(value) + ' supplied to subtype ' + displayName);
     }
 
     return x;
@@ -28748,8 +28760,8 @@ function subtype(type, predicate, name) {
 function list(type, name) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isFunction(type), 'Invalid argument type supplied to list combinator');
-    assert(isTypeName(name), 'Invalid argument name supplied to list combinator');
+    assert(isFunction(type), 'Invalid argument type = ' + exports.stringify(type) + ' supplied to list(type, name): expected a type');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to list(type, name): expected a string');
   }
 
   var defaultName = 'Array<' + getTypeName(type) + '>';
@@ -28762,10 +28774,10 @@ function list(type, name) {
     });
   }
 
-  function List(value, mut) {
+  function List(value) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isArray(value), 'Invalid argument value supplied to list ' + displayName);
+      assert(isArray(value), 'Invalid argument value = ' + exports.stringify(value) + ' supplied to list ' + displayName);
     }
 
     if (isList(value)) { // makes List idempotent
@@ -28777,7 +28789,7 @@ function list(type, name) {
     var arr = [];
     for (var i = 0, len = value.length; i < len; i++ ) {
       var actual = value[i];
-      arr.push(create(type, actual, mut));
+      arr.push(create(type, actual));
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -28809,9 +28821,9 @@ function list(type, name) {
 function dict(domain, codomain, name) {
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(isFunction(domain), 'Invalid argument domain supplied to dict combinator');
-    assert(isFunction(codomain), 'Invalid argument codomain supplied to dict combinator');
-    assert(isTypeName(name), 'Invalid argument name supplied to dict combinator');
+    assert(isFunction(domain), 'Invalid argument domain = ' + exports.stringify(domain) + ' supplied to dict(domain, codomain, name): expected a type');
+    assert(isFunction(codomain), 'Invalid argument codomain = ' + exports.stringify(codomain) + ' supplied to dict(domain, codomain, name): expected a type');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to dict(domain, codomain, name): expected a string');
   }
 
   var defaultName = '{[key: ' + getTypeName(domain) + ']: ' + getTypeName(codomain) + '}';
@@ -28829,10 +28841,10 @@ function dict(domain, codomain, name) {
     return true;
   }
 
-  function Dict(value, mut) {
+  function Dict(value) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isObject(value), 'Invalid argument value supplied to dict ' + displayName);
+      assert(isObject(value), 'Invalid argument value = ' + exports.stringify(value) + ' supplied to dict ' + displayName);
     }
 
     if (isDict(value)) { // makes Dict idempotent
@@ -28847,7 +28859,7 @@ function dict(domain, codomain, name) {
       if (value.hasOwnProperty(k)) {
         k = create(domain, k);
         var actual = value[k];
-        obj[k] = create(codomain, actual, mut);
+        obj[k] = create(codomain, actual);
       }
     }
 
@@ -28887,9 +28899,9 @@ function func(domain, codomain, name) {
   domain = isArray(domain) ? domain : [domain]; // handle handy syntax for unary functions
 
   if (process.env.NODE_ENV !== 'production') {
-    assert(list(Func).is(domain), 'Invalid argument domain supplied to func combinator');
-    assert(isFunction(codomain), 'Invalid argument codomain supplied to func combinator');
-    assert(isTypeName(name), 'Invalid argument name supplied to func combinator');
+    assert(list(Func).is(domain), 'Invalid argument domain = ' + exports.stringify(domain) + ' supplied to func(domain, codomain, name): expected an array of types');
+    assert(isFunction(codomain), 'Invalid argument codomain = ' + exports.stringify(codomain) + ' supplied to func(domain, codomain, name): expected a type');
+    assert(isTypeName(name), 'Invalid argument name = ' + exports.stringify(name) + ' supplied to func(domain, codomain, name): expected a string');
   }
 
   var defaultName = '(' + domain.map(getTypeName).join(', ') + ') => ' + getTypeName(codomain);
@@ -28903,7 +28915,7 @@ function func(domain, codomain, name) {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(FuncType.is(value), 'Invalid argument value supplied to func ' + displayName);
+      assert(FuncType.is(value), 'Invalid argument value = ' + exports.stringify(value) + ' supplied to func ' + displayName);
     }
 
     return value;
@@ -28930,8 +28942,8 @@ function func(domain, codomain, name) {
   FuncType.of = function (f, curried) {
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(isFunction(f), 'Invalid argument f supplied to func.of ' + displayName);
-      assert(isNil(curried) || isBoolean(curried), 'Invalid argument curried supplied to func.of ' + displayName);
+      assert(isFunction(f), 'Invalid argument f supplied to func.of ' + displayName + ': expected a function');
+      assert(isNil(curried) || isBoolean(curried), 'Invalid argument curried = ' + exports.stringify(curried) + ' supplied to func.of ' + displayName + ': expected a boolean');
     }
 
     if (FuncType.is(f)) { // makes FuncType.of idempotent
@@ -28939,7 +28951,7 @@ function func(domain, codomain, name) {
     }
 
     function fn() {
-      var args = slice.call(arguments);
+      var args = Array.prototype.slice.call(arguments);
       var len = curried ?
         args.length :
         domain.length;
@@ -28984,14 +28996,23 @@ mixin(exports, {
   Any: Any,
   Nil: Nil,
   Str: Str,
+  String: Str,
   Num: Num,
+  Number: Num,
   Bool: Bool,
+  Boolean: Bool,
   Arr: Arr,
+  Array: Arr,
   Obj: Obj,
+  Object: Obj,
   Func: Func,
+  Function: Func,
   Err: Err,
+  Error: Err,
   Re: Re,
+  RegExp: Re,
   Dat: Dat,
+  Date: Dat,
   irreducible: irreducible,
   struct: struct,
   enums: enums,
@@ -29934,17 +29955,6 @@ tape('Datetime', function (tape) {
       ctx: ctx,
       value: new Date(1973, 10, 30)
     }).getLocals().value, ['1973', '10', '30'], 'should handle value option');
-  });
-
-  tape.test('transformer', function (tape) {
-    tape.plan(1);
-
-    tape.strictEqual(new Datetime({
-      type: t.Dat,
-      options: { transformer: transformer },
-      ctx: ctx,
-      value: new Date(1973, 10, 30)
-    }).getLocals().value, '1973-11-29T23:00:00.000Z', 'should handle transformer option (format)');
   });
 
   tape.test('hasError', function (tape) {
