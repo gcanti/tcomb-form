@@ -144,9 +144,12 @@ export class Component extends React.Component {
     this.setState({value: this.getTransformer().format(props.value)});
   }
 
-  onChange(value) {
+  onChange(value, callback) {
     this.setState({value}, () => {
       this.props.onChange(value, this.props.ctx.path);
+      if (callback && typeof callback === 'function') {
+        callback(value, this.props.ctx.path);
+      }
     });
   }
 
