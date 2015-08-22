@@ -222,7 +222,7 @@ var Component = (function (_React$Component) {
   Component.prototype.getDefaultLabel = function getDefaultLabel() {
     var ctx = this.props.ctx;
     if (ctx.label) {
-      return ctx.label + (this.typeInfo.isMaybe ? this.getI18n().optional : '');
+      return ctx.label + (this.typeInfo.isMaybe ? this.getI18n().optional : this.getI18n().required);
     }
   };
 
@@ -30725,13 +30725,21 @@ tape('Textbox', function (tape) {
   });
 
   tape.test('label', function (tape) {
-    tape.plan(4);
+    tape.plan(5);
 
     tape.strictEqual(new Textbox({
       type: t.Str,
       options: {},
       ctx: ctx
     }).getLocals().label, 'Default label', 'should have a default label');
+
+    ctx.i18n.required = ' (required)';
+    tape.strictEqual(new Textbox({
+      type: t.Str,
+      options: {},
+      ctx: ctx
+    }).getLocals().label, 'Default label (required)', 'should have a default label');
+    ctx.i18n.required = '';
 
     tape.strictEqual(new Textbox({
       type: t.Str,
@@ -31061,6 +31069,7 @@ var ctx = {
   label: 'Default label',
   i18n: {
     optional: ' (optional)',
+    required: '',
     add: 'Add',
     remove: 'Remove',
     up: 'Up',

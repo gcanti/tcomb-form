@@ -154,7 +154,7 @@ tape('Textbox', function (tape) {
   });
 
   tape.test('label', function (tape) {
-    tape.plan(4);
+    tape.plan(5);
 
     tape.strictEqual(
       new Textbox({
@@ -164,6 +164,17 @@ tape('Textbox', function (tape) {
       }).getLocals().label,
       'Default label',
       'should have a default label');
+
+    ctx.i18n.required = ' (required)';
+    tape.strictEqual(
+      new Textbox({
+        type: t.Str,
+        options: {},
+        ctx: ctx
+      }).getLocals().label,
+      'Default label (required)',
+      'should have a default label');
+    ctx.i18n.required = '';
 
     tape.strictEqual(
       new Textbox({

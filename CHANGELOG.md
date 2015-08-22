@@ -10,6 +10,11 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.6.4
+
+- **New Feature**
+    - added a `required` field to i18n, fix #181
+
 ## v0.6.3
 
 - **Bug Fix**

@@ -13,6 +13,7 @@ var ctx = {
   label: 'Default label',
   i18n: {
     optional: ' (optional)',
+    required: '',
     add: 'Add',
     remove: 'Remove',
     up: 'Up',
