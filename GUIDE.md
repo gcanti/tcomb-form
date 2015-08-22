@@ -217,6 +217,8 @@ var Person = t.struct({
 
 The postfix `" (optional)"` is automatically added to optional fields.
 
+You can customise the postfix value or setting a postfix for required fields (see the "Internationalization" section).
+
 ## Numbers
 
 In order to create a numeric field, use the `t.Num` type:
@@ -580,6 +582,7 @@ var options = {
     add: 'Nuovo',               // add button
     down: 'Giù',                // move down button
     optional: ' (opzionale)',   // suffix added to optional fields
+    required: '',               // suffix added to required fields
     remove: 'Elimina',          // remove button
     up: 'Su'                    // move up button
   }
@@ -1133,7 +1136,7 @@ var options = {
 // remember to add the proper bootstrap style class
 // to a wrapping div (or form) tag in order
 // to get a nice layout
-<div className="form-horizontal"> 
+<div className="form-horizontal">
   <Form type={Person} options={options} />
 </div>
 ```
@@ -1154,6 +1157,7 @@ var bootstrap = require('tcomb-form/lib/templates/bootstrap');
 t.form.Form.templates = bootstrap;
 t.form.Form.i18n = {
   optional: ' (opzionale)',
+  required: '',
   add: 'Nuovo',
   remove: 'Elimina',
   up: 'Su',
