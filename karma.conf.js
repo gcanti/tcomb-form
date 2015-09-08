@@ -3,10 +3,11 @@ module.exports = function (config) {
     browserNoActivityTimeout: 30000,
     browsers: [process.env.CONTINUOUS_INTEGRATION ? 'Firefox' : 'Chrome'],
     singleRun: true,
-    frameworks: [ 'tap' ],
-    files: [
-      'test/browser.js'
-    ],
-    reporters: [ 'dots' ]
+    frameworks: ['browserify', 'tap'],
+    files: ['test/index.js'],
+    preprocessors: {
+      'test/index.js': [ 'browserify' ]
+    },
+    reporters: ['dots']
   });
 };
