@@ -5,7 +5,6 @@ var t = require('tcomb-validation');
 var bootstrap = require('../../lib/templates/bootstrap');
 var Component = require('../../lib/components').Component;
 var React = require('react');
-var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
 

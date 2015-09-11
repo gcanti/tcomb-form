@@ -5,7 +5,6 @@ var t = require('tcomb-validation');
 var bootstrap = require('../../lib/templates/bootstrap');
 var Textbox = require('../../lib/components').Textbox;
 var React = require('react');
-var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
 var ctxPlaceholders = util.ctxPlaceholders;
@@ -154,7 +153,7 @@ tape('Textbox', function (tape) {
   });
 
   tape.test('label', function (tape) {
-    tape.plan(5);
+    tape.plan(6);
 
     tape.strictEqual(
       new Textbox({
@@ -185,14 +184,13 @@ tape('Textbox', function (tape) {
       'mylabel',
       'should handle label option as string');
 
-    tape.deepEqual(
-      vdom(new Textbox({
-        type: t.Str,
-        options: {label: React.DOM.i(null, 'JSX label')},
-        ctx: ctx
-      }).getLocals().label),
-      {tag: 'i', children: 'JSX label'},
-      'should handle label option as JSX');
+    var actual = new Textbox({
+      type: t.Str,
+      options: {label: React.DOM.i(null, 'JSX label')},
+      ctx: ctx
+    }).getLocals().label;
+    tape.equal(actual.type, 'i');
+    tape.equal(actual.props.children, 'JSX label');
 
     tape.strictEqual(
       new Textbox({
@@ -296,7 +294,7 @@ tape('Textbox', function (tape) {
   });
 
   tape.test('help', function (tape) {
-    tape.plan(2);
+    tape.plan(3);
 
     tape.strictEqual(
       new Textbox({
@@ -307,14 +305,13 @@ tape('Textbox', function (tape) {
       'myhelp',
       'should handle help option as string');
 
-    tape.deepEqual(
-      vdom(new Textbox({
-        type: t.Str,
-        options: {help: React.DOM.i(null, 'JSX help')},
-        ctx: ctx
-      }).getLocals().help),
-      {tag: 'i', children: 'JSX help'},
-      'should handle help option as JSX');
+    var actual = new Textbox({
+      type: t.Str,
+      options: {help: React.DOM.i(null, 'JSX help')},
+      ctx: ctx
+    }).getLocals().help;
+    tape.equal(actual.type, 'i');
+    tape.equal(actual.props.children, 'JSX help');
 
   });
 

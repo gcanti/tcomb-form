@@ -5,7 +5,6 @@ var t = require('tcomb-validation');
 var bootstrap = require('../../lib/templates/bootstrap');
 var Checkbox = require('../../lib/components').Checkbox;
 var React = require('react');
-var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
 var ctxPlaceholders = util.ctxPlaceholders;
@@ -23,7 +22,7 @@ var transformer = {
 tape('Checkbox', function (tape) {
 
   tape.test('label', function (tape) {
-    tape.plan(4);
+    tape.plan(5);
 
     tape.strictEqual(
       new Checkbox({
@@ -52,19 +51,18 @@ tape('Checkbox', function (tape) {
       'mylabel',
       'should handle label option as string');
 
-    tape.deepEqual(
-      vdom(new Checkbox({
-        type: t.Bool,
-        options: {label: React.DOM.i(null, 'JSX label')},
-        ctx: ctx
-      }).getLocals().label),
-      {tag: 'i', children: 'JSX label'},
-      'should handle label option as JSX');
+    var actual = new Checkbox({
+      type: t.Bool,
+      options: {label: React.DOM.i(null, 'JSX label')},
+      ctx: ctx
+    }).getLocals().label;
+    tape.equal(actual.type, 'i');
+    tape.equal(actual.props.children, 'JSX label');
 
   });
 
   tape.test('help', function (tape) {
-    tape.plan(2);
+    tape.plan(3);
 
     tape.strictEqual(
       new Checkbox({
@@ -75,14 +73,13 @@ tape('Checkbox', function (tape) {
       'myhelp',
       'should handle help option as string');
 
-    tape.deepEqual(
-      vdom(new Checkbox({
-        type: t.Bool,
-        options: {help: React.DOM.i(null, 'JSX help')},
-        ctx: ctx
-      }).getLocals().help),
-      {tag: 'i', children: 'JSX help'},
-      'should handle help option as JSX');
+    var actual = new Checkbox({
+      type: t.Bool,
+      options: {help: React.DOM.i(null, 'JSX help')},
+      ctx: ctx
+    }).getLocals().help;
+    tape.equal(actual.type, 'i');
+    tape.equal(actual.props.children, 'JSX help');
 
   });
 

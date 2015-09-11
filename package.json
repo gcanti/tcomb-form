@@ -1,10 +1,10 @@
 {
   "name": "tcomb-form",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "dev": "watchify -t [babelify --stage=0 --loose] dev/client/client.js -o dev/client/bundle.js -v -x react",
+    "dev": "watchify -t [babelify --stage=0 --loose] dev/client/client.js -o dev/client/bundle.js -v",
     "lint": "eslint src",
     "test": "npm run lint && karma start",
     "watch": "rm -rf lib/* && babel src -d lib --stage=0 --loose -w"
@@ -20,11 +20,12 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
-    "react": "^0.13.0",
-    "tcomb-validation": "^2.0.0",
-    "classnames": "^1.2.0",
+    "react": "^0.14.0-rc1",
+    "react-dom": "^0.14.0-rc1",
+    "tcomb-validation": "^2.1.1",
+    "classnames": "^2.1.3",
     "debug": "^2.1.1",
-    "uvdom": "^0.1.2",
+    "uvdom": "^0.2.0",
     "uvdom-bootstrap": "^0.2.3"
   },
   "devDependencies": {
@@ -39,8 +40,8 @@
     "karma-chrome-launcher": "0.2.0",
     "karma-firefox-launcher": "^0.1.4",
     "karma-tap": "1.0.3",
-    "react-vdom": "^0.4.0",
-    "tape": "4.0.0"
+    "tape": "4.0.0",
+    "watchify": "^3.4.0"
   },
   "tags": [
     "form",

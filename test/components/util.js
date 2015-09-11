@@ -40,7 +40,6 @@ function getRenderComponent(Component) {
   };
 }
 
-
 module.exports = {
   ctx: ctx,
   ctxPlaceholders: ctxPlaceholders,

@@ -10,6 +10,11 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.7.0
+
+- **Breaking Change**
+    - upgrade to react v0.14.0-rc1, fix #194
+
 ## v0.6.4
 
 - **New Feature**

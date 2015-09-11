@@ -5,7 +5,6 @@ var t = require('tcomb-validation');
 var bootstrap = require('../../lib/templates/bootstrap');
 var Radio = require('../../lib/components').Radio;
 var React = require('react');
-var vdom = require('react-vdom');
 var util = require('./util');
 var ctx = util.ctx;
 var renderComponent = util.getRenderComponent(Radio);
@@ -28,7 +27,7 @@ tape('Radio', function (tape) {
   });
 
   tape.test('label', function (tape) {
-    tape.plan(4);
+    tape.plan(5);
 
     tape.strictEqual(
       new Radio({
@@ -48,14 +47,13 @@ tape('Radio', function (tape) {
       'mylabel',
       'should handle label option as string');
 
-    tape.deepEqual(
-      vdom(new Radio({
-        type: Country,
-        options: {label: React.DOM.i(null, 'JSX label')},
-        ctx: ctx
-      }).getLocals().label),
-      {tag: 'i', children: 'JSX label'},
-      'should handle label option as JSX');
+    var actual = new Radio({
+      type: Country,
+      options: {label: React.DOM.i(null, 'JSX label')},
+      ctx: ctx
+    }).getLocals().label;
+    tape.equal(actual.type, 'i');
+    tape.equal(actual.props.children, 'JSX label');
 
     tape.strictEqual(
       new Radio({
@@ -69,7 +67,7 @@ tape('Radio', function (tape) {
   });
 
   tape.test('help', function (tape) {
-    tape.plan(2);
+    tape.plan(3);
 
     tape.strictEqual(
       new Radio({
@@ -80,14 +78,13 @@ tape('Radio', function (tape) {
       'myhelp',
       'should handle help option as string');
 
-    tape.deepEqual(
-      vdom(new Radio({
-        type: Country,
-        options: {help: React.DOM.i(null, 'JSX help')},
-        ctx: ctx
-      }).getLocals().help),
-      {tag: 'i', children: 'JSX help'},
-      'should handle help option as JSX');
+    var actual = new Radio({
+      type: Country,
+      options: {help: React.DOM.i(null, 'JSX help')},
+      ctx: ctx
+    }).getLocals().help;
+    tape.equal(actual.type, 'i');
+    tape.equal(actual.props.children, 'JSX help');
 
   });
 
