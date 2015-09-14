@@ -11,13 +11,11 @@ import {
   move,
   UIDGenerator
 } from './util';
-import debug from 'debug';
 import classnames from 'classnames';
 
 const Nil = t.Nil;
 const assert = t.assert;
 const SOURCE = 'tcomb-form';
-const log = debug(SOURCE);
 const noobj = Object.freeze({});
 const noarr = Object.freeze([]);
 const noop = () => {};
@@ -133,7 +131,6 @@ export class Component extends React.Component {
       nextProps.options !== this.props.options ||
       nextProps.type !== this.props.type
     );
-    //log('shouldComponentUpdate', this.constructor.name, should);
     return should;
   }
 
@@ -150,9 +147,16 @@ export class Component extends React.Component {
     });
   }
 
+  getContext() {
+    return {
+      path: this.props.ctx.path,
+      context: this.props.context || this.props.ctx.context
+    };
+  }
+
   validate() {
     const value = this.getTransformer().parse(this.state.value);
-    const result = t.validate(value, this.props.type, this.props.ctx.path);
+    const result = t.validate(value, this.props.type, this.getContext());
     this.setState({hasError: !result.isValid()});
     return result;
   }
@@ -184,8 +188,12 @@ export class Component extends React.Component {
   }
 
   getError() {
-    const error = this.props.options.error;
-    return t.Func.is(error) ? error(this.state.value) : error;
+    const error = this.props.options.error || this.props.type.getValidationErrorMessage;
+    if (t.Func.is(error)) {
+      const validationContext = this.getContext();
+      return error(this.state.value, validationContext.path, validationContext.context);
+    }
+    return error;
   }
 
   hasError() {
@@ -228,7 +236,6 @@ export class Component extends React.Component {
   }
 
   render() {
-    //log('rendering %s', this.constructor.name);
     const locals = this.getLocals();
     // getTemplate is the only required implementation when extending Component
     assert(t.Func.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
@@ -440,7 +447,7 @@ export class Struct extends Component {
       const InnerType = this.typeInfo.innerType;
       value = new InnerType(value);
       if (this.typeInfo.isSubtype && errors.length === 0) {
-        result = t.validate(value, this.props.type, this.props.ctx.path);
+        result = t.validate(value, this.props.type, this.getContext());
         hasError = !result.isValid();
         errors = errors.concat(result.errors);
       }
@@ -491,6 +498,7 @@ export class Struct extends Component {
           value: value[prop],
           onChange: this.onChange.bind(this, prop),
           ctx: {
+            context: ctx.context,
             uidGenerator: ctx.uidGenerator,
             auto,
             config,
@@ -565,7 +573,7 @@ export class List extends Component {
 
     // handle subtype
     if (this.typeInfo.isSubtype && errors.length === 0) {
-      result = t.validate(value, this.props.type, this.props.ctx.path);
+      result = t.validate(value, this.props.type, this.getContext());
       hasError = !result.isValid();
       errors = errors.concat(result.errors);
     }
@@ -660,6 +668,7 @@ export class List extends Component {
           value,
           onChange: this.onItemChange.bind(this, i),
           ctx: {
+            context: ctx.context,
             uidGenerator: ctx.uidGenerator,
             auto,
             config,
@@ -729,6 +738,7 @@ export class Form extends React.Component {
       value: this.props.value,
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
+        context: this.props.context,
         uidGenerator: this.uidGenerator,
         auto: 'labels',
         templates,

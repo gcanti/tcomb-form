@@ -2,6 +2,7 @@
 
 var t = require('tcomb-validation');
 var React = require('react');
+var ReactDOM = require('react/lib/ReactDOM');
 var bootstrap = require('../../lib/templates/bootstrap');
 var UIDGenerator = require('../../lib/util').UIDGenerator;
 
@@ -36,7 +37,7 @@ function getRenderComponent(Component) {
     props.ctx = props.ctx || ctx;
     var node = document.createElement('div');
     document.body.appendChild(node);
-    return React.render(React.createElement(Component, props), node);
+    return ReactDOM.render(React.createElement(Component, props), node);
   };
 }
 
