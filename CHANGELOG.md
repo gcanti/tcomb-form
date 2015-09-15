@@ -10,6 +10,16 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.6.5 (backport from 0.7.1)
+
+- **Internal**
+    - upgrade to latest version of tcomb-validation (2.2.0)
+    - removed debug dependency
+- **New Feature**
+    - added argument `context` to `error` options that are functions (new signature: `error(value, path, context)`)
+    - added `error` option default if the type constructor owns a `getValidationErrorMessage(value, path, context)` function
+    - added `context` prop to all components (passed into `error` as `context` argument)
+
 ## v0.6.4
 
 - **New Feature**

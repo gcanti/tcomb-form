@@ -188,6 +188,46 @@ var App = React.createClass({
 });
 ```
 
+### Customised error messages
+
+```js
+var Name = t.subtype(t.String, function (s) { return s.length > 2; });
+
+// if you define a getValidationErrorMessage function it will be called on validation errors
+Name.getValidationErrorMessage = function (value, path, context) {
+  return 'error message with locale: ' + context.locale;
+};
+
+var Schema = t.struct({
+  name: Name
+});
+
+var App = React.createClass({
+
+  onSubmit(evt) {
+    evt.preventDefault();
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+    }
+  },
+
+  render() {
+    return (
+      <form onSubmit={this.onSubmit}>
+        <t.form.Form
+          ref="form"
+          type={Schema}
+          context={{locale: 'it-IT'}}
+        />
+        <button type="submit" className="btn btn-primary">Save</button>
+      </form>
+    );
+  }
+
+});
+```
+
 # Types
 
 Models are defined with [tcomb](https://github.com/gcanti/tcomb). tcomb is a library for Node.js and the browser which allows you to check the types of JavaScript values at runtime with a simple syntax. It's great for Domain Driven Design, for testing and for adding safety to your internal code.
@@ -353,7 +393,7 @@ var Persons = t.list(Person);
 
 # Rendering options
 
-In order to customize the look and feel, use an `options` prop:
+In order to customise the look and feel, use an `options` prop:
 
 ```js
 <Form type={Model} options={options} />
@@ -490,10 +530,12 @@ var options = {
 `error` can also be a function with the following signature:
 
 ```
-(value: any) => ?(string | ReactElement)
+(value, path, context) => ?(string | ReactElement)
 ```
 
-where `value` is an object containing the current form value.
+- `value` is an object containing the current form value.
+- `path` is the path of the value being validated
+- `context` is the value of the `context` prop
 
 If you want to show the error message onload, add the `hasError` option:
 
@@ -536,7 +578,7 @@ var options = {
 
 ### Look and feel
 
-You can customize the look and feel with the `template` option:
+You can customise the look and feel with the `template` option:
 
 ```js
 var options = {
@@ -706,7 +748,7 @@ The following options are similar to the textbox ones:
 
 ### Null option
 
-You can customize the null option with the `nullOption` option:
+You can customise the null option with the `nullOption` option:
 
 ```js
 var options = {
@@ -740,7 +782,7 @@ var options = {
 
 ### Custom options
 
-You can customize the options with the `options` option:
+You can customise the options with the `options` option:
 
 ```js
 var options = {
@@ -839,7 +881,7 @@ The following options are similar to the textbox ones:
 
 ## Templates
 
-To customize the "skin" of tcomb-form you have to write a *template*. A template is simply a function with the following signature:
+To customise the "skin" of tcomb-form you have to write a *template*. A template is simply a function with the following signature:
 
 ```
 (locals: any) => UVDOM | ReactElement
@@ -906,7 +948,7 @@ var petLayout = function(locals){
 var options = {
   template: formLayout,
   fields: {
-    pets: { // <- pets is a list, you can customize the elements with the `item` option
+    pets: { // <- pets is a list, you can customise the elements with the `item` option
       item: {
         template: petLayout
       }

@@ -1,10 +1,10 @@
 {
   "name": "tcomb-form",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "dev": "watchify -t [babelify --stage=0 --loose] dev/client/client.js -o dev/client/bundle.js -v -x react",
+    "dev": "watchify -t [babelify --stage=0 --loose] dev/client/client.js -o dev/client/bundle.js -v",
     "lint": "eslint src",
     "test": "npm run lint && karma start",
     "watch": "rm -rf lib/* && babel src -d lib --stage=0 --loose -w"
@@ -21,9 +21,8 @@
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
     "react": "^0.13.0",
-    "tcomb-validation": "^2.0.0",
-    "classnames": "^1.2.0",
-    "debug": "^2.1.1",
+    "tcomb-validation": "^2.2.0",
+    "classnames": "^2.1.3",
     "uvdom": "^0.1.2",
     "uvdom-bootstrap": "^0.2.3"
   },
