@@ -484,6 +484,16 @@ var options = {
 };
 ```
 
+### Style
+
+You can customise the style with the `className` option
+
+```js
+var options = {
+  className: 'mystyle'
+};
+```
+
 ### Fields order
 
 You can sort the fields with the `order` option:
@@ -591,6 +601,7 @@ var options = {
 The following options are similar to the Struct ones:
 
 - `auto`
+- `className`
 - `disabled`
 - `help`
 - `hasError`

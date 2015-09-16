@@ -10,6 +10,11 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.6.6
+
+- **Bug Fix**
+    - Add className to locals of Struct and List (thanks @jsor)
+
 ## v0.6.5 (backport from 0.7.1)
 
 - **Internal**
