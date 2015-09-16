@@ -147,7 +147,7 @@ export class Component extends React.Component {
     });
   }
 
-  getContext() {
+  getValidationOptions() {
     return {
       path: this.props.ctx.path,
       context: this.props.context || this.props.ctx.context
@@ -156,7 +156,7 @@ export class Component extends React.Component {
 
   validate() {
     const value = this.getTransformer().parse(this.state.value);
-    const result = t.validate(value, this.props.type, this.getContext());
+    const result = t.validate(value, this.props.type, this.getValidationOptions());
     this.setState({hasError: !result.isValid()});
     return result;
   }
@@ -190,7 +190,7 @@ export class Component extends React.Component {
   getError() {
     const error = this.props.options.error || this.props.type.getValidationErrorMessage;
     if (t.Func.is(error)) {
-      const validationContext = this.getContext();
+      const validationContext = this.getValidationOptions();
       return error(this.state.value, validationContext.path, validationContext.context);
     }
     return error;
@@ -447,7 +447,7 @@ export class Struct extends Component {
       const InnerType = this.typeInfo.innerType;
       value = new InnerType(value);
       if (this.typeInfo.isSubtype && errors.length === 0) {
-        result = t.validate(value, this.props.type, this.getContext());
+        result = t.validate(value, this.props.type, this.getValidationOptions());
         hasError = !result.isValid();
         errors = errors.concat(result.errors);
       }
@@ -573,7 +573,7 @@ export class List extends Component {
 
     // handle subtype
     if (this.typeInfo.isSubtype && errors.length === 0) {
-      result = t.validate(value, this.props.type, this.getContext());
+      result = t.validate(value, this.props.type, this.getValidationOptions());
       hasError = !result.isValid();
       errors = errors.concat(result.errors);
     }
