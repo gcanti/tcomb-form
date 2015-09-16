@@ -519,6 +519,7 @@ export class Struct extends Component {
     const locals = super.getLocals();
     locals.order = this.getOrder();
     locals.inputs = this.getInputs();
+    locals.className = options.className;
     return locals;
   }
 
@@ -693,6 +694,7 @@ export class List extends Component {
       click: this.addItem.bind(this)
     };
     locals.items = this.getItems();
+    locals.className = options.className;
     return locals;
   }
 
