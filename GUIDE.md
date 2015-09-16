@@ -878,6 +878,24 @@ The following options are similar to the textbox ones:
 - `error`
 - `template`
 
+### Fields order
+
+You can sort the fields with the `order` option:
+
+```js
+var Type = t.struct({
+  date: t.Date
+});
+
+var options = {
+  fields: {
+    date: {
+      order: ['D', 'M', 'YY']
+    }
+  }
+};
+```
+
 # Customizations
 
 ## Templates
