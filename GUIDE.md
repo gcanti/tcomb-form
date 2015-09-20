@@ -3,8 +3,9 @@
 ## Setup
 
 ```sh
-$ npm install tcomb-form
+$ npm install tcomb-form 
 ```
+Note: Use tcomb-form@0.6.x with react@0.13.x. See [#200](https://github.com/gcanti/tcomb-form/issues/200).
 
 ## Working example
 
