@@ -10,6 +10,11 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.6.7
+
+- **New Feature**
+    - add the type to template locals, #210
+
 ## v0.6.6
 
 - **Bug Fix**

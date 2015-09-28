@@ -3,7 +3,7 @@
 import { mixin } from 'tcomb-validation';
 
 export function getOptionsOfEnum(type) {
-  var enums = type.meta.map;
+  const enums = type.meta.map;
   return Object.keys(enums).map(value => {
     return {
       value,
@@ -14,10 +14,10 @@ export function getOptionsOfEnum(type) {
 
 export function getTypeInfo(type) {
 
-  var innerType = type;
-  var isMaybe = false;
-  var isSubtype = false;
-  var kind;
+  let innerType = type;
+  let isMaybe = false;
+  let isSubtype = false;
+  let kind;
 
   while (innerType) {
     kind = innerType.meta.kind;
@@ -35,9 +35,10 @@ export function getTypeInfo(type) {
   }
 
   return {
-    isMaybe: isMaybe,
-    isSubtype: isSubtype,
-    innerType: innerType
+    type,
+    isMaybe,
+    isSubtype,
+    innerType
   };
 }
 
@@ -60,7 +61,7 @@ export function merge(a, b) {
 }
 
 export function move(arr, fromIndex, toIndex) {
-  var element = arr.splice(fromIndex, 1)[0];
+  const element = arr.splice(fromIndex, 1)[0];
   arr.splice(toIndex, 0, element);
   return arr;
 }

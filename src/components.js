@@ -223,6 +223,7 @@ export class Component extends React.Component {
     const options = this.props.options;
     const value = this.state.value;
     return {
+      typeInfo: this.typeInfo,
       path: this.props.ctx.path,
       error: this.getError(),
       hasError: this.hasError(),
