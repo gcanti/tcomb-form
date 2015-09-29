@@ -42,12 +42,6 @@ Breakpoints.prototype.getOffsetClassName = function () {
   return t.mixin(bootstrap.getOffsets(this.getBreakpoints(1)), bootstrap.getBreakpoints(this.getBreakpoints(1)));
 };
 
-Breakpoints.prototype.getFieldsetClassName = function () {
-  return {
-    'col-xs-12': true
-  };
-};
-
 const Size = t.enums.of('xs sm md lg', 'Size');
 
 const TextboxConfig = t.struct({
@@ -595,23 +589,16 @@ export function struct(locals) {
 
   children = children.concat(locals.order.map(name => locals.inputs[name]));
 
-  let className = null;
-  if (config.horizontal) {
-    className = config.horizontal.getFieldsetClassName();
-  }
+  let className = {};
   if (locals.className) {
-    className = className || {};
     className[locals.className] = true;
   }
 
-  return bootstrap.getFormGroup({
-    className: 'form-group-depth-' + locals.path.length,
-    children: bootstrap.getFieldset({
-      className,
-      disabled: locals.disabled,
-      legend: locals.label,
-      children
-    })
+  return bootstrap.getFieldset({
+    className,
+    disabled: locals.disabled,
+    legend: locals.label,
+    children
   });
 
 }
@@ -668,26 +655,31 @@ export function list(locals) {
   }));
 
   if (locals.add) {
-    children.push(bootstrap.getButton(locals.add));
+    children.push({
+      tag: 'div',
+      attrs: { className: 'row' },
+      children: {
+        tag: 'div',
+        attrs: { className: 'col-lg-12' },
+        children: {
+          tag: 'div',
+          attrs: { style: {marginBottom: '15px'} },
+          children: bootstrap.getButton(locals.add)
+        }
+      }
+    });
   }
 
-  let fieldsetClassName = null;
-  if (config.horizontal) {
-    fieldsetClassName = config.horizontal.getFieldsetClassName();
-  }
+  let className = {};
   if (locals.className) {
-    fieldsetClassName = fieldsetClassName || {};
-    fieldsetClassName[locals.className] = true;
+    className[locals.className] = true;
   }
 
-  return bootstrap.getFormGroup({
-    className: 'form-group-depth-' + locals.path.length,
-    children: bootstrap.getFieldset({
-      className: fieldsetClassName,
-      disabled: locals.disabled,
-      legend: locals.label,
-      children
-    })
+  return bootstrap.getFieldset({
+    className,
+    disabled: locals.disabled,
+    legend: locals.label,
+    children
   });
 
 }
