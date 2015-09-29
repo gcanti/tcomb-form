@@ -13,37 +13,43 @@ tape('Component', function (tape) {
   tape.test('typeInfo', function (tape) {
     tape.plan(3);
 
+    var MaybeString = t.maybe(t.String);
+    var Subtype = t.subtype(t.String, function() { return true; });
+
     var component = new Component({
-      type: t.Str,
+      type: t.String,
       options: {},
       ctx: ctx
     });
 
     tape.deepEqual(component.typeInfo, {
+      type: t.String,
       isMaybe: false,
       isSubtype: false,
       innerType: t.Str
     });
 
     component = new Component({
-      type: t.maybe(t.Str),
+      type: MaybeString,
       options: {},
       ctx: ctx
     });
 
     tape.deepEqual(component.typeInfo, {
+      type: MaybeString,
       isMaybe: true,
       isSubtype: false,
       innerType: t.Str
     });
 
     component = new Component({
-      type: t.subtype(t.Str, function() { return true; }),
+      type: Subtype,
       options: {},
       ctx: ctx
     });
 
     tape.deepEqual(component.typeInfo, {
+      type: Subtype,
       isMaybe: false,
       isSubtype: true,
       innerType: t.Str

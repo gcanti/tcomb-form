@@ -1,3 +1,10 @@
+/*! @preserve
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014-2015 Giulio Canti
+ *
+ */
 var t = require('./lib');
 var templates = require('./lib/templates/bootstrap');
 var i18n = require('./lib/i18n/en');
