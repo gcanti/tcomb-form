@@ -10,6 +10,13 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.7.3
+
+- **New Feature**
+    - add the type to template locals, fix #210
+- **Bug Fix**
+    - Fields are wrapped in a form-group, fix #215
+
 ## v0.7.2
 
 - **Bug Fix**
