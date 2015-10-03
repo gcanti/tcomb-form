@@ -1,6 +1,6 @@
 'use strict';
 
-import { mixin } from 'tcomb-validation';
+import t, { mixin } from 'tcomb-validation';
 
 export function getOptionsOfEnum(type) {
   const enums = type.meta.map;
@@ -18,9 +18,11 @@ export function getTypeInfo(type) {
   let isMaybe = false;
   let isSubtype = false;
   let kind;
+  let hasGetValidationErrorMessage = false;
 
   while (innerType) {
     kind = innerType.meta.kind;
+    hasGetValidationErrorMessage = hasGetValidationErrorMessage || t.Func.is(innerType.getValidationErrorMessage);
     if (kind === 'maybe') {
       isMaybe = true;
       innerType = innerType.meta.type;
@@ -34,11 +36,20 @@ export function getTypeInfo(type) {
     break;
   }
 
+  const getValidationErrorMessage = hasGetValidationErrorMessage ? function (value, path, context) {
+    var result = t.validate(value, type, {path, context});
+    if (result.isValid() || !t.Func.is(result.errors[0].expected.getValidationErrorMessage)) {
+      return null;
+    }
+    return result.errors[0].message;
+  } : undefined;
+
   return {
     type,
     isMaybe,
     isSubtype,
-    innerType
+    innerType,
+    getValidationErrorMessage
   };
 }
 

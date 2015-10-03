@@ -26,7 +26,8 @@ tape('Component', function (tape) {
       type: t.String,
       isMaybe: false,
       isSubtype: false,
-      innerType: t.Str
+      innerType: t.Str,
+      getValidationErrorMessage: undefined
     });
 
     component = new Component({
@@ -39,7 +40,8 @@ tape('Component', function (tape) {
       type: MaybeString,
       isMaybe: true,
       isSubtype: false,
-      innerType: t.Str
+      innerType: t.Str,
+      getValidationErrorMessage: undefined
     });
 
     component = new Component({
@@ -52,7 +54,8 @@ tape('Component', function (tape) {
       type: Subtype,
       isMaybe: false,
       isSubtype: true,
-      innerType: t.Str
+      innerType: t.Str,
+      getValidationErrorMessage: undefined
     });
 
   });
