@@ -85,17 +85,6 @@ export const decorators = {
     };
   },
 
-  placeholder(Component) {
-    Component.prototype.getPlaceholder = function getPlaceholder() {
-      const attrs = this.props.options.attrs || noobj;
-      let placeholder = attrs.placeholder;
-      if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
-        placeholder = this.getDefaultLabel();
-      }
-      return placeholder;
-    };
-  },
-
   templates(Component) {
     Component.prototype.getTemplates = function getTemplates() {
       return merge(this.props.ctx.templates, this.props.options.templates);
@@ -150,7 +139,7 @@ export class Component extends React.Component {
   getValidationOptions() {
     return {
       path: this.props.ctx.path,
-      context: this.props.context || this.props.ctx.context
+      context: t.mixin(t.mixin({}, this.props.context || this.props.ctx.context), { component: this })
     };
   }
 
@@ -188,10 +177,10 @@ export class Component extends React.Component {
   }
 
   getError() {
-    const error = this.props.options.error || this.props.type.getValidationErrorMessage;
+    const error = this.props.options.error || this.typeInfo.getValidationErrorMessage;
     if (t.Func.is(error)) {
-      const validationContext = this.getValidationOptions();
-      return error(this.state.value, validationContext.path, validationContext.context);
+      const validationOptions = this.getValidationOptions();
+      return error(this.state.value, validationOptions.path, validationOptions.context);
     }
     return error;
   }
@@ -223,6 +212,7 @@ export class Component extends React.Component {
     const options = this.props.options;
     const value = this.state.value;
     return {
+      component: this,
       typeInfo: this.typeInfo,
       path: this.props.ctx.path,
       error: this.getError(),
@@ -257,7 +247,6 @@ function parseNumber(value) {
 }
 
 @decorators.attrs
-@decorators.placeholder
 @decorators.template('textbox')
 export class Textbox extends Component {
 
@@ -276,6 +265,15 @@ export class Textbox extends Component {
     return options.transformer ? options.transformer :
       this.typeInfo.innerType === t.Num ? Textbox.numberTransformer :
       Textbox.transformer;
+  }
+
+  getPlaceholder() {
+    const attrs = this.props.options.attrs || noobj;
+    let placeholder = attrs.placeholder;
+    if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
+      placeholder = this.getDefaultLabel();
+    }
+    return placeholder;
   }
 
   getLocals() {
