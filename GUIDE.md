@@ -68,7 +68,7 @@ Table of Contents
 ## Setup
 
 ```sh
-$ npm install tcomb-form 
+$ npm install tcomb-form
 ```
 Note: Use tcomb-form@0.6.x with react@0.13.x. See [#200](https://github.com/gcanti/tcomb-form/issues/200).
 
@@ -602,7 +602,7 @@ var options = {
 
 - `value` is an object containing the current form value.
 - `path` is the path of the value being validated
-- `context` is the value of the `context` prop
+- `context` is the value of the `context`. Also it contains a reference to the current component.
 
 If you want to show the error message onload, add the `hasError` option:
 
@@ -978,16 +978,18 @@ For example this is the recipe for a textbox:
 
 ```js
 {
-  attrs: maybe(Obj),        // should render attributes and events
-  config: maybe(Obj),       // custom options, see Template addons section
-  disabled: maybe(Bool),    // should be disabled
+  component: ReactClasss    // a reference to the current component
+  typeInfo: Object          // an object containing info on the current type
+  attrs: maybe(Object),     // should render attributes and events
+  config: maybe(Object),    // custom options, see Template addons section
+  disabled: maybe(Boolean), // should be disabled
   error: maybe(Label),      // should show an error
-  hasError: maybe(Bool),    // if true should show an error state
+  hasError: maybe(Boolean), // if true should show an error state
   help: maybe(Label),       // should show an help message
   label: maybe(Label),      // should show a label
-  onChange: Func,           // should call this function with the changed value
-  path: Arr,                // the path of this field with respect to the form root
-  type: Str,                // should use this as type attribute
+  onChange: Function,       // should call this function with the changed value
+  path: Array,              // the path of this field with respect to the form root
+  type: String,             // should use this as type attribute
   value: Any                // the current value of the textbox
 }
 ```
