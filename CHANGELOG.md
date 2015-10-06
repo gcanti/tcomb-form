@@ -10,6 +10,13 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.6.8
+
+- **New Feature**
+    - pass the whole form component instance to the error option, fix #222
+- **Bug Fix**
+    - Inconsistent error message creation process between `validate(val, type)` and form validation, fix #221
+
 ## v0.6.7
 
 - **New Feature**
