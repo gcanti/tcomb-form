@@ -139,7 +139,7 @@ export class Component extends React.Component {
   getValidationOptions() {
     return {
       path: this.props.ctx.path,
-      context: t.mixin(t.mixin({}, this.props.context || this.props.ctx.context), { component: this })
+      context: t.mixin(t.mixin({}, this.props.context || this.props.ctx.context), { options: this.props.options })
     };
   }
 
@@ -212,7 +212,6 @@ export class Component extends React.Component {
     const options = this.props.options;
     const value = this.state.value;
     return {
-      component: this,
       typeInfo: this.typeInfo,
       path: this.props.ctx.path,
       error: this.getError(),
@@ -370,6 +369,11 @@ export class Select extends Component {
 @decorators.attrs
 @decorators.template('radio')
 export class Radio extends Component {
+
+  static transformer = {
+    format: value => Nil.is(value) ? null : value,
+    parse: value => value
+  };
 
   getOptions() {
     const options = this.props.options;
