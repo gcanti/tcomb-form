@@ -1,3 +1,68 @@
+Table of Contents
+=================
+
+  * [Get started](#get-started)
+    * [Setup](#setup)
+    * [Working example](#working-example)
+    * [API](#api)
+      * [getValue()](#getvalue)
+      * [validate()](#validate)
+      * [Adding a default value and listen to changes](#adding-a-default-value-and-listen-to-changes)
+      * [How to get access to a field](#how-to-get-access-to-a-field)
+      * [Submitting the form](#submitting-the-form)
+      * [Customised error messages](#customised-error-messages)
+  * [Types](#types)
+    * [Required field](#required-field)
+    * [Optional field](#optional-field)
+    * [Numbers](#numbers)
+    * [Subtypes](#subtypes)
+    * [Booleans](#booleans)
+    * [Dates](#dates)
+    * [Enums](#enums)
+    * [Lists](#lists)
+    * [Nested structures](#nested-structures)
+  * [Rendering options](#rendering-options)
+    * [Struct options](#struct-options)
+      * [Automatically generated placeholders](#automatically-generated-placeholders)
+      * [Fields order](#fields-order)
+      * [Legend](#legend)
+      * [Help message](#help-message)
+      * [Error message](#error-message)
+      * [Disabled](#disabled)
+      * [Fields configuration](#fields-configuration)
+      * [Look and feel](#look-and-feel)
+    * [List options](#list-options)
+      * [Items configuration](#items-configuration)
+      * [Internationalization](#internationalization)
+      * [Buttons configuration](#buttons-configuration)
+    * [Textbox options](#textbox-options)
+      * [Type attribute](#type-attribute)
+      * [Label](#label)
+      * [Attributes and events](#attributes-and-events)
+      * [Styling](#styling)
+    * [Checkbox options](#checkbox-options)
+    * [Select options](#select-options)
+      * [Null option](#null-option)
+      * [Options order](#options-order)
+      * [Custom options](#custom-options)
+      * [Render as a radio group](#render-as-a-radio-group)
+      * [Multiple select](#multiple-select)
+    * [Date options](#date-options)
+      * [Fields order](#fields-order-1)
+  * [Customizations](#customizations)
+    * [Templates](#templates)
+    * [Transformers](#transformers)
+    * [Custom factories](#custom-factories)
+  * [Bootstrap extras](#bootstrap-extras)
+    * [Textbox](#textbox)
+      * [Addons](#addons)
+      * [Size](#size)
+    * [Select](#select)
+    * [Struct](#struct)
+  * [General configuration](#general-configuration)
+    * [Changing the default language](#changing-the-default-language)
+    * [Changing the default skin](#changing-the-default-skin)
+
 # Get started
 
 ## Setup
@@ -5,19 +70,21 @@
 ```sh
 $ npm install tcomb-form
 ```
+Note: Use tcomb-form@0.6.x with react@0.13.x. See [#200](https://github.com/gcanti/tcomb-form/issues/200).
 
 ## Working example
 
 ```js
 var React = require('react');
+var ReactDOM = require('react/lib/ReactDOM');
 var t = require('tcomb-form');
 var Form = t.form.Form;
 
 // define your domain model with tcomb
 // https://github.com/gcanti/tcomb
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str
+  name: t.String,
+  surname: t.String
 });
 
 var App = React.createClass({
@@ -46,7 +113,7 @@ var App = React.createClass({
 
 });
 
-React.render(<App />, document.getElementById('app'));
+ReactDOM.render(<App />, document.getElementById('app'));
 ```
 
 > **Note**. Labels are automatically generated.
@@ -129,8 +196,8 @@ You can get access to a field with the `getComponent(path)` API:
 
 ```js
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str
+  name: t.String,
+  surname: t.String
 });
 
 var App = React.createClass({
@@ -238,8 +305,8 @@ By default fields are required:
 
 ```js
 var Person = t.struct({
-  name: t.Str,    // a required string
-  surname: t.Str  // a required string
+  name: t.String,    // a required string
+  surname: t.String  // a required string
 });
 ```
 
@@ -249,9 +316,9 @@ In order to create an optional field, wrap the field type with the `t.maybe` com
 
 ```js
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str) // an optional string
+  name: t.String,
+  surname: t.String,
+  email: t.maybe(t.String) // an optional string
 });
 ```
 
@@ -261,14 +328,14 @@ You can customise the suffix value, or set a suffix for required fields (see the
 
 ## Numbers
 
-In order to create a numeric field, use the `t.Num` type:
+In order to create a numeric field, use the `t.Number` type:
 
 ```js
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: t.Num // a numeric field
+  name: t.String,
+  surname: t.String,
+  email: t.maybe(t.String),
+  age: t.Number // a numeric field
 });
 ```
 
@@ -282,19 +349,19 @@ A *predicate* is a function with the following signature:
 (x: any) => boolean
 ```
 
-You can refine a type with the `t.subtype(type, predicate)` combinator:
+You can refine a type with the `t.refinement(type, predicate)` combinator:
 
 ```js
 // a type representing positive numbers
-var Positive = t.subtype(t.Num, function (n) {
+var Positive = t.refinement(t.Number, function (n) {
   return n >= 0;
 });
 
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: Positive // refinement
+  name: t.String,
+  surname: t.String,
+  email: t.maybe(t.String),
+  age: Positive
 });
 ```
 
@@ -302,15 +369,15 @@ Subtypes allow you to express any custom validation with a simple predicate.
 
 ## Booleans
 
-In order to create a boolean field, use the `t.Bool` type:
+In order to create a boolean field, use the `t.Boolean` type:
 
 ```js
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: t.Num,
-  rememberMe: t.Bool // a boolean field
+  name: t.String,
+  surname: t.String,
+  email: t.maybe(t.String),
+  age: t.Number,
+  rememberMe: t.Boolean // a boolean field
 });
 ```
 
@@ -318,16 +385,16 @@ Booleans are displayed as checkboxes.
 
 ## Dates
 
-In order to create a date field, use the `t.Dat` type:
+In order to create a date field, use the `t.Date` type:
 
 ```js
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: t.Num,
-  rememberMe: t.Bool,
-  birthDate: t.Dat // a date field
+  name: t.String,
+  surname: t.String,
+  email: t.maybe(t.String),
+  age: t.Number,
+  rememberMe: t.Boolean,
+  birthDate: t.Date // a date field
 });
 ```
 
@@ -342,12 +409,12 @@ var Gender = t.enums({
 });
 
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
-  age: t.Num,
-  rememberMe: t.Bool,
-  birthDate: t.Dat,
+  name: t.String,
+  surname: t.String,
+  email: t.maybe(t.String),
+  age: t.Number,
+  rememberMe: t.Boolean,
+  birthDate: t.Date,
   gender: Gender // enum
 });
 ```
@@ -360,14 +427,14 @@ You can handle a list with the `t.list` combinator:
 
 ```js
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str,
-  email: t.maybe(t.Str),
+  name: t.String,
+  surname: t.String,
+  email: t.maybe(t.String),
   age: Positive, // refinement
-  rememberMe: t.Bool,
-  birthDate: t.Dat,
+  rememberMe: t.Boolean,
+  birthDate: t.Date,
   gender: Gender,
-  tags: t.list(t.Str) // a list of strings
+  tags: t.list(t.String) // a list of strings
 });
 ```
 
@@ -377,8 +444,8 @@ You can nest lists and structs at an arbitrary level:
 
 ```js
 var Person = t.struct({
-  name: t.Str,
-  surname: t.Str
+  name: t.String,
+  surname: t.String
 });
 
 var Persons = t.list(Person);
@@ -405,8 +472,8 @@ Example: disable a field based on another field's value
 
 ```js
 var Type = t.struct({
-  disable: t.Bool, // if true, name field will be disabled
-  name: t.Str
+  disable: t.Boolean, // if true, name field will be disabled
+  name: t.String
 });
 
 var options = {
@@ -481,16 +548,6 @@ Or `auto: 'none'` if you don't want neither labels nor placeholders:
 ```js
 var options = {
   auto: 'none'
-};
-```
-
-### Style
-
-You can customise the style with the `className` option
-
-```js
-var options = {
-  className: 'mystyle'
 };
 ```
 
@@ -601,7 +658,6 @@ var options = {
 The following options are similar to the Struct ones:
 
 - `auto`
-- `className`
 - `disabled`
 - `help`
 - `hasError`
@@ -614,7 +670,7 @@ The following options are similar to the Struct ones:
 To configure all the items in a list, set the `item` option:
 
 ```js
-var Colors = t.list(t.Str);
+var Colors = t.list(t.String);
 
 var options = {
   item: {
@@ -888,6 +944,24 @@ The following options are similar to the textbox ones:
 - `error`
 - `template`
 
+### Fields order
+
+You can sort the fields with the `order` option:
+
+```js
+var Type = t.struct({
+  date: t.Date
+});
+
+var options = {
+  fields: {
+    date: {
+      order: ['D', 'M', 'YY']
+    }
+  }
+};
+```
+
 # Customizations
 
 ## Templates
@@ -929,12 +1003,12 @@ var Animal = t.enums({
 });
 
 var Pet = t.struct({
-  name: t.Str,
+  name: t.String,
   type: Animal
 });
 
 var Person = t.struct({
-  name: t.Str,
+  name: t.String,
   pets: t.list(Pet)
 });
 
@@ -1002,8 +1076,6 @@ var App = React.createClass({
   }
 
 });
-
-React.render(<App />, document.getElementById('app'));
 ```
 
 ## Transformers
@@ -1012,7 +1084,7 @@ Say you want a search textbox which accepts a list of keywords separated by spac
 
 ```js
 var Search = t.struct({
-  search: t.list(t.Str)
+  search: t.list(t.String)
 });
 ```
 
@@ -1032,8 +1104,8 @@ There is a problem though: a textbox handles only strings, so we need a way to t
 
 ```js
 var Transformer = t.struct({
-  format: t.Func, // from value to string, it must be idempotent
-  parse: t.Func   // from string to value
+  format: t.Function, // from value to string, it must be idempotent
+  parse: t.Function   // from string to value
 });
 ```
 
@@ -1106,7 +1178,7 @@ You can set an addon before or an addon after with the `config.addonBefore` and 
 
 ```js
 var Textbox = t.struct({
-  mytext: t.Str
+  mytext: t.String
 });
 
 var options = {
@@ -1146,7 +1218,7 @@ You can set the textbox size with the `config.size` option:
 
 ```js
 var Textbox = t.struct({
-  mytext: t.Str
+  mytext: t.String
 });
 
 var options = {
@@ -1172,9 +1244,9 @@ You can render the form horizontal with the `config.horizontal` option:
 
 ```js
 var Person = t.struct({
-  name: t.Str,
-  notifyMe: t.Bool,
-  email: t.maybe(t.Str)
+  name: t.String,
+  notifyMe: t.Boolean,
+  email: t.maybe(t.String)
 });
 
 var options = {
