@@ -55,7 +55,7 @@ React.render(<App />, document.getElementById('app'));
 
 ### `getValue()`
 
-Returns `null` if the validation failed, an instance of your model otherwise.
+Returns `null` if the validation failed; otherwise returns an instance of your model.
 
 > **Note**. Calling `getValue` will cause the validation of all the fields of the form, including some side effects like highlighting the errors.
 
@@ -63,7 +63,7 @@ Returns `null` if the validation failed, an instance of your model otherwise.
 
 Returns a `ValidationResult` (see [tcomb-validation](https://github.com/gcanti/tcomb-validation) for a reference documentation).
 
-### Adding a default value and listen to changes
+### Adding a default value and listening to changes
 
 The `Form` component behaves like a [controlled component](https://facebook.github.io/react/docs/forms.html):
 
@@ -123,7 +123,7 @@ where
   + `'moveUp'` list item moved up
   + `'moveDown'` list item moved down
 
-### How to get access to a field
+### Accessing fields
 
 You can get access to a field with the `getComponent(path)` API:
 
@@ -156,7 +156,7 @@ var App = React.createClass({
 
 ### Submitting the form
 
-The output of the `Form` component is a `fieldset` tag containing your fields. You can submit the form wrapping the output with a `form` tag:
+The output of the `Form` component is a `fieldset` tag containing your fields. You can submit the form by wrapping the output with a `form` tag:
 
 ```js
 var App = React.createClass({
@@ -193,7 +193,7 @@ var App = React.createClass({
 ```js
 var Name = t.subtype(t.String, function (s) { return s.length > 2; });
 
-// if you define a getValidationErrorMessage function it will be called on validation errors
+// if you define a getValidationErrorMessage function, it will be called on validation errors
 Name.getValidationErrorMessage = function (value, path, context) {
   return 'error message with locale: ' + context.locale;
 };
@@ -230,7 +230,7 @@ var App = React.createClass({
 
 # Types
 
-Models are defined with [tcomb](https://github.com/gcanti/tcomb). tcomb is a library for Node.js and the browser which allows you to check the types of JavaScript values at runtime with a simple syntax. It's great for Domain Driven Design, for testing and for adding safety to your internal code.
+Models are defined with [tcomb](https://github.com/gcanti/tcomb). tcomb is a library for Node.js and the browser which allows you to check the types of JavaScript values at runtime with a simple syntax. It's great for Domain Driven Design, for testing, and for adding safety to your internal code.
 
 ## Required field
 
@@ -255,9 +255,9 @@ var Person = t.struct({
 });
 ```
 
-The postfix `" (optional)"` is automatically added to optional fields.
+The suffix `" (optional)"` is automatically added to optional fields.
 
-You can customise the postfix value or setting a postfix for required fields (see the "Internationalization" section).
+You can customise the suffix value, or set a suffix for required fields (see the "Internationalization" section).
 
 ## Numbers
 
@@ -272,7 +272,7 @@ var Person = t.struct({
 });
 ```
 
-tcomb-form will convert automatically numbers to / from strings.
+tcomb-form will automatically convert numbers to / from strings.
 
 ## Subtypes
 
@@ -611,7 +611,7 @@ The following options are similar to the Struct ones:
 
 ### Items configuration
 
-To configure all the items in a list set the `item` option:
+To configure all the items in a list, set the `item` option:
 
 ```js
 var Colors = t.list(t.Str);
@@ -771,7 +771,7 @@ var options = {
 };
 ```
 
-You can remove the null option setting the `nullOption` option to `false`.
+You can remove the null option by setting the `nullOption` option to `false`.
 
 > **Warning**: when you set `nullOption = false` you must also set the Form's `value` prop for the select field.
 
@@ -809,7 +809,7 @@ var options = {
 };
 ```
 
-An option is a object with the following structure:
+An option is an object with the following structure:
 
 ```js
 {
@@ -849,7 +849,7 @@ var options = {
 
 ### Render as a radio group
 
-You can render the select as a radio group using the `factory` option to override the default:
+You can render the select as a radio group by using the `factory` option to override the default:
 
 ```js
 var options = {
@@ -859,7 +859,7 @@ var options = {
 
 ### Multiple select
 
-You can turn the select in a multiple select passing a `list` as type and using the `factory` option to override the default:
+You can turn the select into a multiple select by passing a `list` as type and using the `factory` option to override the default:
 
 ```js
 var Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
@@ -898,9 +898,9 @@ To customise the "skin" of tcomb-form you have to write a *template*. A template
 (locals: any) => UVDOM | ReactElement
 ```
 
-where `locals` is an object contaning the "recipe" for rendering the input and is built by tcomb-form for you. The returned value can be a [UVDOM](https://github.com/gcanti/uvdom) or a `ReactElement`.
+where `locals` is an object contaning the "recipe" for rendering the input, and is built by tcomb-form for you. The returned value can be a [UVDOM](https://github.com/gcanti/uvdom) or a `ReactElement`.
 
-For example this is the recipe for a textbox:
+For example, this is the recipe for a textbox:
 
 ```js
 {
@@ -911,7 +911,7 @@ For example this is the recipe for a textbox:
   disabled: maybe(Boolean), // should be disabled
   error: maybe(Label),      // should show an error
   hasError: maybe(Boolean), // if true should show an error state
-  help: maybe(Label),       // should show an help message
+  help: maybe(Label),       // should show a help message
   label: maybe(Label),      // should show a label
   onChange: Function,       // should call this function with the changed value
   path: Array,              // the path of this field with respect to the form root
@@ -970,7 +970,6 @@ var options = {
 };
 
 var value = {
-  birthday: 'mybirthday',
   name: 'myname',
   pets: [
     {name: 'pet1', type: 'dog'},
@@ -1017,7 +1016,7 @@ var Search = t.struct({
 });
 ```
 
-tcomb-form by default will render the `search` field as a list. In order to render a textbox you have to override the default behaviour with the factory option:
+tcomb-form by default will render the `search` field as a list. In order to render a textbox you have to override the default behaviour with the `factory` option:
 
 ```js
 var options = {
@@ -1029,7 +1028,7 @@ var options = {
 };
 ```
 
-There is a problem though: a textbox handle only strings so we need a way to transform a list in a string and a string in a list: a `Transformer` deals with serialization / deserialization of data and has the following interface:
+There is a problem though: a textbox handles only strings, so we need a way to transform a list to a string and a string to a list. A `Transformer` deals with serialization / deserialization of data and has the following interface:
 
 ```js
 var Transformer = t.struct({
@@ -1084,7 +1083,7 @@ Props:
 - `onChange(value, path) => void`: call this when the value changes
 - `ctx`: an object generated by tcomb-form containing useful infos
 
-**Note**. All props are injected in your component by tcomb-form.
+**Note**. All props are injected into your component by tcomb-form.
 
 Methods:
 
@@ -1200,7 +1199,7 @@ var options = {
 
 tcomb-form uses the following default settings:
 
-- english as language
+- English as language
 - Bootstrap as theme
 
 ## Changing the default language
