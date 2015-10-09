@@ -17,6 +17,8 @@
 - **Bug Fix**
     - Inconsistent error message creation process between `validate(val, type)` and form validation, fix #221
     - Radio component does not have a transformer in IE10-, fix #226
+- **Internal**
+    - upgrade to react v0.14
 
 ## v0.7.3
 
