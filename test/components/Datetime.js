@@ -149,7 +149,7 @@ tape('Datetime', function (tape) {
         ctx: ctx,
         value: new Date(1973, 10, 30)
       }).getLocals().error,
-      'error: 1973,10,30',
+      'error: Fri Nov 30 1973 00:00:00 GMT+0100 (CET)',
       'should handle error option as a function');
   });
 
