@@ -145,11 +145,11 @@ tape('Datetime', function (tape) {
     tape.deepEqual(
       new Datetime({
         type: t.Dat,
-        options: {error: function (value) { return 'error: ' + value; }},
+        options: {error: function (value) { return 'error: ' + value.toISOString(); }},
         ctx: ctx,
         value: new Date(1973, 10, 30)
       }).getLocals().error,
-      'error: Fri Nov 30 1973 00:00:00 GMT+0100 (CET)',
+      'error: 1973-11-29T23:00:00.000Z',
       'should handle error option as a function');
   });
 
