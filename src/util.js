@@ -18,11 +18,13 @@ export function getTypeInfo(type) {
   let isMaybe = false;
   let isSubtype = false;
   let kind;
-  let hasGetValidationErrorMessage = false;
+  let innerGetValidationErrorMessage;
 
   while (innerType) {
     kind = innerType.meta.kind;
-    hasGetValidationErrorMessage = hasGetValidationErrorMessage || t.Func.is(innerType.getValidationErrorMessage);
+    if (t.Func.is(innerType.getValidationErrorMessage)) {
+      innerGetValidationErrorMessage = innerType.getValidationErrorMessage;
+    }
     if (kind === 'maybe') {
       isMaybe = true;
       innerType = innerType.meta.type;
@@ -36,12 +38,16 @@ export function getTypeInfo(type) {
     break;
   }
 
-  const getValidationErrorMessage = hasGetValidationErrorMessage ? function (value, path, context) {
+  const getValidationErrorMessage = innerGetValidationErrorMessage ? function (value, path, context) {
     var result = t.validate(value, type, {path, context});
-    if (result.isValid() || !t.Func.is(result.errors[0].expected.getValidationErrorMessage)) {
-      return null;
+    if (!result.isValid()) {
+      for (let i = 0, len = result.errors.length; i < len; i++ ) {
+        if (t.Func.is(result.errors[i].expected.getValidationErrorMessage)) {
+          return result.errors[i].message;
+        }
+      }
+      return innerGetValidationErrorMessage(value, path, context);
     }
-    return result.errors[0].message;
   } : undefined;
 
   return {

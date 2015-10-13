@@ -180,7 +180,8 @@ export class Component extends React.Component {
     const error = this.props.options.error || this.typeInfo.getValidationErrorMessage;
     if (t.Func.is(error)) {
       const validationOptions = this.getValidationOptions();
-      return error(this.state.value, validationOptions.path, validationOptions.context);
+      const value = this.getTransformer().parse(this.state.value);
+      return error(value, validationOptions.path, validationOptions.context);
     }
     return error;
   }
