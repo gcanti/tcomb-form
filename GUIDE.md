@@ -257,16 +257,30 @@ var App = React.createClass({
 
 ### Customised error messages
 
+You can add a custom error message with the `error` options (see [Error message](#error-message) section).
+Another way is adding a
+
+```
+getValidationErrorMessage(value, path, context)
+```
+
+ static function to a type, where:
+
+- `value` is the (parsed) current value of the component.
+- `path` is the path of the value being validated
+- `context` is the value of the `context` prop. Also it contains a reference to the component options.
+
+
 ```js
-var Name = t.subtype(t.String, function (s) { return s.length > 2; });
+var Age = t.subtype(t.Number, function (n) { return n >= 18; });
 
 // if you define a getValidationErrorMessage function, it will be called on validation errors
-Name.getValidationErrorMessage = function (value, path, context) {
-  return 'error message with locale: ' + context.locale;
+Age.getValidationErrorMessage = function (value, path, context) {
+  return 'bad age, locale: ' + context.locale;
 };
 
 var Schema = t.struct({
-  name: Name
+  age: Age
 });
 
 var App = React.createClass({
@@ -293,6 +307,18 @@ var App = React.createClass({
   }
 
 });
+```
+
+You can even define `getValidationErrorMessage` on the supertype in order to be DRY:
+
+```js
+t.Number.getValidationErrorMessage = function (value, path, context) {
+  return 'bad number';
+};
+
+Age.getValidationErrorMessage = function (value, path, context) {
+  return 'bad age, locale: ' + context.locale;
+};
 ```
 
 # Types
@@ -602,7 +628,7 @@ var options = {
 
 - `value` is an object containing the current form value.
 - `path` is the path of the value being validated
-- `context` is the value of the `context`. Also it contains a reference to the current component.
+- `context` is the value of the `context` prop. Also it contains a reference to the component options.
 
 If you want to show the error message onload, add the `hasError` option:
 

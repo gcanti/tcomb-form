@@ -608,10 +608,10 @@ export class List extends Component {
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
   }
 
-  onItemChange(itemIndex, itemValue, path) {
+  onItemChange(itemIndex, itemValue, path, kind) {
     const value = this.state.value.slice();
     value[itemIndex] = itemValue;
-    this.onChange(value, this.state.keys, path);
+    this.onChange(value, this.state.keys, path, kind);
   }
 
   removeItem(i, evt) {
