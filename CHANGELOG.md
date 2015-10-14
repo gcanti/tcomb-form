@@ -10,6 +10,14 @@
 
 **Note**: Gaps between patch versions are faulty/broken releases.
 
+## v0.7.5
+
+- **Bug Fix**
+    - optional refinement with custom error message not passing locals.error, fix #230
+    - Kind is undefined in onChange for nested List, fix #231
+- **Internal**
+    - custom error function now takes a parsed value
+
 ## v0.7.4
 
 - **New Feature**
