@@ -15,7 +15,7 @@ Table of Contents
     * [Required field](#required-field)
     * [Optional field](#optional-field)
     * [Numbers](#numbers)
-    * [Subtypes](#subtypes)
+    * [Refinements](#refinements)
     * [Booleans](#booleans)
     * [Dates](#dates)
     * [Enums](#enums)
@@ -272,7 +272,7 @@ getValidationErrorMessage(value, path, context)
 
 
 ```js
-var Age = t.subtype(t.Number, function (n) { return n >= 18; });
+var Age = t.refinement(t.Number, function (n) { return n >= 18; });
 
 // if you define a getValidationErrorMessage function, it will be called on validation errors
 Age.getValidationErrorMessage = function (value, path, context) {
@@ -367,7 +367,7 @@ var Person = t.struct({
 
 tcomb-form will automatically convert numbers to / from strings.
 
-## Subtypes
+## Refinements
 
 A *predicate* is a function with the following signature:
 
@@ -391,7 +391,7 @@ var Person = t.struct({
 });
 ```
 
-Subtypes allow you to express any custom validation with a simple predicate.
+Refinements allow you to express any custom validation with a simple predicate.
 
 ## Booleans
 
