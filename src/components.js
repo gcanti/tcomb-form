@@ -120,6 +120,11 @@ export class Component extends React.Component {
       nextProps.options !== this.props.options ||
       nextProps.type !== this.props.type
     );
+    // console.log(nextState.value !== this.state.value,
+    //   nextState.hasError !== this.state.hasError,
+    //   nextProps.options !== this.props.options,
+    //   nextProps.type !== this.props.type,
+    //   should);
     return should;
   }
 
@@ -464,8 +469,9 @@ export class Struct extends Component {
   onChange(fieldName, fieldValue, path, kind) {
     const value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
-    this.state.value = value;
-    this.props.onChange(value, path, kind);
+    this.setState({value}, () => {
+      this.props.onChange(value, path, kind);
+    });
   }
 
   getTemplate() {
@@ -589,16 +595,9 @@ export class List extends Component {
 
   onChange(value, keys, path, kind) {
     keys = toSameLength(value, keys, this.props.ctx.uidGenerator);
-    if (!kind) {
-      // optimise re-rendering
-      this.state.value = value;
-      this.state.keys = keys;
+    this.setState({value, keys}, () => {
       this.props.onChange(value, path, kind);
-    } else {
-      this.setState({value, keys}, () => {
-        this.props.onChange(value, path, kind);
-      });
-    }
+    });
   }
 
   addItem(evt) {
