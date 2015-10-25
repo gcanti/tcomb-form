@@ -120,6 +120,11 @@ export class Component extends React.Component {
       nextProps.options !== this.props.options ||
       nextProps.type !== this.props.type
     );
+    // console.log(nextState.value !== this.state.value,
+    //   nextState.hasError !== this.state.hasError,
+    //   nextProps.options !== this.props.options,
+    //   nextProps.type !== this.props.type,
+    //   should);
     return should;
   }
 
@@ -141,6 +146,14 @@ export class Component extends React.Component {
       path: this.props.ctx.path,
       context: t.mixin(t.mixin({}, this.props.context || this.props.ctx.context), { options: this.props.options })
     };
+  }
+
+  isValueNully() {
+    return Nil.is(this.getTransformer().parse(this.state.value));
+  }
+
+  removeErrors() {
+    this.setState({hasError: false});
   }
 
   validate() {
@@ -433,11 +446,25 @@ export class Struct extends Component {
     parse: value => value
   };
 
+  isValueNully() {
+    return Object.keys(this.refs).every((ref) => this.refs[ref].isValueNully());
+  }
+
+  removeErrors() {
+    this.setState({hasError: false});
+    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors());
+  }
+
   validate() {
     let value = {};
     let errors = [];
     let hasError = false;
     let result;
+
+    if (this.typeInfo.isMaybe && this.isValueNully()) {
+      this.removeErrors();
+      return new t.ValidationResult({errors: [], value: null});
+    }
 
     for (let ref in this.refs) {
       if (this.refs.hasOwnProperty(ref)) {
@@ -464,8 +491,9 @@ export class Struct extends Component {
   onChange(fieldName, fieldValue, path, kind) {
     const value = t.mixin({}, this.state.value);
     value[fieldName] = fieldValue;
-    this.state.value = value;
-    this.props.onChange(value, path, kind);
+    this.setState({value}, () => {
+      this.props.onChange(value, path, kind);
+    });
   }
 
   getTemplate() {
@@ -564,11 +592,25 @@ export class List extends Component {
     });
   }
 
+  isValueNully() {
+    return this.state.value.length === 0;
+  }
+
+  removeErrors() {
+    this.setState({hasError: false});
+    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors());
+  }
+
   validate() {
     const value = [];
     let errors = [];
     let hasError = false;
     let result;
+
+    if (this.typeInfo.isMaybe && this.isValueNully()) {
+      this.removeErrors();
+      return new t.ValidationResult({errors: [], value: null});
+    }
 
     for (let i = 0, len = this.state.value.length; i < len; i++ ) {
       result = this.refs[i].validate();
@@ -589,16 +631,9 @@ export class List extends Component {
 
   onChange(value, keys, path, kind) {
     keys = toSameLength(value, keys, this.props.ctx.uidGenerator);
-    if (!kind) {
-      // optimise re-rendering
-      this.state.value = value;
-      this.state.keys = keys;
+    this.setState({value, keys}, () => {
       this.props.onChange(value, path, kind);
-    } else {
-      this.setState({value, keys}, () => {
-        this.props.onChange(value, path, kind);
-      });
-    }
+    });
   }
 
   addItem(evt) {
