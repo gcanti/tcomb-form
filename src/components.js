@@ -148,6 +148,14 @@ export class Component extends React.Component {
     };
   }
 
+  isValueNully() {
+    return Nil.is(this.getTransformer().parse(this.state.value));
+  }
+
+  removeErrors() {
+    this.setState({hasError: false});
+  }
+
   validate() {
     const value = this.getTransformer().parse(this.state.value);
     const result = t.validate(value, this.props.type, this.getValidationOptions());
@@ -438,11 +446,25 @@ export class Struct extends Component {
     parse: value => value
   };
 
+  isValueNully() {
+    return Object.keys(this.refs).every((ref) => this.refs[ref].isValueNully());
+  }
+
+  removeErrors() {
+    this.setState({hasError: false});
+    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors());
+  }
+
   validate() {
     let value = {};
     let errors = [];
     let hasError = false;
     let result;
+
+    if (this.typeInfo.isMaybe && this.isValueNully()) {
+      this.removeErrors();
+      return new t.ValidationResult({errors: [], value: null});
+    }
 
     for (let ref in this.refs) {
       if (this.refs.hasOwnProperty(ref)) {
@@ -570,11 +592,25 @@ export class List extends Component {
     });
   }
 
+  isValueNully() {
+    return this.state.value.length === 0;
+  }
+
+  removeErrors() {
+    this.setState({hasError: false});
+    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors());
+  }
+
   validate() {
     const value = [];
     let errors = [];
     let hasError = false;
     let result;
+
+    if (this.typeInfo.isMaybe && this.isValueNully()) {
+      this.removeErrors();
+      return new t.ValidationResult({errors: [], value: null});
+    }
 
     for (let i = 0, len = this.state.value.length; i < len; i++ ) {
       result = this.refs[i].validate();
