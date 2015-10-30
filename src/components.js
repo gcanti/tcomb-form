@@ -93,7 +93,6 @@ export const decorators = {
 
 };
 
-@decorators.attrs
 export class Component extends React.Component {
 
   static transformer = {
@@ -226,7 +225,6 @@ export class Component extends React.Component {
   getLocals() {
     const options = this.props.options;
     const value = this.state.value;
-    const attrs = this.getAttrs();
     return {
       typeInfo: this.typeInfo,
       path: this.props.ctx.path,
@@ -235,7 +233,7 @@ export class Component extends React.Component {
       label: this.getLabel(),
       onChange: this.onChange.bind(this),
       config: this.getConfig(),
-      value, attrs,
+      value,
       disabled: options.disabled,
       help: options.help
     };
