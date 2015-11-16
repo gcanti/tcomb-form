@@ -7,8 +7,17 @@
 > - [Documentation]
 > - [Internal]
 > - [Polish]
+> - [Experimental]
 
 **Note**: Gaps between patch versions are faulty/broken releases.
+**Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
+
+## v0.7.6
+
+- **Bug Fix**
+    - de-optimise structs / lists onChange, fix #235
+- **Experimental**
+    - add support for maybe structs and maybe lists, fix #236
 
 ## v0.7.5
 
