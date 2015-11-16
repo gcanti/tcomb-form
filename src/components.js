@@ -24,13 +24,16 @@ export function getComponent(type, options) {
   if (options.factory) {
     return options.factory;
   }
+  if (type.getTcombFormFactory) {
+    return type.getTcombFormFactory(options);
+  }
   const name = t.getTypeName(type);
   switch (type.meta.kind) {
     case 'irreducible' :
       return (
-        type === t.Bool ? Checkbox :
-        type === t.Dat ?  Datetime :
-                          Textbox
+        type === t.Boolean ? Checkbox :
+        type === t.Date ? Datetime :
+        Textbox
       );
     case 'struct' :
       return Struct;
