@@ -262,6 +262,40 @@ function parseNumber(value) {
   return isNumeric ? n : toNull(value);
 }
 
+
+@decorators.attrs
+export class Factory extends Component {
+
+  static transformer = {
+    format: value => Nil.is(value) ? null : value,
+    parse: toNull
+  };
+
+  static numberTransformer = {
+    format: value => Nil.is(value) ? null : String(value),
+    parse: parseNumber
+  };
+
+  getTransformer() {
+    const options = this.props.options;
+    return options.transformer ? options.transformer :
+        this.typeInfo.innerType === t.Num ? Factory.numberTransformer :
+            Factory.transformer;
+  }
+
+
+  getLocals() {
+    const locals = super.getLocals();
+    locals.attrs = this.getAttrs();
+    locals.type = this.props.options.type || 'text';
+    return locals;
+  }
+
+  getTemplate() {
+    throw new Error('The Factory getTemplate() method should be overridden.');
+  }
+}
+
 @decorators.attrs
 @decorators.template('textbox')
 export class Textbox extends Component {
