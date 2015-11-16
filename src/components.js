@@ -194,7 +194,7 @@ export class Component extends React.Component {
 
   getError() {
     const error = this.props.options.error || this.typeInfo.getValidationErrorMessage;
-    if (t.Func.is(error)) {
+    if (t.Function.is(error)) {
       const validationOptions = this.getValidationOptions();
       const value = this.getTransformer().parse(this.state.value);
       return error(value, validationOptions.path, validationOptions.context);
@@ -245,7 +245,7 @@ export class Component extends React.Component {
   render() {
     const locals = this.getLocals();
     // getTemplate is the only required implementation when extending Component
-    assert(t.Func.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
+    assert(t.Function.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
     const template = this.getTemplate();
     return compile(template(locals));
   }
@@ -253,7 +253,7 @@ export class Component extends React.Component {
 }
 
 function toNull(value) {
-  return (t.Str.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
+  return (t.String.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
 }
 
 function parseNumber(value) {
@@ -279,7 +279,7 @@ export class Textbox extends Component {
   getTransformer() {
     const options = this.props.options;
     return options.transformer ? options.transformer :
-      this.typeInfo.innerType === t.Num ? Textbox.numberTransformer :
+      this.typeInfo.innerType === t.Number ? Textbox.numberTransformer :
       Textbox.transformer;
   }
 
@@ -416,13 +416,13 @@ export class Datetime extends Component {
 
   static transformer = {
     format: (value) => {
-      return t.Arr.is(value) ? value :
-        t.Dat.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) :
+      return t.Array.is(value) ? value :
+        t.Date.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) :
         [null, null, null];
     },
     parse: (value) => {
       value = value.map(parseNumber);
-      return value.every(t.Num.is) ? new Date(value[0], value[1], value[2]) :
+      return value.every(t.Number.is) ? new Date(value[0], value[1], value[2]) :
         value.every(Nil.is) ? null :
         value;
     }
@@ -756,7 +756,7 @@ export class Form extends React.Component {
   }
 
   getComponent(path) {
-    path = t.Str.is(path) ? path.split('.') : path;
+    path = t.String.is(path) ? path.split('.') : path;
     return path.reduce((input, name) => input.refs[name], this.refs.input);
   }
 
@@ -767,9 +767,9 @@ export class Form extends React.Component {
     const { i18n, templates } = Form;
 
     assert(t.isType(type), `[${SOURCE}] missing required prop type`);
-    assert(t.Obj.is(options), `[${SOURCE}] prop options must be an object`);
-    assert(t.Obj.is(templates), `[${SOURCE}] missing templates config`);
-    assert(t.Obj.is(i18n), `[${SOURCE}] missing i18n config`);
+    assert(t.Object.is(options), `[${SOURCE}] prop options must be an object`);
+    assert(t.Object.is(templates), `[${SOURCE}] missing templates config`);
+    assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`);
 
     // this is in the render method because I need this._reactInternalInstance
     this.uidGenerator = this.uidGenerator || new UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '');

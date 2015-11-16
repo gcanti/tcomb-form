@@ -22,7 +22,7 @@ export function getTypeInfo(type) {
 
   while (innerType) {
     kind = innerType.meta.kind;
-    if (t.Func.is(innerType.getValidationErrorMessage)) {
+    if (t.Function.is(innerType.getValidationErrorMessage)) {
       innerGetValidationErrorMessage = innerType.getValidationErrorMessage;
     }
     if (kind === 'maybe') {
@@ -42,7 +42,7 @@ export function getTypeInfo(type) {
     var result = t.validate(value, type, {path, context});
     if (!result.isValid()) {
       for (let i = 0, len = result.errors.length; i < len; i++ ) {
-        if (t.Func.is(result.errors[i].expected.getValidationErrorMessage)) {
+        if (t.Function.is(result.errors[i].expected.getValidationErrorMessage)) {
           return result.errors[i].message;
         }
       }
