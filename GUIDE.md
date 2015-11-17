@@ -1231,7 +1231,7 @@ var options = {
     mytext: {
       config: {
         // you can use strings or JSX
-        addonBefore: <i>before<i>,
+        addonBefore: <i>before</i>,
         addonAfter: <i>after</i>
       }
     }
