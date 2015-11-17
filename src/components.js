@@ -151,8 +151,12 @@ export class Component extends React.Component {
     };
   }
 
+  getValue() {
+    return this.getTransformer().parse(this.state.value);
+  }
+
   isValueNully() {
-    return Nil.is(this.getTransformer().parse(this.state.value));
+    return Nil.is(this.getValue());
   }
 
   removeErrors() {
@@ -160,8 +164,7 @@ export class Component extends React.Component {
   }
 
   validate() {
-    const value = this.getTransformer().parse(this.state.value);
-    const result = t.validate(value, this.props.type, this.getValidationOptions());
+    const result = t.validate(this.getValue(), this.props.type, this.getValidationOptions());
     this.setState({hasError: !result.isValid()});
     return result;
   }
@@ -196,8 +199,7 @@ export class Component extends React.Component {
     const error = this.props.options.error || this.typeInfo.getValidationErrorMessage;
     if (t.Function.is(error)) {
       const validationOptions = this.getValidationOptions();
-      const value = this.getTransformer().parse(this.state.value);
-      return error(value, validationOptions.path, validationOptions.context);
+      return error(this.getValue(), validationOptions.path, validationOptions.context);
     }
     return error;
   }
