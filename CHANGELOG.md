@@ -14,6 +14,8 @@
 
 ## v0.7.7
 
+- **Bug Fix**
+    - Incosistent calling of tcomb-validation validate function in getTypeInfo and components for struct and list types, fix #253
 - **Experimental**
     - if a type owns a `getTcombFormFactory(options)` static function, it will be used to retrieve the suitable factory
 
@@ -49,6 +51,7 @@
     - remove `raw` param in `getValue` API
     - remove deprecated types
     - factor out UIDGenerator from `Form` render method
+    - optimise getError(): return an error message only if `hasError === true`
 
 ## v0.7.6
 

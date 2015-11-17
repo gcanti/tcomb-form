@@ -136,7 +136,7 @@ tape('Datetime', function (tape) {
     tape.strictEqual(
       new Datetime({
         type: t.Dat,
-        options: {error: 'myerror'},
+        options: {error: 'myerror', hasError: true},
         ctx: ctx
       }).getLocals().error,
       'myerror',
@@ -145,7 +145,7 @@ tape('Datetime', function (tape) {
     tape.deepEqual(
       new Datetime({
         type: t.Dat,
-        options: {error: function (value) { return 'error: ' + value.getFullYear(); }},
+        options: {error: function (value) { return 'error: ' + value.getFullYear(); }, hasError: true},
         ctx: ctx,
         value: new Date(1973, 10, 30)
       }).getLocals().error,

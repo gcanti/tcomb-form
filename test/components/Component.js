@@ -11,11 +11,11 @@ var ctx = util.ctx;
 tape('Component', function (tape) {
 
   tape.test('getValidationErrorMessage', function (tape) {
-    tape.plan(15);
+    tape.plan(16);
 
     var component = new Component({
       type: t.String,
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -23,7 +23,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: t.maybe(t.String),
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -33,7 +33,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: Password,
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -45,15 +45,23 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: Password,
-      options: {},
+      options: {hasError: false},
       ctx: ctx
     });
 
-    tape.strictEqual(component.getError(), 'bad password', '#4');
+    tape.strictEqual(component.getError(), undefined, '#4.1');
+
+    component = new Component({
+      type: Password,
+      options: {hasError: true},
+      ctx: ctx
+    });
+
+    tape.strictEqual(component.getError(), 'bad password', '#4.2');
 
     component = new Component({
       type: t.maybe(Password),
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -61,7 +69,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: t.maybe(Password),
-      options: {},
+      options: {hasError: true},
       ctx: ctx,
       value: 'a'
     });
@@ -74,7 +82,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: Password,
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -86,7 +94,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: Age,
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -94,7 +102,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: t.maybe(Age),
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -106,7 +114,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: Age,
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -114,7 +122,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: t.maybe(Age),
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 
@@ -122,7 +130,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: t.maybe(Age),
-      options: {},
+      options: {hasError: true},
       ctx: ctx,
       value: 'a'
     });
@@ -135,7 +143,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: Age,
-      options: {},
+      options: {hasError: true},
       ctx: ctx,
       value: 'a'
     });
@@ -144,7 +152,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: Age,
-      options: {},
+      options: {hasError: true},
       ctx: ctx,
       value: 1
     });
@@ -153,7 +161,7 @@ tape('Component', function (tape) {
 
     component = new Component({
       type: t.maybe(Age),
-      options: {},
+      options: {hasError: true},
       ctx: ctx
     });
 

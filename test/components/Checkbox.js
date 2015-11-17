@@ -172,7 +172,7 @@ tape('Checkbox', function (tape) {
     tape.strictEqual(
       new Checkbox({
         type: t.Bool,
-        options: {error: 'myerror'},
+        options: {error: 'myerror', hasError: true},
         ctx: ctx
       }).getLocals().error,
       'myerror',
@@ -181,7 +181,7 @@ tape('Checkbox', function (tape) {
     tape.strictEqual(
       new Checkbox({
         type: t.Bool,
-        options: {error: function (value) { return 'error: ' + value; }},
+        options: {error: function (value) { return 'error: ' + value; }, hasError: true},
         ctx: ctx,
         value: 'a'
       }).getLocals().error,

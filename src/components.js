@@ -196,12 +196,14 @@ export class Component extends React.Component {
   }
 
   getError() {
-    const error = this.props.options.error || this.typeInfo.getValidationErrorMessage;
-    if (t.Function.is(error)) {
-      const validationOptions = this.getValidationOptions();
-      return error(this.getValue(), validationOptions.path, validationOptions.context);
+    if (this.hasError()) {
+      const error = this.props.options.error || this.typeInfo.getValidationErrorMessage;
+      if (t.Function.is(error)) {
+        const validationOptions = this.getValidationOptions();
+        return error(this.getValue(), validationOptions.path, validationOptions.context);
+      }
+      return error;
     }
-    return error;
   }
 
   hasError() {

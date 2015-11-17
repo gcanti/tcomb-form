@@ -162,7 +162,7 @@ tape('Radio', function (tape) {
     tape.strictEqual(
       new Radio({
         type: Country,
-        options: {error: 'myerror'},
+        options: {error: 'myerror', hasError: true},
         ctx: ctx
       }).getLocals().error,
       'myerror',
@@ -174,7 +174,7 @@ tape('Radio', function (tape) {
         options: {
             error: function (value) {
               return 'error: ' + value;
-            }
+            }, hasError: true
         },
         ctx: ctx,
         value: 'a'
