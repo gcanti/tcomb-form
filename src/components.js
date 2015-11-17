@@ -460,6 +460,14 @@ export class Struct extends Component {
     Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors());
   }
 
+  getValue() {
+    const value = {};
+    for (let ref in this.refs) {
+      value[ref] = this.refs[ref].getValue();
+    }
+    return this.getTransformer().parse(value);
+  }
+
   validate() {
     let value = {};
     let errors = [];
@@ -604,6 +612,14 @@ export class List extends Component {
   removeErrors() {
     this.setState({hasError: false});
     Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors());
+  }
+
+  getValue() {
+    const value = [];
+    for (let i = 0, len = this.state.value.length; i < len; i++ ) {
+      value.push(this.refs[i].getValue());
+    }
+    return this.getTransformer().parse(value);
   }
 
   validate() {
