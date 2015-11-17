@@ -748,11 +748,9 @@ export class Form extends React.Component {
     return this.refs.input.validate();
   }
 
-  getValue(raw) {
+  getValue() {
     const result = this.validate();
-    return raw === true ? result :
-      result.isValid() ? result.value :
-      null;
+    return result.isValid() ? result.value : null;
   }
 
   getComponent(path) {
