@@ -12,6 +12,44 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.7.7
+
+- **Experimental**
+    - if a type owns a `getTcombFormFactory(options)` static function, it will be used to retrieve the suitable factory
+
+    ```js
+    // instead of
+    const Country = t.enums.of(['IT', 'US'], 'Country');
+
+    const Type = t.struct({
+      country: Country
+    });
+
+    const options = {
+      fields: {
+        country: {
+          factory: t.form.Radio
+        }
+      }
+    };
+
+    // you can write
+    const Country = t.enums.of(['IT', 'US'], 'Country');
+
+    Country.getTcombFormFactory = function () {
+      return t.form.Radio;
+    };
+
+    const Type = t.struct({
+      country: Country
+    });
+    ```
+
+- **Internal**
+    - remove `raw` param in `getValue` API
+    - remove deprecated types
+    - factor out UIDGenerator from `Form` render method
+
 ## v0.7.6
 
 - **Bug Fix**
