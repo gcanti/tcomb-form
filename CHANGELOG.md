@@ -53,6 +53,7 @@
     - factor out UIDGenerator from `Form` render method
     - optimise getError(): return an error message only if `hasError === true`
     - split bootstrap templates
+    - split semantic templates
 
 ## v0.7.6
 
