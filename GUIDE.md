@@ -7,8 +7,9 @@ Table of Contents
     * [API](#api)
       * [getValue()](#getvalue)
       * [validate()](#validate)
-      * [Adding a default value and listen to changes](#adding-a-default-value-and-listen-to-changes)
-      * [How to get access to a field](#how-to-get-access-to-a-field)
+    * [How to](#how-to)
+      * [Adding a default value and listening to changes](#adding-a-default-value-and-listening-to-changes)
+      * [Accessing fields](#accessing-fields)
       * [Submitting the form](#submitting-the-form)
       * [Customised error messages](#customised-error-messages)
   * [Types](#types)
@@ -27,7 +28,7 @@ Table of Contents
       * [Fields order](#fields-order)
       * [Legend](#legend)
       * [Help message](#help-message)
-      * [Error message](#error-message)
+      * [Error messages](#error-messages)
       * [Disabled](#disabled)
       * [Fields configuration](#fields-configuration)
       * [Look and feel](#look-and-feel)
@@ -129,6 +130,8 @@ Returns `null` if the validation failed; otherwise returns an instance of your m
 ### `validate()`
 
 Returns a `ValidationResult` (see [tcomb-validation](https://github.com/gcanti/tcomb-validation) for a reference documentation).
+
+## How to
 
 ### Adding a default value and listening to changes
 
@@ -257,69 +260,7 @@ var App = React.createClass({
 
 ### Customised error messages
 
-You can add a custom error message with the `error` options (see [Error message](#error-message) section).
-Another way is adding a
-
-```
-getValidationErrorMessage(value, path, context)
-```
-
- static function to a type, where:
-
-- `value` is the (parsed) current value of the component.
-- `path` is the path of the value being validated
-- `context` is the value of the `context` prop. Also it contains a reference to the component options.
-
-
-```js
-var Age = t.refinement(t.Number, function (n) { return n >= 18; });
-
-// if you define a getValidationErrorMessage function, it will be called on validation errors
-Age.getValidationErrorMessage = function (value, path, context) {
-  return 'bad age, locale: ' + context.locale;
-};
-
-var Schema = t.struct({
-  age: Age
-});
-
-var App = React.createClass({
-
-  onSubmit(evt) {
-    evt.preventDefault();
-    var value = this.refs.form.getValue();
-    if (value) {
-      console.log(value);
-    }
-  },
-
-  render() {
-    return (
-      <form onSubmit={this.onSubmit}>
-        <t.form.Form
-          ref="form"
-          type={Schema}
-          context={{locale: 'it-IT'}}
-        />
-        <button type="submit" className="btn btn-primary">Save</button>
-      </form>
-    );
-  }
-
-});
-```
-
-You can even define `getValidationErrorMessage` on the supertype in order to be DRY:
-
-```js
-t.Number.getValidationErrorMessage = function (value, path, context) {
-  return 'bad number';
-};
-
-Age.getValidationErrorMessage = function (value, path, context) {
-  return 'bad age, locale: ' + context.locale;
-};
-```
+See [Error messages](#error-messages) section.
 
 # Types
 
@@ -609,26 +550,29 @@ var options = {
 };
 ```
 
-### Error message
+### Error messages
 
-You can add a custom error message with the `error` options:
+You can add a custom error message with the `error` option:
 
 ```js
 var options = {
-  // you can use strings or JSX
-  error: <i>A custom error message</i>
+  error: <i>A custom error message</i> // use strings or JSX
 };
 ```
 
 `error` can also be a function with the following signature:
 
 ```
-(value, path, context) => ?(string | ReactElement)
+type getValidationErrorMessage = (value, path, context) => ?(string | ReactElement)
 ```
 
-- `value` is an object containing the current form value.
+where
+
+- `value` is the (parsed) current value of the component.
 - `path` is the path of the value being validated
 - `context` is the value of the `context` prop. Also it contains a reference to the component options.
+
+The value returned by the function will be used as error message.
 
 If you want to show the error message onload, add the `hasError` option:
 
@@ -636,6 +580,64 @@ If you want to show the error message onload, add the `hasError` option:
 var options = {
   hasError: true,
   error: <i>A custom error message</i>
+};
+```
+
+Another (advanced) way to customize the error message is to add a:
+
+```
+getValidationErrorMessage(value, path, context) => ?(string | ReactElement)
+```
+
+static function to the type, where the arguments are the same as above:
+
+```js
+var Age = t.refinement(t.Number, function (n) { return n >= 18; });
+
+// if you define a getValidationErrorMessage function, it will be called on validation errors
+Age.getValidationErrorMessage = function (value, path, context) {
+  return 'bad age, locale: ' + context.locale;
+};
+
+var Schema = t.struct({
+  age: Age
+});
+
+var App = React.createClass({
+
+  onSubmit(evt) {
+    evt.preventDefault();
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+    }
+  },
+
+  render() {
+    return (
+      <form onSubmit={this.onSubmit}>
+        <t.form.Form
+          ref="form"
+          type={Schema}
+          context={{locale: 'it-IT'}}
+        />
+        <button type="submit" className="btn btn-primary">Save</button>
+      </form>
+    );
+  }
+
+});
+```
+
+You can even define `getValidationErrorMessage` on the supertype in order to be DRY:
+
+```js
+t.Number.getValidationErrorMessage = function (value, path, context) {
+  return 'bad number';
+};
+
+Age.getValidationErrorMessage = function (value, path, context) {
+  return 'bad age, locale: ' + context.locale;
 };
 ```
 
