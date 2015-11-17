@@ -2,22 +2,12 @@
 
 var tape = require('tape');
 var t = require('tcomb-validation');
-var bootstrap = require('../../lib/templates/bootstrap');
-var Datetime = require('../../lib/components').Datetime;
+var bootstrap = require('../../src/templates/bootstrap');
+var Datetime = require('../../src/components').Datetime;
 var React = require('react');
 var util = require('./util');
 var ctx = util.ctx;
-var ctxPlaceholders = util.ctxPlaceholders;
 var renderComponent = util.getRenderComponent(Datetime);
-
-var transformer = {
-  format: function (value) {
-    return t.Dat.is(value) ? value.toISOString() : null;
-  },
-  parse: function (value) {
-    return new Date(value);
-  }
-};
 
 tape('Datetime', function (tape) {
 

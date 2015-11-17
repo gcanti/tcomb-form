@@ -3,8 +3,8 @@
 var t = require('tcomb-validation');
 var React = require('react');
 var ReactDOM = require('react/lib/ReactDOM');
-var bootstrap = require('../../lib/templates/bootstrap');
-var UIDGenerator = require('../../lib/util').UIDGenerator;
+var bootstrap = require('../../src/templates/bootstrap');
+var UIDGenerator = require('../../src/util').UIDGenerator;
 
 var ctx = {
   uidGenerator: new UIDGenerator('root'),

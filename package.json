@@ -4,10 +4,10 @@
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "index.js",
   "scripts": {
-    "dev": "watchify -t [babelify --stage=0 --loose] dev/client/client.js -o dev/client/bundle.js -v",
+    "dev": "watchify -t [babelify] dev/client/client.js -o dev/client/bundle.js -v",
     "lint": "eslint src",
     "test": "npm run lint && karma start",
-    "watch": "rm -rf lib/* && babel src -d lib --stage=0 --loose -w"
+    "watch": "rm -rf lib/* && babel src -d lib -w"
   },
   "repository": {
     "type": "git",

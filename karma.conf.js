@@ -8,6 +8,11 @@ module.exports = function (config) {
     preprocessors: {
       'test/index.js': [ 'browserify' ]
     },
+    browserify: {
+      transform: [
+        'babelify'
+      ]
+    },
     reporters: ['dots']
   });
 };

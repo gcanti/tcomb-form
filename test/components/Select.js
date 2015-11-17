@@ -2,8 +2,8 @@
 
 var tape = require('tape');
 var t = require('tcomb-validation');
-var bootstrap = require('../../lib/templates/bootstrap');
-var Select = require('../../lib/components').Select;
+var bootstrap = require('../../src/templates/bootstrap');
+var Select = require('../../src/components').Select;
 var React = require('react');
 var util = require('./util');
 var ctx = util.ctx;
