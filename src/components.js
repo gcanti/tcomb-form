@@ -758,6 +758,11 @@ export class Form extends React.Component {
     return path.reduce((input, name) => input.refs[name], this.refs.input);
   }
 
+  getUIDGenerator() {
+    this.uidGenerator = this.uidGenerator || new UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '');
+    return this.uidGenerator;
+  }
+
   render() {
 
     const type = this.props.type;
@@ -770,7 +775,7 @@ export class Form extends React.Component {
     assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`);
 
     // this is in the render method because I need this._reactInternalInstance
-    this.uidGenerator = this.uidGenerator || new UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '');
+    const uidGenerator = this.getUIDGenerator();
 
     const Component = getComponent(type, options);
     return React.createElement(Component, {
@@ -781,7 +786,7 @@ export class Form extends React.Component {
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
         context: this.props.context,
-        uidGenerator: this.uidGenerator,
+        uidGenerator,
         auto: 'labels',
         templates,
         i18n,
