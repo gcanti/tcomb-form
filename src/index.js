@@ -1,3 +1,4 @@
+/* global File */
 import t from 'tcomb-validation';
 import * as components from './components';
 

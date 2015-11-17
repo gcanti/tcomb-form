@@ -27,7 +27,7 @@
     "uvdom-bootstrap": "^0.2.3"
   },
   "devDependencies": {
-    "babel": "^5.1.10",
+    "babel": "^5.0.0",
     "babel-eslint": "^3.0.1",
     "babelify": "^6.0.2",
     "browserify": "^9.0.8",

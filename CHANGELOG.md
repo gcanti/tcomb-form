@@ -52,6 +52,7 @@
     - remove deprecated types
     - factor out UIDGenerator from `Form` render method
     - optimise getError(): return an error message only if `hasError === true`
+    - split bootstrap templates
 
 ## v0.7.6
 
