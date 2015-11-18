@@ -42,8 +42,36 @@ var months = nullOption.concat(range(12).map(function (i) {
 
 export default function date(locals) {
 
-  const config = new DateConfig(locals.config || {});
-  const value = locals.value.slice();
+  locals.config = date.getConfig(locals);
+
+  const children = locals.config.horizontal ?
+    date.renderHorizontal(locals) :
+    date.renderVertical(locals);
+
+  return date.renderFormGroup(children, locals);
+}
+
+date.getConfig = function (locals) {
+  return new DateConfig(locals.config || {});
+};
+
+date.renderLabel = function (locals) {
+  return getLabel({
+    label: locals.label,
+    breakpoints: locals.config.horizontal
+  });
+};
+
+date.renderError = function (locals) {
+  return getError(locals);
+};
+
+date.renderHelp = function (locals) {
+  return getHelp(locals);
+};
+
+date.renderDate = function (locals) {
+  const value = locals.value = locals.value.slice();
 
   function onDayChange(evt) {
     value[2] = evt.target.value === '-' ? null : evt.target.value;
@@ -61,7 +89,6 @@ export default function date(locals) {
   }
 
   const parts = {
-
     D: {
       tag: 'li',
       key: 'D',
@@ -80,7 +107,6 @@ export default function date(locals) {
         children: days
       }
     },
-
     M: {
       tag: 'li',
       key: 'M',
@@ -99,7 +125,6 @@ export default function date(locals) {
         children: months
       }
     },
-
     YY: {
       tag: 'li',
       key: 'YY',
@@ -119,10 +144,9 @@ export default function date(locals) {
         }
       }
     }
-
   };
 
-  const control = {
+  return {
     tag: 'ul',
     attrs: {
       className: {
@@ -133,43 +157,40 @@ export default function date(locals) {
       return parts[id];
     })
   };
+};
 
-  const horizontal = config.horizontal;
-  const label = getLabel({
-    label: locals.label,
-    breakpoints: config.horizontal
-  });
-  const error = getError(locals);
-  const help = getHelp(locals);
-  var children = [
-    label,
-    control,
-    error,
-    help
+date.renderVertical = function (locals) {
+  return [
+    date.renderLabel(locals),
+    date.renderDate(locals),
+    date.renderError(locals),
+    date.renderHelp(locals)
   ];
+};
 
-  if (horizontal) {
-    children = [
-      label,
-      {
-        tag: 'div',
-        attrs: {
-          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
-        },
-        children: [
-          control,
-          error,
-          help
-        ]
-      }
-    ];
-  }
+date.renderHorizontal = function (locals) {
+  const label = date.renderLabel(locals);
+  return [
+    label,
+    {
+      tag: 'div',
+      attrs: {
+        className: label ? locals.config.horizontal.getInputClassName() : locals.config.horizontal.getOffsetClassName()
+      },
+      children: [
+        date.renderDate(locals),
+        date.renderError(locals),
+        date.renderHelp(locals)
+      ]
+    }
+  ];
+};
 
+date.renderFormGroup = function (children, locals) {
   return bootstrap.getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
-    children: children
+    children
   });
-
-}
+};
 
