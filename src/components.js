@@ -720,9 +720,27 @@ export class List extends Component {
     const Component = getComponent(type, options.item || noobj);
     return value.map((value, i) => {
       const buttons = [];
-      if (!options.disableRemove) { buttons.push({ label: i18n.remove, click: this.removeItem.bind(this, i) }); }
-      if (!options.disableOrder)  { buttons.push({ label: i18n.up, click: this.moveUpItem.bind(this, i) }); }
-      if (!options.disableOrder)  { buttons.push({ label: i18n.down, click: this.moveDownItem.bind(this, i) }); }
+      if (!options.disableRemove) {
+        buttons.push({
+          type: 'remove',
+          label: i18n.remove,
+          click: this.removeItem.bind(this, i)
+        });
+      }
+      if (!options.disableOrder) {
+        buttons.push({
+          type: 'move-up',
+          label: i18n.up,
+          click: this.moveUpItem.bind(this, i)
+        });
+      }
+      if (!options.disableOrder) {
+        buttons.push({
+          type: 'move-down',
+          label: i18n.down,
+          click: this.moveDownItem.bind(this, i)
+        });
+      }
       return {
         input: React.createElement(Component, {
           ref: i,
@@ -752,6 +770,7 @@ export class List extends Component {
     const i18n = this.getI18n();
     const locals = super.getLocals();
     locals.add = options.disableAdd ? null : {
+      type: 'add',
       label: i18n.add,
       click: this.addItem.bind(this)
     };
