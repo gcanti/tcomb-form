@@ -5,50 +5,40 @@ export default function list(locals) {
   let children = [];
 
   if (locals.help) {
-    children.push(list.renderHelp(locals.help));
+    children.push(list.renderHelp(locals));
   }
 
   if (locals.error && locals.hasError) {
-    children.push(list.renderError(locals.error));
+    children.push(list.renderError(locals));
   }
 
   children = children.concat(locals.items.map((item) => {
     return item.buttons.length === 0 ?
-      list.renderRowWithoutButtons(item) :
-      list.renderRow(item);
+      list.renderRowWithoutButtons(item, locals) :
+      list.renderRow(item, locals);
   }));
 
   if (locals.add) {
-    children.push(list.renderAddButton(locals.add));
+    children.push(list.renderAddButton(locals));
   }
 
-  const className = {};
-  if (locals.className) {
-    className[locals.className] = true;
-  }
-
-  return list.renderFieldset({
-    className,
-    disabled: locals.disabled,
-    legend: locals.label,
-    children
-  });
+  return list.renderFieldset(children, locals);
 }
 
-list.renderHelp = function (help) {
+list.renderHelp = function (locals) {
   return bootstrap.getAlert({
-    children: help
+    children: locals.help
   });
 };
 
-list.renderError = function (error) {
+list.renderError = function (locals) {
   return bootstrap.getAlert({
     type: 'danger',
-    children: error
+    children: locals.error
   });
 };
 
-list.renderRowWithoutButtons = function (item) {
+list.renderRowWithoutButtons = function (item/*, locals*/) {
   return bootstrap.getRow({
     key: item.key,
     children: [
@@ -69,11 +59,11 @@ list.renderRowButton = function (button) {
   });
 };
 
-list.renderRowButtons = function (buttons) {
+list.renderRowButtons = function (buttons/*, locals*/) {
   return bootstrap.getButtonGroup(buttons.map(list.renderRowButton));
 };
 
-list.renderRow = function (row) {
+list.renderRow = function (row, locals) {
   return bootstrap.getRow({
     key: row.key,
     children: [
@@ -83,13 +73,14 @@ list.renderRow = function (row) {
       }),
       bootstrap.getCol({
         breakpoints: {sm: 4, xs: 6},
-        children: list.renderRowButtons(row.buttons)
+        children: list.renderRowButtons(row.buttons, locals)
       })
     ]
   });
 };
 
-list.renderAddButton = function (button) {
+list.renderAddButton = function (locals) {
+  const button = locals.add;
   return {
     tag: 'div',
     attrs: { className: 'row' },
@@ -109,11 +100,15 @@ list.renderAddButton = function (button) {
   };
 };
 
-list.renderFieldset = function ({className, disabled, legend, children}) {
+list.renderFieldset = function (children, locals) {
+  const className = {};
+  if (locals.className) {
+    className[locals.className] = true;
+  }
   return bootstrap.getFieldset({
     className,
-    disabled,
-    legend,
+    disabled: locals.disabled,
+    legend: locals.label,
     children
   });
 };
