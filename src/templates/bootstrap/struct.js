@@ -1,44 +1,54 @@
 import bootstrap from 'uvdom-bootstrap';
 
-export default function struct(locals) {
+function clone() {
 
-  let children = [];
+  function struct(locals) {
 
-  if (locals.help) {
-    children.push(struct.renderHelp(locals));
+    let children = [];
+
+    if (locals.help) {
+      children.push(struct.renderHelp(locals));
+    }
+
+    if (locals.error && locals.hasError) {
+      children.push(struct.renderError(locals));
+    }
+
+    children = children.concat(locals.order.map(name => locals.inputs[name]));
+
+    return struct.renderFieldset(children, locals);
   }
 
-  if (locals.error && locals.hasError) {
-    children.push(struct.renderError(locals));
-  }
+  struct.clone = clone;
 
-  children = children.concat(locals.order.map(name => locals.inputs[name]));
+  struct.renderHelp = function (locals) {
+    return bootstrap.getAlert({
+      children: locals.help
+    });
+  };
 
-  return struct.renderFieldset(children, locals);
+  struct.renderError = function (locals) {
+    return bootstrap.getAlert({
+      type: 'danger',
+      children: locals.error
+    });
+  };
+
+  struct.renderFieldset = function (children, locals) {
+    const className = {};
+    if (locals.className) {
+      className[locals.className] = true;
+    }
+    return bootstrap.getFieldset({
+      className,
+      disabled: locals.disabled,
+      legend: locals.label,
+      children
+    });
+  };
+
+  return struct;
 }
 
-struct.renderHelp = function (locals) {
-  return bootstrap.getAlert({
-    children: locals.help
-  });
-};
+export default clone();
 
-struct.renderError = function (locals) {
-  return bootstrap.getAlert({
-    type: 'danger',
-    children: locals.error
-  });
-};
-
-struct.renderFieldset = function (children, locals) {
-  const className = {};
-  if (locals.className) {
-    className[locals.className] = true;
-  }
-  return bootstrap.getFieldset({
-    className,
-    disabled: locals.disabled,
-    legend: locals.label,
-    children
-  });
-};

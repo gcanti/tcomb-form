@@ -14,10 +14,17 @@
 
 ## v0.7.7
 
+- **New Feature**
+    - complete refactoring of bootstrap templates, fix #254
+        - add a type property to button locals
+        - one file for each template
+        - every template own a series of render* function that can be overwritten
 - **Bug Fix**
     - Incosistent calling of tcomb-validation validate function in getTypeInfo and components for struct and list types, fix #253
 - **Experimental**
     - if a type owns a `getTcombFormFactory(options)` static function, it will be used to retrieve the suitable factory
+
+    **Example**
 
     ```js
     // instead of
@@ -38,25 +45,23 @@
     // you can write
     const Country = t.enums.of(['IT', 'US'], 'Country');
 
-    Country.getTcombFormFactory = function () {
+    Country.getTcombFormFactory = function (/*options*/) {
       return t.form.Radio;
     };
 
     const Type = t.struct({
       country: Country
     });
+
+    const options = {};
     ```
 
 - **Internal**
     - remove `raw` param in `getValue` API
-    - remove deprecated types
+    - remove deprecated types short alias from tests
     - factor out UIDGenerator from `Form` render method
     - optimise getError(): return an error message only if `hasError === true`
-    - complete refactoring of bootstrap templates, fix #254
-        - add a type property to button locals
-        - one file for each template
-        - every template own a series of render* function that can be overwritten
-    - split semantic templates
+    - split semantic templates: one file for each template
 
 ## v0.7.6
 
