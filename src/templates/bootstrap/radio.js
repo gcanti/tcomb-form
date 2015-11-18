@@ -11,12 +11,23 @@ const RadioConfig = t.struct({
 
 export default function radio(locals) {
 
-  const config = new RadioConfig(locals.config || {});
+  locals.config = radio.getConfig(locals);
 
+  const children = locals.config.horizontal ?
+    radio.renderHorizontal(locals) :
+    radio.renderVertical(locals);
+
+  return radio.renderFormGroup(children, locals);
+}
+
+radio.getConfig = function (locals) {
+  return new RadioConfig(locals.config || {});
+};
+
+radio.renderRadios = function (locals) {
   const id = locals.attrs.id;
   const onChange = evt => locals.onChange(evt.target.value);
-
-  const controls = locals.options.map((option, i) => {
+  return locals.options.map((option, i) => {
 
     const attrs = t.mixin({}, locals.attrs);
     attrs.type = 'radio';
@@ -30,43 +41,55 @@ export default function radio(locals) {
 
     return bootstrap.getRadio(attrs, option.text, option.value);
   });
+};
 
-  const horizontal = config.horizontal;
-  const label = getLabel({
+radio.renderLabel = function (locals) {
+  return getLabel({
     label: locals.label,
-    id,
-    breakpoints: config.horizontal
+    htmlFor: locals.attrs.id,
+    breakpoints: locals.config.horizontal
   });
-  const error = getError(locals);
-  const help = getHelp(locals);
-  let children = [
-    label,
-    controls,
-    error,
-    help
+};
+
+radio.renderError = function (locals) {
+  return getError(locals);
+};
+
+radio.renderHelp = function (locals) {
+  return getHelp(locals);
+};
+
+radio.renderVertical = function (locals) {
+  return [
+    radio.renderLabel(locals),
+    radio.renderRadios(locals),
+    radio.renderError(locals),
+    radio.renderHelp(locals)
   ];
+};
 
-  if (horizontal) {
-    children = [
-      label,
-      {
-        tag: 'div',
-        attrs: {
-          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
-        },
-        children: [
-          controls,
-          error,
-          help
-        ]
-      }
-    ];
-  }
+radio.renderHorizontal = function (locals) {
+  const label = radio.renderLabel(locals);
+  return [
+    label,
+    {
+      tag: 'div',
+      attrs: {
+        className: label ? locals.config.horizontal.getInputClassName() : locals.config.horizontal.getOffsetClassName()
+      },
+      children: [
+        radio.renderRadios(locals),
+        radio.renderError(locals),
+        radio.renderHelp(locals)
+      ]
+    }
+  ];
+};
 
+radio.renderFormGroup = function (children, locals) {
   return bootstrap.getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children
   });
-
-}
+};
