@@ -5,46 +5,40 @@ export default function struct(locals) {
   let children = [];
 
   if (locals.help) {
-    children.push(struct.renderHelp(locals.help));
+    children.push(struct.renderHelp(locals));
   }
 
   if (locals.error && locals.hasError) {
-    children.push(struct.renderError(locals.error));
+    children.push(struct.renderError(locals));
   }
 
   children = children.concat(locals.order.map(name => locals.inputs[name]));
 
+  return struct.renderFieldset(children, locals);
+}
+
+struct.renderHelp = function (locals) {
+  return bootstrap.getAlert({
+    children: locals.help
+  });
+};
+
+struct.renderError = function (locals) {
+  return bootstrap.getAlert({
+    type: 'danger',
+    children: locals.error
+  });
+};
+
+struct.renderFieldset = function (children, locals) {
   const className = {};
   if (locals.className) {
     className[locals.className] = true;
   }
-
-  return struct.renderFieldset({
+  return bootstrap.getFieldset({
     className,
     disabled: locals.disabled,
     legend: locals.label,
-    children
-  });
-}
-
-struct.renderHelp = function (help) {
-  return bootstrap.getAlert({
-    children: help
-  });
-};
-
-struct.renderError = function (error) {
-  return bootstrap.getAlert({
-    type: 'danger',
-    children: error
-  });
-};
-
-struct.renderFieldset = function ({className, disabled, legend, children}) {
-  return bootstrap.getFieldset({
-    className,
-    disabled,
-    legend,
     children
   });
 };
