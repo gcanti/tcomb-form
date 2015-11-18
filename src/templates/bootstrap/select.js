@@ -15,13 +15,24 @@ const SelectConfig = t.struct({
 
 export default function select(locals) {
 
-  const config = new SelectConfig(locals.config || {});
+  locals.config = select.getConfig(locals);
+  locals.attrs = select.getAttrs(locals);
 
+  const children = locals.config.horizontal ?
+    select.renderHorizontal(locals) :
+    select.renderVertical(locals);
+
+  return select.renderFormGroup(children, locals);
+}
+
+select.getConfig = function (locals) {
+  return new SelectConfig(locals.config || {});
+};
+
+select.getAttrs = function (locals) {
   const attrs = t.mixin({}, locals.attrs);
-
   attrs.className = t.mixin({}, attrs.className);
   attrs.className['form-control'] = true;
-
   attrs.multiple = locals.isMultiple;
   attrs.disabled = locals.disabled;
   attrs.value = locals.value;
@@ -33,58 +44,74 @@ export default function select(locals) {
       evt.target.value;
     locals.onChange(value);
   };
-
   if (locals.help) {
     attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
   }
+  return attrs;
+};
 
-  const options = locals.options.map(x => x.label ?
+select.renderOptions = function (locals) {
+  return locals.options.map(x => x.label ?
     bootstrap.getOptGroup(x) :
     bootstrap.getOption(x)
   );
+};
 
-  const control = {
+select.renderSelect = function (locals) {
+  return {
     tag: 'select',
-    attrs,
-    children: options
+    attrs: locals.attrs,
+    children: select.renderOptions(locals)
   };
+};
 
-  const horizontal = config.horizontal;
-  const label = getLabel({
+select.renderLabel = function (locals) {
+  return getLabel({
     label: locals.label,
-    htmlFor: attrs.id,
-    breakpoints: config.horizontal
+    htmlFor: locals.attrs.id,
+    breakpoints: locals.config.horizontal
   });
-  const error = getError(locals);
-  const help = getHelp(locals);
-  let children = [
-    label,
-    control,
-    error,
-    help
+};
+
+select.renderError = function (locals) {
+  return getError(locals);
+};
+
+select.renderHelp = function (locals) {
+  return getHelp(locals);
+};
+
+select.renderVertical = function (locals) {
+  return [
+    select.renderLabel(locals),
+    select.renderSelect(locals),
+    select.renderError(locals),
+    select.renderHelp(locals)
   ];
+};
 
-  if (horizontal) {
-    children = [
-      label,
-      {
-        tag: 'div',
-        attrs: {
-          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
-        },
-        children: [
-          control,
-          error,
-          help
-        ]
-      }
-    ];
-  }
+select.renderHorizontal = function (locals) {
+  const label = select.renderLabel(locals);
+  return [
+    label,
+    {
+      tag: 'div',
+      attrs: {
+        className: label ? locals.config.horizontal.getInputClassName() : locals.config.horizontal.getOffsetClassName()
+      },
+      children: [
+        select.renderSelect(locals),
+        select.renderError(locals),
+        select.renderHelp(locals)
+      ]
+    }
+  ];
+};
 
+select.renderFormGroup = function (children, locals) {
   return bootstrap.getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
-    children: children
+    children
   });
-
-}
+};
