@@ -10,7 +10,7 @@ const CheckboxConfig = t.struct({
 
 export default function checkbox(locals) {
 
-  const config = checkbox.getConfig(locals);
+  locals.config = checkbox.getConfig(locals);
 
   let children = [
     checkbox.renderCheckbox(locals),
@@ -18,22 +18,12 @@ export default function checkbox(locals) {
     checkbox.renderHelp(locals)
   ];
 
-  if (config.horizontal) {
-    children = checkbox.renderHorizontal(children, config);
+  if (locals.config.horizontal) {
+    children = checkbox.renderHorizontal(children, locals);
   }
 
   return checkbox.renderFormGroup(children, locals);
 }
-
-checkbox.renderHorizontal = function (children, config/*, locals*/) {
-  return {
-    tag: 'div',
-    attrs: {
-      className: config.horizontal.getOffsetClassName()
-    },
-    children: children
-  };
-};
 
 checkbox.getConfig = function (locals) {
   return new CheckboxConfig(locals.config || {});
@@ -63,6 +53,16 @@ checkbox.renderError = function (locals) {
 
 checkbox.renderHelp = function (locals) {
   return getHelp(locals);
+};
+
+checkbox.renderHorizontal = function (children, locals) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: locals.config.horizontal.getOffsetClassName()
+    },
+    children: children
+  };
 };
 
 checkbox.renderFormGroup = function (children, locals) {
