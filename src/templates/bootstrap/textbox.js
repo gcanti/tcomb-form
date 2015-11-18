@@ -15,17 +15,6 @@ const TextboxConfig = t.struct({
   buttonAfter: t.Any
 }, 'TextboxConfig');
 
-function getHiddenTextbox({value, name}) {
-  return {
-    tag: 'input',
-    attrs: {
-      type: 'hidden',
-      value,
-      name
-    }
-  };
-}
-
 function getInputGroupButton(button) {
   return {
     tag: 'div',
@@ -40,93 +29,143 @@ function getInputGroupButton(button) {
 
 export default function textbox(locals) {
 
-  const config = new TextboxConfig(locals.config || {});
+  locals.config = textbox.getConfig(locals);
+  locals.attrs = textbox.getAttrs(locals);
 
   if (locals.type === 'hidden') {
-    return getHiddenTextbox(locals);
+    return textbox.renderHiddenTextbox(locals);
   }
 
+  const children = locals.config.horizontal ?
+    textbox.renderHorizontal(locals) :
+    textbox.renderVertical(locals);
+
+  return textbox.renderFormGroup(children, locals);
+}
+
+textbox.getConfig = function (locals) {
+  return new TextboxConfig(locals.config || {});
+};
+
+textbox.getAttrs = function (locals) {
   const attrs = t.mixin({}, locals.attrs);
-  let control;
+  attrs.type = locals.type;
+  attrs.className = t.mixin({}, attrs.className);
+  attrs.className['form-control'] = true;
 
+  attrs.disabled = locals.disabled;
+  if (locals.type !== 'file') {
+    attrs.value = locals.value;
+  }
+  attrs.onChange = locals.type === 'file' ?
+    evt => locals.onChange(evt.target.files[0]) :
+    evt => locals.onChange(evt.target.value);
+
+  if (locals.help) {
+    attrs['aria-describedby'] = attrs['aria-describedby'] || attrs.id + '-tip';
+  }
+  return attrs;
+};
+
+textbox.renderHiddenTextbox = function (locals) {
+  return {
+    tag: 'input',
+    attrs: {
+      type: 'hidden',
+      value: locals.value,
+      name: locals.name
+    }
+  };
+};
+
+textbox.renderStatic = function (locals) {
+  return bootstrap.getStatic(locals.value);
+};
+
+textbox.renderTextbox = function (locals) {
   if (locals.type === 'static') {
-    control = bootstrap.getStatic(locals.value);
-  } else {
-
-    let tag = 'textarea';
-    if (locals.type !== 'textarea') {
-      tag = 'input';
-      attrs.type = locals.type;
-    }
-
-    attrs.className = t.mixin({}, attrs.className);
-    attrs.className['form-control'] = true;
-
-    attrs.disabled = locals.disabled;
-    if (locals.type !== 'file') {
-      attrs.value = locals.value;
-    }
-    attrs.onChange = locals.type === 'file' ?
-      evt => locals.onChange(evt.target.files[0]) :
-      evt => locals.onChange(evt.target.value);
-
-    if (locals.help) {
-      attrs['aria-describedby'] = attrs['aria-describedby'] || attrs.id + '-tip';
-    }
-
-    control = {
-      tag,
-      attrs: attrs
-    };
-    if (config.addonBefore || config.addonAfter || config.buttonBefore || config.buttonAfter) {
-      control = bootstrap.getInputGroup([
-        config.buttonBefore ? getInputGroupButton(config.buttonBefore) : null,
-        config.addonBefore ? bootstrap.getAddon(config.addonBefore) : null,
-        control,
-        config.addonAfter ? bootstrap.getAddon(config.addonAfter) : null,
-        config.buttonAfter ? getInputGroupButton(config.buttonAfter) : null
-      ]);
-    }
+    return textbox.renderStatic(locals);
   }
+  let ret = locals.type !== 'textarea' ?
+    textbox.renderInput(locals) :
+    textbox.renderTextarea(locals);
+  if (locals.config.addonBefore || locals.config.addonAfter || locals.config.buttonBefore || locals.config.buttonAfter) {
+    ret = textbox.renderInputGroup(ret, locals);
+  }
+  return ret;
+};
 
-  const horizontal = config.horizontal;
-  const label = getLabel({
+textbox.renderInputGroup = function (input, locals) {
+  return bootstrap.getInputGroup([
+    locals.config.buttonBefore ? getInputGroupButton(locals.config.buttonBefore) : null,
+    locals.config.addonBefore ? bootstrap.getAddon(locals.config.addonBefore) : null,
+    input,
+    locals.config.addonAfter ? bootstrap.getAddon(locals.config.addonAfter) : null,
+    locals.config.buttonAfter ? getInputGroupButton(locals.config.buttonAfter) : null
+  ]);
+};
+
+textbox.renderInput = function (locals) {
+  return {
+    tag: 'input',
+    attrs: locals.attrs
+  };
+};
+
+textbox.renderTextarea = function (locals) {
+  return {
+    tag: 'textarea',
+    attrs: locals.attrs
+  };
+};
+
+textbox.renderLabel = function (locals) {
+  return getLabel({
     label: locals.label,
-    htmlFor: attrs.id,
-    breakpoints: config.horizontal
+    htmlFor: locals.attrs.id,
+    breakpoints: locals.config.horizontal
   });
-  const error = getError(locals);
-  const help = getHelp(locals);
+};
 
-  let children = [
-    label,
-    control,
-    error,
-    help
+textbox.renderError = function (locals) {
+  return getError(locals);
+};
+
+textbox.renderHelp = function (locals) {
+  return getHelp(locals);
+};
+
+textbox.renderVertical = function (locals) {
+  return [
+    textbox.renderLabel(locals),
+    textbox.renderTextbox(locals),
+    textbox.renderError(locals),
+    textbox.renderHelp(locals)
   ];
+};
 
-  if (horizontal) {
-    children = [
-      label,
-      {
-        tag: 'div',
-        attrs: {
-          className: label ? horizontal.getInputClassName() : horizontal.getOffsetClassName()
-        },
-        children: [
-          control,
-          error,
-          help
-        ]
-      }
-    ];
-  }
+textbox.renderHorizontal = function (locals) {
+  const label = textbox.renderLabel(locals);
+  return [
+    label,
+    {
+      tag: 'div',
+      attrs: {
+        className: label ? locals.config.horizontal.getInputClassName() : locals.config.horizontal.getOffsetClassName()
+      },
+      children: [
+        textbox.renderTextbox(locals),
+        textbox.renderError(locals),
+        textbox.renderHelp(locals)
+      ]
+    }
+  ];
+};
 
+textbox.renderFormGroup = function (children, locals) {
   return bootstrap.getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children
   });
-
-}
-
+};
