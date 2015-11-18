@@ -10,8 +10,36 @@ const CheckboxConfig = t.struct({
 
 export default function checkbox(locals) {
 
-  const config = new CheckboxConfig(locals.config || {});
+  const config = checkbox.getConfig(locals);
 
+  let children = [
+    checkbox.renderCheckbox(locals),
+    checkbox.renderError(locals),
+    checkbox.renderHelp(locals)
+  ];
+
+  if (config.horizontal) {
+    children = checkbox.renderHorizontal(children, config);
+  }
+
+  return checkbox.renderFormGroup(children, locals);
+}
+
+checkbox.renderHorizontal = function (children, config/*, locals*/) {
+  return {
+    tag: 'div',
+    attrs: {
+      className: config.horizontal.getOffsetClassName()
+    },
+    children: children
+  };
+};
+
+checkbox.getConfig = function (locals) {
+  return new CheckboxConfig(locals.config || {});
+};
+
+checkbox.getAttrs = function (locals) {
   const attrs = t.mixin({}, locals.attrs);
   attrs.type = 'checkbox';
   attrs.disabled = locals.disabled;
@@ -21,32 +49,26 @@ export default function checkbox(locals) {
   if (locals.help) {
     attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
   }
+  return attrs;
+};
 
-  const control = bootstrap.getCheckbox(attrs, locals.label);
+checkbox.renderCheckbox = function (locals) {
+  const attrs = checkbox.getAttrs(locals);
+  return bootstrap.getCheckbox(attrs, locals.label);
+};
 
-  const error = getError(locals);
-  const help = getHelp(locals);
-  let children = [
-    control,
-    error,
-    help
-  ];
+checkbox.renderError = function (locals) {
+  return getError(locals);
+};
 
-  if (config.horizontal) {
-    children = {
-      tag: 'div',
-      attrs: {
-        className: config.horizontal.getOffsetClassName()
-      },
-      children: children
-    };
-  }
+checkbox.renderHelp = function (locals) {
+  return getHelp(locals);
+};
 
+checkbox.renderFormGroup = function (children, locals) {
   return bootstrap.getFormGroup({
     className: 'form-group-depth-' + locals.path.length,
     hasError: locals.hasError,
     children
   });
-
-}
-
+};
