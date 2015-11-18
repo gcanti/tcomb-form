@@ -52,7 +52,10 @@
     - remove deprecated types
     - factor out UIDGenerator from `Form` render method
     - optimise getError(): return an error message only if `hasError === true`
-    - split bootstrap templates
+    - complete refactoring of bootstrap templates, fix #254
+        - add a type property to button locals
+        - one file for each template
+        - every template own a series of render* function that can be overwritten
     - split semantic templates
 
 ## v0.7.6
