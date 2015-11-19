@@ -8,68 +8,71 @@ const CheckboxConfig = t.struct({
   horizontal: t.maybe(Breakpoints)
 }, 'CheckboxConfig');
 
-function clone() {
+function create(overrides = {}) {
 
   function checkbox(locals) {
 
     locals.config = checkbox.getConfig(locals);
 
-    let children = [
-      checkbox.renderCheckbox(locals),
-      checkbox.renderError(locals),
-      checkbox.renderHelp(locals)
-    ];
-
-    if (locals.config.horizontal) {
-      children = checkbox.renderHorizontal(children, locals);
-    }
+    const children = locals.config.horizontal ?
+      checkbox.renderHorizontal(locals) :
+      checkbox.renderVertical(locals);
 
     return checkbox.renderFormGroup(children, locals);
   }
 
-  checkbox.clone = clone;
-
-  checkbox.getConfig = function (locals) {
+  checkbox.getConfig = overrides.getConfig || function getConfig(locals) {
     return new CheckboxConfig(locals.config || {});
   };
 
-  checkbox.getAttrs = function (locals) {
+  checkbox.getAttrs = overrides.getAttrs || function getAttrs(locals) {
     const attrs = t.mixin({}, locals.attrs);
     attrs.type = 'checkbox';
     attrs.disabled = locals.disabled;
     attrs.checked = locals.value;
     attrs.onChange = evt => locals.onChange(evt.target.checked);
-
     if (locals.help) {
       attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
     }
     return attrs;
   };
 
-  checkbox.renderCheckbox = function (locals) {
+  checkbox.renderCheckbox = overrides.renderCheckbox || function renderCheckbox(locals) {
     const attrs = checkbox.getAttrs(locals);
     return bootstrap.getCheckbox(attrs, locals.label);
   };
 
-  checkbox.renderError = function (locals) {
+  checkbox.renderError = overrides.renderError || function renderError(locals) {
     return getError(locals);
   };
 
-  checkbox.renderHelp = function (locals) {
+  checkbox.renderHelp = overrides.renderHelp || function renderHelp(locals) {
     return getHelp(locals);
   };
 
-  checkbox.renderHorizontal = function (children, locals) {
+  checkbox.renderVertical = overrides.renderVertical || function renderVertical(locals) {
+    return [
+      checkbox.renderCheckbox(locals),
+      checkbox.renderError(locals),
+      checkbox.renderHelp(locals)
+    ];
+  };
+
+  checkbox.renderHorizontal = overrides.renderHorizontal || function renderHorizontal(locals) {
     return {
       tag: 'div',
       attrs: {
         className: locals.config.horizontal.getOffsetClassName()
       },
-      children: children
+      children: [
+        checkbox.renderCheckbox(locals),
+        checkbox.renderError(locals),
+        checkbox.renderHelp(locals)
+      ]
     };
   };
 
-  checkbox.renderFormGroup = function (children, locals) {
+  checkbox.renderFormGroup = overrides.renderFormGroup || function renderFormGroup(children, locals) {
     return bootstrap.getFormGroup({
       className: 'form-group-depth-' + locals.path.length,
       hasError: locals.hasError,
@@ -77,7 +80,11 @@ function clone() {
     });
   };
 
+  checkbox.clone = function clone(newOverrides = {}) {
+    return create({...overrides, ...newOverrides});
+  };
+
   return checkbox;
 }
 
-export default clone();
+export default create();

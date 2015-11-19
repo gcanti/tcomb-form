@@ -40,7 +40,7 @@ var months = nullOption.concat(range(12).map(function (i) {
   return toOption(i - 1, padLeft(i, 2));
 }));
 
-function clone() {
+function create(overrides = {}) {
 
   function date(locals) {
 
@@ -53,28 +53,26 @@ function clone() {
     return date.renderFormGroup(children, locals);
   }
 
-  date.clone = clone;
-
-  date.getConfig = function (locals) {
+  date.getConfig = overrides.getConfig || function getConfig(locals) {
     return new DateConfig(locals.config || {});
   };
 
-  date.renderLabel = function (locals) {
+  date.renderLabel = overrides.renderLabel || function renderLabel(locals) {
     return getLabel({
       label: locals.label,
       breakpoints: locals.config.horizontal
     });
   };
 
-  date.renderError = function (locals) {
+  date.renderError = overrides.renderError || function renderError(locals) {
     return getError(locals);
   };
 
-  date.renderHelp = function (locals) {
+  date.renderHelp = overrides.renderHelp || function renderHelp(locals) {
     return getHelp(locals);
   };
 
-  date.renderDate = function (locals) {
+  date.renderDate = overrides.renderDate || function renderDate(locals) {
     const value = locals.value = locals.value.slice();
 
     function onDayChange(evt) {
@@ -163,7 +161,7 @@ function clone() {
     };
   };
 
-  date.renderVertical = function (locals) {
+  date.renderVertical = overrides.renderVertical || function renderVertical(locals) {
     return [
       date.renderLabel(locals),
       date.renderDate(locals),
@@ -172,7 +170,7 @@ function clone() {
     ];
   };
 
-  date.renderHorizontal = function (locals) {
+  date.renderHorizontal = overrides.renderHorizontal || function renderHorizontal(locals) {
     const label = date.renderLabel(locals);
     return [
       label,
@@ -190,7 +188,7 @@ function clone() {
     ];
   };
 
-  date.renderFormGroup = function (children, locals) {
+  date.renderFormGroup = overrides.renderFormGroup || function renderFormGroup(children, locals) {
     return bootstrap.getFormGroup({
       className: 'form-group-depth-' + locals.path.length,
       hasError: locals.hasError,
@@ -198,7 +196,11 @@ function clone() {
     });
   };
 
+  date.clone = function clone(newOverrides = {}) {
+    return create({...overrides, ...newOverrides});
+  };
+
   return date;
 }
 
-export default clone();
+export default create();

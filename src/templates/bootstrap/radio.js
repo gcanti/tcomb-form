@@ -9,7 +9,7 @@ const RadioConfig = t.struct({
   horizontal: t.maybe(Breakpoints)
 }, 'RadioConfig');
 
-function clone() {
+function create(overrides = {}) {
 
   function radio(locals) {
 
@@ -22,13 +22,11 @@ function clone() {
     return radio.renderFormGroup(children, locals);
   }
 
-  radio.clone = clone;
-
-  radio.getConfig = function (locals) {
+  radio.getConfig = overrides.getConfig || function getConfig(locals) {
     return new RadioConfig(locals.config || {});
   };
 
-  radio.renderRadios = function (locals) {
+  radio.renderRadios = overrides.renderRadios || function renderRadios(locals) {
     const id = locals.attrs.id;
     const onChange = evt => locals.onChange(evt.target.value);
     return locals.options.map((option, i) => {
@@ -47,7 +45,7 @@ function clone() {
     });
   };
 
-  radio.renderLabel = function (locals) {
+  radio.renderLabel = overrides.renderLabel || function renderLabel(locals) {
     return getLabel({
       label: locals.label,
       htmlFor: locals.attrs.id,
@@ -55,15 +53,15 @@ function clone() {
     });
   };
 
-  radio.renderError = function (locals) {
+  radio.renderError = overrides.renderError || function renderError(locals) {
     return getError(locals);
   };
 
-  radio.renderHelp = function (locals) {
+  radio.renderHelp = overrides.renderHelp || function renderHelp(locals) {
     return getHelp(locals);
   };
 
-  radio.renderVertical = function (locals) {
+  radio.renderVertical = overrides.renderVertical || function renderVertical(locals) {
     return [
       radio.renderLabel(locals),
       radio.renderRadios(locals),
@@ -72,7 +70,7 @@ function clone() {
     ];
   };
 
-  radio.renderHorizontal = function (locals) {
+  radio.renderHorizontal = overrides.renderHorizontal || function renderHorizontal(locals) {
     const label = radio.renderLabel(locals);
     return [
       label,
@@ -90,7 +88,7 @@ function clone() {
     ];
   };
 
-  radio.renderFormGroup = function (children, locals) {
+  radio.renderFormGroup = overrides.renderFormGroup || function renderFormGroup(children, locals) {
     return bootstrap.getFormGroup({
       className: 'form-group-depth-' + locals.path.length,
       hasError: locals.hasError,
@@ -98,7 +96,11 @@ function clone() {
     });
   };
 
+  radio.clone = function clone(newOverrides = {}) {
+    return create({...overrides, ...newOverrides});
+  };
+
   return radio;
 }
 
-export default clone();
+export default create();

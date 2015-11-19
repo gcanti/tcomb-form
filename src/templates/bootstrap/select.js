@@ -13,7 +13,7 @@ const SelectConfig = t.struct({
   size: t.maybe(Size)
 }, 'SelectConfig');
 
-function clone() {
+function create(overrides = {}) {
 
   function select(locals) {
 
@@ -27,13 +27,11 @@ function clone() {
     return select.renderFormGroup(children, locals);
   }
 
-  select.clone = clone;
-
-  select.getConfig = function (locals) {
+  select.getConfig = overrides.getConfig || function getConfig(locals) {
     return new SelectConfig(locals.config || {});
   };
 
-  select.getAttrs = function (locals) {
+  select.getAttrs = overrides.getAttrs || function getAttrs(locals) {
     const attrs = t.mixin({}, locals.attrs);
     attrs.className = t.mixin({}, attrs.className);
     attrs.className['form-control'] = true;
@@ -54,14 +52,14 @@ function clone() {
     return attrs;
   };
 
-  select.renderOptions = function (locals) {
+  select.renderOptions = overrides.renderOptions || function renderOptions(locals) {
     return locals.options.map(x => x.label ?
       bootstrap.getOptGroup(x) :
       bootstrap.getOption(x)
     );
   };
 
-  select.renderSelect = function (locals) {
+  select.renderSelect = overrides.renderSelect || function renderSelect(locals) {
     return {
       tag: 'select',
       attrs: locals.attrs,
@@ -69,7 +67,7 @@ function clone() {
     };
   };
 
-  select.renderLabel = function (locals) {
+  select.renderLabel = overrides.renderLabel || function renderLabel(locals) {
     return getLabel({
       label: locals.label,
       htmlFor: locals.attrs.id,
@@ -77,15 +75,15 @@ function clone() {
     });
   };
 
-  select.renderError = function (locals) {
+  select.renderError = overrides.renderError || function renderError(locals) {
     return getError(locals);
   };
 
-  select.renderHelp = function (locals) {
+  select.renderHelp = overrides.renderHelp || function renderHelp(locals) {
     return getHelp(locals);
   };
 
-  select.renderVertical = function (locals) {
+  select.renderVertical = overrides.renderVertical || function renderVertical(locals) {
     return [
       select.renderLabel(locals),
       select.renderSelect(locals),
@@ -94,7 +92,7 @@ function clone() {
     ];
   };
 
-  select.renderHorizontal = function (locals) {
+  select.renderHorizontal = overrides.renderHorizontal || function renderHorizontal(locals) {
     const label = select.renderLabel(locals);
     return [
       label,
@@ -112,7 +110,7 @@ function clone() {
     ];
   };
 
-  select.renderFormGroup = function (children, locals) {
+  select.renderFormGroup = overrides.renderFormGroup || function renderFormGroup(children, locals) {
     return bootstrap.getFormGroup({
       className: 'form-group-depth-' + locals.path.length,
       hasError: locals.hasError,
@@ -120,7 +118,11 @@ function clone() {
     });
   };
 
+  select.clone = function clone(newOverrides = {}) {
+    return create({...overrides, ...newOverrides});
+  };
+
   return select;
 }
 
-export default clone();
+export default create();

@@ -1,6 +1,6 @@
 import bootstrap from 'uvdom-bootstrap';
 
-function clone() {
+function create(overrides = {}) {
 
   function list(locals) {
     let children = [];
@@ -26,22 +26,20 @@ function clone() {
     return list.renderFieldset(children, locals);
   }
 
-  list.clone = clone;
-
-  list.renderHelp = function (locals) {
+  list.renderHelp = overrides.renderHelp || function renderHelp(locals) {
     return bootstrap.getAlert({
       children: locals.help
     });
   };
 
-  list.renderError = function (locals) {
+  list.renderError = overrides.renderError || function renderError(locals) {
     return bootstrap.getAlert({
       type: 'danger',
       children: locals.error
     });
   };
 
-  list.renderRowWithoutButtons = function (item/*, locals*/) {
+  list.renderRowWithoutButtons = overrides.renderRowWithoutButtons || function renderRowWithoutButtons(item/*, locals*/) {
     return bootstrap.getRow({
       key: item.key,
       children: [
@@ -53,7 +51,7 @@ function clone() {
     });
   };
 
-  list.renderRowButton = function (button) {
+  list.renderRowButton = overrides.renderRowButton || function renderRowButton(button) {
     return bootstrap.getButton({
       click: button.click,
       key: button.type,
@@ -62,11 +60,11 @@ function clone() {
     });
   };
 
-  list.renderRowButtons = function (buttons/*, locals*/) {
+  list.renderRowButtons = overrides.renderRowButtons || function renderRowButtons(buttons/*, locals*/) {
     return bootstrap.getButtonGroup(buttons.map(list.renderRowButton));
   };
 
-  list.renderRow = function (row, locals) {
+  list.renderRow = overrides.renderRow || function renderRow(row, locals) {
     return bootstrap.getRow({
       key: row.key,
       children: [
@@ -82,7 +80,7 @@ function clone() {
     });
   };
 
-  list.renderAddButton = function (locals) {
+  list.renderAddButton = overrides.renderAddButton || function renderAddButton(locals) {
     const button = locals.add;
     return {
       tag: 'div',
@@ -103,7 +101,7 @@ function clone() {
     };
   };
 
-  list.renderFieldset = function (children, locals) {
+  list.renderFieldset = overrides.renderFieldset || function renderFieldset(children, locals) {
     const className = {};
     if (locals.className) {
       className[locals.className] = true;
@@ -116,8 +114,12 @@ function clone() {
     });
   };
 
+  list.clone = function clone(newOverrides = {}) {
+    return create({...overrides, ...newOverrides});
+  };
+
   return list;
 }
 
-export default clone();
+export default create();
 

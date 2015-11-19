@@ -1,6 +1,6 @@
 import bootstrap from 'uvdom-bootstrap';
 
-function clone() {
+function create(overrides = {}) {
 
   function struct(locals) {
 
@@ -19,22 +19,20 @@ function clone() {
     return struct.renderFieldset(children, locals);
   }
 
-  struct.clone = clone;
-
-  struct.renderHelp = function (locals) {
+  struct.renderHelp = overrides.renderHelp || function renderHelp(locals) {
     return bootstrap.getAlert({
       children: locals.help
     });
   };
 
-  struct.renderError = function (locals) {
+  struct.renderError = overrides.renderError || function renderError(locals) {
     return bootstrap.getAlert({
       type: 'danger',
       children: locals.error
     });
   };
 
-  struct.renderFieldset = function (children, locals) {
+  struct.renderFieldset = overrides.renderFieldset || function renderFieldset(children, locals) {
     const className = {};
     if (locals.className) {
       className[locals.className] = true;
@@ -47,8 +45,12 @@ function clone() {
     });
   };
 
+  struct.clone = function clone(newOverrides = {}) {
+    return create({...overrides, ...newOverrides});
+  };
+
   return struct;
 }
 
-export default clone();
+export default create();
 

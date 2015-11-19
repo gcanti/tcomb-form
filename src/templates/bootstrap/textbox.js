@@ -27,7 +27,7 @@ function getInputGroupButton(button) {
   };
 }
 
-function clone() {
+function create(overrides = {}) {
 
   function textbox(locals) {
 
@@ -45,13 +45,11 @@ function clone() {
     return textbox.renderFormGroup(children, locals);
   }
 
-  textbox.clone = clone;
-
-  textbox.getConfig = function (locals) {
+  textbox.getConfig = overrides.getConfig || function getConfig(locals) {
     return new TextboxConfig(locals.config || {});
   };
 
-  textbox.getAttrs = function (locals) {
+  textbox.getAttrs = overrides.getAttrs || function getAttrs(locals) {
     const attrs = t.mixin({}, locals.attrs);
     attrs.type = locals.type;
     attrs.className = t.mixin({}, attrs.className);
@@ -71,7 +69,7 @@ function clone() {
     return attrs;
   };
 
-  textbox.renderHiddenTextbox = function (locals) {
+  textbox.renderHiddenTextbox = overrides.renderHiddenTextbox || function renderHiddenTextbox(locals) {
     return {
       tag: 'input',
       attrs: {
@@ -82,11 +80,11 @@ function clone() {
     };
   };
 
-  textbox.renderStatic = function (locals) {
+  textbox.renderStatic = overrides.renderStatic || function renderStatic(locals) {
     return bootstrap.getStatic(locals.value);
   };
 
-  textbox.renderTextbox = function (locals) {
+  textbox.renderTextbox = overrides.renderTextbox || function renderTextbox(locals) {
     if (locals.type === 'static') {
       return textbox.renderStatic(locals);
     }
@@ -99,7 +97,7 @@ function clone() {
     return ret;
   };
 
-  textbox.renderInputGroup = function (input, locals) {
+  textbox.renderInputGroup = overrides.renderInputGroup || function renderInputGroup(input, locals) {
     return bootstrap.getInputGroup([
       locals.config.buttonBefore ? getInputGroupButton(locals.config.buttonBefore) : null,
       locals.config.addonBefore ? bootstrap.getAddon(locals.config.addonBefore) : null,
@@ -109,21 +107,21 @@ function clone() {
     ]);
   };
 
-  textbox.renderInput = function (locals) {
+  textbox.renderInput = overrides.renderInput || function renderInput(locals) {
     return {
       tag: 'input',
       attrs: locals.attrs
     };
   };
 
-  textbox.renderTextarea = function (locals) {
+  textbox.renderTextarea = overrides.renderTextarea || function renderTextarea(locals) {
     return {
       tag: 'textarea',
       attrs: locals.attrs
     };
   };
 
-  textbox.renderLabel = function (locals) {
+  textbox.renderLabel = overrides.renderLabel || function renderLabel(locals) {
     return getLabel({
       label: locals.label,
       htmlFor: locals.attrs.id,
@@ -131,15 +129,15 @@ function clone() {
     });
   };
 
-  textbox.renderError = function (locals) {
+  textbox.renderError = overrides.renderError || function renderError(locals) {
     return getError(locals);
   };
 
-  textbox.renderHelp = function (locals) {
+  textbox.renderHelp = overrides.renderHelp || function renderHelp(locals) {
     return getHelp(locals);
   };
 
-  textbox.renderVertical = function (locals) {
+  textbox.renderVertical = overrides.renderVertical || function renderVertical(locals) {
     return [
       textbox.renderLabel(locals),
       textbox.renderTextbox(locals),
@@ -148,7 +146,7 @@ function clone() {
     ];
   };
 
-  textbox.renderHorizontal = function (locals) {
+  textbox.renderHorizontal = overrides.renderHorizontal || function renderHorizontal(locals) {
     const label = textbox.renderLabel(locals);
     return [
       label,
@@ -166,7 +164,7 @@ function clone() {
     ];
   };
 
-  textbox.renderFormGroup = function (children, locals) {
+  textbox.renderFormGroup = overrides.renderFormGroup || function renderFormGroup(children, locals) {
     return bootstrap.getFormGroup({
       className: 'form-group-depth-' + locals.path.length,
       hasError: locals.hasError,
@@ -174,7 +172,11 @@ function clone() {
     });
   };
 
+  textbox.clone = function clone(newOverrides = {}) {
+    return create({...overrides, ...newOverrides});
+  };
+
   return textbox;
 }
 
-export default clone();
+export default create();
