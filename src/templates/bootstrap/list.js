@@ -61,7 +61,7 @@ function create(overrides = {}) {
     });
   };
 
-  list.renderRowButtons = overrides.renderRowButtons || function renderRowButtons(buttons/*, locals*/) {
+  list.renderButtonGroup = overrides.renderButtonGroup || function renderButtonGroup(buttons/*, locals*/) {
     return bootstrap.getButtonGroup(buttons.map(list.renderRowButton));
   };
 
@@ -75,7 +75,7 @@ function create(overrides = {}) {
         }),
         bootstrap.getCol({
           breakpoints: {sm: 4, xs: 6},
-          children: list.renderRowButtons(row.buttons, locals)
+          children: list.renderButtonGroup(row.buttons, locals)
         })
       ]
     });
