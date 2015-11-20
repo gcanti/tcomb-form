@@ -1,4 +1,5 @@
 import t from 'tcomb-validation';
+import { compile } from 'uvdom/react';
 import bootstrap from 'uvdom-bootstrap';
 import Breakpoints from './Breakpoints';
 import Size from './Size';
@@ -175,6 +176,8 @@ function create(overrides = {}) {
   textbox.clone = function clone(newOverrides = {}) {
     return create({...overrides, ...newOverrides});
   };
+
+  textbox.toReactElement = compile;
 
   return textbox;
 }

@@ -248,10 +248,19 @@ export class Component extends React.Component {
 
   render() {
     const locals = this.getLocals();
-    // getTemplate is the only required implementation when extending Component
-    assert(t.Function.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
+    if (process.env.NODE_ENV !== 'production') {
+      // getTemplate is the only required implementation when extending Component
+      assert(t.Function.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
+    }
     const template = this.getTemplate();
-    return compile(template(locals));
+    const vdom = template(locals);
+    if (process.env.NODE_ENV !== 'production') {
+      if (!React.isValidElement(vdom) && !t.Function.is(template.toReactElement)) {
+        console.warn(`[${SOURCE}] missing toReactElement static function in template ${template.name}`);
+      }
+    }
+    const toReactElement = template.toReactElement || compile;
+    return toReactElement(vdom);
   }
 
 }

@@ -1,4 +1,5 @@
 import t from 'tcomb-validation';
+import { compile } from 'uvdom/react';
 import bootstrap from 'uvdom-bootstrap';
 import Breakpoints from './Breakpoints';
 import getLabel from './getLabel';
@@ -199,6 +200,8 @@ function create(overrides = {}) {
   date.clone = function clone(newOverrides = {}) {
     return create({...overrides, ...newOverrides});
   };
+
+  date.toReactElement = compile;
 
   return date;
 }

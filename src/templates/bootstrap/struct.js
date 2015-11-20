@@ -1,3 +1,4 @@
+import { compile } from 'uvdom/react';
 import bootstrap from 'uvdom-bootstrap';
 
 function create(overrides = {}) {
@@ -48,6 +49,8 @@ function create(overrides = {}) {
   struct.clone = function clone(newOverrides = {}) {
     return create({...overrides, ...newOverrides});
   };
+
+  struct.toReactElement = compile;
 
   return struct;
 }

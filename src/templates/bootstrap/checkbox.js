@@ -1,4 +1,5 @@
 import t from 'tcomb-validation';
+import { compile } from 'uvdom/react';
 import bootstrap from 'uvdom-bootstrap';
 import Breakpoints from './Breakpoints';
 import getError from './getError';
@@ -83,6 +84,8 @@ function create(overrides = {}) {
   checkbox.clone = function clone(newOverrides = {}) {
     return create({...overrides, ...newOverrides});
   };
+
+  checkbox.toReactElement = compile;
 
   return checkbox;
 }

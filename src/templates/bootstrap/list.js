@@ -1,3 +1,4 @@
+import { compile } from 'uvdom/react';
 import bootstrap from 'uvdom-bootstrap';
 
 function create(overrides = {}) {
@@ -117,6 +118,8 @@ function create(overrides = {}) {
   list.clone = function clone(newOverrides = {}) {
     return create({...overrides, ...newOverrides});
   };
+
+  list.toReactElement = compile;
 
   return list;
 }

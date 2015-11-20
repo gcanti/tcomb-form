@@ -1,4 +1,5 @@
 import t from 'tcomb-validation';
+import { compile } from 'uvdom/react';
 import bootstrap from 'uvdom-bootstrap';
 import Breakpoints from './Breakpoints';
 import getLabel from './getLabel';
@@ -99,6 +100,8 @@ function create(overrides = {}) {
   radio.clone = function clone(newOverrides = {}) {
     return create({...overrides, ...newOverrides});
   };
+
+  radio.toReactElement = compile;
 
   return radio;
 }
