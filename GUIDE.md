@@ -54,6 +54,7 @@ Table of Contents
     * [Templates](#templates)
     * [Transformers](#transformers)
     * [Custom factories](#custom-factories)
+    * [getTcombFormFactory](#gettcombformfactory)
   * [Bootstrap extras](#bootstrap-extras)
     * [Textbox](#textbox)
       * [Addons](#addons)
@@ -1213,6 +1214,42 @@ const options = {
     }
   }
 };
+```
+
+## getTcombFormFactory
+
+If a type owns a `getTcombFormFactory(options)` static function, it will be used to retrieve the suitable factory
+
+**Example**
+
+```js
+// instead of
+const Country = t.enums.of(['IT', 'US'], 'Country');
+
+const Type = t.struct({
+  country: Country
+});
+
+const options = {
+  fields: {
+    country: {
+      factory: t.form.Radio
+    }
+  }
+};
+
+// you can write
+const Country = t.enums.of(['IT', 'US'], 'Country');
+
+Country.getTcombFormFactory = function (/*options*/) {
+  return t.form.Radio;
+};
+
+const Type = t.struct({
+  country: Country
+});
+
+const options = {};
 ```
 
 # Bootstrap extras
