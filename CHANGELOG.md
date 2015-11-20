@@ -19,8 +19,12 @@
         - add a type property to button locals
         - one file for each template
         - every template own a series of render* function that can be overwritten
+    - complete refactoring of semantic templates
+        - add a type property to button locals
+        - one file for each template
+        - every template own a series of render* function that can be overwritten
 - **Bug Fix**
-    - Incosistent calling of tcomb-validation validate function in getTypeInfo and components for struct and list types, fix #253
+    - Incosistent calling of tcomb-validation `validate` function in `getTypeInfo` and components for struct and list types, fix #253
 - **Experimental**
     - if a type owns a `getTcombFormFactory(options)` static function, it will be used to retrieve the suitable factory
 
@@ -57,11 +61,10 @@
     ```
 
 - **Internal**
-    - remove `raw` param in `getValue` API
+    - remove `raw` param in `getValue` API (use `validate()` API instead)
     - remove deprecated types short alias from tests
     - factor out UIDGenerator from `Form` render method
-    - optimise getError(): return an error message only if `hasError === true`
-    - split semantic templates: one file for each template
+    - optimize `getError()` return an error message only if `hasError === true`
 
 ## v0.7.6
 
