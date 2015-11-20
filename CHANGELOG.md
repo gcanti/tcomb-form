@@ -25,6 +25,7 @@
         - every template own a series of render* function that can be overwritten
 - **Bug Fix**
     - Incosistent calling of tcomb-validation `validate` function in `getTypeInfo` and components for struct and list types, fix #253
+    - avoid useless re-renderings of Datetime when the value is undefined
 - **Experimental**
     - if a type owns a `getTcombFormFactory(options)` static function, it will be used to retrieve the suitable factory
 

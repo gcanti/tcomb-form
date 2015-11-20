@@ -423,6 +423,8 @@ export class Radio extends Component {
 
 }
 
+const defaultDatetimeValue = Object.freeze([null, null, null]);
+
 @decorators.attrs
 @decorators.template('date')
 export class Datetime extends Component {
@@ -431,7 +433,7 @@ export class Datetime extends Component {
     format: (value) => {
       return t.Array.is(value) ? value :
         t.Date.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) :
-        [null, null, null];
+        defaultDatetimeValue;
     },
     parse: (value) => {
       value = value.map(parseNumber);
