@@ -256,7 +256,7 @@ export class Component extends React.Component {
     const vdom = template(locals);
     if (process.env.NODE_ENV !== 'production') {
       if (!React.isValidElement(vdom) && !t.Function.is(template.toReactElement)) {
-        console.warn(`[${SOURCE}] missing toReactElement static function in template ${template.name}`);
+        console.warn(`[${SOURCE}] missing toReactElement static function in template ${template.name}`); // eslint-disable-line
       }
     }
     const toReactElement = template.toReactElement || compile;

@@ -55,7 +55,7 @@ function create(overrides = {}) {
                 }
               }
             }
-          ],
+          ]
         },
         key: option.value
       };
