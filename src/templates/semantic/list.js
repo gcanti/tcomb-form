@@ -1,3 +1,4 @@
+import { compile } from 'uvdom/react';
 import getAlert from './getAlert';
 
 function getButton(options) {
@@ -56,45 +57,71 @@ function getButtonGroup(buttons) {
   };
 }
 
-export default function list(locals) {
+function create(overrides = {}) {
 
-  var rows = [];
+  function list(locals) {
+    let children = [];
 
-  if (locals.label) {
-    rows.push({
-      tag: 'legend',
-      attrs: {
-        className: {
-          ui: true,
-          header: true
-        }
-      },
-      children: locals.label
-    });
-  }
-
-  if (locals.help) {
-    rows.push(getAlert('info', locals.help));
-  }
-
-  rows = rows.concat(locals.items.map(function (item) {
-    if (item.buttons.length === 0) {
-      return getRow({
-        key: item.key,
-        children: [
-          getCol({
-            className: {
-              six: true,
-              wide: true,
-              column: true
-            },
-            children: item.input
-          })
-        ]
-      });
+    if (locals.help) {
+      children.push(list.renderHelp(locals));
     }
+
+    if (locals.error && locals.hasError) {
+      children.push(list.renderError(locals));
+    }
+
+    children = children.concat(locals.items.map((item) => {
+      return item.buttons.length === 0 ?
+        list.renderRowWithoutButtons(item, locals) :
+        list.renderRow(item, locals);
+    }));
+
+    if (locals.add) {
+      children.push(list.renderAddButton(locals));
+    }
+
+    return list.renderFieldset(children, locals);
+  }
+
+  list.renderHelp = overrides.renderHelp || function renderHelp(locals) {
+    return getAlert('info', locals.help);
+  };
+
+  list.renderError = overrides.renderError || function renderError(locals) {
+    return getAlert('error', locals.error);
+  };
+
+  list.renderRowWithoutButtons = overrides.renderRowWithoutButtons || function renderRowWithoutButtons(item/*, locals*/) {
     return getRow({
       key: item.key,
+      children: [
+        getCol({
+          className: {
+            six: true,
+            wide: true,
+            column: true
+          },
+          children: item.input
+        })
+      ]
+    });
+  };
+
+  list.renderRowButton = overrides.renderRowButton || function renderRowButton(button) {
+    return getButton({
+      click: button.click,
+      key: button.type,
+      label: button.label
+    });
+  };
+
+  list.renderButtonGroup = overrides.renderButtonGroup || function renderButtonGroup(buttons/*, locals*/) {
+    return getButtonGroup(buttons.map(list.renderRowButton));
+  };
+
+  list.renderRow = overrides.renderRow || function renderRow(row, locals) {
+    return getRow({
+      key: row.key,
       children: [
         getCol({
           className: {
@@ -102,7 +129,7 @@ export default function list(locals) {
             wide: true,
             column: true
           },
-          children: item.input
+          children: row.input
         }),
         getCol({
           className: {
@@ -110,43 +137,67 @@ export default function list(locals) {
             wide: true,
             column: true
           },
-          children: getButtonGroup(item.buttons.map(function (button, i) {
-            return getButton({
-              click: button.click,
-              key: i,
-              label: button.label
-            });
-          }))
+          children: list.renderButtonGroup(row.buttons, locals)
         })
       ]
     });
-  }));
-
-  if (locals.error && locals.hasError) {
-    rows.push(getAlert('error', locals.error));
-  }
-
-  if (locals.add) {
-    rows.push(getButton(locals.add));
-  }
-
-  return {
-    tag: 'fieldset',
-    attrs: {
-      disabled: locals.disabled,
-      style: {
-        border: 0,
-        margin: 0,
-        padding: 0
-      },
-      className: {
-        ui: true,
-        form: true,
-        segment: locals.path.length > 0,
-        error: locals.hasError
-      }
-    },
-    children: rows
   };
+
+  list.renderAddButton = overrides.renderAddButton || function renderAddButton(locals) {
+    return {
+      tag: 'div',
+      attrs: {
+        style: {
+          marginTop: '1em'
+        }
+      },
+      children: getButton(locals.add)
+    };
+  };
+
+  list.renderLegend = overrides.renderLegend || function renderLegend(locals) {
+    return {
+      tag: 'h4',
+      attrs: {
+        className: {
+          ui: true,
+          dividing: true,
+          header: true
+        }
+      },
+      children: locals.label
+    };
+  };
+
+  list.renderFieldset = overrides.renderFieldset || function renderFieldset(children, locals) {
+    children = locals.label ? [list.renderLegend(locals)].concat(children) : children;
+    return {
+      tag: 'fieldset',
+      attrs: {
+        disabled: locals.disabled,
+        style: locals.path.length === 0 ? {
+          border: 0,
+          margin: 0,
+          padding: 0
+        } : null,
+        className: {
+          ui: true,
+          form: true,
+          segment: locals.path.length > 0,
+          error: locals.hasError
+        }
+      },
+      children
+    };
+  };
+
+  list.clone = function clone(newOverrides = {}) {
+    return create({...overrides, ...newOverrides});
+  };
+
+  list.toReactElement = compile;
+
+  return list;
 }
 
+export default create();
