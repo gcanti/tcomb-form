@@ -46,6 +46,7 @@ function create(overrides = {}) {
   function date(locals) {
 
     locals.config = date.getConfig(locals);
+    locals.attrs = date.getAttrs(locals);
 
     const children = locals.config.horizontal ?
       date.renderHorizontal(locals) :
@@ -56,6 +57,10 @@ function create(overrides = {}) {
 
   date.getConfig = overrides.getConfig || function getConfig(locals) {
     return new DateConfig(locals.config || {});
+  };
+
+  date.getAttrs = overrides.getAttrs || function getAttrs(locals) {
+    return t.mixin({}, locals.attrs);
   };
 
   date.renderLabel = overrides.renderLabel || function renderLabel(locals) {
