@@ -1,11 +1,11 @@
-export default function getHelp(locals) {
-  if (!locals.help) { return; }
+export default function getHelp({help, attrs}) {
+  if (!help) { return; }
   return {
     tag: 'div',
     attrs: {
       className: 'ui pointing label visible',
-      id: locals.id + '-tip'
+      id: attrs.id + '-tip'
     },
-    children: locals.help
+    children: help
   };
 }
