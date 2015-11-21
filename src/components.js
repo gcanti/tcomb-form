@@ -242,7 +242,8 @@ export class Component extends React.Component {
       config: this.getConfig(),
       value,
       disabled: options.disabled,
-      help: options.help
+      help: options.help,
+      context: this.props.ctx.context
     };
   }
 
