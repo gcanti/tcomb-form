@@ -1,6 +1,6 @@
 import t from 'tcomb-validation'
 import React from 'react'
-import ReactDOM from 'react/lib/ReactDOM'
+import ReactDOM from 'react-dom'
 import bootstrap from '../../src/templates/bootstrap'
 import { UIDGenerator } from '../../src/util'
 
