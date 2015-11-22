@@ -4,7 +4,7 @@ import { humanize, move } from '../src/util'
 tape('util', ({ test }) => {
   test('humanize', (assert) => {
     assert.plan(1)
-    assert.strictEqual(humanize('birthDate', 'Birth date'))
+    assert.strictEqual(humanize('birthDate'), 'Birth date')
   })
 
   test('move', (assert) => {
