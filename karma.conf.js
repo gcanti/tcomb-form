@@ -1,4 +1,5 @@
 var webpack = require('webpack') // eslint-disable-line
+var path = require('path') // eslint-disable-line
 
 module.exports = function getConfig(config) {
   config.set({
@@ -17,11 +18,21 @@ module.exports = function getConfig(config) {
         fs: 'empty'
       },
       module: {
-        loaders: [{
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: 'babel'
-        }]
+        preLoaders: [
+          {
+            test: /\.js$/,
+            exclude: [
+              path.resolve('src/'),
+              path.resolve('node_modules/')
+            ],
+            loader: 'babel'
+          },
+          {
+            test: /\.js$/,
+            include: path.resolve('src/'),
+            loader: 'isparta'
+          }
+        ]
       },
       plugins: [
         new webpack.DefinePlugin({
@@ -32,6 +43,9 @@ module.exports = function getConfig(config) {
     webpackMiddleware: {
       noInfo: true
     },
-    reporters: ['dots']
+    reporters: ['dots', 'coverage'],
+    coverageReporter: {
+      type: 'text'
+    }
   })
 }
