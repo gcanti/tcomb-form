@@ -1,26 +1,26 @@
-import t from 'tcomb-validation';
-import { compile } from 'uvdom/react';
-import bootstrap from 'uvdom-bootstrap';
-import Breakpoints from './Breakpoints';
-import getLabel from './getLabel';
-import getError from './getError';
-import getHelp from './getHelp';
+import t from 'tcomb-validation'
+import { compile } from 'uvdom/react'
+import bootstrap from 'uvdom-bootstrap'
+import Breakpoints from './Breakpoints'
+import getLabel from './getLabel'
+import getError from './getError'
+import getHelp from './getHelp'
 
 const DateConfig = t.struct({
   horizontal: t.maybe(Breakpoints)
-}, 'DateConfig');
+}, 'DateConfig')
 
 function range(n) {
-  var result = [];
-  for (var i = 1; i <= n; i++) { result.push(i); }
-  return result;
+  const result = []
+  for (let i = 1; i <= n; i++) { result.push(i) }
+  return result
 }
 
 function padLeft(x, len) {
-  var str = String(x);
-  var times = len - str.length;
-  for (var i = 0; i < times; i++ ) { str = '0' + str; }
-  return str;
+  let str = String(x)
+  const times = len - str.length
+  for (let i = 0; i < times; i++ ) { str = '0' + str }
+  return str
 }
 
 function toOption(value, text) {
@@ -28,72 +28,66 @@ function toOption(value, text) {
     tag: 'option',
     attrs: {value: value + ''},
     children: text
-  };
+  }
 }
 
-var nullOption = [toOption('', '-')];
+const nullOption = [toOption('', '-')]
 
-var days = nullOption.concat(range(31).map(function (i) {
-  return toOption(i, padLeft(i, 2));
-}));
+const days = nullOption.concat(range(31).map((i) => toOption(i, padLeft(i, 2))))
 
-var months = nullOption.concat(range(12).map(function (i) {
-  return toOption(i - 1, padLeft(i, 2));
-}));
+const months = nullOption.concat(range(12).map((i) => toOption(i - 1, padLeft(i, 2))))
 
 function create(overrides = {}) {
-
   function date(locals) {
-
-    locals.config = date.getConfig(locals);
-    locals.attrs = date.getAttrs(locals);
+    locals.config = date.getConfig(locals)
+    locals.attrs = date.getAttrs(locals)
 
     const children = locals.config.horizontal ?
       date.renderHorizontal(locals) :
-      date.renderVertical(locals);
+      date.renderVertical(locals)
 
-    return date.renderFormGroup(children, locals);
+    return date.renderFormGroup(children, locals)
   }
 
   date.getConfig = overrides.getConfig || function getConfig(locals) {
-    return new DateConfig(locals.config || {});
-  };
+    return new DateConfig(locals.config || {})
+  }
 
   date.getAttrs = overrides.getAttrs || function getAttrs(locals) {
-    return t.mixin({}, locals.attrs);
-  };
+    return t.mixin({}, locals.attrs)
+  }
 
   date.renderLabel = overrides.renderLabel || function renderLabel(locals) {
     return getLabel({
       label: locals.label,
       breakpoints: locals.config.horizontal
-    });
-  };
+    })
+  }
 
   date.renderError = overrides.renderError || function renderError(locals) {
-    return getError(locals);
-  };
+    return getError(locals)
+  }
 
   date.renderHelp = overrides.renderHelp || function renderHelp(locals) {
-    return getHelp(locals);
-  };
+    return getHelp(locals)
+  }
 
   date.renderDate = overrides.renderDate || function renderDate(locals) {
-    const value = locals.value = locals.value.slice();
+    const value = locals.value = locals.value.slice()
 
     function onDayChange(evt) {
-      value[2] = evt.target.value === '-' ? null : evt.target.value;
-      locals.onChange(value);
+      value[2] = evt.target.value === '-' ? null : evt.target.value
+      locals.onChange(value)
     }
 
     function onMonthChange(evt) {
-      value[1] = evt.target.value === '-' ? null : evt.target.value;
-      locals.onChange(value);
+      value[1] = evt.target.value === '-' ? null : evt.target.value
+      locals.onChange(value)
     }
 
     function onYearChange(evt) {
-      value[0] = evt.target.value.trim() === '' ? null : evt.target.value.trim();
-      locals.onChange(value);
+      value[0] = evt.target.value.trim() === '' ? null : evt.target.value.trim()
+      locals.onChange(value)
     }
 
     const parts = {
@@ -152,7 +146,7 @@ function create(overrides = {}) {
           }
         }
       }
-    };
+    }
 
     return {
       tag: 'ul',
@@ -161,11 +155,9 @@ function create(overrides = {}) {
           'nav nav-pills': true
         }
       },
-      children: locals.order.map(function (id) {
-        return parts[id];
-      })
-    };
-  };
+      children: locals.order.map((id) => parts[id])
+    }
+  }
 
   date.renderVertical = overrides.renderVertical || function renderVertical(locals) {
     return [
@@ -173,11 +165,11 @@ function create(overrides = {}) {
       date.renderDate(locals),
       date.renderError(locals),
       date.renderHelp(locals)
-    ];
-  };
+    ]
+  }
 
   date.renderHorizontal = overrides.renderHorizontal || function renderHorizontal(locals) {
-    const label = date.renderLabel(locals);
+    const label = date.renderLabel(locals)
     return [
       label,
       {
@@ -191,24 +183,24 @@ function create(overrides = {}) {
           date.renderHelp(locals)
         ]
       }
-    ];
-  };
+    ]
+  }
 
   date.renderFormGroup = overrides.renderFormGroup || function renderFormGroup(children, locals) {
     return bootstrap.getFormGroup({
       className: 'form-group-depth-' + locals.path.length,
       hasError: locals.hasError,
       children
-    });
-  };
+    })
+  }
 
   date.clone = function clone(newOverrides = {}) {
-    return create({...overrides, ...newOverrides});
-  };
+    return create({...overrides, ...newOverrides})
+  }
 
-  date.toReactElement = compile;
+  date.toReactElement = compile
 
-  return date;
+  return date
 }
 
-export default create();
+export default create()

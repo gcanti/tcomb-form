@@ -1,82 +1,76 @@
-'use strict';
+import tape from 'tape'
+import t from 'tcomb-validation'
+import bootstrap from '../../src/templates/bootstrap'
+import React from 'react'
+import { Datetime } from '../../src/components'
+import { ctx, getRenderComponent } from './util'
+const renderComponent = getRenderComponent(Datetime)
 
-var tape = require('tape');
-var t = require('tcomb-validation');
-var bootstrap = require('../../src/templates/bootstrap');
-var Datetime = require('../../src/components').Datetime;
-var React = require('react');
-var util = require('./util');
-var ctx = util.ctx;
-var renderComponent = util.getRenderComponent(Datetime);
+tape('Datetime', ({ test }) => {
+  test('label', (assert) => {
+    assert.plan(4)
 
-tape('Datetime', function (tape) {
-
-  tape.test('label', function (tape) {
-    tape.plan(4);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {},
         ctx: ctx
       }).getLocals().label,
       'Default label',
-      'should have a default label');
+      'should have a default label')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {label: 'mylabel'},
         ctx: ctx
       }).getLocals().label,
       'mylabel',
-      'should handle label option as string');
+      'should handle label option as string')
 
-    var actual = new Datetime({
+    const actual = new Datetime({
       type: t.Dat,
       options: {label: React.DOM.i(null, 'JSX label')},
       ctx: ctx
-    }).getLocals().label;
-    tape.equal(actual.type, 'i');
-    tape.equal(actual.props.children, 'JSX label');
+    }).getLocals().label
+    assert.equal(actual.type, 'i')
+    assert.equal(actual.props.children, 'JSX label')
+  })
 
-  });
+  test('help', (assert) => {
+    assert.plan(3)
 
-  tape.test('help', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {help: 'myhelp'},
         ctx: ctx
       }).getLocals().help,
       'myhelp',
-      'should handle help option as string');
+      'should handle help option as string')
 
-    var actual = new Datetime({
+    const actual = new Datetime({
       type: t.Dat,
       options: {help: React.DOM.i(null, 'JSX help')},
       ctx: ctx
-    }).getLocals().help;
-    tape.equal(actual.type, 'i');
-    tape.equal(actual.props.children, 'JSX help');
+    }).getLocals().help
+    assert.equal(actual.type, 'i')
+    assert.equal(actual.props.children, 'JSX help')
+  })
 
-  });
+  test('value', (assert) => {
+    assert.plan(2)
 
-  tape.test('value', function (tape) {
-    tape.plan(2);
-
-    tape.deepEqual(
+    assert.deepEqual(
       new Datetime({
         type: t.Dat,
         options: {},
         ctx: ctx
       }).getLocals().value,
       [null, null, null],
-      'default value should be [null, null, null]');
+      'default value should be [null, null, null]')
 
-    tape.deepEqual(
+    assert.deepEqual(
       new Datetime({
         type: t.Dat,
         options: {},
@@ -84,117 +78,113 @@ tape('Datetime', function (tape) {
         value: new Date(1973, 10, 30)
       }).getLocals().value,
       ['1973', '10', '30'],
-      'should handle value option');
+      'should handle value option')
+  })
 
-  });
+  test('hasError', (assert) => {
+    assert.plan(2)
 
-  tape.test('hasError', function (tape) {
-    tape.plan(2);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {},
         ctx: ctx
       }).getLocals().hasError,
       false,
-      'default hasError should be false');
+      'default hasError should be false')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {hasError: true},
         ctx: ctx
       }).getLocals().hasError,
       true,
-      'should handle hasError option');
+      'should handle hasError option')
+  })
 
-  });
+  test('error', (assert) => {
+    assert.plan(3)
 
-  tape.test('error', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {},
         ctx: ctx
       }).getLocals().error,
       undefined,
-      'default error should be undefined');
+      'default error should be undefined')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {error: 'myerror', hasError: true},
         ctx: ctx
       }).getLocals().error,
       'myerror',
-      'should handle error option');
+      'should handle error option')
 
-    tape.deepEqual(
+    assert.deepEqual(
       new Datetime({
         type: t.Dat,
-        options: {error: function (value) { return 'error: ' + value.getFullYear(); }, hasError: true},
+        options: {
+          error: (value) => 'error: ' + value.getFullYear(),
+          hasError: true
+        },
         ctx: ctx,
         value: new Date(1973, 10, 30)
       }).getLocals().error,
       'error: 1973',
-      'should handle error option as a function');
-  });
+      'should handle error option as a function')
+  })
 
-  tape.test('template', function (tape) {
-    tape.plan(2);
+  test('template', (assert) => {
+    assert.plan(2)
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {},
         ctx: ctx
       }).getTemplate(),
       bootstrap.date,
-      'default template should be bootstrap.date');
+      'default template should be bootstrap.date')
 
-    var template = function () {};
+    const template = () => {}
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Datetime({
         type: t.Dat,
         options: {template: template},
         ctx: ctx
       }).getTemplate(),
       template,
-      'should handle template option');
-
-  });
+      'should handle template option')
+  })
 
   if (typeof window !== 'undefined') {
+    test('validate', (assert) => {
+      assert.plan(4)
 
-    tape.test('validate', function (tape) {
-      tape.plan(4);
-
-      var result;
+      let result
 
       // required type, default value
       result = renderComponent({
         type: t.Dat
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), false);
-      tape.deepEqual(result.value, null);
+      assert.strictEqual(result.isValid(), false)
+      assert.deepEqual(result.value, null)
 
       // required type, setting a value
       result = renderComponent({
         type: t.Dat,
         value: new Date(1973, 10, 30)
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value.getFullYear(), 1973);
-
-    });
-
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value.getFullYear(), 1973)
+    })
   }
-
-});
+})
 

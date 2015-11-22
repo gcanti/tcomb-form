@@ -1,4 +1,4 @@
-module.exports = function (config) {
+module.exports = function getConfig(config) {
   config.set({
     browserNoActivityTimeout: 30000,
     browsers: [process.env.CONTINUOUS_INTEGRATION ? 'Firefox' : 'Chrome'],
@@ -14,5 +14,5 @@ module.exports = function (config) {
       ]
     },
     reporters: ['dots']
-  });
-};
+  })
+}

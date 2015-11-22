@@ -5,4 +5,4 @@ export default {
   remove: 'Elimina',
   up: 'Su',
   down: 'Giù'
-};
+}

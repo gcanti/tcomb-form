@@ -1,5 +1,5 @@
-import { compile } from 'uvdom/react';
-import getAlert from './getAlert';
+import { compile } from 'uvdom/react'
+import getAlert from './getAlert'
 
 function getButton(options) {
   return {
@@ -16,7 +16,7 @@ function getButton(options) {
     },
     children: options.label,
     key: options.key
-  };
+  }
 }
 
 function getRow(options) {
@@ -30,7 +30,7 @@ function getRow(options) {
     },
     children: options.children,
     key: options.key
-  };
+  }
 }
 
 function getCol(options) {
@@ -40,7 +40,7 @@ function getCol(options) {
       className: options.className
     },
     children: options.children
-  };
+  }
 }
 
 function getButtonGroup(buttons) {
@@ -54,44 +54,43 @@ function getButtonGroup(buttons) {
       }
     },
     children: buttons
-  };
+  }
 }
 
 function create(overrides = {}) {
-
   function list(locals) {
-    let children = [];
+    let children = []
 
     if (locals.help) {
-      children.push(list.renderHelp(locals));
+      children.push(list.renderHelp(locals))
     }
 
     if (locals.error && locals.hasError) {
-      children.push(list.renderError(locals));
+      children.push(list.renderError(locals))
     }
 
     children = children.concat(locals.items.map((item) => {
       return item.buttons.length === 0 ?
         list.renderRowWithoutButtons(item, locals) :
-        list.renderRow(item, locals);
-    }));
+        list.renderRow(item, locals)
+    }))
 
     if (locals.add) {
-      children.push(list.renderAddButton(locals));
+      children.push(list.renderAddButton(locals))
     }
 
-    return list.renderFieldset(children, locals);
+    return list.renderFieldset(children, locals)
   }
 
   list.renderHelp = overrides.renderHelp || function renderHelp(locals) {
-    return getAlert('info', locals.help);
-  };
+    return getAlert('info', locals.help)
+  }
 
   list.renderError = overrides.renderError || function renderError(locals) {
-    return getAlert('error', locals.error);
-  };
+    return getAlert('error', locals.error)
+  }
 
-  list.renderRowWithoutButtons = overrides.renderRowWithoutButtons || function renderRowWithoutButtons(item/*, locals*/) {
+  list.renderRowWithoutButtons = overrides.renderRowWithoutButtons || function renderRowWithoutButtons(item /* , locals*/) {
     return getRow({
       key: item.key,
       children: [
@@ -104,20 +103,20 @@ function create(overrides = {}) {
           children: item.input
         })
       ]
-    });
-  };
+    })
+  }
 
   list.renderRowButton = overrides.renderRowButton || function renderRowButton(button) {
     return getButton({
       click: button.click,
       key: button.type,
       label: button.label
-    });
-  };
+    })
+  }
 
-  list.renderButtonGroup = overrides.renderButtonGroup || function renderButtonGroup(buttons/*, locals*/) {
-    return getButtonGroup(buttons.map(list.renderRowButton));
-  };
+  list.renderButtonGroup = overrides.renderButtonGroup || function renderButtonGroup(buttons /* , locals*/) {
+    return getButtonGroup(buttons.map(list.renderRowButton))
+  }
 
   list.renderRow = overrides.renderRow || function renderRow(row, locals) {
     return getRow({
@@ -140,8 +139,8 @@ function create(overrides = {}) {
           children: list.renderButtonGroup(row.buttons, locals)
         })
       ]
-    });
-  };
+    })
+  }
 
   list.renderAddButton = overrides.renderAddButton || function renderAddButton(locals) {
     return {
@@ -152,8 +151,8 @@ function create(overrides = {}) {
         }
       },
       children: getButton(locals.add)
-    };
-  };
+    }
+  }
 
   list.renderLegend = overrides.renderLegend || function renderLegend(locals) {
     return {
@@ -166,11 +165,11 @@ function create(overrides = {}) {
         }
       },
       children: locals.label
-    };
-  };
+    }
+  }
 
-  list.renderFieldset = overrides.renderFieldset || function renderFieldset(children, locals) {
-    children = locals.label ? [list.renderLegend(locals)].concat(children) : children;
+  list.renderFieldset = overrides.renderFieldset || function renderFieldset(fieldset, locals) {
+    const children = locals.label ? [list.renderLegend(locals)].concat(fieldset) : fieldset
     return {
       tag: 'fieldset',
       attrs: {
@@ -188,16 +187,16 @@ function create(overrides = {}) {
         }
       },
       children
-    };
-  };
+    }
+  }
 
   list.clone = function clone(newOverrides = {}) {
-    return create({...overrides, ...newOverrides});
-  };
+    return create({...overrides, ...newOverrides})
+  }
 
-  list.toReactElement = compile;
+  list.toReactElement = compile
 
-  return list;
+  return list
 }
 
-export default create();
+export default create()

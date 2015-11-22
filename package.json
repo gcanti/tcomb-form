@@ -2,10 +2,10 @@
   "name": "tcomb-form",
   "version": "0.7.7",
   "description": "React.js powered UI library for developing forms writing less code",
-  "main": "index.js",
+  "main": "lib/main.js",
   "scripts": {
-    "dev": "watchify -t [babelify] dev/client/client.js -o dev/client/bundle.js -v",
-    "lint": "eslint src",
+    "dev": "webpack --config=dev/webpack.config.js --watch --progress",
+    "lint": "eslint src test",
     "test": "npm run lint && karma start",
     "watch": "rm -rf lib/* && babel src -d lib -w"
   },
@@ -27,19 +27,22 @@
     "uvdom-bootstrap": "^0.2.3"
   },
   "devDependencies": {
-    "babel": "^5.0.0",
-    "babel-eslint": "^4.0.0",
+    "babel": "^5.8.34",
+    "babel-core": "^5.8.34",
+    "babel-eslint": "^4.1.5",
+    "babel-loader": "^5.4.0",
     "babelify": "^6.0.0",
-    "browserify": "^9.0.8",
-    "eslint": "^1.0.0",
-    "eslint-plugin-react": "^3.0.0",
+    "browserify": "^9.0.0",
+    "eslint": "^1.10.1",
+    "eslint-config-airbnb": "^1.0.0",
+    "eslint-plugin-react": "^3.10.0",
     "karma": "0.13.9",
     "karma-browserify": "4.3.0",
     "karma-chrome-launcher": "0.2.0",
     "karma-firefox-launcher": "^0.1.4",
     "karma-tap": "1.0.3",
     "tape": "4.0.0",
-    "watchify": "^3.4.0"
+    "webpack": "^1.12.2"
   },
   "tags": [
     "form",

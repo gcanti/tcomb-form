@@ -1,42 +1,36 @@
-'use strict';
+import tape from 'tape'
+import bootstrap from '../../src/templates/bootstrap'
 
-var tape = require('tape');
-var bootstrap = require('../../src/templates/bootstrap');
+tape('textbox', ({ test }) => {
+  const textbox = bootstrap.textbox
 
-tape('textbox', function (tape) {
+  test('static', (assert) => {
+    assert.plan(1)
 
-  var textbox = bootstrap.textbox;
-
-  tape.test('static', function (tape) {
-    tape.plan(1);
-
-    tape.deepEqual(
+    assert.deepEqual(
       textbox({type: 'static', attrs: {}, path: []}).children[1].attrs.className,
       { 'form-control-static': true },
-      'should handle static type');
-  });
+      'should handle static type')
+  })
 
-  tape.test('depth', function (tape) {
-    tape.plan(1);
+  test('depth', (assert) => {
+    assert.plan(1)
 
-    tape.deepEqual(
+    assert.deepEqual(
       textbox({type: 'static', attrs: {}, path: []}).attrs.className,
       {'form-group': true, 'form-group-depth-0': true, 'has-error': undefined},
-      'should handle form depth');
-  });
+      'should handle form depth')
+  })
+})
 
-});
+tape('date', ({ test }) => {
+  const date = bootstrap.date
 
-tape('date', function (tape) {
+  test('should handle help option', (assert) => {
+    assert.plan(1)
 
-  var date = bootstrap.date;
-
-  tape.test('should handle help option', function (tape) {
-    tape.plan(1);
-
-    tape.deepEqual(
+    assert.deepEqual(
       date({value: [1973, 10, 30], order: ['M', 'D', 'YY'], path: [], help: 'my help', attrs: {id: 'myId'}}).children[3].tag,
-      'span');
-  });
-
-});
+      'span')
+  })
+})

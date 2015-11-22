@@ -1,19 +1,18 @@
 {
   "parser": "babel-eslint",
-  "extends": "eslint:recommended",
+  "extends": "eslint-config-airbnb",
   "env": {
     "browser": true,
-    "mocha": true,
     "node": true
-  },
-  "ecmaFeatures": {
-    "modules": true,
-    "es6": true,
-    "jsx": true
-  },
-  "rules": {
   },
   "plugins": [
     "react"
-  ]
+  ],
+  "rules": {
+    "semi": [2, "never"],
+    "comma-dangle": 0,
+    "react/sort-comp": 0,
+    "react/no-multi-comp": 0,
+    "react/prop-types": 0
+  }
 }

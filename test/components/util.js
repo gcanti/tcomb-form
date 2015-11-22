@@ -1,12 +1,10 @@
-'use strict';
+import t from 'tcomb-validation'
+import React from 'react'
+import ReactDOM from 'react/lib/ReactDOM'
+import bootstrap from '../../src/templates/bootstrap'
+import { UIDGenerator } from '../../src/util'
 
-var t = require('tcomb-validation');
-var React = require('react');
-var ReactDOM = require('react/lib/ReactDOM');
-var bootstrap = require('../../src/templates/bootstrap');
-var UIDGenerator = require('../../src/util').UIDGenerator;
-
-var ctx = {
+const ctx = {
   uidGenerator: new UIDGenerator('root'),
   auto: 'labels',
   config: {},
@@ -22,28 +20,28 @@ var ctx = {
   },
   templates: bootstrap,
   path: ['defaultPath']
-};
+}
 
 function getContext(options) {
-  return t.mixin(t.mixin({}, ctx), options, true);
+  return t.mixin(t.mixin({}, ctx), options, true)
 }
 
-var ctxPlaceholders = getContext({auto: 'placeholders'});
-var ctxNone = getContext({auto: 'none'});
+const ctxPlaceholders = getContext({auto: 'placeholders'})
+const ctxNone = getContext({auto: 'none'})
 
 function getRenderComponent(Component) {
-  return function renderComponent(props) {
-    props.options = props.options || {};
-    props.ctx = props.ctx || ctx;
-    var node = document.createElement('div');
-    document.body.appendChild(node);
-    return ReactDOM.render(React.createElement(Component, props), node);
-  };
+  return (props) => {
+    props.options = props.options || {}
+    props.ctx = props.ctx || ctx
+    const node = document.createElement('div')
+    document.body.appendChild(node)
+    return ReactDOM.render(React.createElement(Component, props), node)
+  }
 }
 
-module.exports = {
-  ctx: ctx,
-  ctxPlaceholders: ctxPlaceholders,
-  ctxNone: ctxNone,
-  getRenderComponent: getRenderComponent
-};
+export default {
+  ctx,
+  ctxPlaceholders,
+  ctxNone,
+  getRenderComponent
+}

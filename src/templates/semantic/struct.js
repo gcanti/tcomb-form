@@ -1,32 +1,30 @@
-import { compile } from 'uvdom/react';
-import getAlert from './getAlert';
+import { compile } from 'uvdom/react'
+import getAlert from './getAlert'
 
 function create(overrides = {}) {
-
   function struct(locals) {
-
-    let children = [];
+    let children = []
 
     if (locals.help) {
-      children.push(struct.renderHelp(locals));
+      children.push(struct.renderHelp(locals))
     }
 
     if (locals.error && locals.hasError) {
-      children.push(struct.renderError(locals));
+      children.push(struct.renderError(locals))
     }
 
-    children = children.concat(locals.order.map(name => locals.inputs[name]));
+    children = children.concat(locals.order.map(name => locals.inputs[name]))
 
-    return struct.renderFieldset(children, locals);
+    return struct.renderFieldset(children, locals)
   }
 
   struct.renderHelp = overrides.renderHelp || function renderHelp(locals) {
-    return getAlert('info', locals.help);
-  };
+    return getAlert('info', locals.help)
+  }
 
   struct.renderError = overrides.renderError || function renderError(locals) {
-    return getAlert('error', locals.error);
-  };
+    return getAlert('error', locals.error)
+  }
 
   struct.renderLegend = overrides.renderLegend || function renderLegend(locals) {
     return {
@@ -39,11 +37,11 @@ function create(overrides = {}) {
         }
       },
       children: locals.label
-    };
-  };
+    }
+  }
 
-  struct.renderFieldset = overrides.renderFieldset || function renderFieldset(children, locals) {
-    children = locals.label ? [struct.renderLegend(locals)].concat(children) : children;
+  struct.renderFieldset = overrides.renderFieldset || function renderFieldset(fieldset, locals) {
+    const children = locals.label ? [struct.renderLegend(locals)].concat(fieldset) : fieldset
     return {
       tag: 'fieldset',
       attrs: {
@@ -61,16 +59,16 @@ function create(overrides = {}) {
         }
       },
       children
-    };
-  };
+    }
+  }
 
   struct.clone = function clone(newOverrides = {}) {
-    return create({...overrides, ...newOverrides});
-  };
+    return create({...overrides, ...newOverrides})
+  }
 
-  struct.toReactElement = compile;
+  struct.toReactElement = compile
 
-  return struct;
+  return struct
 }
 
-export default create();
+export default create()

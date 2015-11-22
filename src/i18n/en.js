@@ -5,4 +5,4 @@ export default {
   remove: 'Remove',
   up: 'Up',
   down: 'Down'
-};
+}

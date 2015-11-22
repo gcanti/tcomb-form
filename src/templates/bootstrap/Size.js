@@ -1,5 +1,5 @@
-import t from 'tcomb-validation';
+import t from 'tcomb-validation'
 
-const Size = t.enums.of('xs sm md lg', 'Size');
+const Size = t.enums.of('xs sm md lg', 'Size')
 
-export default Size;
+export default Size

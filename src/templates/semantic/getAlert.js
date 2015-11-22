@@ -1,12 +1,12 @@
 export default function getAlert(type, children) {
-  var className = {
+  const className = {
     ui: true,
     message: true
-  };
-  className[type] = true;
+  }
+  className[type] = true
   return {
     tag: 'div',
     attrs: { className: className },
     children: children
-  };
+  }
 }

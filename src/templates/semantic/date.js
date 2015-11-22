@@ -1,20 +1,20 @@
-import t from 'tcomb-validation';
-import { compile } from 'uvdom/react';
-import getLabel from './getLabel';
-import getError from './getError';
-import getHelp from './getHelp';
+import t from 'tcomb-validation'
+import { compile } from 'uvdom/react'
+import getLabel from './getLabel'
+import getError from './getError'
+import getHelp from './getHelp'
 
 function range(n) {
-  var result = [];
-  for (var i = 1; i <= n; i++) { result.push(i); }
-  return result;
+  const result = []
+  for (let i = 1; i <= n; i++) { result.push(i) }
+  return result
 }
 
 function padLeft(x, len) {
-  var str = String(x);
-  var times = len - str.length;
-  for (var i = 0; i < times; i++ ) { str = '0' + str; }
-  return str;
+  let str = String(x)
+  const times = len - str.length
+  for (let i = 0; i < times; i++ ) { str = '0' + str }
+  return str
 }
 
 function toOption(value, text) {
@@ -22,46 +22,41 @@ function toOption(value, text) {
     tag: 'option',
     attrs: {value: value + ''},
     children: text
-  };
+  }
 }
 
-const nullOption = [toOption('', '-')];
+const nullOption = [toOption('', '-')]
 
-const days = nullOption.concat(range(31).map(function (i) {
-  return toOption(i, padLeft(i, 2));
-}));
+const days = nullOption.concat(range(31).map((i) => toOption(i, padLeft(i, 2))))
 
-const months = nullOption.concat(range(12).map(function (i) {
-  return toOption(i - 1, padLeft(i, 2));
-}));
+const months = nullOption.concat(range(12).map((i) => toOption(i - 1, padLeft(i, 2))))
 
 function create(overrides = {}) {
-
   function date(locals) {
-    locals.attrs = date.getAttrs(locals);
-    return date.renderVertical(locals);
+    locals.attrs = date.getAttrs(locals)
+    return date.renderVertical(locals)
   }
 
   date.getAttrs = overrides.getAttrs || function getAttrs(locals) {
-    return t.mixin({}, locals.attrs);
-  };
+    return t.mixin({}, locals.attrs)
+  }
 
   date.renderDate = overrides.renderDate || function renderCheckbox(locals) {
-    const value = locals.value.slice();
+    const value = locals.value.slice()
 
     function onDayChange(evt) {
-      value[2] = evt.target.value === '-' ? null : evt.target.value;
-      locals.onChange(value);
+      value[2] = evt.target.value === '-' ? null : evt.target.value
+      locals.onChange(value)
     }
 
     function onMonthChange(evt) {
-      value[1] = evt.target.value === '-' ? null : evt.target.value;
-      locals.onChange(value);
+      value[1] = evt.target.value === '-' ? null : evt.target.value
+      locals.onChange(value)
     }
 
     function onYearChange(evt) {
-      value[0] = evt.target.value.trim() === '' ? null : evt.target.value.trim();
-      locals.onChange(value);
+      value[0] = evt.target.value.trim() === '' ? null : evt.target.value.trim()
+      locals.onChange(value)
     }
 
     const parts = {
@@ -130,7 +125,7 @@ function create(overrides = {}) {
         }
       }
 
-    };
+    }
 
     return {
       tag: 'div',
@@ -140,26 +135,24 @@ function create(overrides = {}) {
           fields: true
         }
       },
-      children: locals.order.map(function (id) {
-        return parts[id];
-      })
-    };
-  };
+      children: locals.order.map((id) => parts[id])
+    }
+  }
 
   date.renderLabel = overrides.renderLabel || function renderLabel(locals) {
     return getLabel({
       label: locals.label,
       htmlFor: locals.attrs.id
-    });
-  };
+    })
+  }
 
   date.renderError = overrides.renderError || function renderError(locals) {
-    return getError(locals);
-  };
+    return getError(locals)
+  }
 
   date.renderHelp = overrides.renderHelp || function renderHelp(locals) {
-    return getHelp(locals);
-  };
+    return getHelp(locals)
+  }
 
   date.renderVertical = overrides.renderVertical || function renderVertical(locals) {
     return {
@@ -178,16 +171,16 @@ function create(overrides = {}) {
         date.renderError(locals),
         date.renderHelp(locals)
       ]
-    };
-  };
+    }
+  }
 
   date.clone = function clone(newOverrides = {}) {
-    return create({...overrides, ...newOverrides});
-  };
+    return create({...overrides, ...newOverrides})
+  }
 
-  date.toReactElement = compile;
+  date.toReactElement = compile
 
-  return date;
+  return date
 }
 
-export default create();
+export default create()

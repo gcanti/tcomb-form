@@ -1,97 +1,94 @@
-'use strict';
+import tape from 'tape'
+import t from 'tcomb-validation'
+import bootstrap from '../../src/templates/bootstrap'
+import React from 'react'
+import { Radio } from '../../src/components'
+import { ctx, getRenderComponent } from './util'
+const renderComponent = getRenderComponent(Radio)
 
-var tape = require('tape');
-var t = require('tcomb-validation');
-var bootstrap = require('../../src/templates/bootstrap');
-var Radio = require('../../src/components').Radio;
-var React = require('react');
-var util = require('./util');
-var ctx = util.ctx;
-var renderComponent = util.getRenderComponent(Radio);
-
-var transformer = {
-  format: function (value) {
-    return t.Str.is(value) ? value : value === true ? '1' : '0';
+const transformer = {
+  format: (value) => {
+    if (t.String.is(value)) {
+      return value
+    } else if (value === true) {
+      return '1'
+    }
+    return '0'
   },
-  parse: function (value) {
-    return value === '1';
-  }
-};
+  parse: (value) => value === '1'
+}
 
-tape('Radio', function (tape) {
-
-  var Country = t.enums({
+tape('Radio', ({ test }) => {
+  const Country = t.enums({
     'IT': 'Italy',
     'FR': 'France',
     'US': 'United States'
-  });
+  })
 
-  tape.test('label', function (tape) {
-    tape.plan(5);
+  test('label', (assert) => {
+    assert.plan(5)
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {},
         ctx: ctx
       }).getLocals().label,
       'Default label',
-      'should have a default label');
+      'should have a default label')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {label: 'mylabel'},
         ctx: ctx
       }).getLocals().label,
       'mylabel',
-      'should handle label option as string');
+      'should handle label option as string')
 
-    var actual = new Radio({
+    const actual = new Radio({
       type: Country,
       options: {label: React.DOM.i(null, 'JSX label')},
       ctx: ctx
-    }).getLocals().label;
-    tape.equal(actual.type, 'i');
-    tape.equal(actual.props.children, 'JSX label');
+    }).getLocals().label
+    assert.equal(actual.type, 'i')
+    assert.equal(actual.props.children, 'JSX label')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: t.maybe(Country),
         options: {},
         ctx: ctx
       }).getLocals().label,
       'Default label (optional)',
-      'should handle optional types');
+      'should handle optional types')
+  })
 
-  });
+  test('help', (assert) => {
+    assert.plan(3)
 
-  tape.test('help', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {help: 'myhelp'},
         ctx: ctx
       }).getLocals().help,
       'myhelp',
-      'should handle help option as string');
+      'should handle help option as string')
 
-    var actual = new Radio({
+    const actual = new Radio({
       type: Country,
       options: {help: React.DOM.i(null, 'JSX help')},
       ctx: ctx
-    }).getLocals().help;
-    tape.equal(actual.type, 'i');
-    tape.equal(actual.props.children, 'JSX help');
+    }).getLocals().help
+    assert.equal(actual.type, 'i')
+    assert.equal(actual.props.children, 'JSX help')
+  })
 
-  });
+  test('value', (assert) => {
+    assert.plan(1)
 
-  tape.test('value', function (tape) {
-    tape.plan(1);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {},
@@ -99,14 +96,13 @@ tape('Radio', function (tape) {
         value: 'a'
       }).getLocals().value,
       'a',
-      'should handle value option');
+      'should handle value option')
+  })
 
-  });
+  test('transformer', (assert) => {
+    assert.plan(1)
 
-  tape.test('transformer', function (tape) {
-    tape.plan(1);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: t.maybe(t.Bool),
         options: {
@@ -120,98 +116,94 @@ tape('Radio', function (tape) {
         value: true
       }).getLocals().value,
       '1',
-      'should handle transformer option (format)');
+      'should handle transformer option (format)')
+  })
 
-  });
+  test('hasError', (assert) => {
+    assert.plan(2)
 
-  tape.test('hasError', function (tape) {
-    tape.plan(2);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {},
         ctx: ctx
       }).getLocals().hasError,
       false,
-      'default hasError should be false');
+      'default hasError should be false')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {hasError: true},
         ctx: ctx
       }).getLocals().hasError,
       true,
-      'should handle hasError option');
+      'should handle hasError option')
+  })
 
-  });
+  test('error', (assert) => {
+    assert.plan(3)
 
-  tape.test('error', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {},
         ctx: ctx
       }).getLocals().error,
       undefined,
-      'default error should be undefined');
+      'default error should be undefined')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {error: 'myerror', hasError: true},
         ctx: ctx
       }).getLocals().error,
       'myerror',
-      'should handle error option');
+      'should handle error option')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {
-            error: function (value) {
-              return 'error: ' + value;
-            }, hasError: true
+          error: (value) => 'error: ' + value,
+          hasError: true
         },
         ctx: ctx,
         value: 'a'
       }).getLocals().error,
       'error: a',
-      'should handle error option as a function');
-  });
+      'should handle error option as a function')
+  })
 
-  tape.test('template', function (tape) {
-    tape.plan(2);
+  test('template', (assert) => {
+    assert.plan(2)
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {},
         ctx: ctx
       }).getTemplate(),
       bootstrap.radio,
-      'default template should be bootstrap.eadio');
+      'default template should be bootstrap.eadio')
 
-    var template = function () {};
+    const template = () => {}
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Radio({
         type: Country,
         options: {template: template},
         ctx: ctx
       }).getTemplate(),
       template,
-      'should handle template option');
+      'should handle template option')
+  })
 
-  });
+  test('options', (assert) => {
+    assert.plan(1)
 
-  tape.test('options', function (tape) {
-    tape.plan(1);
-
-    tape.deepEqual(
+    assert.deepEqual(
       new Radio({
         type: Country,
         options: {
@@ -226,14 +218,13 @@ tape('Radio', function (tape) {
         { text: 'Italia', value: 'IT' },
         { text: 'Stati Uniti', value: 'US' }
       ],
-      'should handle options option');
+      'should handle options option')
+  })
 
-  });
+  test('order', (assert) => {
+    assert.plan(2)
 
-  tape.test('order', function (tape) {
-    tape.plan(2);
-
-    tape.deepEqual(
+    assert.deepEqual(
       new Radio({
         type: Country,
         options: {order: 'asc'},
@@ -244,9 +235,9 @@ tape('Radio', function (tape) {
         { text: 'Italy', value: 'IT' },
         { text: 'United States', value: 'US' }
       ],
-      'should handle order = asc option');
+      'should handle order = asc option')
 
-    tape.deepEqual(
+    assert.deepEqual(
       new Radio({
         type: Country,
         options: {order: 'desc'},
@@ -257,41 +248,39 @@ tape('Radio', function (tape) {
         { text: 'Italy', value: 'IT' },
         { text: 'France', value: 'FR' }
       ],
-      'should handle order = desc option');
-
-  });
+      'should handle order = desc option')
+  })
 
   if (typeof window !== 'undefined') {
+    test('validate', (assert) => {
+      assert.plan(8)
 
-    tape.test('validate', function (tape) {
-      tape.plan(8);
-
-      var result;
+      let result
 
       // required type, default value
       result = renderComponent({
         type: Country
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), false);
-      tape.strictEqual(result.value, null);
+      assert.strictEqual(result.isValid(), false)
+      assert.strictEqual(result.value, null)
 
       // required type, setting a value
       result = renderComponent({
         type: Country,
         value: 'IT'
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, 'IT');
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, 'IT')
 
       // optional type
       result = renderComponent({
         type: t.maybe(Country)
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, null);
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, null)
 
       result = renderComponent({
         type: t.maybe(t.Bool),
@@ -303,14 +292,11 @@ tape('Radio', function (tape) {
           ]
         },
         value: true
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, true);
-
-    });
-
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, true)
+    })
   }
-
-});
+})
 

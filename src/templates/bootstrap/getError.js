@@ -1,9 +1,10 @@
-import bootstrap from 'uvdom-bootstrap';
+import bootstrap from 'uvdom-bootstrap'
 
 export default function getError({hasError, error}) {
-  if (!hasError || !error) { return; }
-  return bootstrap.getErrorBlock({
-    error,
-    hasError
-  });
+  if (hasError && error) {
+    return bootstrap.getErrorBlock({
+      error,
+      hasError
+    })
+  }
 }

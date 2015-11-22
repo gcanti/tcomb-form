@@ -1,46 +1,45 @@
-import { compile } from 'uvdom/react';
-import bootstrap from 'uvdom-bootstrap';
+import { compile } from 'uvdom/react'
+import bootstrap from 'uvdom-bootstrap'
 
 function create(overrides = {}) {
-
   function list(locals) {
-    let children = [];
+    let children = []
 
     if (locals.help) {
-      children.push(list.renderHelp(locals));
+      children.push(list.renderHelp(locals))
     }
 
     if (locals.error && locals.hasError) {
-      children.push(list.renderError(locals));
+      children.push(list.renderError(locals))
     }
 
     children = children.concat(locals.items.map((item) => {
       return item.buttons.length === 0 ?
         list.renderRowWithoutButtons(item, locals) :
-        list.renderRow(item, locals);
-    }));
+        list.renderRow(item, locals)
+    }))
 
     if (locals.add) {
-      children.push(list.renderAddButton(locals));
+      children.push(list.renderAddButton(locals))
     }
 
-    return list.renderFieldset(children, locals);
+    return list.renderFieldset(children, locals)
   }
 
   list.renderHelp = overrides.renderHelp || function renderHelp(locals) {
     return bootstrap.getAlert({
       children: locals.help
-    });
-  };
+    })
+  }
 
   list.renderError = overrides.renderError || function renderError(locals) {
     return bootstrap.getAlert({
       type: 'danger',
       children: locals.error
-    });
-  };
+    })
+  }
 
-  list.renderRowWithoutButtons = overrides.renderRowWithoutButtons || function renderRowWithoutButtons(item/*, locals*/) {
+  list.renderRowWithoutButtons = overrides.renderRowWithoutButtons || function renderRowWithoutButtons(item /* , locals*/) {
     return bootstrap.getRow({
       key: item.key,
       children: [
@@ -49,8 +48,8 @@ function create(overrides = {}) {
           children: item.input
         })
       ]
-    });
-  };
+    })
+  }
 
   list.renderRowButton = overrides.renderRowButton || function renderRowButton(button) {
     return bootstrap.getButton({
@@ -58,12 +57,12 @@ function create(overrides = {}) {
       key: button.type,
       label: button.label,
       className: 'btn-' + button.type
-    });
-  };
+    })
+  }
 
-  list.renderButtonGroup = overrides.renderButtonGroup || function renderButtonGroup(buttons/*, locals*/) {
-    return bootstrap.getButtonGroup(buttons.map(list.renderRowButton));
-  };
+  list.renderButtonGroup = overrides.renderButtonGroup || function renderButtonGroup(buttons /* , locals*/) {
+    return bootstrap.getButtonGroup(buttons.map(list.renderRowButton))
+  }
 
   list.renderRow = overrides.renderRow || function renderRow(row, locals) {
     return bootstrap.getRow({
@@ -78,11 +77,11 @@ function create(overrides = {}) {
           children: list.renderButtonGroup(row.buttons, locals)
         })
       ]
-    });
-  };
+    })
+  }
 
   list.renderAddButton = overrides.renderAddButton || function renderAddButton(locals) {
-    const button = locals.add;
+    const button = locals.add
     return {
       tag: 'div',
       attrs: { className: 'row' },
@@ -99,30 +98,30 @@ function create(overrides = {}) {
           })
         }
       }
-    };
-  };
+    }
+  }
 
   list.renderFieldset = overrides.renderFieldset || function renderFieldset(children, locals) {
-    const className = {};
+    const className = {}
     if (locals.className) {
-      className[locals.className] = true;
+      className[locals.className] = true
     }
     return bootstrap.getFieldset({
       className,
       disabled: locals.disabled,
       legend: locals.label,
       children
-    });
-  };
+    })
+  }
 
   list.clone = function clone(newOverrides = {}) {
-    return create({...overrides, ...newOverrides});
-  };
+    return create({...overrides, ...newOverrides})
+  }
 
-  list.toReactElement = compile;
+  list.toReactElement = compile
 
-  return list;
+  return list
 }
 
-export default create();
+export default create()
 

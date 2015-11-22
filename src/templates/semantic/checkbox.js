@@ -1,49 +1,48 @@
-import t from 'tcomb-validation';
-import { compile } from 'uvdom/react';
-import getLabel from './getLabel';
-import getError from './getError';
-import getHelp from './getHelp';
+import t from 'tcomb-validation'
+import { compile } from 'uvdom/react'
+import getLabel from './getLabel'
+import getError from './getError'
+import getHelp from './getHelp'
 
 function create(overrides = {}) {
-
   function checkbox(locals) {
-    locals.attrs = checkbox.getAttrs(locals);
-    return checkbox.renderHorizontal(locals);
+    locals.attrs = checkbox.getAttrs(locals)
+    return checkbox.renderHorizontal(locals)
   }
 
   checkbox.getAttrs = overrides.getAttrs || function getAttrs(locals) {
-    const attrs = t.mixin({}, locals.attrs);
-    attrs.type = 'checkbox';
-    attrs.disabled = locals.disabled;
-    attrs.checked = locals.value;
-    attrs.onChange = evt => locals.onChange(evt.target.checked);
+    const attrs = t.mixin({}, locals.attrs)
+    attrs.type = 'checkbox'
+    attrs.disabled = locals.disabled
+    attrs.checked = locals.value
+    attrs.onChange = evt => locals.onChange(evt.target.checked)
     if (locals.help) {
-      attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip');
+      attrs['aria-describedby'] = attrs['aria-describedby'] || (attrs.id + '-tip')
     }
-    return attrs;
-  };
+    return attrs
+  }
 
   checkbox.renderCheckbox = overrides.renderCheckbox || function renderCheckbox(locals) {
     return {
       tag: 'input',
       attrs: locals.attrs
-    };
-  };
+    }
+  }
 
   checkbox.renderLabel = overrides.renderLabel || function renderLabel(locals) {
     return getLabel({
       label: locals.label,
       htmlFor: locals.attrs.id
-    });
-  };
+    })
+  }
 
   checkbox.renderError = overrides.renderError || function renderError(locals) {
-    return getError(locals);
-  };
+    return getError(locals)
+  }
 
   checkbox.renderHelp = overrides.renderHelp || function renderHelp(locals) {
-    return getHelp(locals);
-  };
+    return getHelp(locals)
+  }
 
   checkbox.renderHorizontal = overrides.renderHorizontal || function renderHorizontal(locals) {
     return {
@@ -72,16 +71,16 @@ function create(overrides = {}) {
           checkbox.renderHelp(locals)
         ]
       }
-    };
-  };
+    }
+  }
 
   checkbox.clone = function clone(newOverrides = {}) {
-    return create({...overrides, ...newOverrides});
-  };
+    return create({...overrides, ...newOverrides})
+  }
 
-  checkbox.toReactElement = compile;
+  checkbox.toReactElement = compile
 
-  return checkbox;
+  return checkbox
 }
 
-export default create();
+export default create()

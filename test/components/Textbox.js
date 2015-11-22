@@ -1,45 +1,34 @@
-'use strict';
+import tape from 'tape'
+import t from 'tcomb-validation'
+import bootstrap from '../../src/templates/bootstrap'
+import React from 'react'
+import { Textbox } from '../../src/components'
+import { ctx, ctxPlaceholders, ctxNone, getRenderComponent } from './util'
+const renderComponent = getRenderComponent(Textbox)
 
-var tape = require('tape');
-var t = require('tcomb-validation');
-var bootstrap = require('../../src/templates/bootstrap');
-var Textbox = require('../../src/components').Textbox;
-var React = require('react');
-var util = require('./util');
-var ctx = util.ctx;
-var ctxPlaceholders = util.ctxPlaceholders;
-var ctxNone = util.ctxNone;
-var renderComponent = util.getRenderComponent(Textbox);
+const transformer = {
+  format: (value) => Array.isArray(value) ? value : value.split(' '),
+  parse: (value) => value.join(' ')
+}
 
-var transformer = {
-  format: function (value) {
-    return Array.isArray(value) ? value : value.split(' ');
-  },
-  parse: function (value) {
-    return value.join(' ');
-  }
-};
+tape('Textbox', ({ test }) => {
+  test('path', (assert) => {
+    assert.plan(1)
 
-tape('Textbox', function (tape) {
-
-  tape.test('path', function (tape) {
-    tape.plan(1);
-
-    tape.deepEqual(
+    assert.deepEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getLocals().path,
       [ 'defaultPath' ],
-      'should handle the path');
+      'should handle the path')
+  })
 
-  });
+  test('attrs', (assert) => {
+    assert.plan(1)
 
-  tape.test('attrs', function (tape) {
-    tape.plan(1);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Num,
         options: {
@@ -51,16 +40,15 @@ tape('Textbox', function (tape) {
         ctx: ctx
       }).getLocals().attrs.min,
       0,
-      'should handle attrs option');
+      'should handle attrs option')
+  })
 
-  });
-
-  tape.test('attrs.events', function (tape) {
-    tape.plan(1);
+  test('attrs.events', (assert) => {
+    assert.plan(1)
 
     function onBlur() {}
 
-    tape.deepEqual(
+    assert.deepEqual(
       new Textbox({
         type: t.Str,
         options: {
@@ -77,14 +65,13 @@ tape('Textbox', function (tape) {
         onBlur: onBlur,
         placeholder: undefined
       },
-      'should handle events');
+      'should handle events')
+  })
 
-  });
+  test('attrs.className', (assert) => {
+    assert.plan(3)
 
-  tape.test('attrs.className', function (tape) {
-    tape.plan(3);
-
-    tape.deepEqual(
+    assert.deepEqual(
       new Textbox({
         type: t.Str,
         options: {
@@ -103,9 +90,9 @@ tape('Textbox', function (tape) {
         },
         placeholder: undefined
       },
-      'should handle classNames as strings');
+      'should handle classNames as strings')
 
-    tape.deepEqual(
+    assert.deepEqual(
       new Textbox({
         type: t.Str,
         options: {
@@ -124,9 +111,9 @@ tape('Textbox', function (tape) {
         },
         placeholder: undefined
       },
-      'should handle classNames as arrays');
+      'should handle classNames as arrays')
 
-    tape.deepEqual(
+    assert.deepEqual(
       new Textbox({
         type: t.Str,
         options: {
@@ -148,186 +135,182 @@ tape('Textbox', function (tape) {
         },
         placeholder: undefined
       },
-      'should handle classNames as object');
+      'should handle classNames as object')
+  })
 
-  });
+  test('label', (assert) => {
+    assert.plan(6)
 
-  tape.test('label', function (tape) {
-    tape.plan(6);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getLocals().label,
       'Default label',
-      'should have a default label');
+      'should have a default label')
 
-    ctx.i18n.required = ' (required)';
-    tape.strictEqual(
+    ctx.i18n.required = ' (required)'
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getLocals().label,
       'Default label (required)',
-      'should have a default label');
-    ctx.i18n.required = '';
+      'should have a default label')
+    ctx.i18n.required = ''
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {label: 'mylabel'},
         ctx: ctx
       }).getLocals().label,
       'mylabel',
-      'should handle label option as string');
+      'should handle label option as string')
 
-    var actual = new Textbox({
+    const actual = new Textbox({
       type: t.Str,
       options: {label: React.DOM.i(null, 'JSX label')},
       ctx: ctx
-    }).getLocals().label;
-    tape.equal(actual.type, 'i');
-    tape.equal(actual.props.children, 'JSX label');
+    }).getLocals().label
+    assert.equal(actual.type, 'i')
+    assert.equal(actual.props.children, 'JSX label')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.maybe(t.Str),
         options: {},
         ctx: ctx
       }).getLocals().label,
       'Default label (optional)',
-      'should handle optional types');
+      'should handle optional types')
+  })
 
-  });
+  test('attrs.placeholder', (assert) => {
+    assert.plan(6)
 
-  tape.test('attrs.placeholder', function (tape) {
-    tape.plan(6);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getLocals().attrs.placeholder,
       undefined,
-      'default placeholder should be undefined');
+      'default placeholder should be undefined')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {attrs: {placeholder: 'myplaceholder'}},
         ctx: ctx
       }).getLocals().attrs.placeholder,
       'myplaceholder',
-      'should handle placeholder option');
+      'should handle placeholder option')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {label: 'mylabel', attrs: {placeholder: 'myplaceholder'}},
         ctx: ctx
       }).getLocals().attrs.placeholder,
       'myplaceholder',
-      'should handle placeholder option even if a label is specified');
+      'should handle placeholder option even if a label is specified')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctxPlaceholders
       }).getLocals().attrs.placeholder,
       'Default label',
-      'should have a default placeholder if auto = placeholders');
+      'should have a default placeholder if auto = placeholders')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.maybe(t.Str),
         options: {},
         ctx: ctxPlaceholders
       }).getLocals().attrs.placeholder,
       'Default label (optional)',
-      'should handle optional types if auto = placeholders');
+      'should handle optional types if auto = placeholders')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {attrs: {placeholder: 'myplaceholder'}},
         ctx: ctxNone
       }).getLocals().attrs.placeholder,
       'myplaceholder',
-      'should handle placeholder option even if auto === none');
+      'should handle placeholder option even if auto === none')
+  })
 
-  });
+  test('disabled', (assert) => {
+    assert.plan(3)
 
-  tape.test('disabled', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getLocals().disabled,
       undefined,
-      'default disabled should be undefined');
+      'default disabled should be undefined')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {disabled: true},
         ctx: ctx
       }).getLocals().disabled,
       true,
-      'should handle disabled = true');
+      'should handle disabled = true')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {disabled: false},
         ctx: ctx
       }).getLocals().disabled,
       false,
-      'should handle disabled = false');
-  });
+      'should handle disabled = false')
+  })
 
-  tape.test('help', function (tape) {
-    tape.plan(3);
+  test('help', (assert) => {
+    assert.plan(3)
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {help: 'myhelp'},
         ctx: ctx
       }).getLocals().help,
       'myhelp',
-      'should handle help option as string');
+      'should handle help option as string')
 
-    var actual = new Textbox({
+    const actual = new Textbox({
       type: t.Str,
       options: {help: React.DOM.i(null, 'JSX help')},
       ctx: ctx
-    }).getLocals().help;
-    tape.equal(actual.type, 'i');
-    tape.equal(actual.props.children, 'JSX help');
+    }).getLocals().help
+    assert.equal(actual.type, 'i')
+    assert.equal(actual.props.children, 'JSX help')
+  })
 
-  });
+  test('value', (assert) => {
+    assert.plan(3)
 
-  tape.test('value', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getLocals().value,
       null,
-      'default value should be null');
+      'default value should be null')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
@@ -335,9 +318,9 @@ tape('Textbox', function (tape) {
         value: 'a'
       }).getLocals().value,
       'a',
-      'should handle value option');
+      'should handle value option')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Num,
         options: {},
@@ -345,14 +328,13 @@ tape('Textbox', function (tape) {
         value: 1.1
       }).getLocals().value,
       '1.1',
-      'should handle numeric values');
+      'should handle numeric values')
+  })
 
-  });
+  test('transformer', (assert) => {
+    assert.plan(1)
 
-  tape.test('transformer', function (tape) {
-    tape.plan(1);
-
-    tape.deepEqual(
+    assert.deepEqual(
       new Textbox({
         type: t.Str,
         options: {transformer: transformer},
@@ -360,199 +342,185 @@ tape('Textbox', function (tape) {
         value: 'a b'
       }).getLocals().value,
       ['a', 'b'],
-      'should handle transformer option (format)');
+      'should handle transformer option (format)')
+  })
 
-  });
+  test('hasError', (assert) => {
+    assert.plan(2)
 
-  tape.test('hasError', function (tape) {
-    tape.plan(2);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getLocals().hasError,
       false,
-      'default hasError should be false');
+      'default hasError should be false')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {hasError: true},
         ctx: ctx
       }).getLocals().hasError,
       true,
-      'should handle hasError option');
+      'should handle hasError option')
+  })
 
-    var textbox = new Textbox({
-      type: t.Str,
-      options: {},
-      ctx: ctx
-    });
+  test('error', (assert) => {
+    assert.plan(3)
 
-  });
-
-  tape.test('error', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getLocals().error,
       undefined,
-      'default error should be undefined');
+      'default error should be undefined')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {error: 'myerror', hasError: true},
         ctx: ctx
       }).getLocals().error,
       'myerror',
-      'should handle error option');
+      'should handle error option')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {
-          error: function (value) {
-            return 'error: ' + value;
-          }, hasError: true
+          error: (value) => 'error: ' + value,
+          hasError: true
         },
         ctx: ctx,
         value: 'a'
       }).getLocals().error,
       'error: a',
-      'should handle error option as a function');
-  });
+      'should handle error option as a function')
+  })
 
-  tape.test('template', function (tape) {
-    tape.plan(2);
+  test('template', (assert) => {
+    assert.plan(2)
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {},
         ctx: ctx
       }).getTemplate(),
       bootstrap.textbox,
-      'default template should be bootstrap.textbox');
+      'default template should be bootstrap.textbox')
 
-    var template = function () {};
+    const template = () => {}
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Textbox({
         type: t.Str,
         options: {template: template},
         ctx: ctx
       }).getTemplate(),
       template,
-      'should handle template option');
-
-  });
+      'should handle template option')
+  })
 
   if (typeof window !== 'undefined') {
+    test('validate', (assert) => {
+      assert.plan(20)
 
-    tape.test('validate', function (tape) {
-      tape.plan(20);
-
-      var result;
+      let result
 
       // required type, default value
       result = renderComponent({
         type: t.Str
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), false);
-      tape.strictEqual(result.value, null);
+      assert.strictEqual(result.isValid(), false)
+      assert.strictEqual(result.value, null)
 
       // required type, setting a value
       result = renderComponent({
         type: t.Str,
         value: 'a'
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, 'a');
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, 'a')
 
       // string type with numeric value
       result = renderComponent({
         type: t.Str,
         value: '123'
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, '123');
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, '123')
 
       // optional type
       result = renderComponent({
         type: t.maybe(t.Str)
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, null);
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, null)
 
       // numeric type
       result = renderComponent({
         type: t.Num,
         value: 1
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, 1);
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, 1)
 
       // optional numeric type
       result = renderComponent({
         type: t.maybe(t.Num),
         value: ''
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, null);
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, null)
 
       // numeric type with stringy value
       result = renderComponent({
         type: t.Num,
         value: '1.01'
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, 1.01);
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, 1.01)
 
       // subtype, setting a valid value
       result = renderComponent({
-        type: t.subtype(t.Num, function (n) { return n >= 0; }),
+        type: t.subtype(t.Num, (n) => n >= 0),
         value: 1
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, 1);
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, 1)
 
       // subtype, setting an invalid value
       result = renderComponent({
-        type: t.subtype(t.Num, function (n) { return n >= 0; }),
+        type: t.subtype(t.Num, (n) => n >= 0),
         value: -1
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), false);
-      tape.strictEqual(result.value, -1);
+      assert.strictEqual(result.isValid(), false)
+      assert.strictEqual(result.value, -1)
 
       // should handle transformer option (parse)
       result = renderComponent({
         type: t.Str,
         options: {transformer: transformer},
         value: ['a', 'b']
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, 'a b');
-
-    });
-
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, 'a b')
+    })
   }
-
-});
+})
 

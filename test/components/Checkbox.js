@@ -1,101 +1,97 @@
-'use strict';
+import tape from 'tape'
+import t from 'tcomb-validation'
+import bootstrap from '../../src/templates/bootstrap'
+import React from 'react'
+import { Checkbox } from '../../src/components'
+import { ctx, ctxPlaceholders, getRenderComponent } from './util'
+const renderComponent = getRenderComponent(Checkbox)
 
-var tape = require('tape');
-var t = require('tcomb-validation');
-var bootstrap = require('../../src/templates/bootstrap');
-var Checkbox = require('../../src/components').Checkbox;
-var React = require('react');
-var util = require('./util');
-var ctx = util.ctx;
-var ctxPlaceholders = util.ctxPlaceholders;
-var renderComponent = util.getRenderComponent(Checkbox);
-
-var transformer = {
-  format: function (value) {
-    return t.Str.is(value) ? value : value === true ? '1' : '0';
+const transformer = {
+  format: (value) => {
+    if (t.String.is(value)) {
+      return value
+    } else if (value === true) {
+      return '1'
+    }
+    return '0'
   },
-  parse: function (value) {
-    return value === '1';
-  }
-};
+  parse: (value) => value === '1'
+}
 
-tape('Checkbox', function (tape) {
+tape('Checkbox', ({ test }) => {
+  test('label', (assert) => {
+    assert.plan(5)
 
-  tape.test('label', function (tape) {
-    tape.plan(5);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {},
         ctx: ctx
       }).getLocals().label,
       'Default label',
-      'should have a default label');
+      'should have a default label')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {},
         ctx: ctxPlaceholders
       }).getLocals().label,
       'Default label',
-      'should have a default label even if auto !== labels');
+      'should have a default label even if auto !== labels')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {label: 'mylabel'},
         ctx: ctx
       }).getLocals().label,
       'mylabel',
-      'should handle label option as string');
+      'should handle label option as string')
 
-    var actual = new Checkbox({
+    const actual = new Checkbox({
       type: t.Bool,
       options: {label: React.DOM.i(null, 'JSX label')},
       ctx: ctx
-    }).getLocals().label;
-    tape.equal(actual.type, 'i');
-    tape.equal(actual.props.children, 'JSX label');
+    }).getLocals().label
+    assert.equal(actual.type, 'i')
+    assert.equal(actual.props.children, 'JSX label')
+  })
 
-  });
+  test('help', (assert) => {
+    assert.plan(3)
 
-  tape.test('help', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {help: 'myhelp'},
         ctx: ctx
       }).getLocals().help,
       'myhelp',
-      'should handle help option as string');
+      'should handle help option as string')
 
-    var actual = new Checkbox({
+    const actual = new Checkbox({
       type: t.Bool,
       options: {help: React.DOM.i(null, 'JSX help')},
       ctx: ctx
-    }).getLocals().help;
-    tape.equal(actual.type, 'i');
-    tape.equal(actual.props.children, 'JSX help');
+    }).getLocals().help
+    assert.equal(actual.type, 'i')
+    assert.equal(actual.props.children, 'JSX help')
+  })
 
-  });
+  test('value', (assert) => {
+    assert.plan(3)
 
-  tape.test('value', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {},
         ctx: ctx
       }).getLocals().value,
       false,
-      'default value should be false');
+      'default value should be false')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {},
@@ -103,9 +99,9 @@ tape('Checkbox', function (tape) {
         value: false
       }).getLocals().value,
       false,
-      'should handle value option');
+      'should handle value option')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {},
@@ -113,14 +109,13 @@ tape('Checkbox', function (tape) {
         value: true
       }).getLocals().value,
       true,
-      'should handle value option');
+      'should handle value option')
+  })
 
-  });
+  test('transformer', (assert) => {
+    assert.plan(1)
 
-  tape.test('transformer', function (tape) {
-    tape.plan(1);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {transformer: transformer},
@@ -128,129 +123,125 @@ tape('Checkbox', function (tape) {
         value: true
       }).getLocals().value,
       '1',
-      'should handle transformer option (format)');
+      'should handle transformer option (format)')
+  })
 
-  });
+  test('hasError', (assert) => {
+    assert.plan(2)
 
-  tape.test('hasError', function (tape) {
-    tape.plan(2);
+    const True = t.subtype(t.Bool, (value) => value === true)
 
-    var True = t.subtype(t.Bool, function (value) { return value === true; });
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: True,
         options: {},
         ctx: ctx
       }).getLocals().hasError,
       false,
-      'default hasError should be false');
+      'default hasError should be false')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: True,
         options: {hasError: true},
         ctx: ctx
       }).getLocals().hasError,
       true,
-      'should handle hasError option');
+      'should handle hasError option')
+  })
 
-  });
+  test('error', (assert) => {
+    assert.plan(3)
 
-  tape.test('error', function (tape) {
-    tape.plan(3);
-
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {},
         ctx: ctx
       }).getLocals().error,
       undefined,
-      'default error should be undefined');
+      'default error should be undefined')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {error: 'myerror', hasError: true},
         ctx: ctx
       }).getLocals().error,
       'myerror',
-      'should handle error option');
+      'should handle error option')
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
-        options: {error: function (value) { return 'error: ' + value; }, hasError: true},
+        options: {
+          error: (value) => 'error: ' + value,
+          hasError: true
+        },
         ctx: ctx,
         value: 'a'
       }).getLocals().error,
       'error: a',
-      'should handle error option as a function');
-  });
+      'should handle error option as a function')
+  })
 
-  tape.test('template', function (tape) {
-    tape.plan(2);
+  test('template', (assert) => {
+    assert.plan(2)
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {},
         ctx: ctx
       }).getTemplate(),
       bootstrap.checkbox,
-      'default template should be bootstrap.checkbox');
+      'default template should be bootstrap.checkbox')
 
-    var template = function () {};
+    const template = () => {}
 
-    tape.strictEqual(
+    assert.strictEqual(
       new Checkbox({
         type: t.Bool,
         options: {template: template},
         ctx: ctx
       }).getTemplate(),
       template,
-      'should handle template option');
-
-  });
+      'should handle template option')
+  })
 
   if (typeof window !== 'undefined') {
+    test('validate', (assert) => {
+      assert.plan(6)
 
-    tape.test('validate', function (tape) {
-      tape.plan(6);
-
-      var result;
+      let result
 
       // required type, default value
       result = renderComponent({
         type: t.Bool
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, false);
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, false)
 
       // required type, setting a value
       result = renderComponent({
         type: t.Bool,
         value: true
-      }).validate();
+      }).validate()
 
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, true);
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, true)
 
       result = renderComponent({
         type: t.Bool,
         options: {transformer: transformer},
         value: true
-      }).validate();
+      }).validate()
 
       // 'should handle transformer option (parse)'
-      tape.strictEqual(result.isValid(), true);
-      tape.strictEqual(result.value, true);
-
-    });
-
+      assert.strictEqual(result.isValid(), true)
+      assert.strictEqual(result.value, true)
+    })
   }
-
-});
+})
 

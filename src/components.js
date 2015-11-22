@@ -1,8 +1,6 @@
-'use strict';
-
-import React from 'react';
-import t from 'tcomb-validation';
-import { compile } from 'uvdom/react';
+import React from 'react'
+import t from 'tcomb-validation'
+import { compile } from 'uvdom/react'
 import {
   humanize,
   merge,
@@ -10,58 +8,60 @@ import {
   getOptionsOfEnum,
   move,
   UIDGenerator
-} from './util';
-import classnames from 'classnames';
+} from './util'
+import classnames from 'classnames'
 
-const Nil = t.Nil;
-const assert = t.assert;
-const SOURCE = 'tcomb-form';
-const noobj = Object.freeze({});
-const noarr = Object.freeze([]);
-const noop = () => {};
+const Nil = t.Nil
+const assert = t.assert
+const SOURCE = 'tcomb-form'
+const noobj = Object.freeze({})
+const noarr = Object.freeze([])
+const noop = () => {}
 
 export function getComponent(type, options) {
   if (options.factory) {
-    return options.factory;
+    return options.factory
   }
   if (type.getTcombFormFactory) {
-    return type.getTcombFormFactory(options);
+    return type.getTcombFormFactory(options)
   }
-  const name = t.getTypeName(type);
+  const name = t.getTypeName(type)
   switch (type.meta.kind) {
-    case 'irreducible' :
-      return (
-        type === t.Boolean ? Checkbox :
-        type === t.Date ? Datetime :
-        Textbox
-      );
-    case 'struct' :
-      return Struct;
-    case 'list' :
-      return List;
-    case 'enums' :
-      return Select;
-    case 'maybe' :
-    case 'subtype' :
-      return getComponent(type.meta.type, options);
-    default :
-      t.fail(`[${SOURCE}] unsupported type ${name}`);
+  case 'irreducible' :
+    if (type === t.Boolean) {
+      return Checkbox // eslint-disable-line no-use-before-define
+    } else if (type === t.Date) {
+      return Datetime // eslint-disable-line no-use-before-define
+    }
+    return Textbox // eslint-disable-line no-use-before-define
+  case 'struct' :
+    return Struct // eslint-disable-line no-use-before-define
+  case 'list' :
+    return List // eslint-disable-line no-use-before-define
+  case 'enums' :
+    return Select // eslint-disable-line no-use-before-define
+  case 'maybe' :
+  case 'subtype' :
+    return getComponent(type.meta.type, options)
+  default :
+    t.fail(`[${SOURCE}] unsupported type ${name}`)
   }
 }
 
 function sortByText(a, b) {
-  return (
-    a.text < b.text ? -1 :
-    a.text > b.text ? 1 :
-                      0
-  );
+  if (a.text < b.text) {
+    return -1
+  } else if (a.text > b.text) {
+    return 1
+  }
+  return 0
 }
 
 function getComparator(order) {
   return {
     asc: sortByText,
     desc: (a, b) => -sortByText(a, b)
-  }[order];
+  }[order]
 }
 
 export const decorators = {
@@ -69,51 +69,51 @@ export const decorators = {
   template(name) {
     return (Component) => {
       Component.prototype.getTemplate = function getTemplate() {
-        return this.props.options.template || this.props.ctx.templates[name];
-      };
-    };
+        return this.props.options.template || this.props.ctx.templates[name]
+      }
+    }
   },
 
   attrs(Component) {
     Component.prototype.getAttrs = function getAttrs() {
-      const attrs = t.mixin({}, this.props.options.attrs);
-      attrs.id = this.getId();
-      attrs.name = this.getName();
+      const attrs = t.mixin({}, this.props.options.attrs)
+      attrs.id = this.getId()
+      attrs.name = this.getName()
       if (attrs.className) {
         attrs.className = {
           [classnames(attrs.className)]: true
-        };
+        }
       }
-      return attrs;
-    };
+      return attrs
+    }
   },
 
   templates(Component) {
     Component.prototype.getTemplates = function getTemplates() {
-      return merge(this.props.ctx.templates, this.props.options.templates);
-    };
+      return merge(this.props.ctx.templates, this.props.options.templates)
+    }
   }
 
-};
+}
 
 export class Component extends React.Component {
 
   static transformer = {
     format: value => Nil.is(value) ? null : value,
     parse: value => value
-  };
+  }
 
   constructor(props) {
-    super(props);
-    this.typeInfo = getTypeInfo(props.type);
+    super(props)
+    this.typeInfo = getTypeInfo(props.type)
     this.state = {
       hasError: false,
       value: this.getTransformer().format(props.value)
-    };
+    }
   }
 
   getTransformer() {
-    return this.props.options.transformer || this.constructor.transformer;
+    return this.props.options.transformer || this.constructor.transformer
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -122,116 +122,116 @@ export class Component extends React.Component {
       nextState.hasError !== this.state.hasError ||
       nextProps.options !== this.props.options ||
       nextProps.type !== this.props.type
-    );
+    )
     // console.log(nextState.value !== this.state.value,
     //   nextState.hasError !== this.state.hasError,
     //   nextProps.options !== this.props.options,
     //   nextProps.type !== this.props.type,
-    //   should);
-    return should;
+    //   should)
+    return should
   }
 
   componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = getTypeInfo(props.type);
+      this.typeInfo = getTypeInfo(props.type)
     }
-    this.setState({value: this.getTransformer().format(props.value)});
+    const value = this.getTransformer().format(props.value)
+    this.setState({ value })
   }
 
   onChange(value) {
-    this.setState({value}, () => {
-      this.props.onChange(value, this.props.ctx.path);
-    });
+    this.setState({ value }, () => {
+      this.props.onChange(value, this.props.ctx.path)
+    })
   }
 
   getValidationOptions() {
+    const context = this.props.context || this.props.ctx.context
     return {
       path: this.props.ctx.path,
-      context: t.mixin(t.mixin({}, this.props.context || this.props.ctx.context), { options: this.props.options })
-    };
+      context: t.mixin(t.mixin({}, context), { options: this.props.options })
+    }
   }
 
   getValue() {
-    return this.getTransformer().parse(this.state.value);
+    return this.getTransformer().parse(this.state.value)
   }
 
   isValueNully() {
-    return Nil.is(this.getValue());
+    return Nil.is(this.getValue())
   }
 
   removeErrors() {
-    this.setState({hasError: false});
+    this.setState({ hasError: false })
   }
 
   validate() {
-    const result = t.validate(this.getValue(), this.props.type, this.getValidationOptions());
-    this.setState({hasError: !result.isValid()});
-    return result;
+    const result = t.validate(this.getValue(), this.props.type, this.getValidationOptions())
+    this.setState({ hasError: !result.isValid() })
+    return result
   }
 
   getAuto() {
-    return this.props.options.auto || this.props.ctx.auto;
+    return this.props.options.auto || this.props.ctx.auto
   }
 
   getI18n() {
-    return this.props.options.i18n || this.props.ctx.i18n;
+    return this.props.options.i18n || this.props.ctx.i18n
   }
 
   getDefaultLabel() {
-    const ctx = this.props.ctx;
-    if (ctx.label) {
-      return ctx.label + (this.typeInfo.isMaybe ? this.getI18n().optional : this.getI18n().required);
+    const label = this.props.ctx.label
+    if (label) {
+      const suffix = this.typeInfo.isMaybe ? this.getI18n().optional : this.getI18n().required
+      return label + suffix
     }
   }
 
   getLabel() {
-    const ctx = this.props.ctx;
-    const legend = this.props.options.legend;
-    let label = this.props.options.label;
-    label = label || legend;
-    if (Nil.is(label) && ctx.auto === 'labels') {
-      label = this.getDefaultLabel();
+    let label = this.props.options.label || this.props.options.legend
+    if (Nil.is(label) && this.getAuto() === 'labels') {
+      label = this.getDefaultLabel()
     }
-    return label;
+    return label
   }
 
   getError() {
     if (this.hasError()) {
-      const error = this.props.options.error || this.typeInfo.getValidationErrorMessage;
+      const error = this.props.options.error || this.typeInfo.getValidationErrorMessage
       if (t.Function.is(error)) {
-        const validationOptions = this.getValidationOptions();
-        return error(this.getValue(), validationOptions.path, validationOptions.context);
+        const { path, context } = this.getValidationOptions()
+        return error(this.getValue(), path, context)
       }
-      return error;
+      return error
     }
   }
 
   hasError() {
-    return this.props.options.hasError || this.state.hasError;
+    return this.props.options.hasError || this.state.hasError
   }
 
   getConfig() {
-    return merge(this.props.ctx.config, this.props.options.config);
+    return merge(this.props.ctx.config, this.props.options.config)
   }
 
   getId() {
-    const attrs = this.props.options.attrs || noobj;
+    const attrs = this.props.options.attrs || noobj
     if (attrs.id) {
-      return attrs.id;
+      return attrs.id
     }
     if (!this.uid) {
-      this.uid = this.props.ctx.uidGenerator.next();
+      this.uid = this.props.ctx.uidGenerator.next()
     }
-    return this.uid;
+    return this.uid
   }
 
   getName() {
-    return this.props.options.name || this.props.ctx.name || this.getId();
+    return this.props.options.name || this.props.ctx.name || this.getId()
   }
 
   getLocals() {
-    const options = this.props.options;
-    const value = this.state.value;
+    const options = this.props.options
+    const value = this.state.value
     return {
       typeInfo: this.typeInfo,
       path: this.props.ctx.path,
@@ -244,36 +244,36 @@ export class Component extends React.Component {
       disabled: options.disabled,
       help: options.help,
       context: this.props.ctx.context
-    };
+    }
   }
 
   render() {
-    const locals = this.getLocals();
+    const locals = this.getLocals()
     if (process.env.NODE_ENV !== 'production') {
       // getTemplate is the only required implementation when extending Component
-      assert(t.Function.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`);
+      assert(t.Function.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`)
     }
-    const template = this.getTemplate();
-    const vdom = template(locals);
+    const template = this.getTemplate()
+    const vdom = template(locals)
     if (process.env.NODE_ENV !== 'production') {
       if (!React.isValidElement(vdom) && !t.Function.is(template.toReactElement)) {
-        console.warn(`[${SOURCE}] missing toReactElement static function in template ${template.name}`); // eslint-disable-line
+        console.warn(`[${SOURCE}] missing toReactElement static function in template ${template.name}`) // eslint-disable-line
       }
     }
-    const toReactElement = template.toReactElement || compile;
-    return toReactElement(vdom);
+    const toReactElement = template.toReactElement || compile
+    return toReactElement(vdom)
   }
 
 }
 
 function toNull(value) {
-  return (t.String.is(value) && value.trim() === '') || Nil.is(value) ? null : value;
+  return (t.String.is(value) && value.trim() === '') || Nil.is(value) ? null : value
 }
 
 function parseNumber(value) {
-  var n = parseFloat(value);
-  var isNumeric = (value - n + 1) >= 0;
-  return isNumeric ? n : toNull(value);
+  const n = parseFloat(value)
+  const isNumeric = (value - n + 1) >= 0
+  return isNumeric ? n : toNull(value)
 }
 
 @decorators.attrs
@@ -283,35 +283,38 @@ export class Textbox extends Component {
   static transformer = {
     format: value => Nil.is(value) ? null : value,
     parse: toNull
-  };
+  }
 
   static numberTransformer = {
     format: value => Nil.is(value) ? null : String(value),
     parse: parseNumber
-  };
+  }
 
   getTransformer() {
-    const options = this.props.options;
-    return options.transformer ? options.transformer :
-      this.typeInfo.innerType === t.Number ? Textbox.numberTransformer :
-      Textbox.transformer;
+    const options = this.props.options
+    if (options.transformer) {
+      return options.transformer
+    } else if (this.typeInfo.innerType === t.Number) {
+      return Textbox.numberTransformer
+    }
+    return Textbox.transformer
   }
 
   getPlaceholder() {
-    const attrs = this.props.options.attrs || noobj;
-    let placeholder = attrs.placeholder;
+    const attrs = this.props.options.attrs || noobj
+    let placeholder = attrs.placeholder
     if (Nil.is(placeholder) && this.getAuto() === 'placeholders') {
-      placeholder = this.getDefaultLabel();
+      placeholder = this.getDefaultLabel()
     }
-    return placeholder;
+    return placeholder
   }
 
   getLocals() {
-    const locals = super.getLocals();
-    locals.attrs = this.getAttrs();
-    locals.attrs.placeholder = this.getPlaceholder();
-    locals.type = this.props.options.type || 'text';
-    return locals;
+    const locals = super.getLocals()
+    locals.attrs = this.getAttrs()
+    locals.attrs.placeholder = this.getPlaceholder()
+    locals.type = this.props.options.type || 'text'
+    return locals
   }
 
 }
@@ -323,14 +326,14 @@ export class Checkbox extends Component {
   static transformer = {
     format: value => Nil.is(value) ? false : value,
     parse: value => value
-  };
+  }
 
   getLocals() {
-    const locals = super.getLocals();
-    locals.attrs = this.getAttrs();
+    const locals = super.getLocals()
+    locals.attrs = this.getAttrs()
     // checkboxes must always have a label
-    locals.label = locals.label || this.getDefaultLabel();
-    return locals;
+    locals.label = locals.label || this.getDefaultLabel()
+    return locals
   }
 
 }
@@ -343,56 +346,56 @@ export class Select extends Component {
     return {
       format: value => Nil.is(value) && nullOption ? nullOption.value : value,
       parse: value => nullOption && nullOption.value === value ? null : value
-    };
-  };
+    }
+  }
 
   static multipleTransformer = {
     format: value => Nil.is(value) ? noarr : value,
     parse: value => value
-  };
+  }
 
   getTransformer() {
-    const options = this.props.options;
+    const options = this.props.options
     if (options.transformer) {
-      return options.transformer;
+      return options.transformer
     }
     if (this.isMultiple()) {
-      return Select.multipleTransformer;
+      return Select.multipleTransformer
     }
-    return Select.transformer(this.getNullOption());
+    return Select.transformer(this.getNullOption())
   }
 
   getNullOption() {
-    return this.props.options.nullOption || {value: '', text: '-'};
+    return this.props.options.nullOption || {value: '', text: '-'}
   }
 
   isMultiple() {
-    return this.typeInfo.innerType.meta.kind === 'list';
+    return this.typeInfo.innerType.meta.kind === 'list'
   }
 
   getEnum() {
-    return this.isMultiple() ? getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType;
+    return this.isMultiple() ? getTypeInfo(this.typeInfo.innerType.meta.type).innerType : this.typeInfo.innerType
   }
 
   getOptions() {
-    const options = this.props.options;
-    const items = options.options ? options.options.slice() : getOptionsOfEnum(this.getEnum());
+    const options = this.props.options
+    const items = options.options ? options.options.slice() : getOptionsOfEnum(this.getEnum())
     if (options.order) {
-      items.sort(getComparator(options.order));
+      items.sort(getComparator(options.order))
     }
-    const nullOption = this.getNullOption();
+    const nullOption = this.getNullOption()
     if (!this.isMultiple() && options.nullOption !== false) {
-      items.unshift(nullOption);
+      items.unshift(nullOption)
     }
-    return items;
+    return items
   }
 
   getLocals() {
-    const locals = super.getLocals();
-    locals.attrs = this.getAttrs();
-    locals.options = this.getOptions();
-    locals.isMultiple = this.isMultiple();
-    return locals;
+    const locals = super.getLocals()
+    locals.attrs = this.getAttrs()
+    locals.options = this.getOptions()
+    locals.isMultiple = this.isMultiple()
+    return locals
   }
 
 }
@@ -404,27 +407,27 @@ export class Radio extends Component {
   static transformer = {
     format: value => Nil.is(value) ? null : value,
     parse: value => value
-  };
+  }
 
   getOptions() {
-    const options = this.props.options;
-    const items = options.options ? options.options.slice() : getOptionsOfEnum(this.typeInfo.innerType);
+    const options = this.props.options
+    const items = options.options ? options.options.slice() : getOptionsOfEnum(this.typeInfo.innerType)
     if (options.order) {
-      items.sort(getComparator(options.order));
+      items.sort(getComparator(options.order))
     }
-    return items;
+    return items
   }
 
   getLocals() {
-    const locals = super.getLocals();
-    locals.attrs = this.getAttrs();
-    locals.options = this.getOptions();
-    return locals;
+    const locals = super.getLocals()
+    locals.attrs = this.getAttrs()
+    locals.options = this.getOptions()
+    return locals
   }
 
 }
 
-const defaultDatetimeValue = Object.freeze([null, null, null]);
+const defaultDatetimeValue = Object.freeze([null, null, null])
 
 @decorators.attrs
 @decorators.template('date')
@@ -432,27 +435,33 @@ export class Datetime extends Component {
 
   static transformer = {
     format: (value) => {
-      return t.Array.is(value) ? value :
-        t.Date.is(value) ? [value.getFullYear(), value.getMonth(), value.getDate()].map(String) :
-        defaultDatetimeValue;
+      if (t.Array.is(value)) {
+        return value
+      } else if (t.Date.is(value)) {
+        return [value.getFullYear(), value.getMonth(), value.getDate()].map(String)
+      }
+      return defaultDatetimeValue
     },
     parse: (value) => {
-      value = value.map(parseNumber);
-      return value.every(t.Number.is) ? new Date(value[0], value[1], value[2]) :
-        value.every(Nil.is) ? null :
-        value;
+      const numbers = value.map(parseNumber)
+      if (numbers.every(t.Number.is)) {
+        return new Date(numbers[0], numbers[1], numbers[2])
+      } else if (numbers.every(Nil.is)) {
+        return null
+      }
+      return numbers
     }
-  };
+  }
 
   getOrder() {
-    return this.props.options.order || ['M', 'D', 'YY'];
+    return this.props.options.order || ['M', 'D', 'YY']
   }
 
   getLocals() {
-    const locals = super.getLocals();
-    locals.attrs = this.getAttrs();
-    locals.order = this.getOrder();
-    return locals;
+    const locals = super.getLocals()
+    locals.attrs = this.getAttrs()
+    locals.order = this.getOrder()
+    return locals
   }
 
 }
@@ -463,92 +472,94 @@ export class Struct extends Component {
   static transformer = {
     format: value => Nil.is(value) ? noobj : value,
     parse: value => value
-  };
+  }
 
   isValueNully() {
-    return Object.keys(this.refs).every((ref) => this.refs[ref].isValueNully());
+    return Object.keys(this.refs).every((ref) => this.refs[ref].isValueNully())
   }
 
   removeErrors() {
-    this.setState({hasError: false});
-    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors());
+    this.setState({ hasError: false })
+    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors())
   }
 
   getValue() {
-    const value = {};
-    for (let ref in this.refs) {
-      value[ref] = this.refs[ref].getValue();
+    const value = {}
+    for (const ref in this.refs) {
+      if (this.refs.hasOwnProperty(ref)) {
+        value[ref] = this.refs[ref].getValue()
+      }
     }
-    return this.getTransformer().parse(value);
+    return this.getTransformer().parse(value)
   }
 
   validate() {
-    let value = {};
-    let errors = [];
-    let hasError = false;
-    let result;
+    let value = {}
+    let errors = []
+    let hasError = false
+    let result
 
     if (this.typeInfo.isMaybe && this.isValueNully()) {
-      this.removeErrors();
-      return new t.ValidationResult({errors: [], value: null});
+      this.removeErrors()
+      return new t.ValidationResult({errors: [], value: null})
     }
 
-    for (let ref in this.refs) {
+    for (const ref in this.refs) {
       if (this.refs.hasOwnProperty(ref)) {
-        result = this.refs[ref].validate();
-        errors = errors.concat(result.errors);
-        value[ref] = result.value;
+        result = this.refs[ref].validate()
+        errors = errors.concat(result.errors)
+        value[ref] = result.value
       }
     }
 
     if (errors.length === 0) {
-      const InnerType = this.typeInfo.innerType;
-      value = new InnerType(value);
+      const InnerType = this.typeInfo.innerType
+      value = new InnerType(value)
       if (this.typeInfo.isSubtype && errors.length === 0) {
-        result = t.validate(value, this.props.type, this.getValidationOptions());
-        hasError = !result.isValid();
-        errors = errors.concat(result.errors);
+        result = t.validate(value, this.props.type, this.getValidationOptions())
+        hasError = !result.isValid()
+        errors = errors.concat(result.errors)
       }
     }
 
-    this.setState({hasError: hasError});
-    return new t.ValidationResult({errors, value});
+    this.setState({ hasError: hasError })
+    return new t.ValidationResult({errors, value})
   }
 
   onChange(fieldName, fieldValue, path, kind) {
-    const value = t.mixin({}, this.state.value);
-    value[fieldName] = fieldValue;
-    this.setState({value}, () => {
-      this.props.onChange(value, path, kind);
-    });
+    const value = t.mixin({}, this.state.value)
+    value[fieldName] = fieldValue
+    this.setState({ value }, () => {
+      this.props.onChange(value, path, kind)
+    })
   }
 
   getTemplate() {
-    return this.props.options.template || this.getTemplates().struct;
+    return this.props.options.template || this.getTemplates().struct
   }
 
   getTypeProps() {
-    return this.typeInfo.innerType.meta.props;
+    return this.typeInfo.innerType.meta.props
   }
 
   getOrder() {
-    return this.props.options.order || Object.keys(this.getTypeProps());
+    return this.props.options.order || Object.keys(this.getTypeProps())
   }
 
   getInputs() {
-    const { options, ctx } = this.props;
-    const props = this.getTypeProps();
-    const auto = this.getAuto();
-    const i18n = this.getI18n();
-    const config = this.getConfig();
-    const templates = this.getTemplates();
-    const value = this.state.value;
-    const inputs = {};
+    const { options, ctx } = this.props
+    const props = this.getTypeProps()
+    const auto = this.getAuto()
+    const i18n = this.getI18n()
+    const config = this.getConfig()
+    const templates = this.getTemplates()
+    const value = this.state.value
+    const inputs = {}
 
-    for (let prop in props) {
+    for (const prop in props) {
       if (props.hasOwnProperty(prop)) {
-        const propType = props[prop];
-        const propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj;
+        const propType = props[prop]
+        const propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj
         inputs[prop] = React.createElement(getComponent(propType, propOptions), {
           key: prop,
           ref: prop,
@@ -567,32 +578,32 @@ export class Struct extends Component {
             templates,
             path: ctx.path.concat(prop)
           }
-        });
+        })
       }
     }
-    return inputs;
+    return inputs
   }
 
   getLocals() {
-    const options = this.props.options;
-    const locals = super.getLocals();
-    locals.order = this.getOrder();
-    locals.inputs = this.getInputs();
-    locals.className = options.className;
-    return locals;
+    const options = this.props.options
+    const locals = super.getLocals()
+    locals.order = this.getOrder()
+    locals.inputs = this.getInputs()
+    locals.className = options.className
+    return locals
   }
 
 }
 
 function toSameLength(value, keys, uidGenerator) {
   if (value.length === keys.length) {
-    return keys;
+    return keys
   }
-  const ret = [];
+  const ret = []
   for (let i = 0, len = value.length; i < len; i++ ) {
-    ret[i] = keys[i] || uidGenerator.next();
+    ret[i] = keys[i] || uidGenerator.next()
   }
-  return ret;
+  return ret
 }
 
 @decorators.templates
@@ -601,164 +612,164 @@ export class List extends Component {
   static transformer = {
     format: value => Nil.is(value) ? noarr : value,
     parse: value => value
-  };
+  }
 
   constructor(props) {
-    super(props);
-    this.state.keys = this.state.value.map(() => props.ctx.uidGenerator.next());
+    super(props)
+    this.state.keys = this.state.value.map(() => props.ctx.uidGenerator.next())
   }
 
   componentWillReceiveProps(props) {
     if (props.type !== this.props.type) {
-      this.typeInfo = getTypeInfo(props.type);
+      this.typeInfo = getTypeInfo(props.type)
     }
-    const value = this.getTransformer().format(props.value);
+    const value = this.getTransformer().format(props.value)
     this.setState({
       value,
       keys: toSameLength(value, this.state.keys, props.ctx.uidGenerator)
-    });
+    })
   }
 
   isValueNully() {
-    return this.state.value.length === 0;
+    return this.state.value.length === 0
   }
 
   removeErrors() {
-    this.setState({hasError: false});
-    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors());
+    this.setState({ hasError: false })
+    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors())
   }
 
   getValue() {
-    const value = [];
+    const value = []
     for (let i = 0, len = this.state.value.length; i < len; i++ ) {
-      value.push(this.refs[i].getValue());
+      value.push(this.refs[i].getValue())
     }
-    return this.getTransformer().parse(value);
+    return this.getTransformer().parse(value)
   }
 
   validate() {
-    const value = [];
-    let errors = [];
-    let hasError = false;
-    let result;
+    const value = []
+    let errors = []
+    let hasError = false
+    let result
 
     if (this.typeInfo.isMaybe && this.isValueNully()) {
-      this.removeErrors();
-      return new t.ValidationResult({errors: [], value: null});
+      this.removeErrors()
+      return new t.ValidationResult({errors: [], value: null})
     }
 
     for (let i = 0, len = this.state.value.length; i < len; i++ ) {
-      result = this.refs[i].validate();
-      errors = errors.concat(result.errors);
-      value.push(result.value);
+      result = this.refs[i].validate()
+      errors = errors.concat(result.errors)
+      value.push(result.value)
     }
 
     // handle subtype
     if (this.typeInfo.isSubtype && errors.length === 0) {
-      result = t.validate(value, this.props.type, this.getValidationOptions());
-      hasError = !result.isValid();
-      errors = errors.concat(result.errors);
+      result = t.validate(value, this.props.type, this.getValidationOptions())
+      hasError = !result.isValid()
+      errors = errors.concat(result.errors)
     }
 
-    this.setState({hasError: hasError});
-    return new t.ValidationResult({errors: errors, value: value});
+    this.setState({hasError: hasError})
+    return new t.ValidationResult({errors: errors, value: value})
   }
 
   onChange(value, keys, path, kind) {
-    keys = toSameLength(value, keys, this.props.ctx.uidGenerator);
-    this.setState({value, keys}, () => {
-      this.props.onChange(value, path, kind);
-    });
+    const allkeys = toSameLength(value, keys, this.props.ctx.uidGenerator)
+    this.setState({ value, allkeys }, () => {
+      this.props.onChange(value, path, kind)
+    })
   }
 
   addItem(evt) {
-    evt.preventDefault();
-    const value = this.state.value.concat(undefined);
-    const keys = this.state.keys.concat(this.props.ctx.uidGenerator.next());
-    this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add');
+    evt.preventDefault()
+    const value = this.state.value.concat(undefined)
+    const keys = this.state.keys.concat(this.props.ctx.uidGenerator.next())
+    this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add')
   }
 
   onItemChange(itemIndex, itemValue, path, kind) {
-    const value = this.state.value.slice();
-    value[itemIndex] = itemValue;
-    this.onChange(value, this.state.keys, path, kind);
+    const value = this.state.value.slice()
+    value[itemIndex] = itemValue
+    this.onChange(value, this.state.keys, path, kind)
   }
 
   removeItem(i, evt) {
-    evt.preventDefault();
-    const value = this.state.value.slice();
-    value.splice(i, 1);
-    const keys = this.state.keys.slice();
-    keys.splice(i, 1);
-    this.onChange(value, keys, this.props.ctx.path.concat(i), 'remove');
+    evt.preventDefault()
+    const value = this.state.value.slice()
+    value.splice(i, 1)
+    const keys = this.state.keys.slice()
+    keys.splice(i, 1)
+    this.onChange(value, keys, this.props.ctx.path.concat(i), 'remove')
   }
 
   moveUpItem(i, evt) {
-    evt.preventDefault();
+    evt.preventDefault()
     if (i > 0) {
       this.onChange(
         move(this.state.value.slice(), i, i - 1),
         move(this.state.keys.slice(), i, i - 1),
         this.props.ctx.path.concat(i),
         'moveUp'
-      );
+      )
     }
   }
 
   moveDownItem(i, evt) {
-    evt.preventDefault();
+    evt.preventDefault()
     if (i < this.state.value.length - 1) {
       this.onChange(
         move(this.state.value.slice(), i, i + 1),
         move(this.state.keys.slice(), i, i + 1),
         this.props.ctx.path.concat(i),
         'moveDown'
-      );
+      )
     }
   }
 
   getTemplate() {
-    return this.props.options.template || this.getTemplates().list;
+    return this.props.options.template || this.getTemplates().list
   }
 
   getItems() {
-    const { options, ctx } = this.props;
-    const auto = this.getAuto();
-    const i18n = this.getI18n();
-    const config = this.getConfig();
-    const templates = this.getTemplates();
-    const value = this.state.value;
-    const type = this.typeInfo.innerType.meta.type;
-    const Component = getComponent(type, options.item || noobj);
-    return value.map((value, i) => {
-      const buttons = [];
+    const { options, ctx } = this.props
+    const auto = this.getAuto()
+    const i18n = this.getI18n()
+    const config = this.getConfig()
+    const templates = this.getTemplates()
+    const value = this.state.value
+    const type = this.typeInfo.innerType.meta.type
+    const ItemComponent = getComponent(type, options.item || noobj)
+    return value.map((itemValue, i) => {
+      const buttons = []
       if (!options.disableRemove) {
         buttons.push({
           type: 'remove',
           label: i18n.remove,
           click: this.removeItem.bind(this, i)
-        });
+        })
       }
       if (!options.disableOrder) {
         buttons.push({
           type: 'move-up',
           label: i18n.up,
           click: this.moveUpItem.bind(this, i)
-        });
+        })
       }
       if (!options.disableOrder) {
         buttons.push({
           type: 'move-down',
           label: i18n.down,
           click: this.moveDownItem.bind(this, i)
-        });
+        })
       }
       return {
-        input: React.createElement(Component, {
+        input: React.createElement(ItemComponent, {
           ref: i,
           type,
           options: options.item || noobj,
-          value,
+          itemValue,
           onChange: this.onItemChange.bind(this, i),
           ctx: {
             context: ctx.context,
@@ -773,22 +784,22 @@ export class List extends Component {
         }),
         key: this.state.keys[i],
         buttons: buttons
-      };
-    });
+      }
+    })
   }
 
   getLocals() {
-    const options = this.props.options;
-    const i18n = this.getI18n();
-    const locals = super.getLocals();
+    const options = this.props.options
+    const i18n = this.getI18n()
+    const locals = super.getLocals()
     locals.add = options.disableAdd ? null : {
       type: 'add',
       label: i18n.add,
       click: this.addItem.bind(this)
-    };
-    locals.items = this.getItems();
-    locals.className = options.className;
-    return locals;
+    }
+    locals.items = this.getItems()
+    locals.className = options.className
+    return locals
   }
 
 }
@@ -796,40 +807,38 @@ export class List extends Component {
 export class Form extends React.Component {
 
   validate() {
-    return this.refs.input.validate();
+    return this.refs.input.validate()
   }
 
   getValue() {
-    const result = this.validate();
-    return result.isValid() ? result.value : null;
+    const result = this.validate()
+    return result.isValid() ? result.value : null
   }
 
   getComponent(path) {
-    path = t.String.is(path) ? path.split('.') : path;
-    return path.reduce((input, name) => input.refs[name], this.refs.input);
+    const points = t.String.is(path) ? path.split('.') : path
+    return points.reduce((input, name) => input.refs[name], this.refs.input)
   }
 
   getUIDGenerator() {
-    this.uidGenerator = this.uidGenerator || new UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '');
-    return this.uidGenerator;
+    this.uidGenerator = this.uidGenerator || new UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '')
+    return this.uidGenerator
   }
 
   render() {
+    const type = this.props.type
+    const options = this.props.options || noobj
+    const { i18n, templates } = Form
 
-    const type = this.props.type;
-    const options = this.props.options || noobj;
-    const { i18n, templates } = Form;
-
-    assert(t.isType(type), `[${SOURCE}] missing required prop type`);
-    assert(t.Object.is(options), `[${SOURCE}] prop options must be an object`);
-    assert(t.Object.is(templates), `[${SOURCE}] missing templates config`);
-    assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`);
+    assert(t.isType(type), `[${SOURCE}] missing required prop type`)
+    assert(t.Object.is(options), `[${SOURCE}] prop options must be an object`)
+    assert(t.Object.is(templates), `[${SOURCE}] missing templates config`)
+    assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`)
 
     // this is in the render method because I need this._reactInternalInstance
-    const uidGenerator = this.getUIDGenerator();
+    const uidGenerator = this.getUIDGenerator()
 
-    const Component = getComponent(type, options);
-    return React.createElement(Component, {
+    return React.createElement(getComponent(type, options), {
       ref: 'input',
       type: type,
       options,
@@ -843,7 +852,7 @@ export class Form extends React.Component {
         i18n,
         path: []
       }
-    });
+    })
   }
 
 }

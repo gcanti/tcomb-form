@@ -1,2 +1,2 @@
-require('./components');
-require('./templates');
+import './components'
+import './templates'
