@@ -1,17 +1,36 @@
+var webpack = require('webpack') // eslint-disable-line
+
 module.exports = function getConfig(config) {
   config.set({
     browserNoActivityTimeout: 30000,
     browsers: [process.env.CONTINUOUS_INTEGRATION ? 'Firefox' : 'Chrome'],
     singleRun: true,
-    frameworks: ['browserify', 'tap'],
-    files: ['test/index.js'],
+    frameworks: ['tap'],
+    files: [
+      'test/index.js'
+    ],
     preprocessors: {
-      'test/index.js': [ 'browserify' ]
+      'test/index.js': ['webpack']
     },
-    browserify: {
-      transform: [
-        'babelify'
+    webpack: {
+      node: {
+        fs: 'empty'
+      },
+      module: {
+        loaders: [{
+          test: /\.js$/,
+          exclude: /node_modules/,
+          loader: 'babel'
+        }]
+      },
+      plugins: [
+        new webpack.DefinePlugin({
+          'process.env.NODE_ENV': JSON.stringify('test')
+        })
       ]
+    },
+    webpackMiddleware: {
+      noInfo: true
     },
     reporters: ['dots']
   })
