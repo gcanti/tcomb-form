@@ -23,7 +23,7 @@
         - add a type property to button locals
         - one file for each template
         - every template own a series of render* function that can be overwritten
-    - add context to locals
+    - add `context` prop to template `locals`
 - **Bug Fix**
     - Incosistent calling of tcomb-validation `validate` function in `getTypeInfo` and components for struct and list types, fix #253
     - avoid useless re-renderings of Datetime when the value is undefined

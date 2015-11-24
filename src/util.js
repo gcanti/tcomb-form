@@ -88,8 +88,7 @@ export class UIDGenerator {
   }
 
   next() {
-    const id = this.seed + (this.counter++)
-    return id
+    return this.seed + (this.counter++)
   }
 
 }
