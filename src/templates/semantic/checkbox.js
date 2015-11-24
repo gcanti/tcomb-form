@@ -45,16 +45,19 @@ function create(overrides = {}) {
   }
 
   checkbox.renderHorizontal = overrides.renderHorizontal || function renderHorizontal(locals) {
+    const className = {
+      inline: true,
+      field: true,
+      error: locals.hasError,
+      disabled: locals.disabled,
+      [`${locals.config.wide} wide`]: !t.Nil.is(locals.config.wide),
+      [`field-depth-${locals.path.length}`]: true,
+      [`field-${locals.path.join('-')}`]: locals.path.length > 0
+    }
     return {
       tag: 'div',
       attrs: {
-        className: {
-          field: true,
-          inline: true,
-          error: locals.hasError,
-          disabled: locals.disabled,
-          [`${locals.config.wide} wide`]: !t.Nil.is(locals.config.wide)
-        }
+        className
       },
       children: {
         tag: 'div',

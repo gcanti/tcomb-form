@@ -42,6 +42,17 @@ function create(overrides = {}) {
 
   struct.renderFieldset = overrides.renderFieldset || function renderFieldset(fieldset, locals) {
     const children = locals.label ? [struct.renderLegend(locals)].concat(fieldset) : fieldset
+    const len = locals.path.length
+    const className = {
+      ui: true,
+      form: true,
+      segment: locals.path.length > 0,
+      error: locals.hasError,
+      'fieldset': true,
+      [`fieldset-depth-${len}`]: true,
+      [`fieldset-${locals.path.join('-')}`]: len > 0,
+      [locals.className]: !!locals.className
+    }
     return {
       tag: 'fieldset',
       attrs: {
@@ -51,12 +62,7 @@ function create(overrides = {}) {
           margin: 0,
           padding: 0
         } : null,
-        className: {
-          ui: true,
-          form: true,
-          segment: locals.path.length > 0,
-          error: locals.hasError
-        }
+        className
       },
       children
     }
