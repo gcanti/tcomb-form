@@ -102,7 +102,14 @@ function create(overrides = {}) {
   }
 
   list.renderFieldset = overrides.renderFieldset || function renderFieldset(children, locals) {
-    const className = {}
+    const len = locals.path.length
+    const className = {
+      fieldset: true,
+      [`fieldset-depth-${len}`]: true
+    }
+    if (len > 0) {
+      className[`fieldset-${locals.path.join('-')}`] = true
+    }
     if (locals.className) {
       className[locals.className] = true
     }

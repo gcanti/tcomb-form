@@ -164,8 +164,12 @@ function create(overrides = {}) {
   }
 
   textbox.renderFormGroup = overrides.renderFormGroup || function renderFormGroup(children, locals) {
+    let className = `form-group-depth-${locals.path.length}`
+    if (locals.path.length > 0) {
+      className += ` form-group-${locals.path.join('-')}`
+    }
     return bootstrap.getFormGroup({
-      className: 'form-group-depth-' + locals.path.length,
+      className,
       hasError: locals.hasError,
       children
     })
