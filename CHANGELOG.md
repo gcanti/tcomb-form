@@ -14,6 +14,30 @@
 
 ## v0.7.7
 
+**Warning**. `uvdom` dependency is deprecated and will be removed in the next releases. If you are using custom templates based on `uvdom`, please add a static function `toReactElement` before upgrading to v0.8:
+
+```js
+const Type = t.struct({
+  name: t.String
+})
+
+import { compile } from 'uvdom/react'
+
+function myTemplate(locals) {
+  return {tag: 'input', attrs: { value: locals.value }}
+}
+
+myTemplate.toReactElement = compile // <= here
+
+const options = {
+  fields: {
+    name: {
+      template: myTemplate
+    }
+  }
+}
+```
+
 - **New Feature**
     - complete refactoring of bootstrap templates, fix #254
         - add a type property to button locals
