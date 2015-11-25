@@ -52,6 +52,7 @@ Table of Contents
       * [Fields order](#fields-order-1)
   * [Customizations](#customizations)
     * [Templates](#templates)
+      * [Clone default templates](#clone-default-templates)
     * [Transformers](#transformers)
     * [Custom factories](#custom-factories)
     * [getTcombFormFactory](#gettcombformfactory)
@@ -1007,10 +1008,9 @@ For example, this is the recipe for a textbox:
 
 ```js
 {
-  component: ReactClasss    // a reference to the current component
-  typeInfo: Object          // an object containing info on the current type
-  attrs: maybe(Object),     // should render attributes and events
-  config: maybe(Object),    // custom options, see Template addons section
+  attrs: Object             // should render attributes and events
+  config: Object            // custom options, see Template addons section
+  context: Any              // a reference to the context prop
   disabled: maybe(Boolean), // should be disabled
   error: maybe(Label),      // should show an error
   hasError: maybe(Boolean), // if true should show an error state
@@ -1019,6 +1019,7 @@ For example, this is the recipe for a textbox:
   onChange: Function,       // should call this function with the changed value
   path: Array,              // the path of this field with respect to the form root
   type: String,             // should use this as type attribute
+  typeInfo: Object          // an object containing info on the current type
   value: Any                // the current value of the textbox
 }
 ```
@@ -1105,6 +1106,31 @@ var App = React.createClass({
   }
 
 });
+```
+
+### Clone default templates
+
+In order to keep the majority of the implementation a template can be cloned. Every template own a series of `render*` function that can be overridden:
+
+```js
+const Type = t.struct({
+  name: t.String
+})
+
+const myTemplate = t.form.Form.templates.textbox.clone({
+  // override just the input default implementation (labels, help, error will be preserved)
+  renderInput: (locals) => {
+    return <input value={locals.value} />
+  }
+})
+
+const options = {
+  fields: {
+    name: {
+      template: myTemplate
+    }
+  }
+}
 ```
 
 ## Transformers
