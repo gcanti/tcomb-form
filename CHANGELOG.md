@@ -18,11 +18,62 @@
     - complete refactoring of bootstrap templates, fix #254
         - add a type property to button locals
         - one file for each template
-        - every template own a series of render* function that can be overwritten
+        - every template own a series of render* function that can be overridden
+
+        **Example**
+
+        ```js
+        const Type = t.struct({
+          name: t.String
+        })
+
+        const myTemplate = t.form.Form.templates.textbox.clone({
+          // override default implementation
+          renderInput: (locals) => {
+            return <input value={locals.value} />
+          }
+        })
+
+        const options = {
+          fields: {
+            name: {
+              template: myTemplate
+            }
+          }
+        }
+        ```
+
+        - more style classes for styling purposes, fix #171
+
+        **Example**
+
+        ```js
+        const Type = t.struct({
+          name: t.String,
+          rememberMe: t.Boolean
+        })
+        ```
+
+        outputs
+
+        ```html
+        <!-- fieldset fieldset-depth-<path depth> -->
+        <fieldset class="fieldset fieldset-depth-0" data-reactid=".0.0">
+          <!-- form-group form-group-depth-<path depth> form-group-<field name> -->
+          <div class="form-group form-group-depth-1 form-group-name" data-reactid=".0.0.$name">
+            ...
+          </div>
+          <div class="form-group form-group-depth-1 form-group-rememberMe" data-reactid=".0.0.$rememberMe">
+            ...
+          </div>
+        </fieldset>
+        ```
+
     - complete refactoring of semantic templates
         - add a type property to button locals
         - one file for each template
-        - every template own a series of render* function that can be overwritten
+        - every template own a series of render* function that can be overridden
+        - more style classes for styling purposes, fix #171
     - add `context` prop to template `locals`
 - **Bug Fix**
     - Incosistent calling of tcomb-validation `validate` function in `getTypeInfo` and components for struct and list types, fix #253
