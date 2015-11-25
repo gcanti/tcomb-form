@@ -8,7 +8,8 @@ function getButton(options) {
       className: {
         ui: true,
         basic: true,
-        button: true
+        button: true,
+        [`button-${options.type}`]: true
       }
     },
     events: {
@@ -110,6 +111,7 @@ function create(overrides = {}) {
     return getButton({
       click: button.click,
       key: button.type,
+      type: button.type,
       label: button.label
     })
   }
