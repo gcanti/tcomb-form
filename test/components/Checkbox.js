@@ -244,4 +244,3 @@ tape('Checkbox', ({ test }) => {
     })
   }
 })
-

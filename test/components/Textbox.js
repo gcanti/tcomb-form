@@ -523,4 +523,3 @@ tape('Textbox', ({ test }) => {
     })
   }
 })
-
