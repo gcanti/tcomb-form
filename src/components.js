@@ -677,7 +677,7 @@ export class List extends Component {
 
   onChange(value, keys, path, kind) {
     const allkeys = toSameLength(value, keys, this.props.ctx.uidGenerator)
-    this.setState({ value, allkeys }, () => {
+    this.setState({ value, keys: allkeys }, () => {
       this.props.onChange(value, path, kind)
     })
   }
@@ -769,7 +769,7 @@ export class List extends Component {
           ref: i,
           type,
           options: options.item || noobj,
-          itemValue,
+          value: itemValue,
           onChange: this.onItemChange.bind(this, i),
           ctx: {
             context: ctx.context,

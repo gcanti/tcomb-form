@@ -12,7 +12,7 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
-## v0.7.7
+## v0.7.8
 
 **Warning**. `uvdom` dependency is deprecated and will be removed in the next releases. If you are using custom templates based on `uvdom`, please add a static function `toReactElement` before upgrading to v0.8:
 
