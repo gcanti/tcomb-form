@@ -12,6 +12,10 @@ The [tcomb-validation library](https://github.com/gcanti/tcomb-validation) build
 
 This library builds on those two and **realizes an old dream of mine**.
 
+# Playground
+
+This [playground](https://gcanti.github.io/resources/tcomb-form/playground/playground.html), while a bit outdated, gives you the general idea.
+
 # Benefits
 
 With tcomb-form you simply call `<Form type={Model} />` to generate a form based on that domain model. What does this get you?
