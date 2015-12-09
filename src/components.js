@@ -485,7 +485,8 @@ export class Struct extends Component {
 
   getValue() {
     const value = {}
-    for (const ref in this.refs) {
+    const props = this.getTypeProps()
+    for (const ref in props) {
       if (this.refs.hasOwnProperty(ref)) {
         value[ref] = this.refs[ref].getValue()
       }
@@ -504,7 +505,8 @@ export class Struct extends Component {
       return new t.ValidationResult({errors: [], value: null})
     }
 
-    for (const ref in this.refs) {
+    const props = this.getTypeProps()
+    for (const ref in props) {
       if (this.refs.hasOwnProperty(ref)) {
         result = this.refs[ref].validate()
         errors = errors.concat(result.errors)
