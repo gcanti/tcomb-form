@@ -1,9 +1,14 @@
 import tape from 'tape'
 import t from 'tcomb-validation'
-import { Component } from '../../src/components'
+import { Component, getComponent } from '../../src/components'
 import { ctx } from './util'
 
 tape('Component', ({ test }) => {
+  test('getComponent publi API', (assert) => {
+    assert.plan(1)
+    assert.ok(t.Function.is(getComponent))
+  })
+
   test('getValidationErrorMessage', (assert) => {
     assert.plan(16)
 

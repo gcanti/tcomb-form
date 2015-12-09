@@ -18,7 +18,7 @@ const noobj = Object.freeze({})
 const noarr = Object.freeze([])
 const noop = () => {}
 
-export function getComponent(type, options) {
+function getFormComponent(type, options) {
   if (options.factory) {
     return options.factory
   }
@@ -42,11 +42,13 @@ export function getComponent(type, options) {
     return Select // eslint-disable-line no-use-before-define
   case 'maybe' :
   case 'subtype' :
-    return getComponent(type.meta.type, options)
+    return getFormComponent(type.meta.type, options)
   default :
     t.fail(`[${SOURCE}] unsupported type ${name}`)
   }
 }
+
+exports.getComponent = getFormComponent
 
 function sortByText(a, b) {
   if (a.text < b.text) {
@@ -562,7 +564,7 @@ export class Struct extends Component {
       if (props.hasOwnProperty(prop)) {
         const propType = props[prop]
         const propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj
-        inputs[prop] = React.createElement(getComponent(propType, propOptions), {
+        inputs[prop] = React.createElement(getFormComponent(propType, propOptions), {
           key: prop,
           ref: prop,
           type: propType,
@@ -742,7 +744,7 @@ export class List extends Component {
     const templates = this.getTemplates()
     const value = this.state.value
     const type = this.typeInfo.innerType.meta.type
-    const ItemComponent = getComponent(type, options.item || noobj)
+    const ItemComponent = getFormComponent(type, options.item || noobj)
     return value.map((itemValue, i) => {
       const buttons = []
       if (!options.disableRemove) {
@@ -840,7 +842,7 @@ export class Form extends React.Component {
     // this is in the render method because I need this._reactInternalInstance
     const uidGenerator = this.getUIDGenerator()
 
-    return React.createElement(getComponent(type, options), {
+    return React.createElement(getFormComponent(type, options), {
       ref: 'input',
       type: type,
       options,

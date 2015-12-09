@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## 0.7.10
+
+- **Bug Fix**
+    - IE8 issue, 'this.refs.input' is null or not and object, fix #268
+
 ## v0.7.9
 
 - **Bug Fix**
