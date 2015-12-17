@@ -530,6 +530,8 @@ var options = {
 };
 ```
 
+> **Warning**: Any field that is not in this array will be omitted from the form
+
 ### Legend
 
 You can add a fieldset legend with the `legend` option:
