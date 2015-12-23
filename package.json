@@ -3,6 +3,11 @@
   "version": "0.7.10",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "lib/main.js",
+  "files": [
+    "lib",
+    "src",
+    "GUIDE.md"
+  ],
   "scripts": {
     "dev": "webpack --config=dev/webpack.config.js --watch --progress",
     "lint": "eslint src test",

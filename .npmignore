@@ -1,9 +1,0 @@
-.*
-*.log
-karma.conf.js
-CONTRIBUTING.md
-dev
-dist
-node_modules
-src
-test
