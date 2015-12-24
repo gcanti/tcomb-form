@@ -1,6 +1,6 @@
 import tape from 'tape'
 import t from 'tcomb-validation'
-import bootstrap from '../../src/templates/bootstrap'
+import bootstrap from 'tcomb-form-templates-bootstrap'
 import React from 'react'
 import { Textbox } from '../../src/components'
 import { ctx, ctxPlaceholders, ctxNone, getRenderComponent } from './util'
@@ -66,76 +66,6 @@ tape('Textbox', ({ test }) => {
         placeholder: undefined
       },
       'should handle events')
-  })
-
-  test('attrs.className', (assert) => {
-    assert.plan(3)
-
-    assert.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {
-          attrs: {
-            id: 'myid',
-            className: 'myclass'
-          }
-        },
-        ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        className: {
-          myclass: true
-        },
-        placeholder: undefined
-      },
-      'should handle classNames as strings')
-
-    assert.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {
-          attrs: {
-            id: 'myid',
-            className: ['myclass1', 'myclass2']
-          }
-        },
-        ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        className: {
-          'myclass1 myclass2': true
-        },
-        placeholder: undefined
-      },
-      'should handle classNames as arrays')
-
-    assert.deepEqual(
-      new Textbox({
-        type: t.Str,
-        options: {
-          attrs: {
-            id: 'myid',
-            className: {
-              myclass1: true,
-              myclass2: true
-            }
-          }
-        },
-        ctx: ctx
-      }).getLocals().attrs,
-      {
-        name: 'defaultName',
-        id: 'myid',
-        className: {
-          'myclass1 myclass2': true
-        },
-        placeholder: undefined
-      },
-      'should handle classNames as object')
   })
 
   test('label', (assert) => {

@@ -6,7 +6,7 @@
  *
  */
 import t from './'
-import templates from './templates/bootstrap'
+import templates from 'tcomb-form-templates-bootstrap'
 import i18n from './i18n/en'
 
 t.form.Form.templates = templates
