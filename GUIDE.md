@@ -1241,6 +1241,18 @@ const options = {
     }
   }
 };
+
+const value = {
+  tags: [] // react-tagsinput requires an initial value
+}
+...
+
+<t.form.Form
+  ref="form"
+  type={Type}
+  options={options}
+  value={value}
+/>
 ```
 
 ## getTcombFormFactory
