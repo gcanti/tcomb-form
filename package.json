@@ -27,7 +27,7 @@
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
     "react": "^0.14.0",
-    "tcomb-form-templates-bootstrap": "^0.0.1",
+    "tcomb-form-templates-bootstrap": "^0.0.3",
     "tcomb-validation": "^2.2.0"
   },
   "devDependencies": {
