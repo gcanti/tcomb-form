@@ -1,7 +1,7 @@
 import t from 'tcomb-validation'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import bootstrap from '../../src/templates/bootstrap'
+import bootstrap from 'tcomb-form-templates-bootstrap'
 import { UIDGenerator } from '../../src/util'
 
 const ctx = {

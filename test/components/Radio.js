@@ -1,6 +1,6 @@
 import tape from 'tape'
 import t from 'tcomb-validation'
-import bootstrap from '../../src/templates/bootstrap'
+import bootstrap from 'tcomb-form-templates-bootstrap'
 import React from 'react'
 import { Radio } from '../../src/components'
 import { ctx, getRenderComponent } from './util'

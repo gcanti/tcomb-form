@@ -78,19 +78,20 @@ Note: Use tcomb-form@0.6.x with react@0.13.x. See [#200](https://github.com/gcan
 ## Working example
 
 ```js
-var React = require('react');
-var ReactDOM = require('react/lib/ReactDOM');
-var t = require('tcomb-form');
-var Form = t.form.Form;
+import React from 'react';
+import { render } from 'react-dom';
+import t from 'tcomb-form';
+
+const Form = t.form.Form;
 
 // define your domain model with tcomb
 // https://github.com/gcanti/tcomb
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String
 });
 
-var App = React.createClass({
+const App = React.createClass({
 
   save() {
     // call getValue() to get the values of the form
@@ -116,7 +117,7 @@ var App = React.createClass({
 
 });
 
-ReactDOM.render(<App />, document.getElementById('app'));
+render(<App />, document.getElementById('app'));
 ```
 
 > **Note**. Labels are automatically generated.
@@ -140,7 +141,7 @@ Returns a `ValidationResult` (see [tcomb-validation](https://github.com/gcanti/t
 The `Form` component behaves like a [controlled component](https://facebook.github.io/react/docs/forms.html):
 
 ```js
-var App = React.createClass({
+const App = React.createClass({
 
   getInitialState() {
     return {
@@ -200,12 +201,12 @@ where
 You can get access to a field with the `getComponent(path)` API:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String
 });
 
-var App = React.createClass({
+const App = React.createClass({
 
   onChange(value, path) {
     // validate a field on every change
@@ -231,10 +232,10 @@ var App = React.createClass({
 The output of the `Form` component is a `fieldset` tag containing your fields. You can submit the form by wrapping the output with a `form` tag:
 
 ```js
-var App = React.createClass({
+const App = React.createClass({
 
   onSubmit(evt) {
-    var value = this.refs.form.getValue();
+    const value = this.refs.form.getValue();
     if (!value) {
       // there are errors, don't send the form
       evt.preventDefault();
@@ -273,7 +274,7 @@ Models are defined with [tcomb](https://github.com/gcanti/tcomb). tcomb is a lib
 By default fields are required:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,    // a required string
   surname: t.String  // a required string
 });
@@ -284,7 +285,7 @@ var Person = t.struct({
 In order to create an optional field, wrap the field type with the `t.maybe` combinator:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String,
   email: t.maybe(t.String) // an optional string
@@ -300,7 +301,7 @@ You can customise the suffix value, or set a suffix for required fields (see the
 In order to create a numeric field, use the `t.Number` type:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String,
   email: t.maybe(t.String),
@@ -322,11 +323,9 @@ You can refine a type with the `t.refinement(type, predicate)` combinator:
 
 ```js
 // a type representing positive numbers
-var Positive = t.refinement(t.Number, function (n) {
-  return n >= 0;
-});
+const Positive = t.refinement(t.Number, (n) => n >= 0});
 
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String,
   email: t.maybe(t.String),
@@ -341,7 +340,7 @@ Refinements allow you to express any custom validation with a simple predicate.
 In order to create a boolean field, use the `t.Boolean` type:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String,
   email: t.maybe(t.String),
@@ -357,7 +356,7 @@ Booleans are displayed as checkboxes.
 In order to create a date field, use the `t.Date` type:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String,
   email: t.maybe(t.String),
@@ -372,12 +371,12 @@ var Person = t.struct({
 In order to create an enum field, use the `t.enums` combinator:
 
 ```js
-var Gender = t.enums({
+const Gender = t.enums({
   M: 'Male',
   F: 'Female'
 });
 
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String,
   email: t.maybe(t.String),
@@ -395,7 +394,7 @@ By default enums are displayed as selects.
 You can handle a list with the `t.list` combinator:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String,
   email: t.maybe(t.String),
@@ -412,12 +411,12 @@ var Person = t.struct({
 You can nest lists and structs at an arbitrary level:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   surname: t.String
 });
 
-var Persons = t.list(Person);
+const Persons = t.list(Person);
 
 ...
 
@@ -440,18 +439,18 @@ In order to customise the look and feel, use an `options` prop:
 Example: disable a field based on another field's value
 
 ```js
-var Type = t.struct({
+const Type = t.struct({
   disable: t.Boolean, // if true, name field will be disabled
   name: t.String
 });
 
-var options = {
+const options = {
   fields: {
     name: {}
   }
 };
 
-var App = React.createClass({
+const App = React.createClass({
 
   getInitialState() {
     return {
@@ -505,7 +504,7 @@ var App = React.createClass({
 In order to generate default placeholders use the option `auto: 'placeholders'`:
 
 ```js
-var options = {
+const options = {
   auto: 'placeholders'
 };
 
@@ -515,7 +514,7 @@ var options = {
 Or `auto: 'none'` if you don't want neither labels nor placeholders:
 
 ```js
-var options = {
+const options = {
   auto: 'none'
 };
 ```
@@ -525,7 +524,7 @@ var options = {
 You can sort the fields with the `order` option:
 
 ```js
-var options = {
+const options = {
   order: ['name', 'surname', 'rememberMe', 'gender', 'age', 'email']
 };
 ```
@@ -537,7 +536,7 @@ var options = {
 You can add a fieldset legend with the `legend` option:
 
 ```js
-var options = {
+const options = {
   // you can use strings or JSX
   legend: <i>My form legend</i>
 };
@@ -548,7 +547,7 @@ var options = {
 You can add an help message with the `help` option:
 
 ```js
-var options = {
+const options = {
   // you can use strings or JSX
   help: <i>My form help</i>
 };
@@ -559,7 +558,7 @@ var options = {
 You can add a custom error message with the `error` option:
 
 ```js
-var options = {
+const options = {
   error: <i>A custom error message</i> // use strings or JSX
 };
 ```
@@ -581,7 +580,7 @@ The value returned by the function will be used as error message.
 If you want to show the error message onload, add the `hasError` option:
 
 ```js
-var options = {
+const options = {
   hasError: true,
   error: <i>A custom error message</i>
 };
@@ -596,22 +595,22 @@ getValidationErrorMessage(value, path, context) => ?(string | ReactElement)
 static function to the type, where the arguments are the same as above:
 
 ```js
-var Age = t.refinement(t.Number, function (n) { return n >= 18; });
+const Age = t.refinement(t.Number, (n) => return n >= 18);
 
 // if you define a getValidationErrorMessage function, it will be called on validation errors
-Age.getValidationErrorMessage = function (value, path, context) {
+Age.getValidationErrorMessage = (value, path, context) => {
   return 'bad age, locale: ' + context.locale;
 };
 
-var Schema = t.struct({
+const Schema = t.struct({
   age: Age
 });
 
-var App = React.createClass({
+const App = React.createClass({
 
   onSubmit(evt) {
     evt.preventDefault();
-    var value = this.refs.form.getValue();
+    const value = this.refs.form.getValue();
     if (value) {
       console.log(value);
     }
@@ -636,11 +635,11 @@ var App = React.createClass({
 You can even define `getValidationErrorMessage` on the supertype in order to be DRY:
 
 ```js
-t.Number.getValidationErrorMessage = function (value, path, context) {
+t.Number.getValidationErrorMessage = (value, path, context) => {
   return 'bad number';
 };
 
-Age.getValidationErrorMessage = function (value, path, context) {
+Age.getValidationErrorMessage = (value, path, context) => {
   return 'bad age, locale: ' + context.locale;
 };
 ```
@@ -650,7 +649,7 @@ Age.getValidationErrorMessage = function (value, path, context) {
 You can disable the whole fieldset with the `disabled` option:
 
 ```js
-var options = {
+const options = {
   disabled: true
 };
 ```
@@ -660,7 +659,7 @@ var options = {
 You can configure each field with the `fields` option:
 
 ```js
-var options = {
+const options = {
   fields: {
     name: {
       // name field configuration here..
@@ -680,7 +679,7 @@ var options = {
 You can customise the look and feel with the `template` option:
 
 ```js
-var options = {
+const options = {
   template: mytemplate // see Templates section for documentation
 }
 ```
@@ -702,9 +701,9 @@ The following options are similar to the Struct ones:
 To configure all the items in a list, set the `item` option:
 
 ```js
-var Colors = t.list(t.String);
+const Colors = t.list(t.String);
 
-var options = {
+const options = {
   item: {
     type: 'color' // HTML5 type attribute
   }
@@ -718,7 +717,7 @@ var options = {
 You can override the default language (english) with the `i18n` option:
 
 ```js
-var options = {
+const options = {
   i18n: {
     add: 'Nuovo',               // add button
     down: 'Giù',                // move down button
@@ -739,7 +738,7 @@ You can prevent operations on lists with the following options:
 - `disableOrder`: (default `false`) prevents sorting existing items
 
 ```js
-var options = {
+const options = {
   disableOrder: true
 };
 ```
@@ -772,7 +771,7 @@ You can set the type attribute with the `type` option. The following values are 
 You can override the default label with the `label` option:
 
 ```js
-var options = {
+const options = {
   fields: {
     name: {
       // you can use strings or JSX
@@ -787,13 +786,13 @@ var options = {
 You can add attributes and events with the `attrs` option:
 
 ```js
-var options = {
+const options = {
   fields: {
     name: {
       attrs: {
         autoFocus: true,
         placeholder: 'Type your name here',
-        onBlur: function () {
+        onBlur: () => {
           console.log('onBlur');
         }
       }
@@ -808,7 +807,7 @@ var options = {
 You can a style class with the `className` or the `style` attribute:
 
 ```js
-var options = {
+const options = {
   fields: {
     name: {
       attrs: {
@@ -850,7 +849,7 @@ The following options are similar to the textbox ones:
 You can customise the null option with the `nullOption` option:
 
 ```js
-var options = {
+const options = {
   fields: {
     gender: {
       nullOption: {value: '', text: 'Choose your gender'}
@@ -870,7 +869,7 @@ You can remove the null option by setting the `nullOption` option to `false`.
 You can sort the options with the `order` option:
 
 ```js
-var options = {
+const options = {
   fields: {
     gender: {
       order: 'asc' // or 'desc'
@@ -884,7 +883,7 @@ var options = {
 You can customise the options with the `options` option:
 
 ```js
-var options = {
+const options = {
   fields: {
     gender: {
       options: [
@@ -910,13 +909,13 @@ An option is an object with the following structure:
 You can also add optgroups:
 
 ```js
-var Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
+const Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
 
-var Select = t.struct({
+const Select = t.struct({
   car: Car
 });
 
-var options = {
+const options = {
   fields: {
     car: {
       options: [
@@ -940,7 +939,7 @@ var options = {
 You can render the select as a radio group by using the `factory` option to override the default:
 
 ```js
-var options = {
+const options = {
   factory: t.form.Radio
 };
 ```
@@ -950,13 +949,13 @@ var options = {
 You can turn the select into a multiple select by passing a `list` as type and using the `factory` option to override the default:
 
 ```js
-var Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
+const Car = t.enums.of('Audi Chrysler Ford Renault Peugeot');
 
-var Select = t.struct({
+const Select = t.struct({
   car: t.list(Car)
 });
 
-var options = {
+const options = {
   fields: {
     car: {
       factory: t.form.Select
@@ -981,11 +980,11 @@ The following options are similar to the textbox ones:
 You can sort the fields with the `order` option:
 
 ```js
-var Type = t.struct({
+const Type = t.struct({
   date: t.Date
 });
 
-var options = {
+const options = {
   fields: {
     date: {
       order: ['D', 'M', 'YY']
@@ -1001,10 +1000,10 @@ var options = {
 To customise the "skin" of tcomb-form you have to write a *template*. A template is simply a function with the following signature:
 
 ```
-(locals: any) => UVDOM | ReactElement
+(locals: any) => ReactElement
 ```
 
-where `locals` is an object contaning the "recipe" for rendering the input, and is built by tcomb-form for you. The returned value can be a [UVDOM](https://github.com/gcanti/uvdom) or a `ReactElement`.
+where `locals` is an object contaning the "recipe" for rendering the input, and is built by tcomb-form for you.
 
 For example, this is the recipe for a textbox:
 
@@ -1029,22 +1028,22 @@ For example, this is the recipe for a textbox:
 You can set a custom template using the `template` option:
 
 ```js
-var Animal = t.enums({
+const Animal = t.enums({
  dog: "Dog",
  cat: "Cat"
 });
 
-var Pet = t.struct({
+const Pet = t.struct({
   name: t.String,
   type: Animal
 });
 
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   pets: t.list(Pet)
 });
 
-var formLayout = function(locals){
+const formLayout = (locals) => {
   return (
     <div>
       <p>formLayout</p>
@@ -1054,7 +1053,7 @@ var formLayout = function(locals){
   );
 };
 
-var petLayout = function(locals){
+const petLayout = (locals) => {
   return (
     <div>
       <p>petLayout</p>
@@ -1064,7 +1063,7 @@ var petLayout = function(locals){
   );
 };
 
-var options = {
+const options = {
   template: formLayout,
   fields: {
     pets: { // <- pets is a list, you can customise the elements with the `item` option
@@ -1075,7 +1074,7 @@ var options = {
   }
 };
 
-var value = {
+const value = {
   name: 'myname',
   pets: [
     {name: 'pet1', type: 'dog'},
@@ -1083,10 +1082,10 @@ var value = {
   ]
 };
 
-var App = React.createClass({
+const App = React.createClass({
 
   save() {
-    var value = this.refs.form.getValue();
+    const value = this.refs.form.getValue();
     if (value) {
       console.log(value);
     }
@@ -1140,7 +1139,7 @@ const options = {
 Say you want a search textbox which accepts a list of keywords separated by spaces:
 
 ```js
-var Search = t.struct({
+const Search = t.struct({
   search: t.list(t.String)
 });
 ```
@@ -1148,7 +1147,7 @@ var Search = t.struct({
 tcomb-form by default will render the `search` field as a list. In order to render a textbox you have to override the default behaviour with the `factory` option:
 
 ```js
-var options = {
+const options = {
   fields: {
     search: {
       factory: t.form.Textbox
@@ -1160,7 +1159,7 @@ var options = {
 There is a problem though: a textbox handles only strings, so we need a way to transform a list to a string and a string to a list. A `Transformer` deals with serialization / deserialization of data and has the following interface:
 
 ```js
-var Transformer = t.struct({
+const Transformer = t.struct({
   format: t.Function, // from value to string, it must be idempotent
   parse: t.Function   // from string to value
 });
@@ -1171,11 +1170,11 @@ var Transformer = t.struct({
 A basic transformer implementation for the search textbox:
 
 ```js
-var listTransformer = {
-  format: function (value) {
+const listTransformer = {
+  format: (value) => {
     return Array.isArray(value) ? value.join(' ') : value;
   },
-  parse: function (str) {
+  parse: (str) => {
     return str ? str.split(' ') : [];
   }
 };
@@ -1185,11 +1184,11 @@ Now you can handle lists using the transformer option:
 
 ```js
 // example of initial value
-var value = {
+const value = {
   search: ['climbing', 'yosemite']
 };
 
-var options = {
+const options = {
   fields: {
     search: {
       factory: t.form.Textbox,
@@ -1231,7 +1230,7 @@ export default TagsComponent;
 Usage
 
 ```js
-var Type = t.struct({
+const Type = t.struct({
   tags: t.list(t.String)
 });
 
@@ -1242,6 +1241,18 @@ const options = {
     }
   }
 };
+
+const value = {
+  tags: [] // react-tagsinput requires an initial value
+}
+...
+
+<t.form.Form
+  ref="form"
+  type={Type}
+  options={options}
+  value={value}
+/>
 ```
 
 ## getTcombFormFactory
@@ -1269,7 +1280,7 @@ const options = {
 // you can write
 const Country = t.enums.of(['IT', 'US'], 'Country');
 
-Country.getTcombFormFactory = function (/*options*/) {
+Country.getTcombFormFactory = (/*options*/) => {
   return t.form.Radio;
 };
 
@@ -1289,11 +1300,11 @@ const options = {};
 You can set an addon before or an addon after with the `config.addonBefore` and `config.addonAfter` options:
 
 ```js
-var Textbox = t.struct({
+const Textbox = t.struct({
   mytext: t.String
 });
 
-var options = {
+const options = {
   fields: {
     mytext: {
       config: {
@@ -1311,7 +1322,7 @@ var options = {
 You can set a button after (before) with the `config.buttonAfter` (`config.buttonBefore`) option:
 
 ```js
-var options = {
+const options = {
   fields: {
     mytext: {
       config: {
@@ -1329,11 +1340,11 @@ var options = {
 You can set the textbox size with the `config.size` option:
 
 ```js
-var Textbox = t.struct({
+const Textbox = t.struct({
   mytext: t.String
 });
 
-var options = {
+const options = {
   fields: {
     mytext: {
       config: {
@@ -1355,13 +1366,13 @@ Same as Textbox extras.
 You can render the form horizontal with the `config.horizontal` option:
 
 ```js
-var Person = t.struct({
+const Person = t.struct({
   name: t.String,
   notifyMe: t.Boolean,
   email: t.maybe(t.String)
 });
 
-var options = {
+const options = {
   config: {
     // for each of lg md sm xs you can specify the columns width
     horizontal: {
@@ -1384,15 +1395,15 @@ var options = {
 tcomb-form uses the following default settings:
 
 - English as language
-- Bootstrap as theme
+- Bootstrap as theme ([tcomb-form-templates-bootstrap](https://github.com/gcanti/tcomb-form-templates-bootstrap))
 
 ## Changing the default language
 
 ```js
-// load tcomb-form without templates and i18n
-var t = require('tcomb-form/lib');
-var bootstrap = require('tcomb-form/lib/templates/bootstrap');
-t.form.Form.templates = bootstrap;
+import t from 'tcomb-form/lib'; // load tcomb-form without templates and i18n
+import templates from 'tcomb-form-templates-bootstrap';
+
+t.form.Form.templates = templates;
 t.form.Form.i18n = {
   optional: ' (opzionale)',
   required: '',
@@ -1403,14 +1414,24 @@ t.form.Form.i18n = {
 };
 ```
 
+Or pick one in the `i18n` folder (constributions welcome!):
+
+```js
+import t from 'tcomb-form/lib'; // load tcomb-form without templates and i18n
+import templates from 'tcomb-form-templates-bootstrap';
+import i18n from 'tcomb-form/lib/i18n/it';
+
+t.form.Form.templates = templates;
+t.form.Form.i18n = i18n;
+```
+
 ## Changing the default skin
 
 ```js
-// load tcomb-form without templates and i18n
-var t = require('tcomb-form/lib');
-var en = require('tcomb-form/lib/i18n/en');
-var semantic = require('tcomb-form/lib/templates/semantic');
+import t from 'tcomb-form/lib'; // load tcomb-form without templates and i18n
+import i18n from 'tcomb-form/lib/i18n/en';
+import semantic from 'tcomb-form-templates-semantic';
 
-t.form.Form.i18n = en;
+t.form.Form.i18n = i18n;
 t.form.Form.templates = semantic;
 ```

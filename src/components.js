@@ -1,6 +1,5 @@
 import React from 'react'
 import t from 'tcomb-validation'
-import { compile } from 'uvdom/react'
 import {
   humanize,
   merge,
@@ -9,7 +8,6 @@ import {
   move,
   UIDGenerator
 } from './util'
-import classnames from 'classnames'
 
 const Nil = t.Nil
 const assert = t.assert
@@ -81,11 +79,6 @@ export const decorators = {
       const attrs = t.mixin({}, this.props.options.attrs)
       attrs.id = this.getId()
       attrs.name = this.getName()
-      if (attrs.className) {
-        attrs.className = {
-          [classnames(attrs.className)]: true
-        }
-      }
       return attrs
     }
   },
@@ -256,14 +249,7 @@ export class Component extends React.Component {
       assert(t.Function.is(this.getTemplate), `[${SOURCE}] missing getTemplate method of component ${this.constructor.name}`)
     }
     const template = this.getTemplate()
-    const vdom = template(locals)
-    if (process.env.NODE_ENV !== 'production') {
-      if (!React.isValidElement(vdom) && !t.Function.is(template.toReactElement)) {
-        console.warn(`[${SOURCE}] missing toReactElement static function in template ${template.name}`) // eslint-disable-line
-      }
-    }
-    const toReactElement = template.toReactElement || compile
-    return toReactElement(vdom)
+    return template(locals)
   }
 
 }
