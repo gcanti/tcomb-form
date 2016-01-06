@@ -12,7 +12,56 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
-## 0.7.10
+## v0.8.0
+
+- **Breaking Change**
+    - drop `uvdom`, `uvdom-bootstrap` dependencies
+    - bootstrap templates in its own repo (tcomb-form-templates-bootstrap)[https://github.com/gcanti/tcomb-form-templates-bootstrap]
+    - semantic templates in its own repo (tcomb-form-templates-semantic)[https://github.com/gcanti/tcomb-form-templates-semantic]
+
+**Migration guide**
+
+`tcomb-form` follows semver and technically this is a breaking change (hence the minor version bump).
+However, if you are using the default bootstrap templates, the default language (english) and you are not relaying on the `uvdom` and `uvdom-bootstrap` modules, this is **not a breaking change** for you.
+
+### How to
+
+**I'm using the default bootstrap templates and the default language (english)**
+
+This is easy: nothing changed for you.
+
+**I'm using the default bootstrap templates but I override the language**
+
+```diff
+var t = require('tcomb-form/lib');
+-var templates = require('tcomb-form/lib/templates/bootstrap');
++var templates = require('tcomb-form-templates-bootstrap');
+
+t.form.Form.templates = templates;
+t.form.Form.i18n = {
+  ...
+};
+```
+
+(contributions to `src/i18n` folder welcome!)
+
+**I'm using the default language (english) but I override the templates**
+
+```sh
+npm install tcomb-form-templates-semantic --save
+```
+
+```diff
+var t = require('tcomb-form/lib');
+var i18n = require('tcomb-form/lib/i18n/en');
+-var templates = require('tcomb-form/lib/templates/semantic');
++var templates = require('tcomb-form-templates-semantic');
+
+t.form.Form.i18n = i18n;
+t.form.Form.templates = templates;
+```
+
+## v0.7.10
 
 - **Bug Fix**
     - IE8 issue, 'this.refs.input' is null or not and object, fix #268

@@ -5,8 +5,7 @@
   "main": "lib/main.js",
   "files": [
     "lib",
-    "src",
-    "GUIDE.md"
+    "src"
   ],
   "scripts": {
     "dev": "webpack --config=dev/webpack.config.js --watch --progress",
@@ -27,7 +26,7 @@
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
     "react": "^0.14.0",
-    "tcomb-form-templates-bootstrap": "^0.0.3",
+    "tcomb-form-templates-bootstrap": "^0.1.0",
     "tcomb-validation": "^2.2.0"
   },
   "devDependencies": {

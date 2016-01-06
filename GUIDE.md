@@ -1414,13 +1414,24 @@ t.form.Form.i18n = {
 };
 ```
 
+Or pick one in the `i18n` folder (constributions welcome!):
+
+```js
+import t from 'tcomb-form/lib'; // load tcomb-form without templates and i18n
+import templates from 'tcomb-form-templates-bootstrap';
+import i18n from 'tcomb-form/lib/i18n/it';
+
+t.form.Form.templates = templates;
+t.form.Form.i18n = i18n;
+```
+
 ## Changing the default skin
 
 ```js
 import t from 'tcomb-form/lib'; // load tcomb-form without templates and i18n
-import en from 'tcomb-form/lib/i18n/en';
+import i18n from 'tcomb-form/lib/i18n/en';
 import semantic from 'tcomb-form-templates-semantic';
 
-t.form.Form.i18n = en;
+t.form.Form.i18n = i18n;
 t.form.Form.templates = semantic;
 ```
