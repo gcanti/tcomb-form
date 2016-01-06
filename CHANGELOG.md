@@ -16,8 +16,8 @@
 
 - **Breaking Change**
     - drop `uvdom`, `uvdom-bootstrap` dependencies
-    - bootstrap templates in its own repo (tcomb-form-templates-bootstrap)[https://github.com/gcanti/tcomb-form-templates-bootstrap]
-    - semantic templates in its own repo (tcomb-form-templates-semantic)[https://github.com/gcanti/tcomb-form-templates-semantic]
+    - bootstrap templates in its own repo [tcomb-form-templates-bootstrap](https://github.com/gcanti/tcomb-form-templates-bootstrap)
+    - semantic templates in its own repo [tcomb-form-templates-semantic](https://github.com/gcanti/tcomb-form-templates-semantic)
 
 **Migration guide**
 
