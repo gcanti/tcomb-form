@@ -9,6 +9,7 @@ Table of Contents
       * [validate()](#validate)
     * [How to](#how-to)
       * [Adding a default value and listening to changes](#adding-a-default-value-and-listening-to-changes)
+      * [Reset the form](#reset-the-form)
       * [Accessing fields](#accessing-fields)
       * [Submitting the form](#submitting-the-form)
       * [Customised error messages](#customised-error-messages)
@@ -195,6 +196,33 @@ where
   + `'remove'` list item removed
   + `'moveUp'` list item moved up
   + `'moveDown'` list item moved down
+
+### Reset the form
+
+In the previous example, just pass `null` to the `value` prop:
+
+```js
+const App = React.createClass({
+
+  ...
+
+  resetForm() {
+    this.setState({value: null});
+  },
+
+  save() {
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+      // clear all fields after submit
+      this.clearForm();
+    }
+  },
+
+  ...
+
+});
+```
 
 ### Accessing fields
 

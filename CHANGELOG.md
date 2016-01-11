@@ -22,7 +22,7 @@
 **Migration guide**
 
 `tcomb-form` follows semver and technically this is a breaking change (hence the minor version bump).
-However, if you are using the default bootstrap templates, the default language (english) and you are not relaying on the `uvdom` and `uvdom-bootstrap` modules, this is **not a breaking change** for you.
+However, if you are using the default bootstrap templates, the default language (english) and you are not relying on the `uvdom` and `uvdom-bootstrap` modules, this is **not a breaking change** for you.
 
 ### How to
 
@@ -35,7 +35,7 @@ This is easy: nothing changed for you.
 ```diff
 var t = require('tcomb-form/lib');
 -var templates = require('tcomb-form/lib/templates/bootstrap');
-+var templates = require('tcomb-form-templates-bootstrap');
++var templates = require('tcomb-form/node_modules/tcomb-form-templates-bootstrap');
 
 t.form.Form.templates = templates;
 t.form.Form.i18n = {
