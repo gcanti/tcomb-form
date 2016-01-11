@@ -820,10 +820,12 @@ export class Form extends React.Component {
     const options = this.props.options || noobj
     const { i18n, templates } = Form
 
-    assert(t.isType(type), `[${SOURCE}] missing required prop type`)
-    assert(t.Object.is(options), `[${SOURCE}] prop options must be an object`)
-    assert(t.Object.is(templates), `[${SOURCE}] missing templates config`)
-    assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`)
+    if (process.env.NODE_ENV !== 'production') {
+      assert(t.isType(type), `[${SOURCE}] missing required prop type`)
+      assert(t.Object.is(options), `[${SOURCE}] prop options must be an object`)
+      assert(t.Object.is(templates), `[${SOURCE}] missing templates config`)
+      assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`)
+    }
 
     // this is in the render method because I need this._reactInternalInstance
     const uidGenerator = this.getUIDGenerator()
