@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.8.1
+
+- **New Feature**
+    - add dist configuration for [npmcdn](https://npmcdn.com/)
+
 ## v0.8.0
 
 - **Breaking Change**
