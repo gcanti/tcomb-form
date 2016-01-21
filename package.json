@@ -1,18 +1,21 @@
 {
   "name": "tcomb-form",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "lib/main.js",
   "files": [
     "lib",
-    "src"
+    "src",
+    "dist"
   ],
   "scripts": {
     "dev": "webpack --config=dev/webpack.config.js --watch --progress",
     "lint": "eslint src test",
     "test:node": "babel-node test",
     "test": "npm run lint && karma start",
-    "watch": "rm -rf lib/* && babel src -d lib -w"
+    "watch": "rm -rf lib/* && babel src -d lib -w",
+    "build": "rm -rf lib/* && babel src -d lib",
+    "dist": "webpack --config webpack.dist.config.js --progress"
   },
   "repository": {
     "type": "git",
