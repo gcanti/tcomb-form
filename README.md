@@ -29,6 +29,45 @@ With tcomb-form you simply call `<Form type={Model} />` to generate a form based
 - tcomb-forms lets you override automatic features or add additional information to forms.
 - You often don't want to use your domain model directly for a form. You can easily create a form specific model with tcomb that captures the details of a particular feature, and then define a function that uses that model to process the main domain model.
 
+# Example
+
+```js
+import t from 'tcomb'
+
+const FormSchema = t.struct({
+  name: t.String,         // a required string
+  age: t.maybe(t.Number), // an optional number
+  rememberMe: t.Boolean   // a boolean
+})
+
+const App = React.createClass({
+
+  onSubmit(evt) {
+    evt.preventDefault()
+    const value = this.refs.form.getValue()
+    if (value) {
+      console.log(value) // eslint-disable-line
+    }
+  },
+
+  render() {
+    return (
+      <form onSubmit={this.onSubmit}>
+        <t.form.Form ref="form" type={FormSchema} />
+        <div className="form-group">
+          <button type="submit" className="btn btn-primary">Save</button>
+        </div>
+      </form>
+    )
+  }
+
+})
+```
+
+**Output**. Labels are automatically generated.
+
+![](docs/example.png)
+
 # Documentation
 
 [GUIDE.md](GUIDE.md)
