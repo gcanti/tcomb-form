@@ -46,7 +46,7 @@ const App = React.createClass({
     evt.preventDefault()
     const value = this.refs.form.getValue()
     if (value) {
-      console.log(value) // eslint-disable-line
+      console.log(value)
     }
   },
 
