@@ -16,6 +16,16 @@ const noobj = Object.freeze({})
 const noarr = Object.freeze([])
 const noop = () => {}
 
+function getOptions(options, defaultOptions, value) {
+  if (t.Nil.is(options)) {
+    return defaultOptions
+  }
+  if (t.Function.is(options)) {
+    return options(value)
+  }
+  return options
+}
+
 function getFormComponent(type, options) {
   if (options.factory) {
     return options.factory
@@ -549,13 +559,15 @@ export class Struct extends Component {
     for (const prop in props) {
       if (props.hasOwnProperty(prop)) {
         const propType = props[prop]
-        const propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj
+        const fieldsOptions = options.fields || noobj
+        const propValue = value[prop]
+        const propOptions = getOptions(fieldsOptions[prop], noobj, propValue)
         inputs[prop] = React.createElement(getFormComponent(propType, propOptions), {
           key: prop,
           ref: prop,
           type: propType,
           options: propOptions,
-          value: value[prop],
+          value: propValue,
           onChange: this.onChange.bind(this, prop),
           ctx: {
             context: ctx.context,
@@ -730,9 +742,9 @@ export class List extends Component {
     const templates = this.getTemplates()
     const value = this.state.value
     const type = this.typeInfo.innerType.meta.type
-    const itemOptions = options.item || noobj
-    const ItemComponent = getFormComponent(type, itemOptions)
     return value.map((itemValue, i) => {
+      const itemOptions = getOptions(options.item, noobj, itemValue)
+      const ItemComponent = getFormComponent(type, itemOptions)
       const buttons = []
       if (!options.disableRemove) {
         buttons.push({
@@ -818,12 +830,13 @@ export class Form extends React.Component {
 
   render() {
     const type = this.props.type
-    const options = this.props.options || noobj
+    const value = this.props.value
+    const options = getOptions(this.props.options, noobj, value)
     const { i18n, templates } = Form
 
     if (process.env.NODE_ENV !== 'production') {
       assert(t.isType(type), `[${SOURCE}] missing required prop type`)
-      assert(t.Object.is(options), `[${SOURCE}] prop options must be an object`)
+      assert(t.Object.is(options), `[${SOURCE}] prop options, if specified, must be an object or a function returning an object`)
       assert(t.Object.is(templates), `[${SOURCE}] missing templates config`)
       assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`)
     }
@@ -835,7 +848,7 @@ export class Form extends React.Component {
       ref: 'input',
       type: type,
       options,
-      value: this.props.value,
+      value: value,
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
         context: this.props.context,
