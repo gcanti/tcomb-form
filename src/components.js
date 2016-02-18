@@ -730,7 +730,8 @@ export class List extends Component {
     const templates = this.getTemplates()
     const value = this.state.value
     const type = this.typeInfo.innerType.meta.type
-    const ItemComponent = getFormComponent(type, options.item || noobj)
+    const itemOptions = options.item || noobj
+    const ItemComponent = getFormComponent(type, itemOptions)
     return value.map((itemValue, i) => {
       const buttons = []
       if (!options.disableRemove) {
@@ -758,7 +759,7 @@ export class List extends Component {
         input: React.createElement(ItemComponent, {
           ref: i,
           type,
-          options: options.item || noobj,
+          options: itemOptions,
           value: itemValue,
           onChange: this.onItemChange.bind(this, i),
           ctx: {
