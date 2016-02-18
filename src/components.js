@@ -672,7 +672,7 @@ export class List extends Component {
     })
   }
 
-  addItem(evt) {
+  addItem = (evt) => {
     evt.preventDefault()
     const value = this.state.value.concat(undefined)
     const keys = this.state.keys.concat(this.props.ctx.uidGenerator.next())
@@ -786,7 +786,7 @@ export class List extends Component {
     locals.add = options.disableAdd ? null : {
       type: 'add',
       label: i18n.add,
-      click: this.addItem.bind(this)
+      click: this.addItem
     }
     locals.items = this.getItems()
     locals.className = options.className
