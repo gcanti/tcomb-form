@@ -32,7 +32,7 @@ With tcomb-form you simply call `<Form type={Model} />` to generate a form based
 # Example
 
 ```js
-import t from 'tcomb'
+import t from 'tcomb-form'
 
 const FormSchema = t.struct({
   name: t.String,         // a required string
