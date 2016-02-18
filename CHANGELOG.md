@@ -16,6 +16,7 @@
 
 - **New Feature**
     - now `options` can also be a function `(value: any) -> object`
+    - support for unions, fix #297
 
 ## v0.8.1
 
