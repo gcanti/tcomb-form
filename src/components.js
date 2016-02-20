@@ -152,7 +152,7 @@ export class Component extends React.Component {
     this.setState({ value })
   }
 
-  onChange(value) {
+  onChange = (value) => {
     this.setState({ value, isPristine: false }, () => {
       this.props.onChange(value, this.props.ctx.path)
     })
@@ -252,7 +252,7 @@ export class Component extends React.Component {
       error: this.getError(),
       hasError: this.hasError(),
       label: this.getLabel(),
-      onChange: this.onChange.bind(this),
+      onChange: this.onChange,
       config: this.getConfig(),
       value,
       disabled: options.disabled,
@@ -535,7 +535,7 @@ export class Struct extends Component {
     return new t.ValidationResult({errors, value})
   }
 
-  onChange(fieldName, fieldValue, path, kind) {
+  onChange = (fieldName, fieldValue, path, kind) => {
     const value = t.mixin({}, this.state.value)
     value[fieldName] = fieldValue
     this.setState({ value, isPristine: false }, () => {
@@ -686,7 +686,7 @@ export class List extends Component {
     return new t.ValidationResult({errors: errors, value: value})
   }
 
-  onChange(value, keys, path, kind) {
+  onChange = (value, keys, path, kind) => {
     const allkeys = toSameLength(value, keys, this.props.ctx.uidGenerator)
     this.setState({ value, keys: allkeys, isPristine: false }, () => {
       this.props.onChange(value, path, kind)
