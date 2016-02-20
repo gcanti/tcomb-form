@@ -119,6 +119,7 @@ export class Component extends React.Component {
     super(props)
     this.typeInfo = getTypeInfo(props.type)
     this.state = {
+      isPristine: true,
       hasError: false,
       value: this.getTransformer().format(props.value)
     }
@@ -152,7 +153,7 @@ export class Component extends React.Component {
   }
 
   onChange(value) {
-    this.setState({ value }, () => {
+    this.setState({ value, isPristine: false }, () => {
       this.props.onChange(value, this.props.ctx.path)
     })
   }
@@ -247,6 +248,7 @@ export class Component extends React.Component {
     return {
       typeInfo: this.typeInfo,
       path: this.props.ctx.path,
+      isPristine: this.state.isPristine,
       error: this.getError(),
       hasError: this.hasError(),
       label: this.getLabel(),
@@ -536,7 +538,7 @@ export class Struct extends Component {
   onChange(fieldName, fieldValue, path, kind) {
     const value = t.mixin({}, this.state.value)
     value[fieldName] = fieldValue
-    this.setState({ value }, () => {
+    this.setState({ value, isPristine: false }, () => {
       this.props.onChange(value, path, kind)
     })
   }
@@ -686,7 +688,7 @@ export class List extends Component {
 
   onChange(value, keys, path, kind) {
     const allkeys = toSameLength(value, keys, this.props.ctx.uidGenerator)
-    this.setState({ value, keys: allkeys }, () => {
+    this.setState({ value, keys: allkeys, isPristine: false }, () => {
       this.props.onChange(value, path, kind)
     })
   }

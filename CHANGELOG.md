@@ -17,6 +17,7 @@
 - **New Feature**
     - now `options` can also be a function `(value: any) -> object`
     - support for unions, fix #297
+    - add new `isPristine` field to components `state`
 
 ## v0.8.1
 
