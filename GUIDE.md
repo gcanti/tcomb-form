@@ -13,6 +13,7 @@ Table of Contents
       * [Accessing fields](#accessing-fields)
       * [Submitting the form](#submitting-the-form)
       * [Customised error messages](#customised-error-messages)
+      * [List with Dynamic Items](#list-with-dynamic-items-different-structs-based-on-selected-value)
   * [Types](#types)
     * [Required field](#required-field)
     * [Optional field](#optional-field)
@@ -292,6 +293,93 @@ const App = React.createClass({
 ### Customised error messages
 
 See [Error messages](#error-messages) section.
+
+### List with Dynamic Items (Different structs based on selected value)
+
+Lists of different types are not supported. This is because a `tcomb`'s list, by definition, contains only values of the same type. You can define a union though:
+
+```js
+const AccountType = t.enums.of([
+  'type 1',
+  'type 2',
+  'other'
+], 'AccountType')
+
+const KnownAccount = t.struct({
+  type: AccountType
+}, 'KnownAccount')
+
+// UnknownAccount extends KnownAccount so it owns also the type field
+const UnknownAccount = KnownAccount.extend({
+  label: t.String,
+}, 'UnknownAccount')
+
+// the union
+const Account = t.union([KnownAccount, UnknownAccount], 'Account')
+
+// the final form type
+const Type = t.list(Account)
+```
+
+Generally `tcomb`'s unions require a `dispatch` implementation in order to select the suitable type constructor for a given value and this would be the key in this use case:
+
+```js
+// if account type is 'other' return the UnknownAccount type
+Account.dispatch = value => value && value.type === 'other' ? UnknownAccount : KnownAccount
+```
+
+The complete example:
+
+```js
+import React from 'react'
+import t from 'tcomb-form'
+
+const AccountType = t.enums.of([
+  'type 1',
+  'type 2',
+  'other'
+], 'AccountType')
+
+const KnownAccount = t.struct({
+  type: AccountType
+}, 'KnownAccount')
+
+const UnknownAccount = KnownAccount.extend({
+  label: t.String,
+}, 'UnknownAccount')
+
+const Account = t.union([KnownAccount, UnknownAccount], 'Account')
+
+Account.dispatch = value => value && value.type === 'other' ? UnknownAccount : KnownAccount
+
+const Type = t.list(Account)
+
+const App = React.createClass({
+
+  onSubmit(evt) {
+    evt.preventDefault()
+    const v = this.refs.form.getValue()
+    if (v) {
+      console.log(v)
+    }
+  },
+
+  render() {
+    return (
+      <form onSubmit={this.onSubmit}>
+        <t.form.Form
+          ref="form"
+          type={Type}
+        />
+        <div className="form-group">
+          <button type="submit" className="btn btn-primary">Save</button>
+        </div>
+      </form>
+    )
+  }
+
+})
+```
 
 # Types
 
