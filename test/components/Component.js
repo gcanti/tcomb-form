@@ -4,7 +4,7 @@ import { Component, getComponent } from '../../src/components'
 import { ctx } from './util'
 
 tape('Component', ({ test }) => {
-  test('getComponent publi API', (assert) => {
+  test('getComponent public API', (assert) => {
     assert.plan(1)
     assert.ok(t.Function.is(getComponent))
   })
