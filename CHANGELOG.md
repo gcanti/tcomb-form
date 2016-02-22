@@ -12,6 +12,15 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.8.2
+
+- **New Feature**
+    - now `options` can also be a function `(value: any) -> object`
+    - support for unions, fix #297
+    - add new `isPristine` field to components `state`
+- **Documentation**
+    - add issue template (new GitHub feature)
+
 ## v0.8.1
 
 - **New Feature**

@@ -16,6 +16,23 @@ const noobj = Object.freeze({})
 const noarr = Object.freeze([])
 const noop = () => {}
 
+function getType(type, value) {
+  if (type.meta.kind === 'union') {
+    return type.dispatch(value)
+  }
+  return type
+}
+
+function getOptions(options, defaultOptions, value) {
+  if (t.Nil.is(options)) {
+    return defaultOptions
+  }
+  if (t.Function.is(options)) {
+    return options(value)
+  }
+  return options
+}
+
 function getFormComponent(type, options) {
   if (options.factory) {
     return options.factory
@@ -42,7 +59,7 @@ function getFormComponent(type, options) {
   case 'subtype' :
     return getFormComponent(type.meta.type, options)
   default :
-    t.fail(`[${SOURCE}] unsupported type ${name}`)
+    t.fail(`[${SOURCE}] unsupported kind ${type.meta.kind} for type ${name}`)
   }
 }
 
@@ -102,6 +119,7 @@ export class Component extends React.Component {
     super(props)
     this.typeInfo = getTypeInfo(props.type)
     this.state = {
+      isPristine: true,
       hasError: false,
       value: this.getTransformer().format(props.value)
     }
@@ -134,8 +152,8 @@ export class Component extends React.Component {
     this.setState({ value })
   }
 
-  onChange(value) {
-    this.setState({ value }, () => {
+  onChange = (value) => {
+    this.setState({ value, isPristine: false }, () => {
       this.props.onChange(value, this.props.ctx.path)
     })
   }
@@ -230,10 +248,11 @@ export class Component extends React.Component {
     return {
       typeInfo: this.typeInfo,
       path: this.props.ctx.path,
+      isPristine: this.state.isPristine,
       error: this.getError(),
       hasError: this.hasError(),
       label: this.getLabel(),
-      onChange: this.onChange.bind(this),
+      onChange: this.onChange,
       config: this.getConfig(),
       value,
       disabled: options.disabled,
@@ -516,10 +535,10 @@ export class Struct extends Component {
     return new t.ValidationResult({errors, value})
   }
 
-  onChange(fieldName, fieldValue, path, kind) {
+  onChange = (fieldName, fieldValue, path, kind) => {
     const value = t.mixin({}, this.state.value)
     value[fieldName] = fieldValue
-    this.setState({ value }, () => {
+    this.setState({ value, isPristine: false }, () => {
       this.props.onChange(value, path, kind)
     })
   }
@@ -548,14 +567,16 @@ export class Struct extends Component {
 
     for (const prop in props) {
       if (props.hasOwnProperty(prop)) {
-        const propType = props[prop]
-        const propOptions = options.fields && options.fields[prop] ? options.fields[prop] : noobj
+        const propValue = value[prop]
+        const propType = getType(props[prop], propValue)
+        const fieldsOptions = options.fields || noobj
+        const propOptions = getOptions(fieldsOptions[prop], noobj, propValue)
         inputs[prop] = React.createElement(getFormComponent(propType, propOptions), {
           key: prop,
           ref: prop,
           type: propType,
           options: propOptions,
-          value: value[prop],
+          value: propValue,
           onChange: this.onChange.bind(this, prop),
           ctx: {
             context: ctx.context,
@@ -665,14 +686,14 @@ export class List extends Component {
     return new t.ValidationResult({errors: errors, value: value})
   }
 
-  onChange(value, keys, path, kind) {
+  onChange = (value, keys, path, kind) => {
     const allkeys = toSameLength(value, keys, this.props.ctx.uidGenerator)
-    this.setState({ value, keys: allkeys }, () => {
+    this.setState({ value, keys: allkeys, isPristine: false }, () => {
       this.props.onChange(value, path, kind)
     })
   }
 
-  addItem(evt) {
+  addItem = (evt) => {
     evt.preventDefault()
     const value = this.state.value.concat(undefined)
     const keys = this.state.keys.concat(this.props.ctx.uidGenerator.next())
@@ -729,9 +750,10 @@ export class List extends Component {
     const config = this.getConfig()
     const templates = this.getTemplates()
     const value = this.state.value
-    const type = this.typeInfo.innerType.meta.type
-    const ItemComponent = getFormComponent(type, options.item || noobj)
     return value.map((itemValue, i) => {
+      const itemType = getType(this.typeInfo.innerType.meta.type, itemValue)
+      const itemOptions = getOptions(options.item, noobj, itemValue)
+      const ItemComponent = getFormComponent(itemType, itemOptions)
       const buttons = []
       if (!options.disableRemove) {
         buttons.push({
@@ -757,8 +779,8 @@ export class List extends Component {
       return {
         input: React.createElement(ItemComponent, {
           ref: i,
-          type,
-          options: options.item || noobj,
+          type: itemType,
+          options: itemOptions,
           value: itemValue,
           onChange: this.onItemChange.bind(this, i),
           ctx: {
@@ -785,7 +807,7 @@ export class List extends Component {
     locals.add = options.disableAdd ? null : {
       type: 'add',
       label: i18n.add,
-      click: this.addItem.bind(this)
+      click: this.addItem
     }
     locals.items = this.getItems()
     locals.className = options.className
@@ -816,16 +838,18 @@ export class Form extends React.Component {
   }
 
   render() {
-    const type = this.props.type
-    const options = this.props.options || noobj
     const { i18n, templates } = Form
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(t.isType(type), `[${SOURCE}] missing required prop type`)
-      assert(t.Object.is(options), `[${SOURCE}] prop options must be an object`)
+      assert(t.isType(this.props.type), `[${SOURCE}] missing required prop type`)
+      assert(t.maybe(t.Object).is(this.props.options) || t.Function.is(this.props.options), `[${SOURCE}] prop options, if specified, must be an object or a function returning an object`)
       assert(t.Object.is(templates), `[${SOURCE}] missing templates config`)
       assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`)
     }
+
+    const value = this.props.value
+    const type = getType(this.props.type, value)
+    const options = getOptions(this.props.options, noobj, value)
 
     // this is in the render method because I need this._reactInternalInstance
     const uidGenerator = this.getUIDGenerator()
@@ -834,7 +858,7 @@ export class Form extends React.Component {
       ref: 'input',
       type: type,
       options,
-      value: this.props.value,
+      value: value,
       onChange: this.props.onChange || noop,
       ctx: this.props.ctx || {
         context: this.props.context,
