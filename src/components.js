@@ -693,8 +693,7 @@ export class List extends Component {
     })
   }
 
-  addItem = (evt) => {
-    evt.preventDefault()
+  addItem = () => {
     const value = this.state.value.concat(undefined)
     const keys = this.state.keys.concat(this.props.ctx.uidGenerator.next())
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add')
@@ -706,8 +705,7 @@ export class List extends Component {
     this.onChange(value, this.state.keys, path, kind)
   }
 
-  removeItem(i, evt) {
-    evt.preventDefault()
+  removeItem(i) {
     const value = this.state.value.slice()
     value.splice(i, 1)
     const keys = this.state.keys.slice()
@@ -715,8 +713,7 @@ export class List extends Component {
     this.onChange(value, keys, this.props.ctx.path.concat(i), 'remove')
   }
 
-  moveUpItem(i, evt) {
-    evt.preventDefault()
+  moveUpItem(i) {
     if (i > 0) {
       this.onChange(
         move(this.state.value.slice(), i, i - 1),
@@ -727,8 +724,7 @@ export class List extends Component {
     }
   }
 
-  moveDownItem(i, evt) {
-    evt.preventDefault()
+  moveDownItem(i) {
     if (i < this.state.value.length - 1) {
       this.onChange(
         move(this.state.value.slice(), i, i + 1),

@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.8.3
+
+- **Polish**
+    - remove `evt.preventDefault()` calls
+
 ## v0.8.2
 
 - **New Feature**
