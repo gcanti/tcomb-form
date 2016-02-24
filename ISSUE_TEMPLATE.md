@@ -19,7 +19,7 @@ Tell us what happens instead
 2.
 3.
 
-### Console log (optional)
+### Stack trace and console log
 
 ```
 ```
