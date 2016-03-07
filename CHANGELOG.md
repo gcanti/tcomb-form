@@ -12,8 +12,12 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
-## v0.8.3
+## v0.9.0
 
+**Warning**. If you don't rely in your codebase on the property `maybe(MyType)(undefined) === null` this **is not a breaking change** for you.
+
+- **Breaking Change**
+    - upgrade to `tcomb-validation` v3.0.0
 - **Polish**
     - remove `evt.preventDefault()` calls
 

@@ -1,6 +1,6 @@
 {
   "name": "tcomb-form",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "lib/main.js",
   "files": [
@@ -30,7 +30,7 @@
   "dependencies": {
     "react": "^0.14.0",
     "tcomb-form-templates-bootstrap": "^0.1.0",
-    "tcomb-validation": "^2.2.0"
+    "tcomb-validation": "^3.0.0"
   },
   "devDependencies": {
     "babel": "^5.8.34",
