@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.1
+
+- **Bug Fix**
+    - upgrade to `tcomb-form-templates-bootstrap` v0.2, ref https://github.com/gcanti/tcomb-json-schema/issues/22
+
 ## v0.9.0
 
 **Warning**. If you don't rely in your codebase on the property `maybe(MyType)(undefined) === null` this **is not a breaking change** for you.
