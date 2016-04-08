@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.3
+
+- **Internal**
+    - Move React to peerDependecies and devDependencies, fix #313 (thanks @maksis)
+
 ## v0.9.2
 
 - **Internal**
