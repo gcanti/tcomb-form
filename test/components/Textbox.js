@@ -237,8 +237,8 @@ tape('Textbox', ({ test }) => {
         options: {},
         ctx: ctx
       }).getLocals().value,
-      null,
-      'default value should be null')
+      '',
+      'default value should be \'\'')
 
     assert.strictEqual(
       new Textbox({
