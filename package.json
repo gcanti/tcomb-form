@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/gcanti/tcomb-form",
   "dependencies": {
-    "react": "^0.14.0",
     "tcomb-form-templates-bootstrap": "^0.2.0",
     "tcomb-validation": "^3.0.0"
   },
@@ -47,9 +46,13 @@
     "karma-firefox-launcher": "^0.1.4",
     "karma-tap": "1.0.3",
     "karma-webpack": "^1.7.0",
-    "react-dom": "^0.14.3",
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0",
     "tape": "4.0.0",
     "webpack": "^1.12.2"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.0.0"
   },
   "tags": [
     "form",
