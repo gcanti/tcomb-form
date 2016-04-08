@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.2
+
+- **Internal**
+    - use empty string instead of null in textbox format, fix #308 (thanks @snadn). Reference https://facebook.github.io/react/blog/#new-deprecations-introduced-with-a-warning
+
 ## v0.9.1
 
 - **Bug Fix**
