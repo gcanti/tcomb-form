@@ -288,12 +288,12 @@ function parseNumber(value) {
 export class Textbox extends Component {
 
   static transformer = {
-    format: value => Nil.is(value) ? null : value,
+    format: value => Nil.is(value) ? '' : value,
     parse: toNull
   }
 
   static numberTransformer = {
-    format: value => Nil.is(value) ? null : String(value),
+    format: value => Nil.is(value) ? '' : String(value),
     parse: parseNumber
   }
 
