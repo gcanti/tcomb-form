@@ -83,7 +83,7 @@ export function move(arr, fromIndex, toIndex) {
 export class UIDGenerator {
 
   constructor(seed) {
-    this.seed = seed
+    this.seed = 'tfid-' + seed + '-'
     this.counter = 0
   }
 
