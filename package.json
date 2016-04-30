@@ -1,6 +1,6 @@
 {
   "name": "tcomb-form",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "React.js powered UI library for developing forms writing less code",
   "main": "lib/main.js",
   "files": [

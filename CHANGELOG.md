@@ -12,6 +12,12 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.4
+
+- **Bug Fix**
+    - fix broken server side rendering with React v15.0.0, fix https://github.com/gcanti/tcomb-form-templates-bootstrap/issues/7
+    - Optional or subtyped unions, fix #319
+
 ## v0.9.3
 
 - **Internal**
