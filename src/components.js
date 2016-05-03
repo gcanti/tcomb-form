@@ -6,7 +6,9 @@ import {
   getTypeInfo,
   getOptionsOfEnum,
   move,
-  UIDGenerator
+  UIDGenerator,
+  getTypeFromUnion,
+  getOptions
 } from './util'
 
 const Nil = t.Nil
@@ -15,23 +17,6 @@ const SOURCE = 'tcomb-form'
 const noobj = Object.freeze({})
 const noarr = Object.freeze([])
 const noop = () => {}
-
-function getType(type, value) {
-  if (type.meta.kind === 'union') {
-    return type.dispatch(value)
-  }
-  return type
-}
-
-function getOptions(options, defaultOptions, value) {
-  if (t.Nil.is(options)) {
-    return defaultOptions
-  }
-  if (t.Function.is(options)) {
-    return options(value)
-  }
-  return options
-}
 
 function getFormComponent(type, options) {
   if (options.factory) {
@@ -568,7 +553,7 @@ export class Struct extends Component {
     for (const prop in props) {
       if (props.hasOwnProperty(prop)) {
         const propValue = value[prop]
-        const propType = getType(props[prop], propValue)
+        const propType = getTypeFromUnion(props[prop], propValue)
         const fieldsOptions = options.fields || noobj
         const propOptions = getOptions(fieldsOptions[prop], noobj, propValue)
         inputs[prop] = React.createElement(getFormComponent(propType, propOptions), {
@@ -747,7 +732,7 @@ export class List extends Component {
     const templates = this.getTemplates()
     const value = this.state.value
     return value.map((itemValue, i) => {
-      const itemType = getType(this.typeInfo.innerType.meta.type, itemValue)
+      const itemType = getTypeFromUnion(this.typeInfo.innerType.meta.type, itemValue)
       const itemOptions = getOptions(options.item, noobj, itemValue)
       const ItemComponent = getFormComponent(itemType, itemOptions)
       const buttons = []
@@ -829,7 +814,10 @@ export class Form extends React.Component {
   }
 
   getUIDGenerator() {
-    this.uidGenerator = this.uidGenerator || new UIDGenerator(this._reactInternalInstance ? this._reactInternalInstance._rootNodeID : '')
+    const seed = this._reactInternalInstance && this._reactInternalInstance._rootNodeID ?
+      this._reactInternalInstance._rootNodeID :
+      this._reactInternalInstance._nativeContainerInfo._idCounter
+    this.uidGenerator = this.uidGenerator || new UIDGenerator(seed)
     return this.uidGenerator
   }
 
@@ -844,10 +832,11 @@ export class Form extends React.Component {
     }
 
     const value = this.props.value
-    const type = getType(this.props.type, value)
+    const type = getTypeFromUnion(this.props.type, value)
     const options = getOptions(this.props.options, noobj, value)
 
-    // this is in the render method because I need this._reactInternalInstance
+    // this is in the render method because I need this._reactInternalInstance._rootNodeID in React ^0.14.0
+    // and this._reactInternalInstance._nativeContainerInfo._idCounter in React ^15.0.0
     const uidGenerator = this.getUIDGenerator()
 
     return React.createElement(getFormComponent(type, options), {

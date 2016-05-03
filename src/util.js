@@ -83,7 +83,7 @@ export function move(arr, fromIndex, toIndex) {
 export class UIDGenerator {
 
   constructor(seed) {
-    this.seed = seed
+    this.seed = 'tfid-' + seed + '-'
     this.counter = 0
   }
 
@@ -92,3 +92,45 @@ export class UIDGenerator {
   }
 
 }
+
+function containsUnion(type) {
+  switch (type.meta.kind) {
+  case 'union' :
+    return true
+  case 'maybe' :
+  case 'subtype' :
+    return containsUnion(type.meta.type)
+  default :
+    return false
+  }
+}
+
+function getUnionConcreteType(type, value) {
+  const kind = type.meta.kind
+  if (kind === 'union') {
+    return type.dispatch(value)
+  } else if (kind === 'maybe') {
+    return t.maybe(getUnionConcreteType(type.meta.type, value), type.meta.name)
+  } else if (kind === 'subtype') {
+    return t.subtype(getUnionConcreteType(type.meta.type, value), type.meta.predicate, type.meta.name)
+  }
+}
+
+export function getTypeFromUnion(type, value) {
+  if (containsUnion(type)) {
+    return getUnionConcreteType(type, value)
+  }
+  return type
+}
+
+export function getOptions(options, defaultOptions, value) {
+  if (t.Nil.is(options)) {
+    return defaultOptions
+  }
+  if (t.Function.is(options)) {
+    return options(value)
+  }
+  return options
+}
+
+
