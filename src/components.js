@@ -638,7 +638,9 @@ export class List extends Component {
   getValue() {
     const value = []
     for (let i = 0, len = this.state.value.length; i < len; i++ ) {
-      value.push(this.refs[i].getValue())
+      if (this.refs.hasOwnProperty(i)) {
+        value.push(this.refs[i].getValue())
+      }
     }
     return this.getTransformer().parse(value)
   }
