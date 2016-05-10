@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.5
+
+- **Bug Fix**
+    - check for existing index in `List`'s `getValue` method, fix #322 (thanks @rajeshps)
+
 ## v0.9.4
 
 - **Bug Fix**
