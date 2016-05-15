@@ -127,7 +127,7 @@ export function getTypeFromUnion(type, value) {
   return type
 }
 
-export function getOptions(options, defaultOptions, value) {
+export function getComponentOptions(options, defaultOptions, value) {
   if (t.Nil.is(options)) {
     return defaultOptions
   }
