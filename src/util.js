@@ -108,7 +108,11 @@ function containsUnion(type) {
 function getUnionConcreteType(type, value) {
   const kind = type.meta.kind
   if (kind === 'union') {
-    return type.dispatch(value)
+    const concreteType = type.dispatch(value)
+    if (process.env.NODE_ENV !== 'production') {
+      t.assert(t.isType(concreteType), () => 'Invalid value ' + t.assert.stringify(value) + ' supplied to ' + t.getTypeName(type) + ' (no constructor returned by dispatch)' )
+    }
+    return concreteType
   } else if (kind === 'maybe') {
     return t.maybe(getUnionConcreteType(type.meta.type, value), type.meta.name)
   } else if (kind === 'subtype') {
