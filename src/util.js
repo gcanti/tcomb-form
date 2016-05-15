@@ -127,12 +127,35 @@ export function getTypeFromUnion(type, value) {
   return type
 }
 
-export function getComponentOptions(options, defaultOptions, value) {
+function getUnion(type) {
+  if (type.meta.kind === 'union') {
+    return type
+  }
+  return getUnion(type.meta.type)
+}
+
+function findIndex(arr, element) {
+  for (let i = 0, len = arr.length; i < len; i++ ) {
+    if (arr[i] === element) {
+      return i
+    }
+  }
+  return -1
+}
+
+export function getComponentOptions(options, defaultOptions, value, type) {
   if (t.Nil.is(options)) {
     return defaultOptions
   }
   if (t.Function.is(options)) {
     return options(value)
+  }
+  if (t.Array.is(options) && containsUnion(type)) {
+    const union = getUnion(type)
+    const concreteType = union.dispatch(value)
+    const index = findIndex(union.meta.types, concreteType)
+    // recurse
+    return getComponentOptions(options[index], defaultOptions, value, concreteType)
   }
   return options
 }
