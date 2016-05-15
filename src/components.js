@@ -555,7 +555,7 @@ export class Struct extends Component {
         const propValue = value[prop]
         const propType = getTypeFromUnion(props[prop], propValue)
         const fieldsOptions = options.fields || noobj
-        const propOptions = getOptions(fieldsOptions[prop], noobj, propValue)
+        const propOptions = getOptions(fieldsOptions[prop], noobj, propValue, props[prop])
         inputs[prop] = React.createElement(getFormComponent(propType, propOptions), {
           key: prop,
           ref: prop,
@@ -735,7 +735,7 @@ export class List extends Component {
     const value = this.state.value
     return value.map((itemValue, i) => {
       const itemType = getTypeFromUnion(this.typeInfo.innerType.meta.type, itemValue)
-      const itemOptions = getOptions(options.item, noobj, itemValue)
+      const itemOptions = getOptions(options.item, noobj, itemValue, this.typeInfo.innerType.meta.type)
       const ItemComponent = getFormComponent(itemType, itemOptions)
       const buttons = []
       if (!options.disableRemove) {
@@ -835,7 +835,7 @@ export class Form extends React.Component {
 
     const value = this.props.value
     const type = getTypeFromUnion(this.props.type, value)
-    const options = getOptions(this.props.options, noobj, value)
+    const options = getOptions(this.props.options, noobj, value, this.props.type)
 
     // this is in the render method because I need this._reactInternalInstance._rootNodeID in React ^0.14.0
     // and this._reactInternalInstance._nativeContainerInfo._idCounter in React ^15.0.0

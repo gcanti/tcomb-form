@@ -123,12 +123,22 @@ export function getTypeFromUnion(type, value) {
   return type
 }
 
-export function getOptions(options, defaultOptions, value) {
+export function getOptions(options, defaultOptions, value, type) {
   if (t.Nil.is(options)) {
     return defaultOptions
   }
   if (t.Function.is(options)) {
     return options(value)
+  }
+  if (containsUnion(type)) {
+    const concreteTypeName = getUnionConcreteType(type, value).meta.name
+    let concreteOptions = options
+    if (options.case) {
+      const concreteTypeOptions = options.case[concreteTypeName] || {}
+      concreteOptions = merge(options, concreteTypeOptions)
+      delete concreteOptions.case
+    }
+    return concreteOptions
   }
   return options
 }
