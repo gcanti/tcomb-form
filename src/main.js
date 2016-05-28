@@ -2,10 +2,10 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Giulio Canti
+ * Copyright (c) 2014 Giulio Canti
  *
  */
-import t from './'
+import t from './index.js'
 import templates from 'tcomb-form-templates-bootstrap'
 import i18n from './i18n/en'
 
