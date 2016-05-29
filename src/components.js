@@ -830,7 +830,7 @@ export class Form extends React.Component {
 
     if (process.env.NODE_ENV !== 'production') {
       assert(t.isType(this.props.type), `[${SOURCE}] missing required prop type`)
-      assert(t.maybe(t.Object).is(this.props.options) || t.Function.is(this.props.options), `[${SOURCE}] prop options, if specified, must be an object or a function returning an object`)
+      assert(t.maybe(t.Object).is(this.props.options) || t.Function.is(this.props.options) || t.list(t.maybe(t.Object)).is(this.props.options), `[${SOURCE}] prop options, if specified, must be an object, a function returning the options or a list of options for unions`)
       assert(t.Object.is(templates), `[${SOURCE}] missing templates config`)
       assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`)
     }
