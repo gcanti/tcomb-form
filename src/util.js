@@ -108,7 +108,11 @@ function containsUnion(type) {
 function getUnionConcreteType(type, value) {
   const kind = type.meta.kind
   if (kind === 'union') {
-    return type.dispatch(value)
+    const concreteType = type.dispatch(value)
+    if (process.env.NODE_ENV !== 'production') {
+      t.assert(t.isType(concreteType), () => 'Invalid value ' + t.assert.stringify(value) + ' supplied to ' + t.getTypeName(type) + ' (no constructor returned by dispatch)' )
+    }
+    return concreteType
   } else if (kind === 'maybe') {
     return t.maybe(getUnionConcreteType(type.meta.type, value), type.meta.name)
   } else if (kind === 'subtype') {
@@ -123,12 +127,35 @@ export function getTypeFromUnion(type, value) {
   return type
 }
 
-export function getOptions(options, defaultOptions, value) {
+function getUnion(type) {
+  if (type.meta.kind === 'union') {
+    return type
+  }
+  return getUnion(type.meta.type)
+}
+
+function findIndex(arr, element) {
+  for (let i = 0, len = arr.length; i < len; i++ ) {
+    if (arr[i] === element) {
+      return i
+    }
+  }
+  return -1
+}
+
+export function getComponentOptions(options, defaultOptions, value, type) {
   if (t.Nil.is(options)) {
     return defaultOptions
   }
   if (t.Function.is(options)) {
     return options(value)
+  }
+  if (t.Array.is(options) && containsUnion(type)) {
+    const union = getUnion(type)
+    const concreteType = union.dispatch(value)
+    const index = findIndex(union.meta.types, concreteType)
+    // recurse
+    return getComponentOptions(options[index], defaultOptions, value, concreteType)
   }
   return options
 }

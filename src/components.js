@@ -8,7 +8,7 @@ import {
   move,
   UIDGenerator,
   getTypeFromUnion,
-  getOptions
+  getComponentOptions
 } from './util'
 
 const Nil = t.Nil
@@ -552,10 +552,11 @@ export class Struct extends Component {
 
     for (const prop in props) {
       if (props.hasOwnProperty(prop)) {
+        const type = props[prop]
         const propValue = value[prop]
-        const propType = getTypeFromUnion(props[prop], propValue)
+        const propType = getTypeFromUnion(type, propValue)
         const fieldsOptions = options.fields || noobj
-        const propOptions = getOptions(fieldsOptions[prop], noobj, propValue)
+        const propOptions = getComponentOptions(fieldsOptions[prop], noobj, propValue, type)
         inputs[prop] = React.createElement(getFormComponent(propType, propOptions), {
           key: prop,
           ref: prop,
@@ -734,8 +735,9 @@ export class List extends Component {
     const templates = this.getTemplates()
     const value = this.state.value
     return value.map((itemValue, i) => {
-      const itemType = getTypeFromUnion(this.typeInfo.innerType.meta.type, itemValue)
-      const itemOptions = getOptions(options.item, noobj, itemValue)
+      const type = this.typeInfo.innerType.meta.type
+      const itemType = getTypeFromUnion(type, itemValue)
+      const itemOptions = getComponentOptions(options.item, noobj, itemValue, type)
       const ItemComponent = getFormComponent(itemType, itemOptions)
       const buttons = []
       if (!options.disableRemove) {
@@ -828,14 +830,14 @@ export class Form extends React.Component {
 
     if (process.env.NODE_ENV !== 'production') {
       assert(t.isType(this.props.type), `[${SOURCE}] missing required prop type`)
-      assert(t.maybe(t.Object).is(this.props.options) || t.Function.is(this.props.options), `[${SOURCE}] prop options, if specified, must be an object or a function returning an object`)
+      assert(t.maybe(t.Object).is(this.props.options) || t.Function.is(this.props.options) || t.list(t.maybe(t.Object)).is(this.props.options), `[${SOURCE}] prop options, if specified, must be an object, a function returning the options or a list of options for unions`)
       assert(t.Object.is(templates), `[${SOURCE}] missing templates config`)
       assert(t.Object.is(i18n), `[${SOURCE}] missing i18n config`)
     }
 
     const value = this.props.value
     const type = getTypeFromUnion(this.props.type, value)
-    const options = getOptions(this.props.options, noobj, value)
+    const options = getComponentOptions(this.props.options, noobj, value, this.props.type)
 
     // this is in the render method because I need this._reactInternalInstance._rootNodeID in React ^0.14.0
     // and this._reactInternalInstance._nativeContainerInfo._idCounter in React ^15.0.0
