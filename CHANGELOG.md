@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.7
+
+- **New Feature**
+    - add support for union options (thanks @minedeljkovic)
+
 ## v0.9.6
 
 - **Bug Fix**

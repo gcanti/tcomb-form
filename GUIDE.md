@@ -39,6 +39,7 @@
     - [Items configuration](#items-configuration)
     - [Internationalization](#internationalization)
     - [Buttons configuration](#buttons-configuration)
+  - [Union options](#union-options)
   - [Textbox options](#textbox-options)
     - [Type attribute](#type-attribute)
     - [Label](#label)
@@ -860,6 +861,42 @@ You can prevent operations on lists with the following options:
 const options = {
   disableOrder: true
 };
+```
+
+## Union options
+
+```js
+const AccountType = t.enums.of([
+  'type 1',
+  'type 2',
+  'other'
+], 'AccountType')
+
+const KnownAccount = t.struct({
+  type: AccountType
+}, 'KnownAccount')
+
+// UnknownAccount extends KnownAccount so it owns also the type field
+const UnknownAccount = KnownAccount.extend({
+  label: t.String,
+}, 'UnknownAccount')
+
+// the union
+const Account = t.union([KnownAccount, UnknownAccount], 'Account')
+
+// the final form type
+const Type = t.list(Account)
+
+const options = {
+  item: [ // one options object for each concrete type of the union
+    {
+      label: 'KnownAccount'
+    },
+    {
+      label: 'UnknownAccount'
+    }
+  ]
+}
 ```
 
 ## Textbox options
