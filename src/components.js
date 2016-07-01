@@ -35,6 +35,7 @@ function getFormComponent(type, options) {
     }
     return Textbox // eslint-disable-line no-use-before-define
   case 'struct' :
+  case 'interface' :
     return Struct // eslint-disable-line no-use-before-define
   case 'list' :
     return List // eslint-disable-line no-use-before-define
@@ -475,16 +476,16 @@ export class Struct extends Component {
     Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors())
   }
 
-  getValue() {
-    const value = {}
-    const props = this.getTypeProps()
-    for (const ref in props) {
-      if (this.refs.hasOwnProperty(ref)) {
-        value[ref] = this.refs[ref].getValue()
-      }
-    }
-    return this.getTransformer().parse(value)
-  }
+  // getValue() {
+  //   const value = {}
+  //   const props = this.getTypeProps()
+  //   for (const ref in props) {
+  //     if (this.refs.hasOwnProperty(ref)) {
+  //       value[ref] = this.refs[ref].getValue()
+  //     }
+  //   }
+  //   return this.getTransformer().parse(value)
+  // }
 
   validate() {
     let value = {}
@@ -508,6 +509,7 @@ export class Struct extends Component {
 
     if (errors.length === 0) {
       const InnerType = this.typeInfo.innerType
+      value = this.getTransformer().parse(value)
       value = new InnerType(value)
       if (this.typeInfo.isSubtype && errors.length === 0) {
         result = t.validate(value, this.props.type, this.getValidationOptions())
@@ -636,18 +638,18 @@ export class List extends Component {
     Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors())
   }
 
-  getValue() {
-    const value = []
-    for (let i = 0, len = this.state.value.length; i < len; i++ ) {
-      if (this.refs.hasOwnProperty(i)) {
-        value.push(this.refs[i].getValue())
-      }
-    }
-    return this.getTransformer().parse(value)
-  }
+  // getValue() {
+  //   const value = []
+  //   for (let i = 0, len = this.state.value.length; i < len; i++ ) {
+  //     if (this.refs.hasOwnProperty(i)) {
+  //       value.push(this.refs[i].getValue())
+  //     }
+  //   }
+  //   return this.getTransformer().parse(value)
+  // }
 
   validate() {
-    const value = []
+    let value = []
     let errors = []
     let hasError = false
     let result
@@ -665,6 +667,7 @@ export class List extends Component {
 
     // handle subtype
     if (this.typeInfo.isSubtype && errors.length === 0) {
+      value = this.getTransformer().parse(value)
       result = t.validate(value, this.props.type, this.getValidationOptions())
       hasError = !result.isValid()
       errors = errors.concat(result.errors)

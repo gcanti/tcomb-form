@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.8
+
+- **New Feature**
+    - add support for interfaces (tcomb ^3.1.0), fix #341 (@gcanti)
+
 ## v0.9.7
 
 - **New Feature**
