@@ -14,7 +14,10 @@
 
 ## v0.9.8
 
-- **New Feature**
+- **Bug Fix**
+    - `_nativeContainerInfo` no longer exists in React v15.2.0, use `_hostContainerInfo` instead, fix #345 (thanks @kikoanis)
+    - `transformer.parse` was not called for structs and lists (@gcanti)
+- **Experimental**
     - add support for interfaces (tcomb ^3.1.0), fix #341 (@gcanti)
 
 ## v0.9.7
