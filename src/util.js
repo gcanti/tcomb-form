@@ -114,9 +114,15 @@ function getUnionConcreteType(type, value) {
     }
     return concreteType
   } else if (kind === 'maybe') {
-    return t.maybe(getUnionConcreteType(type.meta.type, value), type.meta.name)
+    const maybeConcrete = t.maybe(getUnionConcreteType(type.meta.type, value), type.meta.name)
+    maybeConcrete.getValidationErrorMessage = type.getValidationErrorMessage
+    maybeConcrete.getTcombFormFactory = type.getTcombFormFactory
+    return maybeConcrete
   } else if (kind === 'subtype') {
-    return t.subtype(getUnionConcreteType(type.meta.type, value), type.meta.predicate, type.meta.name)
+    const subtypeConcrete = t.subtype(getUnionConcreteType(type.meta.type, value), type.meta.predicate, type.meta.name)
+    subtypeConcrete.getValidationErrorMessage = type.getValidationErrorMessage
+    subtypeConcrete.getTcombFormFactory = type.getTcombFormFactory
+    return subtypeConcrete
   }
 }
 
