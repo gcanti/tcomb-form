@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.9
+
+- **Bug Fix**
+    - retain static functions when constructing concrete type from union (@minedeljkovic)
+
 ## v0.9.8
 
 - **Bug Fix**
