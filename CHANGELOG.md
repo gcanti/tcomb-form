@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.10
+
+- **Bug Fix**
+    - struct's and list's validate() now set hasError to true when there are errors, fix #350 (@gcanti, thanks @volkanunsal)
+
 ## v0.9.9
 
 - **Bug Fix**
