@@ -25,7 +25,7 @@ JavaScript Preprocessor: Babel
 
 - //cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react.js
 - //cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react-dom.js
-- https://npmcdn.com/tcomb-form/dist/tcomb-form.js (or https://npmcdn.com/tcomb-form/dist/tcomb-form.min.js)
+- https://unpkg.com/tcomb-form/dist/tcomb-form.js (or https://unpkg.com/tcomb-form/dist/tcomb-form.min.js)
 
 ## Pull Request Guidelines
 
