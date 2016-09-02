@@ -87,7 +87,7 @@
 ## v0.8.1
 
 - **New Feature**
-    - add dist configuration for [npmcdn](https://npmcdn.com/)
+    - add dist configuration for [unpkg](https://unpkg.com/)
 
 ## v0.8.0
 
