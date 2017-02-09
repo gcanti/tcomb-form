@@ -220,7 +220,7 @@ const App = React.createClass({
     if (value) {
       console.log(value);
       // clear all fields after submit
-      this.clearForm();
+      this.resetForm();
     }
   },
 
