@@ -149,7 +149,7 @@ function findIndex(arr, element) {
   return -1
 }
 
-export function getComponentOptions(options, defaultOptions, value, type) {
+export function getBaseComponentOptions(options, defaultOptions, value, type) {
   if (t.Nil.is(options)) {
     return defaultOptions
   }
@@ -161,9 +161,15 @@ export function getComponentOptions(options, defaultOptions, value, type) {
     const concreteType = union.dispatch(value)
     const index = findIndex(union.meta.types, concreteType)
     // recurse
-    return getComponentOptions(options[index], defaultOptions, value, concreteType)
+    return getComponentOptions(options[index], defaultOptions, value, concreteType) // eslint-disable-line no-use-before-define
   }
   return options
 }
 
-
+export function getComponentOptions(options, defaultOptions, value, type) {
+  const opts = getBaseComponentOptions(options, defaultOptions, value, type)
+  if (t.Function.is(type.getTcombFormOptions)) {
+    return type.getTcombFormOptions(opts)
+  }
+  return opts
+}
