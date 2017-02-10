@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## v0.9.11
+
+- **Experimental**
+    - optional `getTcombFormOptions` function on types
+
 ## v0.9.10
 
 - **Bug Fix**
