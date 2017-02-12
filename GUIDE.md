@@ -60,6 +60,7 @@
   - [Transformers](#transformers)
   - [Custom factories](#custom-factories)
   - [getTcombFormFactory](#gettcombformfactory)
+  - [getTcombFormOptions](#gettcombformoptions)
 - [Bootstrap extras](#bootstrap-extras)
   - [Textbox](#textbox)
     - [Addons](#addons)
@@ -1446,6 +1447,45 @@ const Type = t.struct({
 
 const options = {};
 ```
+
+## getTcombFormOptions
+
+If a type owns a `getTcombFormOptions` static function, tcomb-form will call it and use the result to populate the rendering options.
+
+For example, the following two code snippets behave the same:
+
+```js
+const Message = t.maybe(t.String);
+const Textbox = t.struct({
+  message: Message
+});
+
+Message.getTcombFormOptions = formOptions => ({
+  help: <span>Enter text here!</span>
+});
+
+<Form type={Textbox} />
+```
+
+```js
+const Textbox = t.struct({
+  message: t.maybe(t.String)
+});
+
+const options = {
+  fields: {
+    message: {
+      help: <span>Enter text here!</span>
+    }
+  }
+};
+
+<Form type={Textbox} options={options} />
+```
+
+You can mix and match `Form`'s `options` prop and `getTcombFormOptions` as you see fit. The `formOptions` parameter passed to `getTcombFormOptions` contains the rendering options for this type as passed in via `Form`'s `options` prop, if any. 
+
+`getTcombFormOptions` is particularly helpful to keep code easy to follow when using tcomb-form on deeply nested data structures.
 
 # Bootstrap extras
 
