@@ -659,8 +659,8 @@ export class List extends Component {
     })
   }
 
-  addItem = () => {
-    const value = this.state.value.concat(undefined)
+  addItem = item => {
+    const value = this.state.value.concat(item)
     const keys = this.state.keys.concat(this.props.ctx.uidGenerator.next())
     this.onChange(value, keys, this.props.ctx.path.concat(value.length - 1), 'add')
   }
