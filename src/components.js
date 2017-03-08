@@ -265,7 +265,7 @@ function toNull(value) {
 
 function parseNumber(value) {
   const n = parseFloat(value)
-  const isNumeric = (value - n + 1) >= 0
+  const isNumeric = typeof n === 'number' && isFinite(n)
   return isNumeric ? n : toNull(value)
 }
 
