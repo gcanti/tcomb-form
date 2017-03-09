@@ -265,7 +265,7 @@ function toNull(value) {
 
 function parseNumber(value) {
   const n = parseFloat(value)
-  const isNumeric = (value - n + 1) >= 0
+  const isNumeric = value == n // eslint-disable-line eqeqeq
   return isNumeric ? n : toNull(value)
 }
 
