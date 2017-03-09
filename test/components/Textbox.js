@@ -262,7 +262,7 @@ tape('Textbox', ({ test }) => {
   })
 
   test('transformer', (assert) => {
-    assert.plan(1)
+    assert.plan(13)
 
     assert.deepEqual(
       new Textbox({
@@ -273,6 +273,21 @@ tape('Textbox', ({ test }) => {
       }).getLocals().value,
       ['a', 'b'],
       'should handle transformer option (format)')
+
+    const { parse } = Textbox.numberTransformer
+    assert.equal(parse(''), null)
+    assert.equal(parse(' \r\n\t'), null)
+    assert.equal(parse('a'), 'a')
+    assert.equal(parse('1'), 1)
+    assert.equal(parse('1.2a'), '1.2a')
+    assert.equal(parse('1.a2'), '1.a2')
+    assert.equal(parse('1a2'), '1a2')
+    assert.equal(parse('1 2'), '1 2')
+    assert.equal(parse(true), true)
+    assert.equal(parse(null), null)
+    assert.equal(parse(undefined), null)
+    const objValue = { foo: 'bar' }
+    assert.equal(parse(objValue), objValue)
   })
 
   test('hasError', (assert) => {
