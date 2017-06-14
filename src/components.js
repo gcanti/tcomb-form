@@ -116,17 +116,18 @@ export class Component extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    const { props, state } = this
+    const nextPath = Boolean(nextProps.ctx) && nextProps.ctx.path
+    const curPath = Boolean(props.ctx) && props.ctx.path
+
     const should = (
-      nextState.value !== this.state.value ||
-      nextState.hasError !== this.state.hasError ||
-      nextProps.options !== this.props.options ||
-      nextProps.type !== this.props.type
+      nextState.value !== state.value ||
+      nextState.hasError !== state.hasError ||
+      nextProps.options !== props.options ||
+      nextProps.type !== props.type ||
+      nextPath !== curPath
     )
-    // console.log(nextState.value !== this.state.value,
-    //   nextState.hasError !== this.state.hasError,
-    //   nextProps.options !== this.props.options,
-    //   nextProps.type !== this.props.type,
-    //   should)
+
     return should
   }
 
