@@ -8,7 +8,8 @@ import {
   move,
   UIDGenerator,
   getTypeFromUnion,
-  getComponentOptions
+  getComponentOptions,
+  isArraysDiffers
 } from './util'
 
 const Nil = t.Nil
@@ -125,7 +126,7 @@ export class Component extends React.Component {
       nextState.hasError !== state.hasError ||
       nextProps.options !== props.options ||
       nextProps.type !== props.type ||
-      nextPath !== curPath
+      isArraysDiffers(nextPath, curPath)
     )
 
     return should
