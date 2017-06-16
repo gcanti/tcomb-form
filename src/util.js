@@ -173,3 +173,23 @@ export function getComponentOptions(options, defaultOptions, value, type) {
   }
   return opts
 }
+
+export function isArraysDiffers(array, other) {
+  if (array === other) {
+    return false
+  }
+
+  const { length } = array
+  if (length !== other.length) {
+    return true
+  }
+
+  let index = -1
+  while (++index < length) {
+    if (array[index] !== other[index]) {
+      return true
+    }
+  }
+
+  return false
+}
