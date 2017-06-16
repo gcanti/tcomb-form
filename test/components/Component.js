@@ -1,5 +1,7 @@
 import tape from 'tape'
+import React from 'react'
 import t from 'tcomb-validation'
+import ShallowRenderer from 'react-test-renderer/shallow'
 import { Component, getComponent } from '../../src/components'
 import { ctx } from './util'
 
@@ -221,5 +223,44 @@ tape('Component', ({ test }) => {
       }).getId(),
       'myid',
       'should return the provided id')
+  })
+
+  test('re-render on path change', (assert) => {
+    assert.plan(2)
+
+    let renderCallsNum = 0
+
+    class TestComponent extends Component {
+      render() {
+        renderCallsNum++
+        return null
+      }
+    }
+
+    const renderer = new ShallowRenderer()
+
+    const baseProps = {
+      options: {},
+    }
+    const elementA = React.createElement(TestComponent, {
+      ...baseProps,
+      ctx: {
+        ...ctx,
+        path: ['foo']
+      }
+    })
+    const elementB = React.createElement(TestComponent, {
+      ...baseProps,
+      ctx: {
+        ...ctx,
+        path: ['bar']
+      }
+    })
+
+    renderer.render(elementA)
+    assert.strictEqual(renderCallsNum, 1, '#1.1')
+
+    renderer.render(elementB)
+    assert.strictEqual(renderCallsNum, 2, '#1.2')
   })
 })
