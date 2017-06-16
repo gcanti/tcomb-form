@@ -1,5 +1,5 @@
 import tape from 'tape'
-import { humanize, move, isArraysDiffers } from '../src/util'
+import { humanize, move, isArraysShallowDiffers } from '../src/util'
 
 tape('util', ({ test }) => {
   test('humanize', (assert) => {
@@ -16,20 +16,20 @@ tape('util', ({ test }) => {
     assert.deepEqual(actual, expected)
   })
 
-  test('isArraysDiffers', (assert) => {
+  test('isArraysShallowDiffers', (assert) => {
     assert.plan(4)
 
     const array = ['foo', 1]
     let other = ['bar', 1]
-    assert.equal(isArraysDiffers(array, other), true)
+    assert.equal(isArraysShallowDiffers(array, other), true)
 
     other[0] = 'foo'
-    assert.equal(isArraysDiffers(array, other), false)
+    assert.equal(isArraysShallowDiffers(array, other), false)
 
     other.push('baz')
-    assert.equal(isArraysDiffers(array, other), true)
+    assert.equal(isArraysShallowDiffers(array, other), true)
 
     other = array
-    assert.equal(isArraysDiffers(array, other), false)
+    assert.equal(isArraysShallowDiffers(array, other), false)
   })
 })

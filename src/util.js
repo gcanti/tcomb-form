@@ -174,7 +174,7 @@ export function getComponentOptions(options, defaultOptions, value, type) {
   return opts
 }
 
-export function isArraysDiffers(array, other) {
+export function isArraysShallowDiffers(array, other) {
   if (array === other) {
     return false
   }

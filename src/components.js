@@ -9,7 +9,7 @@ import {
   UIDGenerator,
   getTypeFromUnion,
   getComponentOptions,
-  isArraysDiffers
+  isArraysShallowDiffers
 } from './util'
 
 const Nil = t.Nil
@@ -126,7 +126,7 @@ export class Component extends React.Component {
       nextState.hasError !== state.hasError ||
       nextProps.options !== props.options ||
       nextProps.type !== props.type ||
-      isArraysDiffers(nextPath, curPath)
+      isArraysShallowDiffers(nextPath, curPath)
     )
 
     return should
