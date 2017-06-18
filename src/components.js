@@ -107,7 +107,8 @@ export class Component extends React.Component {
     this.typeInfo = getTypeInfo(props.type)
     this.state = {
       isPristine: true,
-      hasError: false,
+      hasError: props.options ? !!props.options.hasError : false,
+      error: this.getError(),
       value: this.getTransformer().format(props.value)
     }
   }
@@ -124,6 +125,7 @@ export class Component extends React.Component {
     const should = (
       nextState.value !== state.value ||
       nextState.hasError !== state.hasError ||
+      nextState.error !== state.error ||
       nextProps.options !== props.options ||
       nextProps.type !== props.type ||
       isArraysShallowDiffers(nextPath, curPath)
@@ -155,7 +157,8 @@ export class Component extends React.Component {
   }
 
   getValue() {
-    return this.getTransformer().parse(this.state.value)
+    const value = this.state ? this.state.value : this.getTransformer().format(this.props.value)
+    return this.getTransformer().parse(value)
   }
 
   isValueNully() {
@@ -163,12 +166,12 @@ export class Component extends React.Component {
   }
 
   removeErrors() {
-    this.setState({ hasError: false })
+    this.setState({ hasError: false, error: '' })
   }
 
   validate() {
     const result = t.validate(this.getValue(), this.props.type, this.getValidationOptions())
-    this.setState({ hasError: !result.isValid() })
+    this.setState({ hasError: !result.isValid(), error: this.getError() })
     return result
   }
 
@@ -208,7 +211,7 @@ export class Component extends React.Component {
   }
 
   hasError() {
-    return this.props.options.hasError || this.state.hasError
+    return this.props.options.hasError || (this.state && this.state.hasError)
   }
 
   getConfig() {
@@ -237,8 +240,8 @@ export class Component extends React.Component {
       typeInfo: this.typeInfo,
       path: this.props.ctx.path,
       isPristine: this.state.isPristine,
-      error: this.getError(),
-      hasError: this.hasError(),
+      error: this.state.error,
+      hasError: this.state.hasError,
       label: this.getLabel(),
       onChange: this.onChange,
       config: this.getConfig(),
@@ -438,6 +441,7 @@ export class Datetime extends Component {
       return defaultDatetimeValue
     },
     parse: (value) => {
+      if (Nil.is(value)) { return defaultDatetimeValue }
       const numbers = value.map(parseNumber)
       if (numbers.every(t.Number.is)) {
         return new Date(numbers[0], numbers[1], numbers[2])
@@ -474,7 +478,7 @@ export class Struct extends Component {
   }
 
   removeErrors() {
-    this.setState({ hasError: false })
+    this.setState({ hasError: false, error: '' })
     Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors())
   }
 
@@ -507,7 +511,7 @@ export class Struct extends Component {
       }
     }
 
-    this.setState({ hasError: errors.length > 0 })
+    this.setState({ hasError: errors.length > 0, error: this.getError() })
     return new t.ValidationResult({errors, value})
   }
 
@@ -623,7 +627,7 @@ export class List extends Component {
   }
 
   removeErrors() {
-    this.setState({ hasError: false })
+    this.setState({ hasError: false, error: '' })
     Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors())
   }
 
@@ -650,7 +654,7 @@ export class List extends Component {
       errors = result.errors
     }
 
-    this.setState({ hasError: errors.length > 0 })
+    this.setState({ hasError: errors.length > 0, error: this.getError() })
     return new t.ValidationResult({errors: errors, value: value})
   }
 
