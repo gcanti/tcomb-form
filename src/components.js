@@ -208,6 +208,11 @@ export class Component extends React.Component {
   }
 
   hasError() {
+    var optionsHasError = this.props.options.hasError
+    if (t.Function.is(optionsHasError)) {
+      const {path, context} = this.getValidationOptions()
+      return optionsHasError(this.getValue(), path, context)
+    }
     return this.props.options.hasError || this.state.hasError
   }
 
