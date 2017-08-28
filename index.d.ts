@@ -185,7 +185,7 @@ declare namespace form {
 // Augment the 'tcomb' module.
 
 declare module 'tcomb' {
-    export interface Type<T> extends t.Type<T> {
+    export interface Type<T> {
         getTcombFormFactory(options: form.TcombRenderingOptions): form.Component;
         getTcombFormOptions(options: form.TcombRenderingOptions): form.TcombRenderingOptions;
     }
