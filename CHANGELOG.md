@@ -12,6 +12,12 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## 0.9.18
+
+- **Internal**
+    - replace string refs with callback refs (@gbiryukov)
+    - add React 16 to `peerDependencies` (@gcanti)
+
 ## 0.9.17
 
 - **Bug Fix**
