@@ -462,11 +462,17 @@ export class Datetime extends Component {
 }
 
 class ComponentWithChildRefs extends Component {
+
   childRefs = {};
 
   setChildRefFor = prop => ref => {
-    this.childRefs[prop] = ref
+    if (ref) {
+      this.childRefs[prop] = ref
+    } else {
+      delete this.childRefs[prop]
+    }
   }
+
 }
 
 @decorators.templates
