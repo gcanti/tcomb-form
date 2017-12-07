@@ -461,8 +461,16 @@ export class Datetime extends Component {
 
 }
 
+class ComponentWithChildRefs extends Component {
+  childRefs = {};
+
+  setChildRefFor = prop => ref => {
+    this.childRefs[prop] = ref
+  }
+}
+
 @decorators.templates
-export class Struct extends Component {
+export class Struct extends ComponentWithChildRefs {
 
   static transformer = {
     format: value => Nil.is(value) ? noobj : value,
@@ -470,12 +478,12 @@ export class Struct extends Component {
   }
 
   isValueNully() {
-    return Object.keys(this.refs).every((ref) => this.refs[ref].isValueNully())
+    return Object.keys(this.childRefs).every((key) => this.childRefs[key].isValueNully())
   }
 
   removeErrors() {
     this.setState({ hasError: false })
-    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors())
+    Object.keys(this.childRefs).forEach((key) => this.childRefs[key].removeErrors())
   }
 
   validate() {
@@ -490,8 +498,8 @@ export class Struct extends Component {
 
     const props = this.getTypeProps()
     for (const ref in props) {
-      if (this.refs.hasOwnProperty(ref)) {
-        result = this.refs[ref].validate()
+      if (this.childRefs.hasOwnProperty(ref)) {
+        result = this.childRefs[ref].validate()
         errors = errors.concat(result.errors)
         value[ref] = result.value
       }
@@ -550,7 +558,7 @@ export class Struct extends Component {
         const propOptions = getComponentOptions(fieldsOptions[prop], noobj, propValue, type)
         inputs[prop] = React.createElement(getFormComponent(propType, propOptions), {
           key: prop,
-          ref: prop,
+          ref: this.setChildRefFor(prop),
           type: propType,
           options: propOptions,
           value: propValue,
@@ -595,7 +603,7 @@ function toSameLength(value, keys, uidGenerator) {
 }
 
 @decorators.templates
-export class List extends Component {
+export class List extends ComponentWithChildRefs {
 
   static transformer = {
     format: value => Nil.is(value) ? noarr : value,
@@ -624,7 +632,7 @@ export class List extends Component {
 
   removeErrors() {
     this.setState({ hasError: false })
-    Object.keys(this.refs).forEach((ref) => this.refs[ref].removeErrors())
+    Object.keys(this.childRefs).forEach((key) => this.childRefs[key].removeErrors())
   }
 
   validate() {
@@ -638,7 +646,7 @@ export class List extends Component {
     }
 
     for (let i = 0, len = this.state.value.length; i < len; i++ ) {
-      result = this.refs[i].validate()
+      result = this.childRefs[i].validate()
       errors = errors.concat(result.errors)
       value.push(result.value)
     }
@@ -743,7 +751,7 @@ export class List extends Component {
       }
       return {
         input: React.createElement(ItemComponent, {
-          ref: i,
+          ref: this.setChildRefFor(i),
           type: itemType,
           options: itemOptions,
           value: itemValue,
@@ -782,9 +790,14 @@ export class List extends Component {
 }
 
 export class Form extends React.Component {
+  inputRef = null
+
+  setInputRef = ref => {
+    this.inputRef = ref
+  }
 
   validate() {
-    return this.refs.input.validate()
+    return this.inputRef.validate()
   }
 
   getValue() {
@@ -794,7 +807,7 @@ export class Form extends React.Component {
 
   getComponent(path) {
     const points = t.String.is(path) ? path.split('.') : path
-    return points.reduce((input, name) => input.refs[name], this.refs.input)
+    return points.reduce((input, name) => input.childRefs[name], this.inputRef)
   }
 
   getSeed() {
@@ -837,7 +850,7 @@ export class Form extends React.Component {
     const uidGenerator = this.getUIDGenerator()
 
     return React.createElement(getFormComponent(type, options), {
-      ref: 'input',
+      ref: this.setInputRef,
       type: type,
       options,
       value: value,
