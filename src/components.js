@@ -461,9 +461,15 @@ export class Datetime extends Component {
 
 }
 
-class ComponentWithChildRefs extends Component {
+@decorators.templates
+export class Struct extends Component {
 
-  childRefs = {};
+  static transformer = {
+    format: value => Nil.is(value) ? noobj : value,
+    parse: value => value
+  }
+
+  childRefs = {}
 
   setChildRefFor = prop => ref => {
     if (ref) {
@@ -471,16 +477,6 @@ class ComponentWithChildRefs extends Component {
     } else {
       delete this.childRefs[prop]
     }
-  }
-
-}
-
-@decorators.templates
-export class Struct extends ComponentWithChildRefs {
-
-  static transformer = {
-    format: value => Nil.is(value) ? noobj : value,
-    parse: value => value
   }
 
   isValueNully() {
@@ -609,7 +605,7 @@ function toSameLength(value, keys, uidGenerator) {
 }
 
 @decorators.templates
-export class List extends ComponentWithChildRefs {
+export class List extends Component {
 
   static transformer = {
     format: value => Nil.is(value) ? noarr : value,
@@ -630,6 +626,19 @@ export class List extends ComponentWithChildRefs {
       value,
       keys: toSameLength(value, this.state.keys, props.ctx.uidGenerator)
     })
+  }
+
+  childRefs = {}
+
+  setChildRefFor = (index, key) => ref => {
+    // removed items may cause side effects in cases like removal animation, update refs only for actual items
+    if (this.state.keys.indexOf(key) !== -1) {
+      if (ref) {
+        this.childRefs[index] = ref
+      } else {
+        delete this.childRefs[index]
+      }
+    }
   }
 
   isValueNully() {
@@ -729,6 +738,7 @@ export class List extends ComponentWithChildRefs {
     const templates = this.getTemplates()
     const value = this.state.value
     return value.map((itemValue, i) => {
+      const key = this.state.keys[i]
       const type = this.typeInfo.innerType.meta.type
       const itemType = getTypeFromUnion(type, itemValue)
       const itemOptions = getComponentOptions(options.item, noobj, itemValue, type)
@@ -757,7 +767,7 @@ export class List extends ComponentWithChildRefs {
       }
       return {
         input: React.createElement(ItemComponent, {
-          ref: this.setChildRefFor(i),
+          ref: this.setChildRefFor(i, key),
           type: itemType,
           options: itemOptions,
           value: itemValue,
@@ -773,7 +783,7 @@ export class List extends ComponentWithChildRefs {
             path: ctx.path.concat(i)
           }
         }),
-        key: this.state.keys[i],
+        key,
         buttons: buttons
       }
     })
