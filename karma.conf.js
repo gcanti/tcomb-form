@@ -4,10 +4,7 @@ var path = require('path') // eslint-disable-line
 module.exports = function getConfig(config) {
   config.set({
     browserNoActivityTimeout: 30000,
-    // TODO: This should include "Firefox" for CI. It is currently turned off because
-    //       of https://github.com/travis-ci/travis-ci/issues/8242 When this issue is
-    //       resolved, this should be updated to include firefox
-    browsers: [process.env.CONTINUOUS_INTEGRATION ? 'Chrome' : 'Chrome'],
+    browsers: [process.env.CONTINUOUS_INTEGRATION ? 'Firefox' : 'Chrome'],
     singleRun: true,
     frameworks: ['tap'],
     files: [
