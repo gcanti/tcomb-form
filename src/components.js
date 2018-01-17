@@ -628,16 +628,21 @@ export class List extends Component {
     })
   }
 
-  childRefs = {}
+  childRefsByKey = {}
 
-  setChildRefFor = (index, key) => ref => {
-    // removed items may cause side effects in cases like removal animation, update refs only for actual items
-    if (this.state.keys.indexOf(key) !== -1) {
-      if (ref) {
-        this.childRefs[index] = ref
-      } else {
-        delete this.childRefs[index]
-      }
+  get childRefs() {
+    return this.state.keys.reduce((acc, key, index) => {
+      acc[index] = this.childRefsByKey[key]
+
+      return acc
+    }, {})
+  }
+
+  setChildRefFor = key => ref => {
+    if (ref) {
+      this.childRefsByKey[key] = ref
+    } else {
+      delete this.childRefsByKey[key]
     }
   }
 
@@ -767,7 +772,7 @@ export class List extends Component {
       }
       return {
         input: React.createElement(ItemComponent, {
-          ref: this.setChildRefFor(i, key),
+          ref: this.setChildRefFor(key),
           type: itemType,
           options: itemOptions,
           value: itemValue,
