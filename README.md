@@ -4,6 +4,10 @@
 
 > "Simplicity is the ultimate sophistication" (Leonardo da Vinci)
 
+# Notice
+
+`tcomb-form` is looking for maintainers. If you're interested in helping a great way to get started would just be to start weighing-in on GitHub issues, reviewing and testing some PRs.
+
 # Domain Driven Forms
 
 The [tcomb library](https://github.com/gcanti/tcomb) provides a concise but expressive way to define domain models in JavaScript.
