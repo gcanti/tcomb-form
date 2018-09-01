@@ -53,12 +53,7 @@ function getFormComponent(type, options) {
 exports.getComponent = getFormComponent
 
 function sortByText(a, b) {
-  if (a.text < b.text) {
-    return -1
-  } else if (a.text > b.text) {
-    return 1
-  }
-  return 0
+  return a.text.localeCompare(b.text);
 }
 
 function getComparator(order) {
