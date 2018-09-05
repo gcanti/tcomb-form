@@ -12,6 +12,11 @@
 **Note**: Gaps between patch versions are faulty/broken releases.
 **Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
+## 0.9.21
+
+- **Polish**
+    - Possibility to use flexible sorting, PR #422 (@yasaricli)
+
 ## 0.9.20
 
 - **Bug Fix**
