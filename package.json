@@ -35,6 +35,7 @@
     "react": "^0.14.0 || ^15.0.0 || ^16.0.0"
   },
   "devDependencies": {
+    "@types/react": "^15.0.38",
     "babel": "5.8.38",
     "babel-core": "5.8.38",
     "babel-eslint": "4.1.8",
